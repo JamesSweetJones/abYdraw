@@ -18,7 +18,7 @@ input1="VH.b(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.b(6:1)-CL(7:
 #IgG(H)-scFv
 input2="VH.b(1:8)-CH1(2:9){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L-VH2(6:7)-L-VL2(7:6)|VL.b(8:1)-CL(9:2){1}|VH.a(10:17)-CH1(11:18){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L-VH2(15:16)-L-VL2(16:15)|VL.a(17:10)-CL(18:11){1}"
 
-input3="VL.a(1:2)|VH.a(2:1)|VL.b(3:4)|VH.b(4:3)"
+input3="VL.a(1:2)-L-VH.a(2:1)-L-X[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(3:4)-L-VL.b(4:3)"
 #BsAb Fragment
 input4="VH.b(1:2)-L-VL.b(2:1)-H*(3:6){1}[MOD: engineered disulphide bond]-X[TYPE:LEUCINE] | VH.a(4:5)-L-VL.a(5:4)-H*(6:3){1}[MOD: engineered disulphide bond]-X[TYPE:LEUCINE]"
 #ADC
@@ -28,34 +28,46 @@ def Get_dictionaries(x):
     takes in IgG in SMILES format and identifies variables for dynamically rendering image
     """
     y       = re.sub("\s","",x)
-    splitx  = y.split("|")
+    if "|" in y:
+        splitx  = y.split("|")
+    else:
+        splitx = [y]
     chains  = []
     ADCs    = []
     VHa     = {}
     VHb     = {}
     VLa     = {}
     VLb     = {}
-    Salt_bridges = ""
-    VHa_VLa_bonds= ""
-    VHb_VLb_bonds= ""
+    fragment= {}
+    Salt_bridges   = ""
+    VHa_VLa_bonds  = ""
+    VHb_VLb_bonds  = ""
     CH1a_CL1a_bonds=""
     CH1b_CL1b_bonds=""
     #get chains and watch out for ADCs
     for i in splitx:
-        if i[0] != "X":
-            chain = i.split("(")[0]
-            chains.append(chain)
-        elif i[0] == "X":
-            chain = i.split("-")[1]
-            chain = chain.split("(")[0]
-            chains.append(chain)
+        if len(splitx) > 1:
+            if i[0] != "X":
+                chain = i.split("(")[0]
+                chains.append(chain)
+            elif i[0] == "X":
+                chain = i.split("-")[1]
+                chain = chain.split("(")[0]
+                chains.append(chain)
+        elif len(splitx) == 1:
+            chains.append("fragment")
+
     for i in range(len(chains)):
         dict = str(re.sub("\.","",str(chains[i])))
         chain = splitx[i].split("-")
         #print(dict,chain)
         for j in range(len(chain)):
-            domain   =  re.findall("^CH[1-9]|^VL[1-9]|^VH[1-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
+            domain   =  re.findall("^CH[1-9]|^VL.[ab]|^VH.[ab]|^VL[1-9]|^VH[1-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
             domain   =  str(re.sub("\[|\'|\]","", str(domain)))
+            print(domain)
+            print(chain[j])
+            #if chain[i] != fragment:
+            #    if domain == ""
             ##Get Bond numbers
             if domain == "H" and Salt_bridges == "":
                 Salt_bridges = re.findall("\{.*?\}", str(chain[j]))
@@ -104,9 +116,14 @@ def Get_dictionaries(x):
                 VLa[domain] = location
             elif dict == "VLb" and domain !="":
                 VLb[domain] = location
+            elif dict == "fragment" and domain !="":
+                fragment[domain] = location
             else:
                 continue
-    return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds)
+
+
+    print(fragment)
+    return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
 
 
 
@@ -122,6 +139,7 @@ def Check_interactions(chains_list):
     VHb_VLb_bond_count    = chains_list[6]
     CH1a_CL1a_bond_count  = chains_list[7]
     CH1b_CL1b_bond_count  = chains_list[8]
+    fragment              = chains_list[9]
     Heavy_chain_a_domains = []
     Light_chain_a_domains = []
     Heavy_chain_b_domains = []
@@ -248,11 +266,15 @@ def Check_interactions(chains_list):
     VLb_ADC_label_location = Point(230,10)
     VHb_ADC = Polygon(Point(240,50),Point(250,30),Point(240,20),Point(250,10),Point(260,20),Point(250,30))
     VHb_ADC_label_location = Point(200,10)
+    VHa_VHb_ADC = Polygon(Point(150,90),Point(140,70),Point(150,50),Point(180,50),Point(190,70),Point(180,90),Point(150,90))
+    VHa_VHb_ADC_label_location = Point(160,40)
+    VHa_ADC_bond_location = Line(Point(110,90),Point(140,70))
+    VHb_ADC_bond_location = Line(Point(190,70),Point(210,90))
 #######Heavy chain A check what domains are there################
     for i in range(len(VHa)):
         keyslist = list(VHa.keys())
         if i==0:
-            if keyslist[i] == "VH":
+            if keyslist[i] == "VH.a":
                 Heavy_chain_a_domains.append(VH1a)
                 location = VHa.get(keyslist[i])[0]
                 Labels.append(Text(VH1a_label_location,str(location)))
@@ -265,7 +287,7 @@ def Check_interactions(chains_list):
 
 
         elif i == 1:
-                if keyslist[i] == "VH" and keyslist[i-1] == "X":
+                if keyslist[i] == "VH.a" and keyslist[i-1] == "X":
                     Heavy_chain_a_domains.append(VH1a)
                     location = VHa.get(keyslist[i])[0]
                     Labels.append(Text(VH1a_label_location,str(location)))
@@ -333,7 +355,7 @@ def Check_interactions(chains_list):
     for i in range(len(VLa)):
         keyslist = list(VLa.keys())
         if i==0:
-            if keyslist[i] == "VL":
+            if keyslist[i] == "VL.a":
                 Light_chain_a_domains.append(VL1a)
                 location = VLa.get(keyslist[i])[0]
                 Labels.append(Text(VL1a_label_location,str(location)))
@@ -345,7 +367,7 @@ def Check_interactions(chains_list):
 
 
         elif i ==1:
-            if keyslist[i] == "VL":
+            if keyslist[i] == "VL.a":
                 Light_chain_a_domains.append(VL1a)
                 location = VLa.get(keyslist[i])[0]
                 Labels.append(Text(VL1a_label_location,str(location)))
@@ -370,7 +392,7 @@ def Check_interactions(chains_list):
     for i in range(len(VHb)):
             keyslist = list(VHb.keys())
             if i==0:
-                if keyslist[i] == "VH":
+                if keyslist[i] == "VH.b":
                     Heavy_chain_b_domains.append(VH1b)
                     location = VHb.get(keyslist[i])[0]
                     Labels.append(Text(VH1b_label_location,str(location)))
@@ -383,7 +405,7 @@ def Check_interactions(chains_list):
 
 
             elif i == 1:
-                if keyslist[i] == "VH" and keyslist[i-1] == "X" :
+                if keyslist[i] == "VH.b" and keyslist[i-1] == "X" :
                     Heavy_chain_b_domains.append(VH1b)
                     location = VHb.get(keyslist[i])[0]
                     Labels.append(Text(VH1b_label_location,str(location)))
@@ -451,7 +473,7 @@ def Check_interactions(chains_list):
     for i in range(len(VLb)):
         keyslist = list(VLb.keys())
         if i==0:
-            if keyslist[i] == "VL":
+            if keyslist[i] == "VL.b":
                 Light_chain_b_domains.append(VL1b)
                 location = VLb.get(keyslist[i])[0]
                 Labels.append(Text(VL1b_label_location,str(location)))
@@ -463,7 +485,7 @@ def Check_interactions(chains_list):
 
 
         elif i ==1:
-            if keyslist[i] == "VL":
+            if keyslist[i] == "VL.b":
                 Light_chain_b_domains.append(VL1b)
                 location = VLb.get(keyslist[i])[0]
                 Labels.append(Text(VL1b_label_location,str(location)))
@@ -481,9 +503,44 @@ def Check_interactions(chains_list):
                     location = VLb.get(keyslist[i])[0]
                     Labels.append(Text(CL1a_label_location,str(location)))
 
+#########Check Fragment################
 
+    if fragment != {}:
+        for i in range(len(fragment)):
+            keyslist = list(fragment.keys())
+            print(keyslist[i])
+            if keyslist[i] == "VL.a":
+                Light_chain_a_domains.append(VL1a)
+                location = fragment.get(keyslist[i])[0]
+                Labels.append(Text(VL1a_label_location,str(location)))
 
+            if keyslist[i] == "VH.a":
+                Heavy_chain_a_domains.append(VH1a)
+                location = fragment.get(keyslist[i])[0]
+                Labels.append(Text(VH1a_label_location,str(location)))
+                if keyslist[i-1] == "VL.a":
+                    Salt_bridges.append(VHa_VLa_bond_location)
 
+            if keyslist[i] == "VH.b":
+                Heavy_chain_b_domains.append(VH1b)
+                location = fragment.get(keyslist[i])[0]
+                Labels.append(Text(VH1b_label_location,str(location)))
+                if keyslist[i+1] == "VL.b":
+                    Salt_bridges.append(VHb_VLb_bond_location)
+
+            if keyslist[i] == "VL.b":
+                Light_chain_b_domains.append(VL1b)
+                location = fragment.get(keyslist[i])[0]
+                Labels.append(Text(VL1b_label_location,str(location)))
+
+            if keyslist[i] == "X":
+                Salt_bridges.append(VHa_VHb_ADC)
+                TYPE = str(re.sub("\[\'TYPE:|\]","",fragment.get(keyslist[i])[0]))
+                Labels.append(Text(VHa_VHb_ADC_label_location,str(TYPE)))
+                if keyslist[i-1] == "VH.a":
+                    Salt_bridges.append(VHa_ADC_bond_location)
+                if keyslist[i+1] == "VH.b":
+                    Salt_bridges.append(VHb_ADC_bond_location)
 
     return (Heavy_chain_a_domains,Light_chain_a_domains,Heavy_chain_b_domains,Light_chain_b_domains, Salt_bridges, Labels)
 
@@ -504,7 +561,7 @@ def render(chains_list):
 
 
 
-split_chains = Get_dictionaries(input5)
+split_chains = Get_dictionaries(input2)
 print(split_chains)
 coordinates  = Check_interactions(split_chains)
 render(coordinates)
