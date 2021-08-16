@@ -352,8 +352,8 @@ def Check_interactions(chains_list):
     VHb_ADC_label_location = Point(200,10)
     VHa_VHb_ADC = Polygon(Point(150,90),Point(140,70),Point(150,50),Point(180,50),Point(190,70),Point(180,90),Point(150,90))
     VHa_VHb_ADC_label_location = Point(160,40)
-    VHa_ADC_bond_location = Line(Point(110,90),Point(140,70))
-    VHb_ADC_bond_location = Line(Point(190,70),Point(210,90))
+    VHa_ADC_bond_location = Point(150,50)
+    VHb_ADC_bond_location = Point(180,90)
 
 #########Make bonds################
     def bondmaker(x,y):
@@ -396,7 +396,7 @@ def Check_interactions(chains_list):
                     Heavy_chain_a_domains.append(CH1a)
                     location = VHa.get(keyslist[i])[0]
                     Labels.append(Text(CH1a_label_location,str(location)))
-                    bonds = bondmaker(str(keyslist[i-1]),str(keyslist[i]))
+                    bonds = bondmaker("VH1a",str(keyslist[i])+"a")
                     Salt_bridges.append(Line(eval(bonds[0]),eval(bonds[1])))
 
                 elif keyslist[i] == "H":
@@ -657,12 +657,16 @@ def Check_interactions(chains_list):
                 location = fragment.get(keyslist[i])[0]
                 Labels.append(Text(VL1a_label_location,str(location)))
 
+
             if keyslist[i] == "VH.a":
                 Heavy_chain_a_domains.append(VH1a)
                 location = fragment.get(keyslist[i])[0]
                 Labels.append(Text(VH1a_label_location,str(location)))
                 if keyslist[i-1] == "VL.a":
-                    Salt_bridges.append(VHa_VLa_bond_location)
+                    if i > 0:
+                        bonds = bondmaker("VL1a","VH1a")
+                        Salt_bridges.append(Line(eval(bonds[0]),eval(bonds[1])))
+
 
             if keyslist[i] == "VH.b":
                 Heavy_chain_b_domains.append(VH1b)
@@ -671,19 +675,24 @@ def Check_interactions(chains_list):
                 if keyslist[i+1] == "VL.b":
                     Salt_bridges.append(VHb_VLb_bond_location)
 
+
             if keyslist[i] == "VL.b":
                 Light_chain_b_domains.append(VL1b)
                 location = fragment.get(keyslist[i])[0]
                 Labels.append(Text(VL1b_label_location,str(location)))
+                bonds = bondmaker("VH1b","VL1b")
+                Salt_bridges.append(Line(eval(bonds[0]),eval(bonds[1])))
+
 
             if keyslist[i] == "X":
                 Salt_bridges.append(VHa_VHb_ADC)
                 TYPE = str(re.sub("\[\'TYPE:|\]","",fragment.get(keyslist[i])[0]))
                 Labels.append(Text(VHa_VHb_ADC_label_location,str(TYPE)))
                 if keyslist[i-1] == "VH.a":
-                    Salt_bridges.append(VHa_ADC_bond_location)
+                    Salt_bridges.append(Line(VH1a_bottom_bond_location,VHa_ADC_bond_location))
+
                 if keyslist[i+1] == "VH.b":
-                    Salt_bridges.append(VHb_ADC_bond_location)
+                    Salt_bridges.append(Line(VHb_ADC_bond_location,VH1b_top_bond_location))
 
     return (Heavy_chain_a_domains,Light_chain_a_domains,Heavy_chain_b_domains,Light_chain_b_domains, Salt_bridges, Labels)
 
