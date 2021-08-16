@@ -131,7 +131,7 @@ def Get_dictionaries(x):
             else:
                 continue
 
-
+    print(VHa)
     return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
 
 
@@ -289,22 +289,22 @@ def Check_interactions(chains_list):
     scFv4_IgGb   = Polygon( Point(220,50),Point(200,50),Point(180,90),Point(200,90))
 
     IgG_2scFV1b  = Polygon( Point(190,220),Point(170,220),Point(170,257),Point(190,257))
-    IgG_2scFV1b_label_location       = Point(210,240)
+    IgG_2scFV1b_label_location       = Point(180,240)
     IgG_2scFV1b_top_bond_location    = Point(180,220)
     IgG_2scFV1b_bottom_bond_location = Point(180,257)
 
     IgG_2scFV2b  = Polygon( Point(190,260),Point(170,260),Point(170,297),Point(190,297))
-    IgG_2scFV2b_label_location       = Point(210,300)
+    IgG_2scFV2b_label_location       = Point(180,300)
     IgG_2scFV2b_top_bond_location    = Point(180,260)
     IgG_2scFV2b_bottom_bond_location = Point(180,297)
 
     IgG_2scFV3b  = Polygon( Point(220,220),Point(200,220),Point(200,257),Point(220,257))
-    IgG_2scFV3b_label_location       = Point(180,240)
+    IgG_2scFV3b_label_location       = Point(210,240)
     IgG_2scFV3b_top_bond_location    = Point(210,220)
     IgG_2scFV3b_bottom_bond_location = Point(210,257)
 
     IgG_2scFV4b  = Polygon( Point(220,260),Point(200,260),Point(200,297),Point(220,297))
-    IgG_2scFV4b_label_location       = Point(180,300)
+    IgG_2scFV4b_label_location       = Point(210,300)
     IgG_2scFV4b_top_bond_location    = Point(210,260)
     IgG_2scFV4b_bottom_bond_location = Point(210,297)
 
@@ -412,8 +412,11 @@ def Check_interactions(chains_list):
                         Labels.append(Text(CH2a_label_location,str(location)))
 
 
-                elif keyslist[i] == "CH3":
-                    Heavy_chain_a_domains.append(CH3a)
+                elif "CH3" in keyslist[i]:
+                    if "@" in keyslist[i]:
+                        Heavy_chain_a_domains.append(CH3a_notch)
+                    else:
+                        Heavy_chain_a_domains.append(CH3a)
                     if VHa.get('CH3')[0] == VHb.get('CH3')[1] and VHa.get('CH3')[1] == VHb.get('CH3')[0]:
                         CH3a_CH3b = True
                         location = VHa.get(keyslist[i])[0]
@@ -592,7 +595,7 @@ def Check_interactions(chains_list):
                         elif keyslist[i-1] == "VH2" and keyslist[i-2] == "CH4":
                             Heavy_chain_b_domains.append(IgG_2scFV4b)
                             location = VHb.get(keyslist[i])[0]
-                            Labels.append(Text(IgG_4scFV1b_label_location,str(location)))
+                            Labels.append(Text(IgG_4scFV4b_label_location,str(location)))
                             bonds = bondmaker("IgG_2scFV3b","IgG_2scFV4b")
                             Salt_bridges.append(Line(eval(bonds[0]),eval(bonds[1])))
 
@@ -602,7 +605,7 @@ def Check_interactions(chains_list):
                         if keyslist[i-1] == "VH2" and keyslist[i-2] == "CH4":
                             Heavy_chain_b_domains.append(IgG_2scFV3b)
                             location = VHb.get(keyslist[i])[0]
-                            Labels.append(Text(IgG_2scFV3b_label_location,str(location)))
+                            Labels.append(Text(IgG_2scFV4b_label_location,str(location)))
                             bonds = bondmaker("IgG_2scFV2b","IgG_2scFV4b")
                             Salt_bridges.append(Line(eval(bonds[0]),eval(bonds[1])))
 
