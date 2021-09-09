@@ -52,12 +52,24 @@ def Get_dictionaries(x):
         elif len(splitx) == 1:
             chains.append("fragment")
 
+
     for i in range(len(chains)):
-        dict = str(re.sub("\.","",str(chains[i])))
+        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
         chain = splitx[i].split("-")
         for j in range(len(chain)):
-            domain   =  re.findall("^CH[0-9][@+>_!*]|^CH[0-9]|^VL.[ab]|^VH.[ab]|^VL[1-9]|^VH[1-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
-            domain   =  str(re.sub("\[|\'|\]|\.","", str(domain)))
+            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL.[ab]|^VH.[ab]|^VL[1-9]|^VH[1-9]|VH[+_*]\.[ab]|VL[+_*]\.[ab]|^CL[0-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
+            for i in range(len(domain)):
+                if "*" in domain[i]:
+                    domain = str(re.sub("\(.*\)\[MOD\:","",str(domain)))
+                elif ("VH+") in domain[i] or ("VL+") in domain[i]:
+                    domain = str(re.sub("\+","",domain[i]))
+                    domain = domain+"+"
+                elif ("VH_") in domain[i] or ("VL_") in domain[i]:
+                    domain = str(re.sub("\_","",domain[i]))
+                    domain = domain+"_"
+            else:
+                domain = str(re.sub("\[|\'|\]|\.","", str(domain)))
+
 
             #if chain[i] != fragment:
             #    if domain == ""
@@ -116,105 +128,6 @@ def Get_dictionaries(x):
 
     return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
 
-
-######################################
-def Get_dictionaries(x):
-    """
-    takes in IgG in SMILES format and identifies variables for dynamically rendering image
-    """
-    y       = re.sub("\s","",x)
-    if "|" in y:
-        splitx  = y.split("|")
-    else:
-        splitx = [y]
-    chains  = []
-    ADCs    = []
-    VHa     = {}
-    VHb     = {}
-    VLa     = {}
-    VLb     = {}
-    fragment= {}
-    Salt_bridges   = ""
-    VHa_VLa_bonds  = ""
-    VHb_VLb_bonds  = ""
-    CH1a_CL1a_bonds=""
-    CH1b_CL1b_bonds=""
-    #get chains and watch out for ADCs
-    for i in splitx:
-        if len(splitx) > 1:
-            if i[0] != "X":
-                chain = i.split("(")[0]
-                chains.append(chain)
-            elif i[0] == "X":
-                chain = i.split("-")[1]
-                chain = chain.split("(")[0]
-                chains.append(chain)
-        elif len(splitx) == 1:
-            chains.append("fragment")
-
-    for i in range(len(chains)):
-        dict = str(re.sub("\.","",str(chains[i])))
-        chain = splitx[i].split("-")
-        for j in range(len(chain)):
-            domain   =  re.findall("^CH[0-9][@+>_!*]|^CH[0-9]|^VL.[ab]|^VH.[ab]|^VL[1-9]|^VH[1-9]|^CL[0-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
-            domain   =  str(re.sub("\[|\'|\]|\.","", str(domain)))
-
-            #if chain[i] != fragment:
-            #    if domain == ""
-            ##Get Bond numbers
-            if domain == "H" and Salt_bridges == "":
-                Salt_bridges = re.findall("\{.*?\}", str(chain[j]))
-                Salt_bridges = str(Salt_bridges)
-                Salt_bridges = int(re.sub("\{|\'|\}|\[|\]","", Salt_bridges))
-            elif domain == "VH":
-                if dict == "VHa" and VHa_VLa_bonds == "":
-                    VHa_VLa_bonds_match = re.findall("\{.*?\}", str(chain[j]))
-                    if VHa_VLa_bonds_match != []:
-                        VHa_VLa_bonds = str(VHa_VLa_bonds_match)
-                        VHa_VLa_bonds = int(re.sub("\{|\'|\}|\[|\]","", VHa_VLa_bonds))
-                elif dict == "VHb" and VHb_VLb_bonds == "":
-                    VHb_VLb_bonds_match = re.findall("\{.*?\}", str(chain[j]))
-                    if VHb_VLb_bonds_match != []:
-                        VHb_VLb_bonds = str(VHb_VLb_bonds_match)
-                        VHb_VLb_bonds = int(re.sub("\{|\'|\}|\[|\]","", VHb_VLb_bonds))
-            elif domain == "CH1":
-                if dict == "VHa" and CH1a_CL1a_bonds == "":
-                    CH1a_CL1a_bonds_match = re.findall("\{.*?\}", str(chain[j]))
-                    if CH1a_CL1a_bonds_match != []:
-                        CH1a_CL1a_bonds = str(CH1a_CL1a_bonds_match)
-                        CH1a_CL1a_bonds = int(re.sub("\{|\'|\}|\[|\]","", CH1a_CL1a_bonds))
-                elif dict == "VHb" and CH1b_CL1b_bonds == "":
-                    CH1b_CL1b_bonds_match = re.findall("\{.*?\}", str(chain[j]))
-                    if CH1b_CL1b_bonds_match != []:
-                        CH1b_CL1b_bonds = str(CH1b_CL1b_bonds_match)
-                        CH1b_CL1b_bonds = int(re.sub("\{|\'|\}|\[|\]","", CH1b_CL1b_bonds))
-
-            location    = []
-            locationstr =  re.findall("\((.*?)\)", str(chain[j]))
-            locationstr =  str(re.sub("\[|\'|\]","", str(locationstr)))
-            locationstr =  str(re.sub(":",",", str(locationstr)))
-            locationstr = locationstr.split(",")
-
-            if domain != "X" and domain != "":
-                for x in range(len(locationstr)):
-                    location.append(int(locationstr[x]))
-            elif domain == "X":
-                location = re.findall("\[(.*?)\]", str(chain[j]))
-
-            if dict == "VHa" and domain !="":
-                VHa[domain] = location
-            elif dict == "VHb" and domain !="":
-                VHb[domain] = location
-            elif dict == "VLa" and domain !="":
-                VLa[domain] = location
-            elif dict == "VLb" and domain !="":
-                VLb[domain] = location
-            elif dict == "fragment" and domain !="":
-                fragment[domain] = location
-            else:
-                continue
-
-    return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
 
 
 ######################################
@@ -278,6 +191,8 @@ def Check_interactions(chains_list):
 
 
         CLa                       = [140,180,180,180,220,254,180,254]
+        CLa_notch                 = [140,180,180,180,220,220,220,254,180,254]
+        CLa_inward_notch          = [140,180,180,180,180,220,220,254,180,254]
         CLa_label_location        = [120,220]
         CLa_top_bond_location     = [160,180]
         CLa_bottom_bond_location  = [200,254]
@@ -298,11 +213,15 @@ def Check_interactions(chains_list):
         VHa_bottom_bond_location = [217,174]
 
         CH1a                      = [200,180,240,180,280,254,240,254]
+        CH1a_notch                = [200,180,240,180,280,254,240,254,200,220]
+        CH1a_inward_notch         = [200,180,240,180,280,254,240,254,240,220]
         CH1a_label_location       = [280,220]
         CH1a_top_bond_location    = [220,180]
         CH1a_bottom_bond_location = [260,254]
 
         CH2a                      = [280,280,320,280,320,354,280,354]
+        CH2a_notch                = [280,280,320,280,320,340,320,354,280,354]
+        CH2a_inward_notch         = [280,280,320,280,320,300,320,354,280,354]
         CH2a_label_location       = [260,320]
         CH2a_top_bond_location    = [300,280]
         CH2a_bottom_bond_location = [300,354]
@@ -355,6 +274,8 @@ def Check_interactions(chains_list):
 
 
         CLb                      = [520,180,480,180,440,254,480,254]
+        CLb_notch                = [520,180,480,180,440,220,440,254,480,254]
+        CLb_inward_notch         = [520,180,480,180,480,220,440,254,480,254]
         CLb_label_location       = [520,220]
         CLb_top_bond_location    = [500,180]
         CLb_bottom_bond_location = [460,254]
@@ -375,12 +296,16 @@ def Check_interactions(chains_list):
         VHb_bottom_bond_location = [443,174]
 
         CH1b                      = [460,180,420,180,380,254,420,254]
+        CH1b_notch                = [460,180,420,180,380,254,420,254,460,220]
+        CH1b_inward_notch         = [460,180,420,180,380,254,420,254,420,220]
         CH1b_label_location       = [380,220]
         CH1b_top_bond_location    = [440,180]
         CH1b_bottom_bond_location = [400,254]
 
 
         CH2b                      = [380,280,340,280,340,354,380,354]
+        CH2b_notch                = [380,280,340,280,320,320,340,354,380,354]
+        CH2b_inward_notch         = [380,280,340,280,320,360,340,354,380,354]
         CH2b_label_location       = [400,320]
         CH2b_top_bond_location    = [360,280]
         CH2b_bottom_bond_location = [360,354]
@@ -448,6 +373,15 @@ def Check_interactions(chains_list):
         VHa_X_VHb_top_bond_location      = [300,100]
         VHa_X_VHb_bottom_bond_location      = [360,180]
 
+        X_CH3a                   = [280,480,300,500,280,520,260,500]
+        X_CH3a_label_location    = [290,520]
+        X_CH3a_top_bond_location = [290,480]
+
+        X_CH3b                   = [380,480,400,500,380,520,360,500]
+        X_CH3b_label_location    = [380,520]
+        X_CH3b_top_bond_location = [380,480]
+
+
         CH1_CH2bonda = CH1a_bottom_bond_location+CH2a_top_bond_location
         CH1_CH2bondb = CH1b_bottom_bond_location+CH2b_top_bond_location
         Saltbridge_a  =[271,262,388,262]
@@ -455,7 +389,8 @@ def Check_interactions(chains_list):
         Saltbridge_b  = [288,272,374,272]
         Saltbridge_labelb = [400,274]
 
-    #########Check VH/VL ADC Coordinates################
+#########Check VH/VL ADC Coordinates################
+
 
 
         coordinates_list      = []
@@ -466,13 +401,27 @@ def Check_interactions(chains_list):
         labels = []
         keyslist = list(dictionary.keys())
         for i in range(len(dictionary)):
+            mod = ""
             if i == 0:
                 if "V" in keyslist[i]:
-                    coordinates = eval(str(keyslist[i]))
+                    if "+" in keyslist[i]:
+                        domain = keyslist[i]
+                        domain = re.sub("\+","",str(domain))
+                        coordinates= eval(str(domain))
+                        mod = " +"
+                    elif "_" in keyslist[i]:
+                        domain = keyslist[i]
+                        domain = re.sub("\_","",str(domain))
+                        coordinates= eval(str(domain))
+                        mod = " -"
+                    else:
+                        domain = keyslist[i]
+                        coordinates = eval(str(keyslist[i]))
+
                     coordinates_list.append(coordinates)
-                    Label_Locations.append((eval(str(keyslist[i]+"_label_location"))))
+                    Label_Locations.append((eval(str(domain+"_label_location"))))
                     location = dictionary.get(keyslist[i])[0]
-                    Label_Text.append(str(location))
+                    Label_Text.append(str(location)+mod)
                     domain_names.append(keyslist[i])
 
                 elif "X" in keyslist[i]:
@@ -588,42 +537,67 @@ def Check_interactions(chains_list):
 
             elif i > 0 and "V" not in keyslist[i]:
                 domain = keyslist[i]
+                previous_domain = str(keyslist[i-1])
+                previous_domain = re.sub("\*|\+|\_|\>|\@","",previous_domain)
+                previous_domain_2 = str(keyslist[i-2])
+                previous_domain_2 = re.sub("\*|\+|\_|\>|\@","",previous_domain_2)
+                mod    = ""
+                print(domain, previous_domain,previous_domain_2)
                 if "@" in domain:
                     domain = re.sub("@","",str(domain))
                     coordinates= eval(str(domain+chain+"_notch"))
-                    bonds = bondmaker(keyslist[i-1],domain,chain)
-                    Bonds.append(eval(bonds[0])+eval(bonds[1]))
+                    mod = " notch"
 
                 elif ">" in keyslist[i]:
                     domain = re.sub(">","",str(domain))
                     coordinates= eval(str(domain+chain+"_inward_notch"))
-                    bonds = bondmaker(keyslist[i-1],domain,chain)
-                    Bonds.append(eval(bonds[0])+eval(bonds[1]))
+                    mod = " inward notch"
 
-                elif keyslist[i-1] == "H":
-                    coordinates = eval(str(domain+chain))
-                    bonds = bondmaker(keyslist[i-2],domain,chain)
-                    Bonds.append(eval(bonds[0])+eval(bonds[1]))
+                elif "+" in keyslist[i]:
+                    domain = re.sub("\+","",str(domain))
+                    coordinates= eval(str(domain+chain))
+                    mod = " +"
+
+                elif "_" in keyslist[i]:
+                    domain = re.sub("\_","",str(domain))
+                    coordinates= eval(str(domain+chain))
+                    mod = " -"
+
+                elif "*" in keyslist[i]:
+                    domain = re.sub("\*.*","",str(domain))
+                    coordinates= eval(str(domain+chain))
+                    try:
+                        mod = str(keyslist[i].split("*")[1])
+                    except IndexError:
+                        mod = ""
+
 
                 elif keyslist[i] == "X":
                     if keyslist[i-1] == "VHa":
                         if keyslist[i+1] == "VHb":
                             coordinates = VHa_X_VHb
-                            bonds = bondmaker(keyslist[i-1],"VHa_X_VHb",chain)
-                            Bonds.append(eval(bonds[0])+eval(bonds[1]))
                             domain = "VHa_X_VHb"
+
+
                             chain = ""
+                    elif "CH3" in keyslist[i-1]:
+                        domain = "X_CH3"
+                        coordinates = eval(domain+chain)
+
 
                 else:
                     coordinates = eval(str(domain+chain))
-                    bonds = bondmaker(keyslist[i-1],domain,chain)
-                    Bonds.append(eval(bonds[0])+eval(bonds[1]))
 
-
+                if previous_domain == "H":
+                    print("yes")
+                    bonds = bondmaker(previous_domain_2,domain,chain)
+                else:
+                    bonds = bondmaker(previous_domain,domain,chain)
+                Bonds.append(eval(bonds[0])+eval(bonds[1]))
                 coordinates_list.append(coordinates)
                 Label_Locations.append((eval(str(domain+chain+"_label_location"))))
                 location = dictionary.get(keyslist[i])[0]
-                Label_Text.append(str(location))
+                Label_Text.append(str(location)+mod)
                 domain_names.append(keyslist[i])
 
         return(coordinates_list, Bonds,Label_Text, Label_Locations, domain_names)
@@ -666,7 +640,6 @@ def Check_interactions(chains_list):
 
 
 
-
     H_Coordinates   = GetChainCoordinates(VHa_chain,"a")[0] , GetChainCoordinates(VHb_chain,"b")[0]
     L_Coordinates   = GetChainCoordinates(VLa_chain,"a")[0] , GetChainCoordinates(VLb_chain,"b")[0]
     Bonds           = GetChainCoordinates(VLa_chain,"a")[1] + GetChainCoordinates(VHa_chain,"a")[1] + GetChainCoordinates(VLb_chain,"b")[1] + GetChainCoordinates(VHb_chain,"b")[1]
@@ -701,13 +674,13 @@ def render(chains_list,canvas):
     for i in range(len(H_Polygons)):
         for j in range(len(H_Polygons[i])):
             #tag = str(H_domain_names[i][j])
-            canvas.create_polygon(H_Polygons[i][j], outline='#000000',fill='#006400', width=2, tags = str(H_domain_names[i][j]), smooth=1, splinesteps = 10000000)
+            canvas.create_polygon(H_Polygons[i][j], outline='#000000',fill='#006400', width=2, tags = str(H_domain_names[i][j]))
             #canvas.tag_bind(str(H_domain_names[i][j]),"<Enter>", button_hover_polygon(H_domain_names[i][j]))
             #canvas.tag_bind(str(H_domain_names[i][j]),"<Leave>", button_hover_polygon_leave)
     for i in range(len(L_Polygons)):
         for j in range(len(L_Polygons[i])):
             #tag = str(L_domain_names[i][j])
-            canvas.create_polygon(L_Polygons[i][j], outline='#000000',fill='#1f1', width=2, smooth=1, splinesteps = 10000000)
+            canvas.create_polygon(L_Polygons[i][j], outline='#000000',fill='#1f1', width=2)
             #canvas.tag_bind(tag,"<Enter>", button_hover_polygon(tag))
             #canvas.tag_bind(tag,"<Leave>", button_hover_polygon_leave)
     for i in range(len(Label_positions)):
@@ -773,4 +746,3 @@ lower_canvas.place(relheight=1,relwidth=1)
 
 
 root.mainloop()
-
