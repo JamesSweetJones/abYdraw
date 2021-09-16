@@ -27,7 +27,12 @@ def Get_dictionaries(x):
         splitx  = y.split("|")
     else:
         splitx = [y]
-    chains  = []
+    if len(splitx) == 4:
+        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a']
+    elif len(splitx) == 2:
+        chains = ['VH.b','VH.a']
+    elif len(splitx) == 1:
+        chains = ['VH.a']
     ADCs    = []
     VHa     = {}
     VHb     = {}
@@ -40,24 +45,45 @@ def Get_dictionaries(x):
     CH1a_CL1a_bonds=""
     CH1b_CL1b_bonds=""
     #get chains and watch out for ADCs
-    for i in splitx:
-        if len(splitx) > 1:
-            if i[0] != "X":
-                chain = i.split("(")[0]
-                chains.append(chain)
-            elif i[0] == "X":
-                chain = i.split("-")[1]
-                chain = chain.split("(")[0]
-                chains.append(chain)
-        elif len(splitx) == 1:
-            chains.append("fragment")
-
+    #for i in splitx:
+    #    if len(splitx) > 1:
+    #        if i[0] != "X":
+    #            chain = i.split("(")[0]
+    #            chains.append(chain)
+    #        elif i[0] == "X":
+    #            chain = i.split("-")[1]
+    #            chain = chain.split("(")[0]
+    #            chains.append(chain)
+    #    elif len(splitx) == 1:
+    #        chains.append("fragment")
 
     for i in range(len(chains)):
-        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+
         chain = splitx[i].split("-")
+        if  "VH" in chain[0]:
+            if chain[1] != "L":
+                dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+            elif chain[1] == "L":
+                if "VH" in chain[2]:
+                    dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                elif "VL" in chain[2]:
+                    dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+
+        elif "VL" in chain[0]:
+            if  chain[1] != "L":
+                dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+            elif chain[1] == "L":
+                if len(chain) > 2:
+                    if "VH" in chain[2]:
+                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    elif "VL" in chain[2]:
+                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+
+        elif "X" in chain[0] and "VH" in chain[1]:
+             dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+        #elif "VH" in chain[0] and
         for j in range(len(chain)):
-            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL.[ab]|^VH.[ab]|^VL[1-9]|^VH[1-9]|VH[+_*]\.[ab]|VL[+_*]\.[ab]|^CL[0-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
+            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL[1-9].[abcd]|^VL.[abcd]|^VH\.[abcd]|^VL[1-9]|^VH[1-9]\.[abcd]|^VH[1-9]|VH[+_*]\.[abcd]|VL[+_*]\.[abcd]|^CL[0-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
             for i in range(len(domain)):
                 if "*" in domain[i]:
                     domain = str(re.sub("\(.*\)\[MOD\:","",str(domain)))
@@ -129,7 +155,6 @@ def Get_dictionaries(x):
     return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
 
 
-
 ######################################
 def Check_interactions(chains_list):
 #########Set Variables################
@@ -152,41 +177,280 @@ def Check_interactions(chains_list):
     if fragment != {}:
         VLa_chain = fragment
 
-    print(fragment)
 
 
 
 #########Make bonds################
-    def bondmaker(x,y,side):
+    def bondmaker(x,y,side,f):
+        add_chain = f
+        if add_chain == "yes":
 
-
-        if re.search("[a-b]",x) == None and re.search("[a-b]",y) == None:
-            x_bond      = str(x)+str(side)+"_bottom_bond_location"
-            y_bond      = str(y)+str(side)+   "_top_bond_location"
-        elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) == None:
-            x_bond      = str(x)+"_bottom_bond_location"
-            y_bond      = str(y)+str(side)+   "_top_bond_location"
-        elif re.search("[a-b]",x) == None and re.search("[a-b]",y) != "" :
-            x_bond      = str(x)+str(side)+"_bottom_bond_location"
-            y_bond      = str(y)          +   "_top_bond_location"
-        elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) != "":
+            if re.search("[a-b]",x) == None and re.search("[a-b]",y) == None:
+                x_bond      = str(x)+str(side)+"_bottom_bond_location"
+                y_bond      = str(y)+str(side)+   "_top_bond_location"
+            elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) == None:
+                x_bond      = str(x)+"_bottom_bond_location"
+                y_bond      = str(y)+str(side)+   "_top_bond_location"
+            elif re.search("[a-b]",x) == None and re.search("[a-b]",y) != "" :
+                x_bond      = str(x)+str(side)+"_bottom_bond_location"
+                y_bond      = str(y)          +   "_top_bond_location"
+            elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) != "":
+                x_bond      = str(x)+"_bottom_bond_location"
+                y_bond      = str(y)+   "_top_bond_location"
+        elif add_chain != "yes":
             x_bond      = str(x)+"_bottom_bond_location"
             y_bond      = str(y)+   "_top_bond_location"
 
         return(x_bond,y_bond)
 
+    def GetChainCoordinates_2chains(dictionary,chain):
+        Block1                       = [100,180,140,180,140,260,100,260]
+        Block1_left_abd              = [100,200,120,200,120,180,140,180,140,260,100,260]
+        Block1_right_abd             = [100,180,120,180,120,200,140,200,140,260,100,260]
+        Block1_label_location        = [120,220]
+        Block1_top_bond_location     = [120,180]
+        Block1_bottom_bond_location  = [120,260]
+
+        Block2                       = [160,180,200,180,200,260,160,260]
+        Block2_left_abd              = [160,200,180,200,180,180,200,180,200,260,160,260]
+        Block2_right_abd             = [160,180,180,180,180,200,200,200,200,260,160,260]
+        Block2_label_location        = [180,220]
+        Block2_top_bond_location     = [180,180]
+        Block2_bottom_bond_location  = [180,260]
+
+        Block3                       = [220,180,260,180,260,260,220,260]
+        Block3_left_abd              = [220,200,240,200,240,180,260,180,260,260,220,260]
+        Block3_right_abd             = [220,180,240,180,240,200,260,200,260,260,220,260]
+        Block3_label_location        = [240,220]
+        Block3_top_bond_location     = [240,180]
+        Block3_bottom_bond_location  = [240,260]
+
+        Block4                       = [280,180,320,180,320,260,280,260]
+        Block4_left_abd              = [280,200,300,200,300,180,320,180,320,260,280,260]
+        Block4_right_abd             = [280,180,300,180,300,200,320,200,320,260,280,260]
+        Block4_central_abd           = [280,180,300,200,320,180,320,260,280,260]
+        Block4_label_location        = [300,220]
+        Block4_top_bond_location     = [300,180]
+        Block4_bottom_bond_location  = [300,260]
+
+        Block5                       = [280,280,320,280,320,360,280,360]
+        Block5_left_abd              = [280,300,300,300,300,280,320,220,320,360,280,360]
+        Block5_right_abd             = [280,280,300,280,300,300,320,300,320,360,280,360]
+        Block5_central_abd           = [280,280,300,300,320,280,320,360,280,360]
+        Block5_notch                 = [280,280,320,280,340,320,360,360,280,360]
+        Block_5_inward_notch         = [280,280,320,280,300,320,360,320,280,360]
+        Block5_label_location        = [300,320]
+        Block5_top_bond_location     = [300,280]
+        Block5_bottom_bond_location  = [300,360]
+
+        Block6                       = [280,380,320,380,320,460,280,460]
+        Block6_left_abd              = [280,400,300,400,300,380,320,280,320,460,280,460]
+        Block6_right_abd             = [280,380,300,380,300,400,320,400,320,460,280,460]
+        Block6_label_location        = [320,420]
+        Block6_top_bond_location     = [320,380]
+        Block6_bottom_bond_location  = [320,460]
+
+        Block7                       = [220,380,260,380,380,460,220,460]
+        Block7_left_abd              = [220,400,220,420,220,400,260,380,380,460,220,460]
+        Block7_right_abd             = [220,380,240,380,240,400,260,400,380,460,220,460]
+        Block7_label_location        = [240,420]
+        Block7_top_bond_location     = [240,420]
+        Block7_bottom_bond_location  = [240,420]
+
+        Block8                       = [520,180,560,180,560,260,520,260]
+        Block8_left_abd              = [520,200,540,200,540,180,560,180,560,260,520,260]
+        Block8_right_abd             = [520,180,540,180,540,200,560,200,560,260,520,260]
+        Block8_label_location        = [520,220]
+        Block8_top_bond_location     = [520,180]
+        Block8_bottom_bond_location  = [520,260]
+
+        Block9                       = [460,180,500,180,500,260,460,260]
+        Block9_left_abd              = [460,200,480,200,480,180,500,180,500,260,460,260]
+        Block9_right_abd             = [460,180,480,180,480,200,500,200,500,260,460,260]
+        Block9_label_location        = [480,220]
+        Block9_top_bond_location     = [480,180]
+        Block9_bottom_bond_location  = [480,260]
+
+        Block10                       = [400,180,440,180,440,260,400,260]
+        Block10_left_abd              = [400,200,420,200,420,180,440,180,440,260,400,260]
+        Block10_right_abd             = [400,180,420,180,420,200,440,200,440,260,400,260]
+        Block10_label_location        = [420,220]
+        Block10_top_bond_location     = [420,180]
+        Block10_bottom_bond_location  = [420,260]
+
+        Block11                       = [340,180,380,180,380,260,340,260]
+        Block11_left_abd              = [340,200,360,200,360,180,380,180,380,260,340,260]
+        Block11_right_abd             = [340,180,360,180,360,200,380,200,380,260,340,260]
+        Block11_label_location        = [360,220]
+        Block11_top_bond_location     = [360,180]
+        Block11_bottom_bond_location  = [360,260]
+
+        Block12                       = [340,280,380,280,380,360,340,360]
+        Block12_left_abd              = [340,300,360,300,360,280,380,280,380,360,340,360]
+        Block12_right_abd             = [340,280,360,280,360,300,380,300,380,360,340,360]
+        Block12_notch                 = [340,280,380,280,380,360,340,360,320,320]
+        Block12_inward_notch          = [340,280,380,280,380,360,340,360,360,320]
+        Block12_label_location        = [360,320]
+        Block12_top_bond_location     = [360,280]
+        Block12_bottom_bond_location  = [360,360]
+
+        Block13                       = [340,380,380,380,380,460,240,460]
+        Block13_left_abd              = [340,400,360,400,360,380,380,380,380,460,240,460]
+        Block13_right_abd             = [340,380,360,380,360,400,380,400,380,460,240,460]
+        Block13_label_location        = [360,320]
+        Block13_top_bond_location     = [360,380]
+        Block13_bottom_bond_location  = [360,360]
+
+        Block14                       = [400,380,440,380,440,460,400,460]
+        Block14_left_abd              = [400,400,420,400,420,380,440,380,440,460,400,460]
+        Block14_right_abd             = [400,380,420,380,420,400,440,400,440,460,400,460]
+        Block14_label_location        = [420,380]
+        Block14_top_bond_location     = [420,380]
+        Block14_bottom_bond_location  = [420,460]
+
+        Hbond_upper                   = [240,260]
+        Hbond_upper_label_location    = [240,240]
+        Hbond_lower                   = [240,280]
+        Hbond_lower_label_location    = [240,300]
+        Hbond_Upper_Lower             = [260,260,260,280]
+
+        HSA                           = [180,300,180,360,380,220,360,360,300,260,280,220]
+        HSA_label_location            = [330,260]
+        HSA_top_bond_location         = [180,300]
+        HSA_bottom_bond_location      = [300,260]
+        right_HSA                     = [500,380,560,380,580,420,560,460,500,460,480,420]
+        right_HSA_label_location      = [530,460]
+        right_HSA_top_bond_location   = [500,380]
+        right_HSA_bottom_bond_location= [560,460]
+
+        coordinates_list      = []
+        Bonds                 = []
+        Label_Locations       = []
+        Label_Text            = []
+        domain_names          = []
+        labels = []
+        keyslist = list(dictionary.keys())
+        Passed_H = False
+        #nanobody
+        if "VHa" in keyslist[0] and "VH2" in keyslist[1]:
+            if dictionary.get(keyslist[0]) == [1] and dictionary.get(keyslist[1]) == [2]:
+                coordinates      = [Block4_central_abd , Block5_central_abd]
+                bonds            = [Block4_bottom_bond_location+Block5_top_bond_location]
+                label_locations  = [Block4_label_location,Block5_label_location]
+                label_text       = ["1","2"]
+        #diabody
+        elif "VHa" in keyslist[0] and "VHb" in keyslist[1]:
+            if dictionary.get(keyslist[0]) == [1,3] and dictionary.get(keyslist[1]) == [2,4]:
+                coordinates      = [Block4_right_abd, Block5_right_abd]
+                bonds            = [Block4_bottom_bond_location+Block5_top_bond_location]
+                label_locations  = [Block4_label_location,Block5_label_location]
+                label_text       = ["1","2"]
+        elif "VLa" in keyslist[0] and "VLb" in keyslist[1]:
+            if dictionary.get(keyslist[0]) == [3,1] and dictionary.get(keyslist[1]) == [4,2]:
+                coordinates      = [Block11_left_abd, Block12_left_abd]
+                bonds            = [Block11_bottom_bond_location+Block12_top_bond_location]
+                label_locations  = [Block11_label_location,Block12_label_location]
+                label_text       = ["3","4"]
+        #BiTE
+        elif "VHa" in keyslist[0]  and "VLa" in keyslist[1] and "VHb" in keyslist[2] and "VLb" in keyslist[3]:
+            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) == [4,3]:
+                coordinates      = [Block3_right_abd , Block4_left_abd , Block5_right_abd, Block12_left_abd]
+                bonds            = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block12_top_bond_location]
+                label_locations  = [Block3_label_location,Block4_label_location,Block5_label_location,Block12_label_location]
+                label_text       = ["1","2","3","4"]
+        #DART
+        elif "VLa" in keyslist[0] and "VHb" in keyslist[1] and "H" in keyslist[2]:
+            if dictionary.get(keyslist[0]) == [1,6] and dictionary.get(keyslist[1]) == [3,2] and dictionary.get(keyslist[2]) == [4,5]:
+                coordinates      = [Block12,Block4]
+                bonds            = [Block12_bottom_bond_location+ Block4_top_bond_location,Block4_bottom_bond_location+Hbond_upper]
+                label_locations  = [Block12_label_location,Block4_label_location,Hbond_upper_label_location]
+                label_text       = ["1","3","4"]
+        elif "VLb" in keyslist[0] and "VHa" in keyslist[1] and "H" in keyslist[2]:
+            if dictionary.get(keyslist[0]) == [2,3] and dictionary.get(keyslist[1]) == [6,1] and dictionary.get(keyslist[2]) == [5,4]:
+                coordinates      = [Block11,Block5]
+                bonds            = [Block11_bottom_bond_location+Block5_bottom_bond_location,Block5_top_bond_location+Hbond_lower]
+                label_locations  = [Block11_label_location,Block5_label_location,Hbond_lower_label_location, Hbond_Upper_Lower ]
+                label_text       = ["2","6","5"]
+        #TandAb
+        elif "VH1a" in keyslist[0] and "VL1b" in keyslist[1] and "VH2b" in keyslist[2] and "VL2a" in keyslist[3]:
+            if dictionary.get(keyslist[0]) == [1,5] and dictionary.get(keyslist[1]) == [2,6] and dictionary.get(keyslist[2]) == [3,7] and dictionary.get(keyslist[3]) ==[4,8] :
+                coordinates     = [Block1,Block3,Block11,Block9]
+                bonds           = [Block1_bottom_bond_location+Block3_bottom_bond_location,Block3_top_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block9_bottom_bond_location]
+                label_locations = [Block1_label_location,Block3_label_location,Block11_label_location,Block9_label_location]
+                label_text      = ["1","2","3","4"]
+        elif "VL1a" in keyslist[0] and "VH1b" in keyslist[1] and "VL2b" in keyslist[2] and "VH2a" in keyslist[3]:
+            if dictionary.get(keyslist[0]) == [5,1] and dictionary.get(keyslist[1]) == [6,2] and dictionary.get(keyslist[2]) == [7,3] and dictionary.get(keyslist[3]) ==[8,4] :
+                coordinates     = [Block2,Block4,Block10,Block8]
+                bonds           = [Block2_top_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block10_bottom_bond_location,Block10_top_bond_location+Block8_top_bond_location]
+                label_locations = [Block2_label_location,Block4_label_location,Block10_label_location,Block8_label_location]
+                label_text      = ["5","6","7","8"]
+        #minibody
+        elif "VHb" in keyslist[0] and "VLb" in keyslist[1] and "CH3" in keyslist[2] and "CH3" in keyslist[3] and "VLa" in keyslist[4] and "VHa" in keyslist[5]:
+            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) ==[4,3] and dictionary.get(keyslist[4]) == [5,6] and dictionary.get(keyslist[5]) == [6,5]:
+                coordinates     = [Block10_left_abd,Block11_right_abd,Block12_notch,Block_5_inward_notch,Block4_left_abd,Block3_right_abd]
+                bonds           = [Block10_bottom_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block5_bottom_bond_location,Block5_top_bond_location+Block4_top_bond_location,Block4_top_bond_location+Block3_bottom_bond_location]
+                label_locations = [Block10_label_location,Block11_label_location,Block12_label_location,Block5_label_location,Block4_label_location,Block3_label_location]
+                label_text      = ["1","2","3","4","5","6"]
+        #Triplebody
+        elif "VHa" in keyslist[0] and "CH1" in keyslist[1] and "VLb" in keyslist[2] and "VHb" in keyslist[3]:
+            if dictionary.get(keyslist[0]) == [1,5] and dictionary.get(keyslist[1]) == [2,6] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) ==[4,3]:
+                coordinates     = [Block4_right_abd,Block5,Block6_left_abd,Block7_right_abd]
+                bonds           = [Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block6_top_bond_location,Block6_bottom_bond_location+Block7_top_bond_location]
+                label_locations = [Block4_label_location,Block5_label_location,Block6_label_location,Block7_label_location]
+                label_text      = ["1","2","3","4"]
+        elif "VLa" in keyslist[0] and "CL" in keyslist[1] and "VLc" in keyslist[2] and "VHc" in keyslist[3]:
+            if dictionary.get(keyslist[0]) == [5,1] and dictionary.get(keyslist[1]) == [6,2] and dictionary.get(keyslist[2]) == [7,8] and dictionary.get(keyslist[3]) ==[8,7]:
+                coordinates     = [Block11_left_abd,Block12,Block13_right_abd,Block14_left_abd]
+                bonds           = [Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block13_top_bond_location,Block13_bottom_bond_location+Block14_top_bond_location]
+                label_text      = ["5","6","7","8"]
+        #HSAbody
+        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "X" in keyslist[2] and "VHb" in keyslist[3] and "VLb" in keyslist[4]:
+            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[3]) ==[3,4] and dictionary.get(keyslist[4]) == [4,3]:
+                coordinates     = [Block2_right_abd,Block3_right_abd,HSA,Block10_right_abd,Block9_left_abd]
+                bonds           = [Block2_bottom_bond_location+Block3_top_bond_location,Block3_bottom_bond_location+HSA_top_bond_location,HSA_bottom_bond_location+Block10_top_bond_location,Block10_bottom_bond_location+Block9_top_bond_location]
+                label_locations = [Block2_label_location,Block3_label_location,HSA_label_location, Block10_label_location,Block9_label_location]
+                label_text      = ["1","2","X","3","4"]
+        #TriBi minibody
+        elif "VHb" in keyslist[0] and "VLb" in keyslist[1] and "CH3" in keyslist[2] and "VHc" in keyslist[3] and "VLc" in keyslist[4]:
+            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[2]) ==[3,8] and dictionary.get(keyslist[3]) ==[4,5] and dictionary.get(keyslist[4]) ==[5,4]:
+                coordinates     = [Block10_left_abd+Block11_right_abd,Block12_notch,Block13_right_abd,Block14_left_abd]
+                bonds           = [Block10_bottom_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block13_top_bond_location,Block13_bottom_bond_location,Block14_bottom_bond_location]
+                label_locations = [Block10_label_location,Block11_label_location,Block12_label_location,Block13_label_location]
+                label_text      = ["1","2","3","4","5"]
+        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "CH3" in keyslist[2]:
+            if dictionary.get(keyslist[0]) == [6,7] and dictionary.get(keyslist[1]) == [7,6] and  dictionary.get(keyslist[2]) ==[8,3]:
+                coordinates     = [Block3_right_abd,Block4_left_abd,Block_5_inward_notch]
+                bonds           = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location]
+                label_locations = [Block3_label_location,Block4_label_location,Block5_label_location]
+                label_text      = ["6","7","8"]
+        #Tandem scFv-Toxin
+        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "VHb" in keyslist[2] and "VLb" in keyslist[3] and "X" in keyslist[4]:
+            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[2]) ==[3,4] and dictionary.get(keyslist[3]) ==[4,3]:
+                coordinates     = [Block3_right_abd,Block4_left_abd,Block5_right_abd,Block12_left_abd,right_HSA]
+                bonds           = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location,right_HSA_top_bond_location]
+                label_locations = [Block3_label_location,Block4_label_location,Block5_label_location,Block12_label_location,right_HSA_label_location]
+                label_text      = ["1","2","3","4","X"]
+        for j in range(len(coordinates)):
+            coordinates_list.append(coordinates[j])
+        for j in range(len(bonds)):
+            Bonds.append(bonds[j])
+        for j in range(len(label_locations)):
+            Label_Locations.append(label_locations[j])
+        for j in range(len(label_text)):
+            Label_Text.append(label_text[j])
+        return(coordinates_list, Bonds,Label_Text, Label_Locations, domain_names)
 
 
 
 #######Heavy chain A check what domains are there################
-    def GetChainCoordinates(dictionary,chain):
+    def GetChainCoordinates_4chains(dictionary,chain):
 #########VLa Chain coordinates################
 
 
         VLa                       = [97,100,117,100,129,120,147,120,177,174,137,174]
         VLa_no_V                  = [100,100,140,110,180,174,140,174]
         VLa_label_location        = [80,140]
-        VLa_top_bond_location     = [120,100]
+        VLa_top_bond_location     = [115,100]
         VLa_bottom_bond_location  = [157,174]
 
 
@@ -196,6 +460,21 @@ def Check_interactions(chains_list):
         CLa_label_location        = [120,220]
         CLa_top_bond_location     = [160,180]
         CLa_bottom_bond_location  = [200,254]
+
+        VL2_3a                      = [55,20,75,20,85,40,105,40,135,94,95,94]
+        VL2_3a_label_location       = [95,60]
+        VL2_3a_bottom_bond_location = [110,94]
+
+        VL2_4a                      = [220,280,180,280,180,354,220,354]
+        VL2_4a_label_location       = [200,300]
+        VL2_4a_top_bond_location    = [200,280]
+        VL2_4a_bottom_bond_location = [200,354]
+
+        VL2_5a                      = [160,280,120,280,120,354,160,354]
+        VL2_5a_label_location       = [140,300]
+        VL2_5a_top_bond_location    = [160,280]
+        VL2_ta_bottom_bond_location = [160,354]
+
 
         scFV_VeryL_IgGa = [0,20,40,20,80,100,60,100]
         tandem_scFca    = [20,50,40,50,70,90,40,90]
@@ -234,7 +513,11 @@ def Check_interactions(chains_list):
         CH3a_bottom_bond_location = [300,434]
 
 
-        scFV_H_IgGa_outer = [120,20,160,20,200,100,160,100]
+        VH2_3a                      = [155,20,195,94,155,94,125,40,145,40,135,20]
+        VH2_3a_label_location       = [165,60]
+        VH2_3a_top_bond_location    = [135,20]
+        VH2_3a_bottom_bond_location = [175,94]
+
         scFV_H_IgGa_inner = [180,20,220,20,260,100,220,100]
         scFv4_IgG         = [220,100,260,100,300,180,260,180]
 
@@ -280,6 +563,20 @@ def Check_interactions(chains_list):
         CLb_top_bond_location    = [500,180]
         CLb_bottom_bond_location = [460,254]
 
+        VL2_3b                      = [605,20,585,20,575,40,555,40,525,94,565,94]
+        VL2_3b_label_location       = [565,60]
+        VL2_3b_bottom_bond_location = [545,94]
+
+        VL2_4b                      = [440,280,480,280,480,354,440,354]
+        VL2_4b_label_location       = [460,300]
+        VL2_4b_top_bond_location    = [460,280]
+        VL2_4b_bottom_bond_location = [460,354]
+
+        VL2_5b                      = [500,280,540,280,540,354,500,354]
+        VL2_5b_label_location       = [520,300]
+        VL2_5b_top_bond_location    = [520,280]
+        VL2_5b_bottom_bond_location = [520,354]
+
         scFV_VeryL_IgGa = [330,10,310,10,290,50,330,10]
         tandem_scFca= [330,50,290,50,270,90,330,90]
         Fab_scFV_Fca= [290,90,270,90,250,130,270,130]
@@ -292,7 +589,7 @@ def Check_interactions(chains_list):
         VHb                      = [463,100,483,100,473,120,493,120,463,174,423,174]
         VHb_no_v                 = [500,100,460,100,420,174,460,174]
         VHb_label_location       = [420,140]
-        VHb_top_bond_location    = [480,100]
+        VHb_top_bond_location    = [483,100]
         VHb_bottom_bond_location = [443,174]
 
         CH1b                      = [460,180,420,180,380,254,420,254]
@@ -319,7 +616,11 @@ def Check_interactions(chains_list):
         CH3b_bottom_bond_location = [360,434]
 
 
-        scFv_H_IgGb_outer                = [540,20,500,20,260,100,500,100]
+        VH2_3b                = [505,20,465,94,505,94,535,40,515,40,525,20]
+        VH2_3b_label_location = [505,60]
+        VH2_3b_top_bond_location = [525,20]
+        VH2_3b_bottom_bond_location = [485,94]
+
         scFv_H_IgGb_inner                = [280,20,440,20,400,100,440,100]
         scFv4_IgGb                       = [440,100,400,100,360,180,400,180]
 
@@ -389,8 +690,7 @@ def Check_interactions(chains_list):
         Saltbridge_b  = [288,272,374,272]
         Saltbridge_labelb = [400,274]
 
-#########Check VH/VL ADC Coordinates################
-
+    #########Check VH/VL ADC Coordinates################
 
 
         coordinates_list      = []
@@ -400,37 +700,58 @@ def Check_interactions(chains_list):
         domain_names          = []
         labels = []
         keyslist = list(dictionary.keys())
+        Passed_H = False
         for i in range(len(dictionary)):
-            mod = ""
+            mod    = ""
+            bonds  = ""
+            Label_Coordinates = ""
+            domain = keyslist[i]
+            previous_domain = str(keyslist[i-1])
+            previous_domain = re.sub("\*|\+|\_|\>|\@","",previous_domain)
+            previous_domain_2 = str(keyslist[i-2])
+            previous_domain_2 = re.sub("\*|\+|\_|\>|\@","",previous_domain_2)
+
+
+######Starting chains off##########
             if i == 0:
                 if "V" in keyslist[i]:
-                    if "+" in keyslist[i]:
+                    if "C" in keyslist[i+1]:
                         domain = keyslist[i]
-                        domain = re.sub("\+","",str(domain))
-                        coordinates= eval(str(domain))
-                        mod = " +"
-                    elif "_" in keyslist[i]:
-                        domain = keyslist[i]
-                        domain = re.sub("\_","",str(domain))
-                        coordinates= eval(str(domain))
-                        mod = " -"
-                    else:
-                        domain = keyslist[i]
-                        coordinates = eval(str(keyslist[i]))
+                        coordinates = ""
 
-                    coordinates_list.append(coordinates)
-                    Label_Locations.append((eval(str(domain+"_label_location"))))
-                    location = dictionary.get(keyslist[i])[0]
-                    Label_Text.append(str(location)+mod)
-                    domain_names.append(keyslist[i])
+                        if keyslist[i] == "VL2":
+                            domain = str("VL"+chain)
+                            coordinates = eval(str(domain))
+                        if "+" in keyslist[i]:
+                            domain = re.sub("\+","",str(domain))
+                            coordinates= eval(str(domain))
+                            mod = " +"
+                        elif "_" in keyslist[i]:
+                            domain = keyslist[i]
+                            domain = re.sub("\_","",str(domain))
+                            coordinates= eval(str(domain))
+                            mod = " -"
+                        else:
+                            coordinates= eval(str(domain))
+                        Label_Coordinates = eval(str(domain+"_label_location"))
+
+
+                    elif "V" in keyslist[i+1]:
+                        if "H" in keyslist[i]:
+                            domain = "VH2_3"
+                        elif "L" in keyslist[i]:
+                            domain = "VL2_3"
+                        coordinates = eval(domain+chain)
+                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
+
+
+                    bonds = []
 
                 elif "X" in keyslist[i]:
                     coordinates = eval(str(keyslist[i]+"_"+keyslist[i+1]))
-                    coordinates_list.append(coordinates)
-                    location = dictionary.get(keyslist[i])[0]
-                    Label_Text.append(str(location))
-                    Label_Locations.append((eval(str(keyslist[i]+"_"+keyslist[i+1]+"_label_location"))))
-                    domain_names.append(keyslist[i])
+                    Label_Coordinates = (eval(str(keyslist[i]+"_"+keyslist[i+1]+"_label_location")))
+                    bonds = []
+######V domains elsewhere in the chain ##########
 
 
             elif i > 0 and "V" in keyslist[i]:
@@ -438,111 +759,99 @@ def Check_interactions(chains_list):
                     if keyslist[i-1] == "X":
                         domain = keyslist[i]
                         coordinates = eval(str(keyslist[i]))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(keyslist[i]+"_label_location"))))
+                        Label_Coordinates =(eval(str(keyslist[i]+"_label_location")))
                         if i == 1:
-                            bonds = bondmaker(str("X_"+domain),domain,chain)
+                            bonds = bondmaker(str("X_"+domain),domain,chain,"yes")
                         elif i > 1:
-                            bonds = bondmaker(str("VHa_X_VHb"),domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+                            bonds = bondmaker(str("VHa_X_VHb"),domain,chain,"yes")
 
+                    elif "VL" in keyslist[i-1]:
+                        if dictionary.get(keyslist[i])[0] == dictionary.get(keyslist[i-1])[1] and Passed_H == False:
+                            domain = "VH2_3"
+                            previous_domain = "VL2_3"
+                            coordinates = eval(domain+chain)
+                    elif "VH" in keyslist[i-1] and "VL" in keyslist[i]:
+                        domain = "VL"
+                        previous_domain = "VH2_3"
+                        coordinates = eval(domain+chain)
                     else:
                         domain = keyslist[i]
                         coordinates = eval(str(keyslist[i]))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(keyslist[i]+"_label_location"))))
-                        bonds = bondmaker(str(keyslist[i-1]),domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+
+                    Label_Coordinates = eval(str(keyslist[i]+"_label_location"))
+
 
                 elif "VH2" in keyslist[i]:
-                    if "CH3" in keyslist[i-1]:
-                        domain = "CH4"
-                        coordinates = eval(str(keyslist[i]+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker(str(keyslist[i-1]),domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+                    if Passed_H == False:
+                        if "VH" in keyslist[i-1]:
+                            if dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[i-1])[0]+1):
+                                domain = "VH"
+                                previous_domain = "VH2_3"
+                                coordinates = eval(str(domain+chain))
+                                Label_Coordinates = eval(str(domain+chain+"_label_location"))
 
-                    elif "CH4" in keyslist[i-1]:
-                        domain = "CH5"
-                        coordinates = eval(str("VH2_2"+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker(str(keyslist[i-1]),domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+                        elif "CL" in keyslist[i-1]:
+                                domain = "VL2_4"
+                                previous_domain ="CL"
+                                coordinates = eval(str(domain+chain))
+                                Label_Coordinates = eval(str(domain+chain+"_label_location"))
+
+
+                    elif Passed_H == True:
+                        if "CH3" in keyslist[i-1]:
+                            domain = "CH4"
+                            coordinates = eval(str(keyslist[i]+chain))
+                        elif "CH4" in keyslist[i-1]:
+                            domain = "CH5"
+                            coordinates = eval(str("VH2_2"+chain))
+                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
+
 
                 elif "VL2" in keyslist[i]:
-                    if  keyslist[i-1] == "VH2" and keyslist[i-2] == "CH3"  :
-                        domain = "VL2"
-                        coordinates = eval(str("VL2"+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker("CH4",domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+                    if Passed_H == False:
+                        if "VL" in keyslist[i-1]:
+                            domain = "VL"
+                            previous_domain = "VL2_3"
+                            coordinates = eval(str(domain+chain))
+                        elif "VH" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == dictionary.get(keyslist[i-1])[1]:
+                            domain = "VL2_5"
+                            previous_domain = "VL2_4"
+                            coordinates = eval(str(domain+chain))
+                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
 
-                    elif "VH2" in keyslist[i-1] and "CH4" in keyslist[i-2]:
-                        domain = "VL2_2"
-                        coordinates = eval(str("VL2_2"+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker("CH5",domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
 
-                    elif "CL2" in keyslist[i-1]:
-                        domain = "VL2_2"
-                        coordinates = eval(str("VL2_2"+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker(keyslist[i-1],domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        Label_Text.append(str(location))
-                        domain_names.append(keyslist[i])
+                    elif Passed_H == True:
+                        if  keyslist[i-1] == "VH2" and keyslist[i-2] == "CH3"  :
+                            domain = "VL2"
+                            previous_domain = "CH4"
+                            coordinates = eval(str("VL2"+chain))
+
+                        elif "VH2" in keyslist[i-1] and "CH4" in keyslist[i-2]:
+                            domain = "VL2_2"
+                            previous_domain = "CH5"
+                            coordinates = eval(str("VL2_2"+chain))
+
+                        elif "CL2" in keyslist[i-1]:
+                            domain = "VL2_2"
+                            coordinates = eval(str("VL2_2"+chain))
+                    Label_Coordinates = eval(str(domain+chain+"_label_location"))
+
+
 
                 elif "CL2" in keyslist[i]:
                     if dictionary == VHa_chain or  dictionary == VHb_chain:
                         domain = "CL2"
                         coordinates = eval(str("CL2"+chain))
-                        coordinates_list.append(coordinates)
-                        Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                        bonds = bondmaker(keyslist[i-1],domain,chain)
-                        Bonds.append(eval(bonds[0])+eval(bonds[1]))
-                        location = dictionary.get(keyslist[i])[0]
-                        domain_names.append(keyslist[i])
 
 
 
-            elif keyslist[i] == "H":
-                location = dictionary.get(keyslist[i])[0]
-                Label_Locations.append((eval(str("Saltbridge_label"+chain))))
-                Label_Text.append(str(location))
 
-            elif i > 0 and "V" not in keyslist[i]:
-                domain = keyslist[i]
-                previous_domain = str(keyslist[i-1])
-                previous_domain = re.sub("\*|\+|\_|\>|\@","",previous_domain)
-                previous_domain_2 = str(keyslist[i-2])
-                previous_domain_2 = re.sub("\*|\+|\_|\>|\@","",previous_domain_2)
-                mod    = ""
-                print(domain, previous_domain,previous_domain_2)
+
+######C domains ##########
+
+
+            elif i > 0 and "V" not in keyslist[i] and keyslist[i] != "H":
+
                 if "@" in domain:
                     domain = re.sub("@","",str(domain))
                     coordinates= eval(str(domain+chain+"_notch"))
@@ -572,7 +881,7 @@ def Check_interactions(chains_list):
                         mod = ""
 
 
-                elif keyslist[i] == "X":
+                if keyslist[i] == "X":
                     if keyslist[i-1] == "VHa":
                         if keyslist[i+1] == "VHb":
                             coordinates = VHa_X_VHb
@@ -587,18 +896,38 @@ def Check_interactions(chains_list):
 
                 else:
                     coordinates = eval(str(domain+chain))
+                Label_Coordinates = eval(str(domain+chain+"_label_location"))
 
-                if previous_domain == "H":
-                    print("yes")
-                    bonds = bondmaker(previous_domain_2,domain,chain)
-                else:
-                    bonds = bondmaker(previous_domain,domain,chain)
+            if "CH1" in keyslist[i] or "CL" in keyslist[i]:
+                if Passed_H == False:
+                    if "VH2" in keyslist[i-1]:
+                        previous_domain = "VH"+chain
+                    elif "VL2" in keyslist[i-1]:
+                        previous_domain = "VL"+chain
+
+
+            if keyslist[i] == "H":
+                Label_Coordinates = (eval(str("Saltbridge_label"+chain)))
+                coordinates = []
+                bonds = []
+                Passed_H = True
+            else:
+                if bonds == "":
+                    if previous_domain == "H":
+                        bonds = bondmaker(previous_domain_2,domain,chain,"yes")
+                    else:
+                        bonds = bondmaker(previous_domain,domain,chain,"yes")
+
+            if bonds != []:
                 Bonds.append(eval(bonds[0])+eval(bonds[1]))
+            if coordinates != []:
                 coordinates_list.append(coordinates)
-                Label_Locations.append((eval(str(domain+chain+"_label_location"))))
-                location = dictionary.get(keyslist[i])[0]
-                Label_Text.append(str(location)+mod)
-                domain_names.append(keyslist[i])
+            if Label_Coordinates == []:
+                Label_Coordinates = eval(str(keyslist[i]+chain+"_label_location"))
+            Label_Locations.append(Label_Coordinates)
+            location = dictionary.get(keyslist[i])[0]
+            Label_Text.append(str(location)+mod)
+            domain_names.append(keyslist[i])
 
         return(coordinates_list, Bonds,Label_Text, Label_Locations, domain_names)
 
@@ -640,14 +969,38 @@ def Check_interactions(chains_list):
 
 
 
-    H_Coordinates   = GetChainCoordinates(VHa_chain,"a")[0] , GetChainCoordinates(VHb_chain,"b")[0]
-    L_Coordinates   = GetChainCoordinates(VLa_chain,"a")[0] , GetChainCoordinates(VLb_chain,"b")[0]
-    Bonds           = GetChainCoordinates(VLa_chain,"a")[1] + GetChainCoordinates(VHa_chain,"a")[1] + GetChainCoordinates(VLb_chain,"b")[1] + GetChainCoordinates(VHb_chain,"b")[1]
-    Horizontal_bonds= Count_Salt_bridges(Salt_bridge_count)+ Horizontal_bonds(VHa_VLa_bond_count,VHb_VLb_bond_count,CH1a_CLa_bond_count,CH1b_CLb_bond_count)
-    Label_Text      = GetChainCoordinates(VLa_chain,"a")[2] + GetChainCoordinates(VHa_chain,"a")[2] + GetChainCoordinates(VLb_chain,"b")[2] + GetChainCoordinates(VHb_chain,"b")[2]
-    Label_spot      = GetChainCoordinates(VLa_chain,"a")[3] + GetChainCoordinates(VHa_chain,"a")[3] + GetChainCoordinates(VLb_chain,"b")[3] + GetChainCoordinates(VHb_chain,"b")[3]
-    H_domain_names  = GetChainCoordinates(VHa_chain,"a")[4] , GetChainCoordinates(VHb_chain,"b")[4]
-    L_domain_names  = GetChainCoordinates(VLb_chain,"b")[4] + GetChainCoordinates(VLb_chain,"b")[4]
+
+    if VLa_chain == {} and VLb_chain == {}:
+        if VHb_chain == {}:
+            H_Coordinates    = GetChainCoordinates_2chains(VHa_chain,"a")[0]
+            L_Coordinates    = []
+            Bonds            = GetChainCoordinates_2chains(VHa_chain,"a")[1]
+            Horizontal_bonds = []
+            Label_Text       = GetChainCoordinates_2chains(VHa_chain,"a")[2]
+            Label_spot       = GetChainCoordinates_2chains(VHa_chain,"a")[3]
+            H_domain_names   = []
+            L_domain_names   = []
+
+
+        else:
+            H_Coordinates    = GetChainCoordinates_2chains(VHa_chain,"a")[0]
+            L_Coordinates    = GetChainCoordinates_2chains(VHb_chain,"b")[0]
+            Bonds            = GetChainCoordinates_2chains(VHa_chain,"a")[1] + GetChainCoordinates_2chains(VHb_chain,"b")[1]
+            Horizontal_bonds = []
+            Label_Text       = GetChainCoordinates_2chains(VHa_chain,"a")[2] + GetChainCoordinates_2chains(VHb_chain,"b")[2]
+            Label_spot       = GetChainCoordinates_2chains(VHa_chain,"a")[3] + GetChainCoordinates_2chains(VHb_chain,"b")[3]
+            H_domain_names   = []
+            L_domain_names   = []
+
+    else:
+        H_Coordinates   = GetChainCoordinates_4chains(VHa_chain,"a")[0] + GetChainCoordinates_4chains(VHb_chain,"b")[0]
+        L_Coordinates   = GetChainCoordinates_4chains(VLa_chain,"a")[0] + GetChainCoordinates_4chains(VLb_chain,"b")[0]
+        Bonds           = GetChainCoordinates_4chains(VLa_chain,"a")[1] + GetChainCoordinates_4chains(VHa_chain,"a")[1] + GetChainCoordinates_4chains(VLb_chain,"b")[1] + GetChainCoordinates_4chains(VHb_chain,"b")[1]
+        Horizontal_bonds= Count_Salt_bridges(Salt_bridge_count)+ Horizontal_bonds(VHa_VLa_bond_count,VHb_VLb_bond_count,CH1a_CLa_bond_count,CH1b_CLb_bond_count)
+        Label_Text      = GetChainCoordinates_4chains(VLa_chain,"a")[2] + GetChainCoordinates_4chains(VHa_chain,"a")[2] + GetChainCoordinates_4chains(VLb_chain,"b")[2] + GetChainCoordinates_4chains(VHb_chain,"b")[2]
+        Label_spot      = GetChainCoordinates_4chains(VLa_chain,"a")[3] + GetChainCoordinates_4chains(VHa_chain,"a")[3] + GetChainCoordinates_4chains(VLb_chain,"b")[3] + GetChainCoordinates_4chains(VHb_chain,"b")[3]
+        H_domain_names  = GetChainCoordinates_4chains(VHa_chain,"a")[4] , GetChainCoordinates_4chains(VHb_chain,"b")[4]
+        L_domain_names  = GetChainCoordinates_4chains(VLb_chain,"b")[4] + GetChainCoordinates_4chains(VLb_chain,"b")[4]
     return(H_Coordinates,L_Coordinates,Bonds,Horizontal_bonds,Label_Text,Label_spot, H_domain_names,L_domain_names)
 
 
@@ -664,25 +1017,22 @@ def render(chains_list,canvas):
     L_domain_names  = chains_list[7]
     print(H_Polygons)
     print(L_Polygons)
+    print(Bonds)
+    print(Label_Text)
+    print(len(Label_Text))
+    print(Label_positions)
+    print(len(Label_positions))
+
 
 
     for i in range(len(Bonds)):
         canvas.create_line(Bonds[i], fill='#000000', width = 2)
     for i in range(len(Horizontal_bonds)):
         canvas.create_line(Horizontal_bonds[i], fill='#000000', width = 2)
-
     for i in range(len(H_Polygons)):
-        for j in range(len(H_Polygons[i])):
-            #tag = str(H_domain_names[i][j])
-            canvas.create_polygon(H_Polygons[i][j], outline='#000000',fill='#006400', width=2, tags = str(H_domain_names[i][j]))
-            #canvas.tag_bind(str(H_domain_names[i][j]),"<Enter>", button_hover_polygon(H_domain_names[i][j]))
-            #canvas.tag_bind(str(H_domain_names[i][j]),"<Leave>", button_hover_polygon_leave)
+        canvas.create_polygon(H_Polygons[i], outline='#000000',fill='#006400', width=2)
     for i in range(len(L_Polygons)):
-        for j in range(len(L_Polygons[i])):
-            #tag = str(L_domain_names[i][j])
-            canvas.create_polygon(L_Polygons[i][j], outline='#000000',fill='#1f1', width=2)
-            #canvas.tag_bind(tag,"<Enter>", button_hover_polygon(tag))
-            #canvas.tag_bind(tag,"<Leave>", button_hover_polygon_leave)
+        canvas.create_polygon(L_Polygons[i], outline='#000000',fill='#1f1'   , width=2)
     for i in range(len(Label_positions)):
         canvas.create_text(Label_positions[i], text=Label_Text[i])
     #canvas.pack(fill=BOTH, expand=1)
