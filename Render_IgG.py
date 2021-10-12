@@ -22,6 +22,8 @@ def Get_dictionaries(x):
     """
     takes in IgG in SMILES format and identifies variables for dynamically rendering image
     """
+
+    ###Split chains into dictionaries
     y       = re.sub("\s","",x)
     if "|" in y:
         splitx  = y.split("|")
@@ -30,10 +32,14 @@ def Get_dictionaries(x):
     if len(splitx) == 4:
         chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a']
     elif len(splitx) == 2:
-        chains = ['VH.b','VH.a']
+        chains  = ['VH.b','VH.a']
     elif len(splitx) == 1:
-        chains = ['VH.a']
-    ADCs    = []
+        chains  = ['VH.a']
+    elif len(splitx) <4:
+        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a', 'X','Y']
+
+
+    chain_count = len(splitx)
     VHa     = {}
     VHb     = {}
     VLa     = {}
@@ -44,18 +50,7 @@ def Get_dictionaries(x):
     VHb_VLb_bonds  = ""
     CH1a_CL1a_bonds=""
     CH1b_CL1b_bonds=""
-    #get chains and watch out for ADCs
-    #for i in splitx:
-    #    if len(splitx) > 1:
-    #        if i[0] != "X":
-    #            chain = i.split("(")[0]
-    #            chains.append(chain)
-    #        elif i[0] == "X":
-    #            chain = i.split("-")[1]
-    #            chain = chain.split("(")[0]
-    #            chains.append(chain)
-    #    elif len(splitx) == 1:
-    #        chains.append("fragment")
+
 
     for i in range(len(chains)):
 
@@ -83,7 +78,7 @@ def Get_dictionaries(x):
              dict = str(re.sub("\.|\+|\_","",str(chains[i])))
         #elif "VH" in chain[0] and
         for j in range(len(chain)):
-            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL[1-9].[abcd]|^VL.[abcd]|^VH\.[abcd]|^VL[1-9]|^VH[1-9]\.[abcd]|^VH[1-9]|VH[+_*]\.[abcd]|VL[+_*]\.[abcd]|^CL[0-9]|^CL|^VH|^VL|^H|^X", str(chain[j]))
+            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL[1-9].[abcd]|^VL.[abcd]|^VH\.[abcd]|^VL[1-9]|^VH[1-9]\.[abcd]|^VH[1-9]|VH[+_*]\.[abcd]|VL[+_*]\.[abcd]|^CL[0-9]|^CL|^VH|^VL|^H|^X|^L", str(chain[j]))
             for i in range(len(domain)):
                 if "*" in domain[i]:
                     domain = str(re.sub("\(.*\)\[MOD\:","",str(domain)))
@@ -97,13 +92,12 @@ def Get_dictionaries(x):
                 domain = str(re.sub("\[|\'|\]|\.","", str(domain)))
 
 
-            #if chain[i] != fragment:
-            #    if domain == ""
-            ##Get Bond numbers
+
             if domain == "H" and Salt_bridges == "":
                 Salt_bridges = re.findall("\{.*?\}", str(chain[j]))
                 Salt_bridges = str(Salt_bridges)
                 Salt_bridges = int(re.sub("\{|\'|\}|\[|\]","", Salt_bridges))
+
             elif domain == "VH":
                 if dict == "VHa" and VHa_VLa_bonds == "":
                     VHa_VLa_bonds_match = re.findall("\{.*?\}", str(chain[j]))
@@ -133,11 +127,14 @@ def Get_dictionaries(x):
             locationstr =  str(re.sub(":",",", str(locationstr)))
             locationstr = locationstr.split(",")
 
-            if domain != "X" and domain != "":
+            if domain != "X" and domain !="L" and domain != "":
                 for x in range(len(locationstr)):
                     location.append(int(locationstr[x]))
             elif domain == "X":
                 location = re.findall("\[(.*?)\]", str(chain[j]))
+            elif domain == "L":
+                domain = "L"+str([j])
+                location.append("")
 
             if dict == "VHa" and domain !="":
                 VHa[domain] = location
@@ -152,8 +149,7 @@ def Get_dictionaries(x):
             else:
                 continue
 
-    return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment)
-
+    return(VHa,VLa,VHb,VLb,Salt_bridges,VHa_VLa_bonds,VHb_VLb_bonds,CH1a_CL1a_bonds,CH1b_CL1b_bonds,fragment,chain_count)
 
 ######################################
 def Check_interactions(chains_list):
@@ -170,869 +166,653 @@ def Check_interactions(chains_list):
     Salt_bridge_count     = chains_list[4]
     VHa_VLa_bond_count    = chains_list[5]
     VHb_VLb_bond_count    = chains_list[6]
-    CH1a_CLa_bond_count  = chains_list[7]
-    CH1b_CLb_bond_count  = chains_list[8]
+    CH1a_CLa_bond_count   = chains_list[7]
+    CH1b_CLb_bond_count   = chains_list[8]
     fragment              = chains_list[9]
+    chain_count           = chains_list[10]
 
-    if fragment != {}:
-        VLa_chain = fragment
 
 
 
+    def innie_or_outie(chain,Light_chain_check, chain_count):
+        innie_or_outie_list = []
+        keyslist = list(chain.keys())
+        for n in range(len(chain)):
 
-#########Make bonds################
-    def bondmaker(x,y,side,f):
-        add_chain = f
-        if add_chain == "yes":
-
-            if re.search("[a-b]",x) == None and re.search("[a-b]",y) == None:
-                x_bond      = str(x)+str(side)+"_bottom_bond_location"
-                y_bond      = str(y)+str(side)+   "_top_bond_location"
-            elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) == None:
-                x_bond      = str(x)+"_bottom_bond_location"
-                y_bond      = str(y)+str(side)+   "_top_bond_location"
-            elif re.search("[a-b]",x) == None and re.search("[a-b]",y) != "" :
-                x_bond      = str(x)+str(side)+"_bottom_bond_location"
-                y_bond      = str(y)          +   "_top_bond_location"
-            elif re.search("[a-b]",x) != "" and re.search("[a-b]",y) != "":
-                x_bond      = str(x)+"_bottom_bond_location"
-                y_bond      = str(y)+   "_top_bond_location"
-        elif add_chain != "yes":
-            x_bond      = str(x)+"_bottom_bond_location"
-            y_bond      = str(y)+   "_top_bond_location"
-
-        return(x_bond,y_bond)
-
-    def GetChainCoordinates_2chains(dictionary,chain):
-        Block1                       = [100,180,140,180,140,260,100,260]
-        Block1_left_abd              = [100,200,120,200,120,180,140,180,140,260,100,260]
-        Block1_right_abd             = [100,180,120,180,120,200,140,200,140,260,100,260]
-        Block1_label_location        = [120,220]
-        Block1_top_bond_location     = [120,180]
-        Block1_bottom_bond_location  = [120,260]
-
-        Block2                       = [160,180,200,180,200,260,160,260]
-        Block2_left_abd              = [160,200,180,200,180,180,200,180,200,260,160,260]
-        Block2_right_abd             = [160,180,180,180,180,200,200,200,200,260,160,260]
-        Block2_label_location        = [180,220]
-        Block2_top_bond_location     = [180,180]
-        Block2_bottom_bond_location  = [180,260]
-
-        Block3                       = [220,180,260,180,260,260,220,260]
-        Block3_left_abd              = [220,200,240,200,240,180,260,180,260,260,220,260]
-        Block3_right_abd             = [220,180,240,180,240,200,260,200,260,260,220,260]
-        Block3_label_location        = [240,220]
-        Block3_top_bond_location     = [240,180]
-        Block3_bottom_bond_location  = [240,260]
-
-        Block4                       = [280,180,320,180,320,260,280,260]
-        Block4_left_abd              = [280,200,300,200,300,180,320,180,320,260,280,260]
-        Block4_right_abd             = [280,180,300,180,300,200,320,200,320,260,280,260]
-        Block4_central_abd           = [280,180,300,200,320,180,320,260,280,260]
-        Block4_label_location        = [300,220]
-        Block4_top_bond_location     = [300,180]
-        Block4_bottom_bond_location  = [300,260]
-
-        Block5                       = [280,280,320,280,320,360,280,360]
-        Block5_left_abd              = [280,300,300,300,300,280,320,220,320,360,280,360]
-        Block5_right_abd             = [280,280,300,280,300,300,320,300,320,360,280,360]
-        Block5_central_abd           = [280,280,300,300,320,280,320,360,280,360]
-        Block5_notch                 = [280,280,320,280,340,320,360,360,280,360]
-        Block_5_inward_notch         = [280,280,320,280,300,320,360,320,280,360]
-        Block5_label_location        = [300,320]
-        Block5_top_bond_location     = [300,280]
-        Block5_bottom_bond_location  = [300,360]
-
-        Block6                       = [280,380,320,380,320,460,280,460]
-        Block6_left_abd              = [280,400,300,400,300,380,320,280,320,460,280,460]
-        Block6_right_abd             = [280,380,300,380,300,400,320,400,320,460,280,460]
-        Block6_label_location        = [320,420]
-        Block6_top_bond_location     = [320,380]
-        Block6_bottom_bond_location  = [320,460]
-
-        Block7                       = [220,380,260,380,380,460,220,460]
-        Block7_left_abd              = [220,400,220,420,220,400,260,380,380,460,220,460]
-        Block7_right_abd             = [220,380,240,380,240,400,260,400,380,460,220,460]
-        Block7_label_location        = [240,420]
-        Block7_top_bond_location     = [240,420]
-        Block7_bottom_bond_location  = [240,420]
-
-        Block8                       = [520,180,560,180,560,260,520,260]
-        Block8_left_abd              = [520,200,540,200,540,180,560,180,560,260,520,260]
-        Block8_right_abd             = [520,180,540,180,540,200,560,200,560,260,520,260]
-        Block8_label_location        = [520,220]
-        Block8_top_bond_location     = [520,180]
-        Block8_bottom_bond_location  = [520,260]
-
-        Block9                       = [460,180,500,180,500,260,460,260]
-        Block9_left_abd              = [460,200,480,200,480,180,500,180,500,260,460,260]
-        Block9_right_abd             = [460,180,480,180,480,200,500,200,500,260,460,260]
-        Block9_label_location        = [480,220]
-        Block9_top_bond_location     = [480,180]
-        Block9_bottom_bond_location  = [480,260]
-
-        Block10                       = [400,180,440,180,440,260,400,260]
-        Block10_left_abd              = [400,200,420,200,420,180,440,180,440,260,400,260]
-        Block10_right_abd             = [400,180,420,180,420,200,440,200,440,260,400,260]
-        Block10_label_location        = [420,220]
-        Block10_top_bond_location     = [420,180]
-        Block10_bottom_bond_location  = [420,260]
-
-        Block11                       = [340,180,380,180,380,260,340,260]
-        Block11_left_abd              = [340,200,360,200,360,180,380,180,380,260,340,260]
-        Block11_right_abd             = [340,180,360,180,360,200,380,200,380,260,340,260]
-        Block11_label_location        = [360,220]
-        Block11_top_bond_location     = [360,180]
-        Block11_bottom_bond_location  = [360,260]
-
-        Block12                       = [340,280,380,280,380,360,340,360]
-        Block12_left_abd              = [340,300,360,300,360,280,380,280,380,360,340,360]
-        Block12_right_abd             = [340,280,360,280,360,300,380,300,380,360,340,360]
-        Block12_notch                 = [340,280,380,280,380,360,340,360,320,320]
-        Block12_inward_notch          = [340,280,380,280,380,360,340,360,360,320]
-        Block12_label_location        = [360,320]
-        Block12_top_bond_location     = [360,280]
-        Block12_bottom_bond_location  = [360,360]
-
-        Block13                       = [340,380,380,380,380,460,240,460]
-        Block13_left_abd              = [340,400,360,400,360,380,380,380,380,460,240,460]
-        Block13_right_abd             = [340,380,360,380,360,400,380,400,380,460,240,460]
-        Block13_label_location        = [360,320]
-        Block13_top_bond_location     = [360,380]
-        Block13_bottom_bond_location  = [360,360]
-
-        Block14                       = [400,380,440,380,440,460,400,460]
-        Block14_left_abd              = [400,400,420,400,420,380,440,380,440,460,400,460]
-        Block14_right_abd             = [400,380,420,380,420,400,440,400,440,460,400,460]
-        Block14_label_location        = [420,380]
-        Block14_top_bond_location     = [420,380]
-        Block14_bottom_bond_location  = [420,460]
-
-        Hbond_upper                   = [240,260]
-        Hbond_upper_label_location    = [240,240]
-        Hbond_lower                   = [240,280]
-        Hbond_lower_label_location    = [240,300]
-        Hbond_Upper_Lower             = [260,260,260,280]
-
-        HSA                           = [180,300,180,360,380,220,360,360,300,260,280,220]
-        HSA_label_location            = [330,260]
-        HSA_top_bond_location         = [180,300]
-        HSA_bottom_bond_location      = [300,260]
-        right_HSA                     = [500,380,560,380,580,420,560,460,500,460,480,420]
-        right_HSA_label_location      = [530,460]
-        right_HSA_top_bond_location   = [500,380]
-        right_HSA_bottom_bond_location= [560,460]
-
-        coordinates_list      = []
-        Bonds                 = []
-        Label_Locations       = []
-        Label_Text            = []
-        domain_names          = []
-        labels = []
-        keyslist = list(dictionary.keys())
-        Passed_H = False
-        #nanobody
-        if "VHa" in keyslist[0] and "VH2" in keyslist[1]:
-            if dictionary.get(keyslist[0]) == [1] and dictionary.get(keyslist[1]) == [2]:
-                coordinates      = [Block4_central_abd , Block5_central_abd]
-                bonds            = [Block4_bottom_bond_location+Block5_top_bond_location]
-                label_locations  = [Block4_label_location,Block5_label_location]
-                label_text       = ["1","2"]
-        #diabody
-        elif "VHa" in keyslist[0] and "VHb" in keyslist[1]:
-            if dictionary.get(keyslist[0]) == [1,3] and dictionary.get(keyslist[1]) == [2,4]:
-                coordinates      = [Block4_right_abd, Block5_right_abd]
-                bonds            = [Block4_bottom_bond_location+Block5_top_bond_location]
-                label_locations  = [Block4_label_location,Block5_label_location]
-                label_text       = ["1","2"]
-        elif "VLa" in keyslist[0] and "VLb" in keyslist[1]:
-            if dictionary.get(keyslist[0]) == [3,1] and dictionary.get(keyslist[1]) == [4,2]:
-                coordinates      = [Block11_left_abd, Block12_left_abd]
-                bonds            = [Block11_bottom_bond_location+Block12_top_bond_location]
-                label_locations  = [Block11_label_location,Block12_label_location]
-                label_text       = ["3","4"]
-        #BiTE
-        elif "VHa" in keyslist[0]  and "VLa" in keyslist[1] and "VHb" in keyslist[2] and "VLb" in keyslist[3]:
-            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) == [4,3]:
-                coordinates      = [Block3_right_abd , Block4_left_abd , Block5_right_abd, Block12_left_abd]
-                bonds            = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block12_top_bond_location]
-                label_locations  = [Block3_label_location,Block4_label_location,Block5_label_location,Block12_label_location]
-                label_text       = ["1","2","3","4"]
-        #DART
-        elif "VLa" in keyslist[0] and "VHb" in keyslist[1] and "H" in keyslist[2]:
-            if dictionary.get(keyslist[0]) == [1,6] and dictionary.get(keyslist[1]) == [3,2] and dictionary.get(keyslist[2]) == [4,5]:
-                coordinates      = [Block12,Block4]
-                bonds            = [Block12_bottom_bond_location+ Block4_top_bond_location,Block4_bottom_bond_location+Hbond_upper]
-                label_locations  = [Block12_label_location,Block4_label_location,Hbond_upper_label_location]
-                label_text       = ["1","3","4"]
-        elif "VLb" in keyslist[0] and "VHa" in keyslist[1] and "H" in keyslist[2]:
-            if dictionary.get(keyslist[0]) == [2,3] and dictionary.get(keyslist[1]) == [6,1] and dictionary.get(keyslist[2]) == [5,4]:
-                coordinates      = [Block11,Block5]
-                bonds            = [Block11_bottom_bond_location+Block5_bottom_bond_location,Block5_top_bond_location+Hbond_lower]
-                label_locations  = [Block11_label_location,Block5_label_location,Hbond_lower_label_location, Hbond_Upper_Lower ]
-                label_text       = ["2","6","5"]
-        #TandAb
-        elif "VH1a" in keyslist[0] and "VL1b" in keyslist[1] and "VH2b" in keyslist[2] and "VL2a" in keyslist[3]:
-            if dictionary.get(keyslist[0]) == [1,5] and dictionary.get(keyslist[1]) == [2,6] and dictionary.get(keyslist[2]) == [3,7] and dictionary.get(keyslist[3]) ==[4,8] :
-                coordinates     = [Block1,Block3,Block11,Block9]
-                bonds           = [Block1_bottom_bond_location+Block3_bottom_bond_location,Block3_top_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block9_bottom_bond_location]
-                label_locations = [Block1_label_location,Block3_label_location,Block11_label_location,Block9_label_location]
-                label_text      = ["1","2","3","4"]
-        elif "VL1a" in keyslist[0] and "VH1b" in keyslist[1] and "VL2b" in keyslist[2] and "VH2a" in keyslist[3]:
-            if dictionary.get(keyslist[0]) == [5,1] and dictionary.get(keyslist[1]) == [6,2] and dictionary.get(keyslist[2]) == [7,3] and dictionary.get(keyslist[3]) ==[8,4] :
-                coordinates     = [Block2,Block4,Block10,Block8]
-                bonds           = [Block2_top_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block10_bottom_bond_location,Block10_top_bond_location+Block8_top_bond_location]
-                label_locations = [Block2_label_location,Block4_label_location,Block10_label_location,Block8_label_location]
-                label_text      = ["5","6","7","8"]
-        #minibody
-        elif "VHb" in keyslist[0] and "VLb" in keyslist[1] and "CH3" in keyslist[2] and "CH3" in keyslist[3] and "VLa" in keyslist[4] and "VHa" in keyslist[5]:
-            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) ==[4,3] and dictionary.get(keyslist[4]) == [5,6] and dictionary.get(keyslist[5]) == [6,5]:
-                coordinates     = [Block10_left_abd,Block11_right_abd,Block12_notch,Block_5_inward_notch,Block4_left_abd,Block3_right_abd]
-                bonds           = [Block10_bottom_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block5_bottom_bond_location,Block5_top_bond_location+Block4_top_bond_location,Block4_top_bond_location+Block3_bottom_bond_location]
-                label_locations = [Block10_label_location,Block11_label_location,Block12_label_location,Block5_label_location,Block4_label_location,Block3_label_location]
-                label_text      = ["1","2","3","4","5","6"]
-        #Triplebody
-        elif "VHa" in keyslist[0] and "CH1" in keyslist[1] and "VLb" in keyslist[2] and "VHb" in keyslist[3]:
-            if dictionary.get(keyslist[0]) == [1,5] and dictionary.get(keyslist[1]) == [2,6] and dictionary.get(keyslist[2]) == [3,4] and dictionary.get(keyslist[3]) ==[4,3]:
-                coordinates     = [Block4_right_abd,Block5,Block6_left_abd,Block7_right_abd]
-                bonds           = [Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block6_top_bond_location,Block6_bottom_bond_location+Block7_top_bond_location]
-                label_locations = [Block4_label_location,Block5_label_location,Block6_label_location,Block7_label_location]
-                label_text      = ["1","2","3","4"]
-        elif "VLa" in keyslist[0] and "CL" in keyslist[1] and "VLc" in keyslist[2] and "VHc" in keyslist[3]:
-            if dictionary.get(keyslist[0]) == [5,1] and dictionary.get(keyslist[1]) == [6,2] and dictionary.get(keyslist[2]) == [7,8] and dictionary.get(keyslist[3]) ==[8,7]:
-                coordinates     = [Block11_left_abd,Block12,Block13_right_abd,Block14_left_abd]
-                bonds           = [Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block13_top_bond_location,Block13_bottom_bond_location+Block14_top_bond_location]
-                label_text      = ["5","6","7","8"]
-        #HSAbody
-        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "X" in keyslist[2] and "VHb" in keyslist[3] and "VLb" in keyslist[4]:
-            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[3]) ==[3,4] and dictionary.get(keyslist[4]) == [4,3]:
-                coordinates     = [Block2_right_abd,Block3_right_abd,HSA,Block10_right_abd,Block9_left_abd]
-                bonds           = [Block2_bottom_bond_location+Block3_top_bond_location,Block3_bottom_bond_location+HSA_top_bond_location,HSA_bottom_bond_location+Block10_top_bond_location,Block10_bottom_bond_location+Block9_top_bond_location]
-                label_locations = [Block2_label_location,Block3_label_location,HSA_label_location, Block10_label_location,Block9_label_location]
-                label_text      = ["1","2","X","3","4"]
-        #TriBi minibody
-        elif "VHb" in keyslist[0] and "VLb" in keyslist[1] and "CH3" in keyslist[2] and "VHc" in keyslist[3] and "VLc" in keyslist[4]:
-            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[2]) ==[3,8] and dictionary.get(keyslist[3]) ==[4,5] and dictionary.get(keyslist[4]) ==[5,4]:
-                coordinates     = [Block10_left_abd+Block11_right_abd,Block12_notch,Block13_right_abd,Block14_left_abd]
-                bonds           = [Block10_bottom_bond_location+Block11_top_bond_location,Block11_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location+Block13_top_bond_location,Block13_bottom_bond_location,Block14_bottom_bond_location]
-                label_locations = [Block10_label_location,Block11_label_location,Block12_label_location,Block13_label_location]
-                label_text      = ["1","2","3","4","5"]
-        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "CH3" in keyslist[2]:
-            if dictionary.get(keyslist[0]) == [6,7] and dictionary.get(keyslist[1]) == [7,6] and  dictionary.get(keyslist[2]) ==[8,3]:
-                coordinates     = [Block3_right_abd,Block4_left_abd,Block_5_inward_notch]
-                bonds           = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location]
-                label_locations = [Block3_label_location,Block4_label_location,Block5_label_location]
-                label_text      = ["6","7","8"]
-        #Tandem scFv-Toxin
-        elif "VHa" in keyslist[0] and "VLa" in keyslist[1] and "VHb" in keyslist[2] and "VLb" in keyslist[3] and "X" in keyslist[4]:
-            if dictionary.get(keyslist[0]) == [1,2] and dictionary.get(keyslist[1]) == [2,1] and  dictionary.get(keyslist[2]) ==[3,4] and dictionary.get(keyslist[3]) ==[4,3]:
-                coordinates     = [Block3_right_abd,Block4_left_abd,Block5_right_abd,Block12_left_abd,right_HSA]
-                bonds           = [Block3_bottom_bond_location+Block4_top_bond_location,Block4_bottom_bond_location+Block5_top_bond_location,Block5_bottom_bond_location+Block12_top_bond_location,Block12_bottom_bond_location,right_HSA_top_bond_location]
-                label_locations = [Block3_label_location,Block4_label_location,Block5_label_location,Block12_label_location,right_HSA_label_location]
-                label_text      = ["1","2","3","4","X"]
-        for j in range(len(coordinates)):
-            coordinates_list.append(coordinates[j])
-        for j in range(len(bonds)):
-            Bonds.append(bonds[j])
-        for j in range(len(label_locations)):
-            Label_Locations.append(label_locations[j])
-        for j in range(len(label_text)):
-            Label_Text.append(label_text[j])
-        return(coordinates_list, Bonds,Label_Text, Label_Locations, domain_names)
-
-
-
-#######Heavy chain A check what domains are there################
-    def GetChainCoordinates_4chains(dictionary,chain):
-#########VLa Chain coordinates################
-
-
-        VLa                       = [97,100,117,100,129,120,147,120,177,174,137,174]
-        VLa_no_V                  = [100,100,140,110,180,174,140,174]
-        VLa_label_location        = [80,140]
-        VLa_top_bond_location     = [115,100]
-        VLa_bottom_bond_location  = [157,174]
-
-
-        CLa                       = [140,180,180,180,220,254,180,254]
-        CLa_notch                 = [140,180,180,180,220,220,220,254,180,254]
-        CLa_inward_notch          = [140,180,180,180,180,220,220,254,180,254]
-        CLa_label_location        = [120,220]
-        CLa_top_bond_location     = [160,180]
-        CLa_bottom_bond_location  = [200,254]
-
-        VL2_3a                      = [55,20,75,20,85,40,105,40,135,94,95,94]
-        VL2_3a_label_location       = [95,60]
-        VL2_3a_bottom_bond_location = [110,94]
-
-        VL2_4a                      = [220,280,180,280,180,354,220,354]
-        VL2_4a_label_location       = [200,300]
-        VL2_4a_top_bond_location    = [200,280]
-        VL2_4a_bottom_bond_location = [200,354]
-
-        VL2_5a                      = [160,280,120,280,120,354,160,354]
-        VL2_5a_label_location       = [140,300]
-        VL2_5a_top_bond_location    = [160,280]
-        VL2_ta_bottom_bond_location = [160,354]
-
-
-        scFV_VeryL_IgGa = [0,20,40,20,80,100,60,100]
-        tandem_scFca    = [20,50,40,50,70,90,40,90]
-        Fab_scFV_Fca    = [40,90,60,90,80,130,60,130]
-        scFV_VeryLscFVa = [60,130,80,130,80,170,80,90]
-        scFV_L_IgGa     = [30,10,50,10,70,50,50,50]
-        scFV_LscFVa     = [90,130,110,130,110,170,90,170]
-
-    #########VHa Chain coordinates################
-
-        VHa                      = [167,120,187,120,177,100,197,100,237,174,197,174]
-        VHa_no_V                 = [160,100,200,100,240,174,200,174]
-        VHa_label_location       = [240,140]
-        VHa_top_bond_location    = [180,100]
-        VHa_bottom_bond_location = [217,174]
-
-        CH1a                      = [200,180,240,180,280,254,240,254]
-        CH1a_notch                = [200,180,240,180,280,254,240,254,200,220]
-        CH1a_inward_notch         = [200,180,240,180,280,254,240,254,240,220]
-        CH1a_label_location       = [280,220]
-        CH1a_top_bond_location    = [220,180]
-        CH1a_bottom_bond_location = [260,254]
-
-        CH2a                      = [280,280,320,280,320,354,280,354]
-        CH2a_notch                = [280,280,320,280,320,340,320,354,280,354]
-        CH2a_inward_notch         = [280,280,320,280,320,300,320,354,280,354]
-        CH2a_label_location       = [260,320]
-        CH2a_top_bond_location    = [300,280]
-        CH2a_bottom_bond_location = [300,354]
-
-        CH3a                      = [280,360,320,360,320,434,280,434]
-        CH3a_notch                = [280,360,320,360,340,380,320,434,280,434]
-        CH3a_inward_notch         = [280,360,320,360,300,400,320,434,280,434]
-        CH3a_label_location       = [260,400]
-        CH3a_top_bond_location    = [300,360]
-        CH3a_bottom_bond_location = [300,434]
-
-
-        VH2_3a                      = [155,20,195,94,155,94,125,40,145,40,135,20]
-        VH2_3a_label_location       = [165,60]
-        VH2_3a_top_bond_location    = [135,20]
-        VH2_3a_bottom_bond_location = [175,94]
-
-        scFV_H_IgGa_inner = [180,20,220,20,260,100,220,100]
-        scFv4_IgG         = [220,100,260,100,300,180,260,180]
-
-        VH2a                      = [300,440,320,440,320,514,280,514,280,460,300,440]
-        CH4a                      = [280,440,320,440,320,514,280,514]
-        VH2a_label_location       = CH4a_label_location       = [300,480]
-        VH2a_top_bond_location    = CH4a_top_bond_location    = [300,440]
-        VH2a_bottom_bond_location = CH4a_bottom_bond_location = [300,514]
-
-        VL2a                      = [220,440,240,440,260,460,260,514,220,514]
-        CL2a                      = [220,440,260,440,260,514,220,514]
-        VL2a_label_location       = CL2a_label_location       = [240,480]
-        VL2a_top_bond_location    = CL2a_top_bond_location    = [240,440]
-        VL2a_bottom_bond_location = CL2a_bottom_bond_location = [240,514]
-
-
-        VH2_2a                      = [280,520,320,520,320,594,280,594]
-        VH2_2a_label_location       = CH5a_label_location       = [300,560]
-        VH2_2a_top_bond_location    = CH5a_top_bond_location    = [300,540]
-        VH2_2a_bottom_bond_location = CH5a_bottom_bond_location = [300,694]
-
-
-        VL2_2a                      = [220,520,260,520,260,594,220,594]
-        VL2_2a_label_location       = [240,560]
-        VL2_2a_top_bond_location    = [240,520]
-        VL2_2a_bottom_bond_location = [240,594]
-
-
-
-    #########VLb Chain coordinates################
-
-        VLb                      = [563,100,543,100,533,120,513,120,483,174,523,174]
-        VLb_no_V                 = [560,100,520,50,480,87,520,87]
-        VLb_label_location       = [560,140]
-        VLb_top_bond_location    = [540,100]
-        VLb_bottom_bond_location = [503,174]
-
-
-        CLb                      = [520,180,480,180,440,254,480,254]
-        CLb_notch                = [520,180,480,180,440,220,440,254,480,254]
-        CLb_inward_notch         = [520,180,480,180,480,220,440,254,480,254]
-        CLb_label_location       = [520,220]
-        CLb_top_bond_location    = [500,180]
-        CLb_bottom_bond_location = [460,254]
-
-        VL2_3b                      = [605,20,585,20,575,40,555,40,525,94,565,94]
-        VL2_3b_label_location       = [565,60]
-        VL2_3b_bottom_bond_location = [545,94]
-
-        VL2_4b                      = [440,280,480,280,480,354,440,354]
-        VL2_4b_label_location       = [460,300]
-        VL2_4b_top_bond_location    = [460,280]
-        VL2_4b_bottom_bond_location = [460,354]
-
-        VL2_5b                      = [500,280,540,280,540,354,500,354]
-        VL2_5b_label_location       = [520,300]
-        VL2_5b_top_bond_location    = [520,280]
-        VL2_5b_bottom_bond_location = [520,354]
-
-        scFV_VeryL_IgGa = [330,10,310,10,290,50,330,10]
-        tandem_scFca= [330,50,290,50,270,90,330,90]
-        Fab_scFV_Fca= [290,90,270,90,250,130,270,130]
-        scFV_VeryLscFVa = [270,130,250,130,250,170,270,170]
-        scFV_L_IgGb = [300,10,280,10,260,50,280,50]
-        scFV_LscFVb = [240,120,220,120,220,160,240,160]
-
-    #########VHb Chain coordinates################
-
-        VHb                      = [463,100,483,100,473,120,493,120,463,174,423,174]
-        VHb_no_v                 = [500,100,460,100,420,174,460,174]
-        VHb_label_location       = [420,140]
-        VHb_top_bond_location    = [483,100]
-        VHb_bottom_bond_location = [443,174]
-
-        CH1b                      = [460,180,420,180,380,254,420,254]
-        CH1b_notch                = [460,180,420,180,380,254,420,254,460,220]
-        CH1b_inward_notch         = [460,180,420,180,380,254,420,254,420,220]
-        CH1b_label_location       = [380,220]
-        CH1b_top_bond_location    = [440,180]
-        CH1b_bottom_bond_location = [400,254]
-
-
-        CH2b                      = [380,280,340,280,340,354,380,354]
-        CH2b_notch                = [380,280,340,280,320,320,340,354,380,354]
-        CH2b_inward_notch         = [380,280,340,280,320,360,340,354,380,354]
-        CH2b_label_location       = [400,320]
-        CH2b_top_bond_location    = [360,280]
-        CH2b_bottom_bond_location = [360,354]
-
-
-        CH3b                      = [380,360,340,360,340,434,380,434]
-        CH3b_notch                = [380,360,340,360,320,400,340,434,380,434]
-        CH3b_inward_notch         = [380,360,340,360,360,400,340,434,380,434]
-        CH3b_label_location       = [400,400]
-        CH3b_top_bond_location    = [360,360]
-        CH3b_bottom_bond_location = [360,434]
-
-
-        VH2_3b                = [505,20,465,94,505,94,535,40,515,40,525,20]
-        VH2_3b_label_location = [505,60]
-        VH2_3b_top_bond_location = [525,20]
-        VH2_3b_bottom_bond_location = [485,94]
-
-        scFv_H_IgGb_inner                = [280,20,440,20,400,100,440,100]
-        scFv4_IgGb                       = [440,100,400,100,360,180,400,180]
-
-        VH2b                      = [380,460,360,440,340,440,340,514,380,514]
-        CH4b                      = [380,440,340,440,340,514,380,514]
-        VH2b_label_location       = CH4b_label_location       = [360,480]
-        VH2b_top_bond_location    = CH4b_top_bond_location    = [360,440]
-        VH2b_bottom_bond_location = CH4b_bottom_bond_location = [360,514]
-
-        VL2b                      = [440,440,420,440,400,460,400,514,440,514]
-        CL2b                      = [440,440,400,440,400,514,440,514]
-        VL2b_label_location       = CL2b_label_location       = [420,480]
-        VL2b_top_bond_location    = CL2b_top_bond_location    = [420,440]
-        VL2b_bottom_bond_location = CL2b_bottom_bond_location = [420,514]
-
-
-        VH2_2b                    = [380,520,340,520,340,594,380,594]
-        CH5b                      = [380,520,340,520,340,594,380,594]
-        CH5b_label_location       = VH2_2b_label_location       = [360,560]
-        CH5b_top_bond_location    = VH2_2b_top_bond_location    = [360,520]
-        CH5b_bottom_bond_location = VH2_2b_bottom_bond_location = [360,594]
-
-
-        VL2_2b                      = [440,520,400,520,400,594,440,594]
-        VL2_2b_label_location       = [420,560]
-        VL2_2b_top_bond_location    = [420,520]
-        VL2_2b_bottom_bond_location = [420,594]
-
-
-
-
-    #########Check VH/VL ADC Coordinates################
-        X_VLa                    = [100,60,80,40,100,200,120,40,100,60]
-        X_VLa_label_location     = [100,10]
-        X_VLa_bottom_bond_location      = [100,60]
-
-        X_VHa                    = [160,60,140,40,160,20,180,40,160,60]
-        X_VHa_label_location     = [140,10]
-        X_VHa_bottom_bond_location      = [160,60]
-
-        X_VLb                    = [480,60,600,40,580,20,560,40,480,60]
-        X_VLb_label_location     = [480,10]
-        X_VLb_bottom_bond_location      = [480,60]
-
-        X_VHb                    = [500,60,480,40,500,20,520,40,500,60]
-        X_VHb_label_location     = [500,10]
-        X_VHb_bottom_bond_location      = [500,60]
-
-        VHa_X_VHb                = [300,180,280,140,300,100,360,100,380,140,360,180,300,180]
-        VHa_X_VHb_label_location = [320,80]
-        VHa_X_VHb_top_bond_location      = [300,100]
-        VHa_X_VHb_bottom_bond_location      = [360,180]
-
-        X_CH3a                   = [280,480,300,500,280,520,260,500]
-        X_CH3a_label_location    = [290,520]
-        X_CH3a_top_bond_location = [290,480]
-
-        X_CH3b                   = [380,480,400,500,380,520,360,500]
-        X_CH3b_label_location    = [380,520]
-        X_CH3b_top_bond_location = [380,480]
-
-
-        CH1_CH2bonda = CH1a_bottom_bond_location+CH2a_top_bond_location
-        CH1_CH2bondb = CH1b_bottom_bond_location+CH2b_top_bond_location
-        Saltbridge_a  =[271,262,388,262]
-        Saltbridge_labela = [260,274]
-        Saltbridge_b  = [288,272,374,272]
-        Saltbridge_labelb = [400,274]
-
-    #########Check VH/VL ADC Coordinates################
-
-
-        coordinates_list      = []
-        Bonds                 = []
-        Label_Locations       = []
-        Label_Text            = []
-        domain_names          = []
-        labels = []
-        keyslist = list(dictionary.keys())
-        Passed_H = False
-        for i in range(len(dictionary)):
-            mod    = ""
-            bonds  = ""
-            Label_Coordinates = ""
-            domain = keyslist[i]
-            previous_domain = str(keyslist[i-1])
-            previous_domain = re.sub("\*|\+|\_|\>|\@","",previous_domain)
-            previous_domain_2 = str(keyslist[i-2])
-            previous_domain_2 = re.sub("\*|\+|\_|\>|\@","",previous_domain_2)
-
-
-######Starting chains off##########
-            if i == 0:
-                if "V" in keyslist[i]:
-                    if "C" in keyslist[i+1]:
-                        domain = keyslist[i]
-                        coordinates = ""
-
-                        if keyslist[i] == "VL2":
-                            domain = str("VL"+chain)
-                            coordinates = eval(str(domain))
-                        if "+" in keyslist[i]:
-                            domain = re.sub("\+","",str(domain))
-                            coordinates= eval(str(domain))
-                            mod = " +"
-                        elif "_" in keyslist[i]:
-                            domain = keyslist[i]
-                            domain = re.sub("\_","",str(domain))
-                            coordinates= eval(str(domain))
-                            mod = " -"
-                        else:
-                            coordinates= eval(str(domain))
-                        Label_Coordinates = eval(str(domain+"_label_location"))
-
-
-                    elif "V" in keyslist[i+1]:
-                        if "H" in keyslist[i]:
-                            domain = "VH2_3"
-                        elif "L" in keyslist[i]:
-                            domain = "VL2_3"
-                        coordinates = eval(domain+chain)
-                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-
-                    bonds = []
-
-                elif "X" in keyslist[i]:
-                    coordinates = eval(str(keyslist[i]+"_"+keyslist[i+1]))
-                    Label_Coordinates = (eval(str(keyslist[i]+"_"+keyslist[i+1]+"_label_location")))
-                    bonds = []
-######V domains elsewhere in the chain ##########
-
-
-            elif i > 0 and "V" in keyslist[i]:
-                if re.search('\d', keyslist[i]) is None:
-                    if keyslist[i-1] == "X":
-                        domain = keyslist[i]
-                        coordinates = eval(str(keyslist[i]))
-                        Label_Coordinates =(eval(str(keyslist[i]+"_label_location")))
-                        if i == 1:
-                            bonds = bondmaker(str("X_"+domain),domain,chain,"yes")
-                        elif i > 1:
-                            bonds = bondmaker(str("VHa_X_VHb"),domain,chain,"yes")
-
-                    elif "VL" in keyslist[i-1]:
-                        if dictionary.get(keyslist[i])[0] == dictionary.get(keyslist[i-1])[1] and Passed_H == False:
-                            domain = "VH2_3"
-                            previous_domain = "VL2_3"
-                            coordinates = eval(domain+chain)
-                    elif "VH" in keyslist[i-1] and "VL" in keyslist[i]:
-                        domain = "VL"
-                        previous_domain = "VH2_3"
-                        coordinates = eval(domain+chain)
-                    else:
-                        domain = keyslist[i]
-                        coordinates = eval(str(keyslist[i]))
-
-                    Label_Coordinates = eval(str(keyslist[i]+"_label_location"))
-
-
-                elif "VH2" in keyslist[i]:
-                    if Passed_H == False:
-                        if "VH" in keyslist[i-1]:
-                            if dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[i-1])[0]+1):
-                                domain = "VH"
-                                previous_domain = "VH2_3"
-                                coordinates = eval(str(domain+chain))
-                                Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-                        elif "CL" in keyslist[i-1]:
-                                domain = "VL2_4"
-                                previous_domain ="CL"
-                                coordinates = eval(str(domain+chain))
-                                Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-
-                    elif Passed_H == True:
-                        if "CH3" in keyslist[i-1]:
-                            domain = "CH4"
-                            coordinates = eval(str(keyslist[i]+chain))
-                        elif "CH4" in keyslist[i-1]:
-                            domain = "CH5"
-                            coordinates = eval(str("VH2_2"+chain))
-                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-
-                elif "VL2" in keyslist[i]:
-                    if Passed_H == False:
-                        if "VL" in keyslist[i-1]:
-                            domain = "VL"
-                            previous_domain = "VL2_3"
-                            coordinates = eval(str(domain+chain))
-                        elif "VH" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == dictionary.get(keyslist[i-1])[1]:
-                            domain = "VL2_5"
-                            previous_domain = "VL2_4"
-                            coordinates = eval(str(domain+chain))
-                        Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-
-                    elif Passed_H == True:
-                        if  keyslist[i-1] == "VH2" and keyslist[i-2] == "CH3"  :
-                            domain = "VL2"
-                            previous_domain = "CH4"
-                            coordinates = eval(str("VL2"+chain))
-
-                        elif "VH2" in keyslist[i-1] and "CH4" in keyslist[i-2]:
-                            domain = "VL2_2"
-                            previous_domain = "CH5"
-                            coordinates = eval(str("VL2_2"+chain))
-
-                        elif "CL2" in keyslist[i-1]:
-                            domain = "VL2_2"
-                            coordinates = eval(str("VL2_2"+chain))
-                    Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-
-
-                elif "CL2" in keyslist[i]:
-                    if dictionary == VHa_chain or  dictionary == VHb_chain:
-                        domain = "CL2"
-                        coordinates = eval(str("CL2"+chain))
-
-
-
-
-
-######C domains ##########
-
-
-            elif i > 0 and "V" not in keyslist[i] and keyslist[i] != "H":
-
-                if "@" in domain:
-                    domain = re.sub("@","",str(domain))
-                    coordinates= eval(str(domain+chain+"_notch"))
-                    mod = " notch"
-
-                elif ">" in keyslist[i]:
-                    domain = re.sub(">","",str(domain))
-                    coordinates= eval(str(domain+chain+"_inward_notch"))
-                    mod = " inward notch"
-
-                elif "+" in keyslist[i]:
-                    domain = re.sub("\+","",str(domain))
-                    coordinates= eval(str(domain+chain))
-                    mod = " +"
-
-                elif "_" in keyslist[i]:
-                    domain = re.sub("\_","",str(domain))
-                    coordinates= eval(str(domain+chain))
-                    mod = " -"
-
-                elif "*" in keyslist[i]:
-                    domain = re.sub("\*.*","",str(domain))
-                    coordinates= eval(str(domain+chain))
+            if "V" in keyslist[n]:
+                default = ""
+                if Light_chain_check == False:
+                    default = "outie"
+                elif Light_chain_check == True:
+                    default = "innie"
+                if n == 0:
                     try:
-                        mod = str(keyslist[i].split("*")[1])
+                        if "L[" in keyslist[n+1]:
+                            if chain.get(keyslist[n+2])[0] == chain.get(keyslist[n])[0]+1 and chain.get(keyslist[n])[0] == (chain.get(keyslist[n+2])[1]):
+                                if Light_chain_check == False:
+                                    innie_or_outie_list.append("innie")
+                                elif Light_chain_check == True:
+                                    innie_or_outie_list.append("innie")
+                            elif  chain.get(keyslist[n+2])[0] == chain.get(keyslist[n])[0]+1 and chain.get(keyslist[n])[0] != (chain.get(keyslist[n+2])[1]):
+                                if chain_count == 2:
+                                    if Light_chain_check == False:
+                                        innie_or_outie_list.append("innie")
+                                    elif Light_chain_check == True:
+                                        innie_or_outie_list.append("innie")
+                                else:
+                                    innie_or_outie_list.append(default)
+                        elif "L[" not in keyslist[n+1]:
+                            if chain_count == 2:
+                                if Light_chain_check == False:
+                                    innie_or_outie_list.append("innie")
+                            else:
+                                innie_or_outie_list.append(default)
                     except IndexError:
-                        mod = ""
+                        continue
 
 
-                if keyslist[i] == "X":
-                    if keyslist[i-1] == "VHa":
-                        if keyslist[i+1] == "VHb":
-                            coordinates = VHa_X_VHb
-                            domain = "VHa_X_VHb"
 
+                elif n > 0 and n < len(chain):
+                    if "L[" in keyslist[n-1]:
+                        if chain.get(keyslist[n-2])[0]+1 == chain.get(keyslist[n])[0] and chain.get(keyslist[n-2])[0] == (chain.get(keyslist[n])[1]):
 
-                            chain = ""
-                    elif "CH3" in keyslist[i-1]:
-                        domain = "X_CH3"
-                        coordinates = eval(domain+chain)
+                            if innie_or_outie_list[-2] == "outie":
+                                innie_or_outie_list.append("innie")
+                            elif innie_or_outie_list[-2] == "innie":
+                                innie_or_outie_list.append("outie")
+                            else:
+                                innie_or_outie_list.append(default)
 
+                        elif  chain.get(keyslist[n-2])[0]+1 == chain.get(keyslist[n])[0] and chain.get(keyslist[n])[0] != (chain.get(keyslist[n])[1]):
+                            if "CL" in keyslist[n-2] and Light_chain_check == True:
+                                innie_or_outie_list.append("outie")
+                            elif innie_or_outie_list[-2] == "outie":
+                                innie_or_outie_list.append("outie")
+                            elif innie_or_outie_list[-2] == "innie":
+                                innie_or_outie_list.append("innie")
+                            else:
+                                innie_or_outie_list.append(default)
+                        else:
+                            innie_or_outie_list.append(default)
 
-                else:
-                    coordinates = eval(str(domain+chain))
-                Label_Coordinates = eval(str(domain+chain+"_label_location"))
-
-            if "CH1" in keyslist[i] or "CL" in keyslist[i]:
-                if Passed_H == False:
-                    if "VH2" in keyslist[i-1]:
-                        previous_domain = "VH"+chain
-                    elif "VL2" in keyslist[i-1]:
-                        previous_domain = "VL"+chain
-
-
-            if keyslist[i] == "H":
-                Label_Coordinates = (eval(str("Saltbridge_label"+chain)))
-                coordinates = []
-                bonds = []
-                Passed_H = True
-            else:
-                if bonds == "":
-                    if previous_domain == "H":
-                        bonds = bondmaker(previous_domain_2,domain,chain,"yes")
                     else:
-                        bonds = bondmaker(previous_domain,domain,chain,"yes")
+                        innie_or_outie_list.append(default)
+                elif n == len(chain):
+                    innie_or_outie_list.append("innie")
+            elif "V" not in keyslist[n]:
+                innie_or_outie_list.append("constant")
+        return(innie_or_outie_list)
 
-            if bonds != []:
-                Bonds.append(eval(bonds[0])+eval(bonds[1]))
-            if coordinates != []:
-                coordinates_list.append(coordinates)
-            if Label_Coordinates == []:
-                Label_Coordinates = eval(str(keyslist[i]+chain+"_label_location"))
-            Label_Locations.append(Label_Coordinates)
-            location = dictionary.get(keyslist[i])[0]
-            Label_Text.append(str(location)+mod)
-            domain_names.append(keyslist[i])
+    def VH_VL_check(current_chain_pos,current_dictionary,Light_chain_check,Heavy_chain,Light_chain,have,lookingfor):
+        interaction = ""
+        if Light_chain_check == False:
+            keyslist = list(Light_chain.keys())
+            candidate_chain = Light_chain
+        elif Light_chain_check == True:
+            keyslist = list(Heavy_chain.keys())
+            candidate_chain = Heavy_chain
+        current_chain_loc =  current_dictionary.get(current_chain_pos)[0]
+        for x in range(len(keyslist)):
+            if lookingfor in keyslist[x]:
+                candidate_chain_loc = candidate_chain.get(keyslist[x])[1]
+                if current_chain_loc == candidate_chain_loc:
+                    interaction = "H_L"
+                elif current_chain_loc != candidate_chain_loc:
+                    interaction = "H_H"
 
-        return(coordinates_list, Bonds,Label_Text, Label_Locations, domain_names)
+        return(interaction)
 
-    def Count_Salt_bridges(Salt_bridge_count):
-        Disulphide_bonds = []
-        Saltbridge_a  =[271,262,388,262]
-        Saltbridge_b  = [288,272,374,272]
-        if Salt_bridge_count   == 0:
-            pass
-        if Salt_bridge_count == 1:
-            Disulphide_bonds = [Saltbridge_a]
-        elif Salt_bridge_count == 2:
-            Disulphide_bonds = [Saltbridge_a, Saltbridge_b]
-        return Disulphide_bonds
+    def domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction):
+        if V == False and  direction == "constant" and mod == "" and X == False:
 
-    def Horizontal_bonds(VHa_VLa_bond_count,VHb_VLb_bond_count,CH1a_CL1a_bond_count,CH1b_CLb_bond_count):
-        Horizontal_bonds = []
-        VLa_bottom_bond_location  = [157,174]
-        VHa_bottom_bond_location = [217,174]
-        CLa_bottom_bond_location  = [200,254]
-        CH1a_bottom_bond_location = [260,254]
-        VLb_bottom_bond_location = [503,174]
-        VHb_bottom_bond_location = [443,174]
-        CLb_bottom_bond_location = [460,254]
-        CH1b_bottom_bond_location = [400,254]
-        VHa_VLa_bond_location   = VHa_bottom_bond_location+VLa_bottom_bond_location
-        VHb_VLb_bond_location   = VHb_bottom_bond_location+VLb_bottom_bond_location
-        CH1a_CL1a_bond_location = CH1a_bottom_bond_location+CLa_bottom_bond_location
-        CH1b_CL1b_bond_location = CH1b_bottom_bond_location+CLb_bottom_bond_location
-        if VHa_VLa_bond_count != "":
-            Horizontal_bonds.append(VHa_VLa_bond_location)
-        if VHb_VLb_bond_count!= "":
-            Horizontal_bonds.append(VHb_VLb_bond_location)
-        if CH1a_CLa_bond_count != "":
-            Horizontal_bonds.append(CH1a_CL1a_bond_location)
-        if CH1b_CLb_bond_count !="":
-            Horizontal_bonds.append(CH1b_CL1b_bond_location)
-        return Horizontal_bonds
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant and righthanded == False:
+                sixthx     = fifthx - 40
+            elif slant and righthanded == True:
+                sixthx     = fifthx + 40
+            else:
+                sixthx     = fifthx
+            sixthy     = fifthy-75
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy]
+        elif V == True and direction == "innie":
+            #print("innie")
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant and righthanded == False:
+                sixthx     = fifthx - 30
+            elif slant and righthanded == True:
+                sixthx     = fifthx + 30
+            else:
+                sixthx     = fifthx
+            sixthy     = fifthy-55
+            if righthanded == False:
+                seventhx = sixthx - 20
+            elif righthanded == True:
+                seventhx = sixthx + 20
+            seventhy    = sixthy
+            coordinates = [firstx,firsty,secondx,secondy,thirdx,thirdy,fourthx,fourthy,fifthx,fifthy,sixthx,sixthy,seventhx,seventhy]
+        elif V == True and direction == "outie":
+            #print("outie")
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx + 20
+            elif righthanded == True:
+                secondx = firstx - 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx - 20
+            elif righthanded == True:
+                fourthx     = thirdx + 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx - 20
+            elif righthanded == True:
+                fifthx     = fourthx + 20
+            fifthy         = fourthy
+            if slant and righthanded == False:
+                sixthx     = fifthx - 30
+            elif slant and righthanded == True:
+                sixthx     = fifthx + 30
+            else:
+                sixthx     = fifthx
+            sixthy     = fifthy-55
+            if righthanded == False:
+                seventhx = sixthx + 20
+            elif righthanded == True:
+                seventhx = sixthx - 20
+            seventhy    = sixthy
+            coordinates = [firstx,firsty,secondx,secondy,thirdx,thirdy,fourthx,fourthy,fifthx,fifthy,sixthx,sixthy,seventhx,seventhy]
+        elif V == False  and mod == "@" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant == True:
+                sixthx     = fifthx
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx + 40
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx - 40
+            sixthy     = fifthy-37
+            if righthanded == False:
+                seventhx   =  firstx + 20
+            elif righthanded == True:
+                seventhx   =  firstx - 20
+            seventhy   =  firsty
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy]
+
+        elif V == False and mod == ">" and interaction == "H_L" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx + 20
+            elif righthanded == True:
+                secondx = firstx - 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx - 20
+            elif righthanded == True:
+                fourthx     = thirdx + 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx - 20
+            elif righthanded == True:
+                fifthx     = fourthx + 20
+            fifthy         = fourthy
+            if slant == True:
+                sixthx     = fifthx
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx + 40
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx - 40
+            sixthy     = fifthy-37
+            if righthanded == False:
+                seventhx   =  firstx - 20
+            elif righthanded == True:
+                seventhx   =  firstx + 20
+            seventhy   =  firsty
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy]
+        elif V == False and mod == ">" and interaction != "H_L" and  X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant == True:
+                sixthx     = fifthx
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx - 20
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx + 20
+            sixthy     = fifthy-37
+            if righthanded == False:
+                seventhx   =  firstx + 20
+            elif righthanded == True:
+                seventhx   =  firstx - 20
+            seventhy   =  firsty
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy]
+        elif X == True:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx     =   startx-30
+            elif righthanded== True:
+                secondx     =   startx+30
+            secondy         =   firsty+37
+            if righthanded == False:
+                thirdx     =   secondx+30
+            elif righthanded== True:
+                thirdx     =   secondx-30
+            thirdy         =   secondy+ 38
+            fourthx         =   thirdx
+            fourthy         =   thirdy
+            if righthanded == False:
+                fifthx      =   fourthx+30
+            elif righthanded== True:
+                fifthx     =    fourthx-30
+            fifthy         =    fourthy-38
+
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy]
+
+        top_bond    = [firstx,firsty]
+        bottom_bond = [fourthx, fourthy]
+        Labelbond   = [firstx, secondy/thirdy]
+        return(coordinates, bottom_bond,top_bond,Labelbond)
 
 
 
+    def renderchains(dictionary,startx,starty):
+        chain                = []
+        coordinates_list_heavy= []
+        coordinates_list_light= []
+        bonds = []
+        saltbridge1 = []
+        saltbridge2 = []
+        H_count     = 0
+        Label_Text=[]
+        text_coordinates=[]
 
-    if VLa_chain == {} and VLb_chain == {}:
-        if VHb_chain == {}:
-            H_Coordinates    = GetChainCoordinates_2chains(VHa_chain,"a")[0]
-            L_Coordinates    = []
-            Bonds            = GetChainCoordinates_2chains(VHa_chain,"a")[1]
-            Horizontal_bonds = []
-            Label_Text       = GetChainCoordinates_2chains(VHa_chain,"a")[2]
-            Label_spot       = GetChainCoordinates_2chains(VHa_chain,"a")[3]
-            H_domain_names   = []
-            L_domain_names   = []
-
-
+        if chain_count >= 4:
+            slant = True
         else:
-            H_Coordinates    = GetChainCoordinates_2chains(VHa_chain,"a")[0]
-            L_Coordinates    = GetChainCoordinates_2chains(VHb_chain,"b")[0]
-            Bonds            = GetChainCoordinates_2chains(VHa_chain,"a")[1] + GetChainCoordinates_2chains(VHb_chain,"b")[1]
-            Horizontal_bonds = []
-            Label_Text       = GetChainCoordinates_2chains(VHa_chain,"a")[2] + GetChainCoordinates_2chains(VHb_chain,"b")[2]
-            Label_spot       = GetChainCoordinates_2chains(VHa_chain,"a")[3] + GetChainCoordinates_2chains(VHb_chain,"b")[3]
-            H_domain_names   = []
-            L_domain_names   = []
+            slant = False
+        before_H = True
+        Build_in = True
+        Build_out = False
+        righthanded = False
+        Light_chain_check = False
+        if dictionary == VHb_chain or dictionary == VLb_chain:
+            Heavy_chain = VHb_chain
+            Light_chain = VLb_chain
+            righthanded = True
+        elif dictionary == VHa_chain or dictionary == VLa_chain:
+            Heavy_chain = VHa_chain
+            Light_chain = VLa_chain
+            righthanded = False
+        if dictionary == VLa_chain or dictionary == VLb_chain:
+            Light_chain_check = True
 
-    else:
-        H_Coordinates   = GetChainCoordinates_4chains(VHa_chain,"a")[0] + GetChainCoordinates_4chains(VHb_chain,"b")[0]
-        L_Coordinates   = GetChainCoordinates_4chains(VLa_chain,"a")[0] + GetChainCoordinates_4chains(VLb_chain,"b")[0]
-        Bonds           = GetChainCoordinates_4chains(VLa_chain,"a")[1] + GetChainCoordinates_4chains(VHa_chain,"a")[1] + GetChainCoordinates_4chains(VLb_chain,"b")[1] + GetChainCoordinates_4chains(VHb_chain,"b")[1]
-        Horizontal_bonds= Count_Salt_bridges(Salt_bridge_count)+ Horizontal_bonds(VHa_VLa_bond_count,VHb_VLb_bond_count,CH1a_CLa_bond_count,CH1b_CLb_bond_count)
-        Label_Text      = GetChainCoordinates_4chains(VLa_chain,"a")[2] + GetChainCoordinates_4chains(VHa_chain,"a")[2] + GetChainCoordinates_4chains(VLb_chain,"b")[2] + GetChainCoordinates_4chains(VHb_chain,"b")[2]
-        Label_spot      = GetChainCoordinates_4chains(VLa_chain,"a")[3] + GetChainCoordinates_4chains(VHa_chain,"a")[3] + GetChainCoordinates_4chains(VLb_chain,"b")[3] + GetChainCoordinates_4chains(VHb_chain,"b")[3]
-        H_domain_names  = GetChainCoordinates_4chains(VHa_chain,"a")[4] , GetChainCoordinates_4chains(VHb_chain,"b")[4]
-        L_domain_names  = GetChainCoordinates_4chains(VLb_chain,"b")[4] + GetChainCoordinates_4chains(VLb_chain,"b")[4]
-    return(H_Coordinates,L_Coordinates,Bonds,Horizontal_bonds,Label_Text,Label_spot, H_domain_names,L_domain_names)
+        innie_or_outie_list = innie_or_outie(dictionary, Light_chain_check, chain_count)
+        #print(dictionary, innie_or_outie_list)
 
 
+        for i in range(len(dictionary)):
+
+            keyslist = list(dictionary.keys())
+
+            V  = False
+            X  = False
+            direction = str(innie_or_outie_list[i])
+            #print(keyslist[i],direction)
+            interaction = ""
+            mod= ""
+            if "V" in keyslist[i]:
+                V  = True
+            elif "X" in keyslist[i]:
+                X  = True
+
+
+            if "@" in keyslist[i]:
+                mod = "@"
+            elif ">" in keyslist[i]:
+                mod = ">"
+                if "H" in str(dictionary):
+                    interaction = VH_VL_check(keyslist[i],dictionary,Light_chain_check,Heavy_chain,Light_chain,">","@")
+            elif "+" in keyslist[i]:
+                mod = "+"
+            elif "_" in keyslist[i]:
+                mod = "-"
+            elif "*" in keyslist[i]:
+                try:
+                    mod = str(keyslist[i].split("*")[1])
+                except IndexError:
+                    mod = ""
+
+
+
+            if i == 0:
+
+
+                getcoordinates = domainmaker(startx,starty, righthanded,slant,V,direction,X,mod,interaction)
+
+
+
+            elif i > 0:
+                previous_domain = keyslist[i-1]
+                previous_chain  = chain[i-1]
+                if keyslist[i-1] != "H" and "L[" not in keyslist[i-1] and "X" not in keyslist[i-1]:
+                    previous_number = (dictionary.get(previous_domain)[0])+1
+                elif "X" in keyslist[i-1]  and i-1 == 0:
+                    previous_number = (dictionary.get(keyslist[i])[0])
+                    dictionary[keyslist[i-1]] = [previous_number,0]
+                    previous_domain = (keyslist[i])
+
+
+                if previous_domain == "H":
+                    previous_domain = keyslist[i-2]
+                    previous_chain  = chain[i-2]
+                    previous_number = (dictionary.get(previous_domain)[0])+2
+                if keyslist[i-1] == "CL":
+                    slant = False
+
+                if keyslist[i] == "H":
+                    slant = False
+                    before_H == False
+                    H_count +=1
+                    if H_count == 1:
+                        saltbridge1 += bottom_bond
+                    elif H_count == 2:
+                        saltbridge1 += bottom_bond
+                elif "X" in keyslist[i]:
+                    previous_chain = chain[i-2]
+                    if righthanded == False:
+                        getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                    elif righthanded == True:
+                        getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+
+
+                elif keyslist[i-1] == "H" and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
+                    if righthanded == True:
+                        getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                    elif righthanded == False:
+                        getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+
+
+                    if H_count == 1:
+                        saltbridge2 += top_bond
+                    elif H_count == 2:
+                        saltbridge2 += top_bond
+
+                elif keyslist[i] != "H" and "L[" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
+                    if slant == True and righthanded == True:
+                        getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+                    elif slant == True and righthanded == False:
+                        getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+                    else:
+                        getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+
+
+                    Build_in  = False
+                    Build_out = True
+
+##Linker
+                elif "L[" in keyslist[i-1]:
+                    previous_chain = chain[i-2]
+                    previous_domain = keyslist[i-2]
+
+##Build up
+                    if dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
+                        if "VH" in keyslist[i-2] and "VL" in keyslist[i]:
+                            if righthanded == True:
+                                righthanded = False
+                            elif righthanded==False:
+                                righthanded = True
+                            getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction)
+
+##Build down
+                    elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
+
+                        if slant == True and righthanded == True:
+                            getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+                        elif slant == True and righthanded == False:
+                            getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+                        else:
+                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+
+
+                        Build_in  = False
+                        Build_out = True
+##Build across
+                    elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] == (dictionary.get(previous_domain)[1]):
+                        if Build_in == True:
+                            if righthanded == False:
+                                getcoordinates = domainmaker((previous_chain[0]+50),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction)
+                            elif righthanded == True:
+                                getcoordinates = domainmaker((previous_chain[0]-50),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction)
+                        elif Build_out == True:
+                            if righthanded == False:
+                                getcoordinates = domainmaker((previous_chain[0]-50),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction)
+                            elif righthanded == True:
+                                getcoordinates = domainmaker((previous_chain[0]+50),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction)
+
+
+##append coordinates to chains
+            if keyslist[i] == "H" or "L[" in keyslist[i]:
+                chain.append([])
+                bonds.append([])
+            else:
+                chain.append(getcoordinates[0])
+            if i > 0:
+                top_bond = getcoordinates[2]
+                bonds.append(bottom_bond + top_bond)
+            bottom_bond = getcoordinates[1]
+            if "VL" in keyslist[i] or "CL" in keyslist[i]:
+                coordinates_list_heavy.append(getcoordinates[0])
+            else:
+                coordinates_list_light.append(getcoordinates[0])
+
+        chain = [x for x in chain if x != []]
+        bonds = [x for x in bonds if x != []]
+        allbonds = bonds + saltbridge1 + saltbridge2
+        
+        return(chain,allbonds,Label_Text,text_coordinates)
+
+    VHa_Domains_before_H = 0
+    VHb_Domains_before_H = 0
+    for i in range(len(VHa_chain)):
+        keyslist = list(VHa_chain.keys())
+        if keyslist[i] != "H" and "L[" not in keyslist[i]:
+            VHa_Domains_before_H += 1
+        elif keyslist[i] == "H":
+            break
+    for i in range(len(VHb_chain)):
+        keyslist = list(VHb_chain.keys())
+        if keyslist[i] != "H" and "L[" not in keyslist[i]:
+            VHb_Domains_before_H += 1
+        elif keyslist[i] == "H":
+            break
+
+    VLa_Domains_before_CL = 0
+    VLb_Domains_before_CL = 0
+    for i in range(len(VLa_chain)):
+        keyslist = list(VLa_chain.keys())
+        if  "CL" not in keyslist[i] and "L[" not in keyslist[i]:
+            VLa_Domains_before_CL += 1
+        elif "CL" in keyslist[i]:
+            break
+    for i in range(len(VLb_chain)):
+        keyslist = list(VLb_chain.keys())
+        if "CL" not in keyslist[i]  and "L[" not in keyslist[i]:
+            VLb_Domains_before_CL += 1
+        elif "CL" in keyslist[i]:
+            break
+    VLa_startx, VLa_starty = 75, 95
+    VHa_startx, VHa_starty = 145, 95
+    if VHa_Domains_before_H   == 2 and VLa_Domains_before_CL == 1:
+        VLa_startx, VLa_starty = 75, 95
+        VHa_startx, VHa_starty = 145, 95
+    elif VHa_Domains_before_H == 2 and VLa_Domains_before_CL == 2:
+        VLa_startx, VLa_starty = 30,0
+        VHa_startx, VHa_starty = 100,0
+    elif VHa_Domains_before_H == 3 and VLa_Domains_before_CL == 1:
+        VLa_startx, VLa_starty = 75, 95
+        VHa_startx, VHa_starty = 140,0
+    elif VHa_Domains_before_H == 4 and VLa_Domains_before_CL == 1:
+        VLa_startx, VLa_starty  = 75,95
+        VHa_startx, VHa_starty  = 30,0
+    #elif VHa_Domains_before_H == 3 and VLa_Domains_before_CL == 2:
+    #    VLa_startx, VLa_starty  = 75,95
+    #    VHa_startx, VHa_starty  = 255,95
+    if VLa_Domains_before_CL == 1:
+        VLa_startx, VLa_starty = 75, 95
+
+    VLb_startx, VLb_starty = 520, 95
+    VHb_startx, VHb_starty = 450, 95
+    if VHb_Domains_before_H   == 2 and VLa_Domains_before_CL == 1:
+        VLb_startx, VLb_starty = 520, 95
+        VHb_startx, VHb_starty = 450, 95
+    elif VHa_Domains_before_H == 2 and VLa_Domains_before_CL == 2:
+        VLb_startx, VLb_starty = 560,0
+        VHb_startx, VHb_starty = 480,0
+    elif VHa_Domains_before_H == 3 and VLa_Domains_before_CL == 1:
+        VLb_startx, VLb_starty = 515, 95
+        VHb_startx, VHb_starty = 440,0
+    elif VHa_Domains_before_H == 4 and VLa_Domains_before_CL == 1:
+        VLb_startx, VLb_starty  = 520, 95
+        VHb_startx, VHb_starty  = 560,0
+    #elif VHa_Domains_before_H == 3 and VLa_Domains_before_CL == 2:
+    #    VLb_startx, VLb_starty = 690, 95
+    #    VHb_startx, VHb_starty = 490,95
+    if VLa_Domains_before_CL == 1:
+        VLb_startx, VLb_starty = 515, 95
+
+    Coordinates_a = renderchains(VHa_chain,VHa_startx, VHa_starty)[0] + renderchains(VLa_chain,VLa_startx, VLa_starty)[0]
+    Coordinates_b = renderchains(VLb_chain,VLb_startx, VLb_starty)[0] + renderchains(VHb_chain,VHb_startx, VHb_starty)[0]
+    Bonds         = renderchains(VLa_chain,VLa_startx, VLa_starty)[1] + renderchains(VHa_chain,VHa_startx, VLa_starty)[1] + renderchains(VLb_chain,VLb_startx, VLb_starty)[1] + renderchains(VHb_chain,VHb_startx, VHb_starty)[1]
+    Label_Text    = renderchains(VLa_chain,VLa_startx, VLa_starty)[2] + renderchains(VHa_chain,VHa_startx, VHa_starty)[2] + renderchains(VLb_chain,VLb_startx, VLb_starty)[2] + renderchains(VHb_chain,VHb_startx, VHb_starty)[2]
+    Label_spot    = renderchains(VLa_chain,VLa_startx, VLa_starty)[3] + renderchains(VHa_chain,VHa_startx, VHa_starty)[3] + renderchains(VLb_chain,VLb_startx, VLb_starty)[3] + renderchains(VHb_chain,VHb_startx, VHb_starty)[3]
+
+    return(Coordinates_a,Coordinates_b,Bonds,Label_Text,Label_spot)
 
 def render(chains_list,canvas):
     canvas.delete("all")
-    H_Polygons      = chains_list[0]
-    L_Polygons      = chains_list[1]
-    Bonds           = chains_list[2]
-    Horizontal_bonds= chains_list[3]
-    Label_Text      = chains_list[4]
-    Label_positions = chains_list[5]
-    H_domain_names  = chains_list[6]
-    L_domain_names  = chains_list[7]
-    print(H_Polygons)
-    print(L_Polygons)
-    print(Bonds)
-    print(Label_Text)
-    print(len(Label_Text))
-    print(Label_positions)
-    print(len(Label_positions))
+    Coordinates_a    = chains_list[0]
+    Coordinates_b    = chains_list[1]
+    Bonds            = chains_list[2]
+    Label_Text       = chains_list[3]
+    Label_positions  = chains_list[4]
+
+
 
 
 
     for i in range(len(Bonds)):
         canvas.create_line(Bonds[i], fill='#000000', width = 2)
-    for i in range(len(Horizontal_bonds)):
-        canvas.create_line(Horizontal_bonds[i], fill='#000000', width = 2)
-    for i in range(len(H_Polygons)):
-        canvas.create_polygon(H_Polygons[i], outline='#000000',fill='#006400', width=2)
-    for i in range(len(L_Polygons)):
-        canvas.create_polygon(L_Polygons[i], outline='#000000',fill='#1f1'   , width=2)
+    for i in range(len(Coordinates_a)):
+        canvas.create_polygon(Coordinates_a[i], outline='#000000',fill='#007ECB', width=2)
+    for i in range(len(Coordinates_b)):
+        canvas.create_polygon(Coordinates_b[i], outline='#000000',fill='#FF43EE', width=2)
+
+
     for i in range(len(Label_positions)):
         canvas.create_text(Label_positions[i], text=Label_Text[i])
     #canvas.pack(fill=BOTH, expand=1)
