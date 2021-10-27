@@ -673,6 +673,8 @@ def Check_interactions(chains_list):
 
         if chain_count >= 4:
             slant = True
+        elif chain_count==2 and "H" in dictionary:
+            slant = True
         else:
             slant = False
         before_H = True
@@ -785,8 +787,9 @@ def Check_interactions(chains_list):
                     previous_number = (dictionary.get(previous_domain)[0])+2
 
 
-                if keyslist[i-1] == "CL":
-                    slant = False
+                if dictionary == VLa_chain or dictionary == VLb_chain:
+                    if keyslist[i-1] == "CL":
+                        slant = False
 
                 if keyslist[i] == "H":
                     before_H = False
@@ -832,11 +835,20 @@ def Check_interactions(chains_list):
 
                 elif "X" in keyslist[i] and keyslist[i-1] != "H":
                     previous_chain = chain[i-2]
-                    if righthanded == False:
+                    if "C" in keyslist[i-1]:
+                        if Build_in == True:
+                            Build_in = False
+                            Build_out = True
+                    if righthanded == False and Build_in == True and Build_out == False:
                         getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-                    elif righthanded == True:
+                    elif righthanded == False and Build_in == False and Build_out == True:
                         getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-
+                    elif righthanded == True and Build_in == True and Build_out == False:
+                        getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                    elif righthanded == True and Build_in == False and Build_out == True:
+                        getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                    Build_in = True
+                    Build_out = False
 
                 elif keyslist[i-1] == "H" and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
                     if righthanded == True:
@@ -880,8 +892,8 @@ def Check_interactions(chains_list):
                                 else:
                                     getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
 
-                    Build_in  = False
-                    Build_out = True
+                    #Build_in  = False
+                    #Build_out = True
 
 
                 elif keyslist[i] != "H" and "L[" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
@@ -893,8 +905,8 @@ def Check_interactions(chains_list):
                         getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
 
 
-                    Build_in  = False
-                    Build_out = True
+                    #Build_in  = False
+                    #Build_out = True
 
 ##Linker
                 elif "L[" in keyslist[i-1]:
@@ -920,6 +932,7 @@ def Check_interactions(chains_list):
                         Build_in  = False
                         Build_out = True
 
+##Self-Interacting chains
                     elif dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
                         to_join_number      = str(dictionary.get(keyslist[i])[1])
                         to_join_coordinates = find_the_fragment(to_join_number,All_positions_and_chains)
@@ -1210,6 +1223,7 @@ def Check_interactions(chains_list):
     VHa_Domains_before_H = 0
     VHb_Domains_before_H = 0
     keyslista = list(VHa_chain.keys())
+    print(keyslista)
     for i in range(len(VHa_chain)):
         if keyslista[i] != "H" and "L[" not in keyslista[i]:
             VHa_Domains_before_H += 1
@@ -1222,12 +1236,14 @@ def Check_interactions(chains_list):
         elif keyslistb[i] == "H":
             break
     if chain_count == 2:
-        if "L[" in keyslista[1] and VHa_chain.get(keyslista[0])[0] == (VHa_chain.get(keyslista[2])[1]):
+        if "L[" in keyslista[1] and VHa_chain.get(keyslista[0])[0] == (VHa_chain.get(keyslista[2])[1]) and "H" not in keyslista:
             VHa_startx, VHa_starty = 150, 100
+        elif "H" in keyslista:
+            VHa_startx, VHa_starty = 155, 110
         else:
             VHa_startx, VHa_starty = 250, 100
     elif chain_count ==1:
-        VHa_startx, VHa_starty = 250,200
+        VHa_startx, VHa_starty = 350,100
         VHb_startx, VHb_starty = 500, 110
     elif chain_count >=4:
         if VHa_Domains_before_H == 1:
@@ -1244,8 +1260,10 @@ def Check_interactions(chains_list):
             VHa_startx, VHa_starty = 165, 15
 
     if chain_count == 2:
-        if "L[" in keyslistb[1] and  VHb_chain.get(keyslistb[0])[0] == (VHb_chain.get(keyslistb[2])[1]):
+        if "L[" in keyslistb[1] and  VHb_chain.get(keyslistb[0])[0] == (VHb_chain.get(keyslistb[2])[1]) and "H" not in keyslistb:
             VHb_startx, VHb_starty = 400,100
+        elif "H" in keyslistb:
+            VHb_startx, VHb_starty = 560, 110
         else:
             VHb_startx, VHb_starty = 350,100
     elif chain_count >=4:
@@ -1264,6 +1282,7 @@ def Check_interactions(chains_list):
 
 
     if chain_count ==2:
+        print(VLb_startx, VLb_starty)
         VHb_startx, VHb_starty = VHb_startx, VHb_starty
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VLb_stats = renderchains(VLb_chain,VLb_startx, VLb_starty)
