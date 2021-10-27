@@ -668,7 +668,7 @@ def Check_interactions(chains_list):
         Location_Text=[]
         text_coordinates= []
         Domain_Text     = []
-        Domain_Numbers
+
 
 
         if chain_count >= 4:
@@ -919,6 +919,22 @@ def Check_interactions(chains_list):
                             getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
                         Build_in  = False
                         Build_out = True
+
+                    elif dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
+                        to_join_number      = str(dictionary.get(keyslist[i])[1])
+                        to_join_coordinates = find_the_fragment(to_join_number,All_positions_and_chains)
+                        to_joinx            = to_join_coordinates[0][0]
+                        to_joiny            = to_join_coordinates[0][1]
+
+                        if  righthanded == False and Build_in == True and Build_out == False:
+                            getcoordinates = domainmaker(to_joinx+50,to_joiny, righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == False and Build_in == False and Build_out == True:
+                            getcoordinates = domainmaker(to_joinx-50,to_joiny, righthanded,slant,V,direction,X,mod,interaction)
+                        elif  righthanded == True and Build_in == True and Build_out == False:
+                            getcoordinates = domainmaker(to_joinx-50,to_joiny, righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == True and Build_in == False and Build_out == True:
+                            getcoordinates = domainmaker(to_joinx+50,to_joiny, righthanded,slant,V,direction,X,mod,interaction)
+
 ##Build up
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
                         getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction)
@@ -1039,6 +1055,11 @@ def Check_interactions(chains_list):
                             coordinates_list_heavy_a.append(getcoordinates[0])
                         elif "VL" in keyslist[i]:
                             coordinates_list_light_a.append(getcoordinates[0])
+                        elif "X" in keyslist[i]:
+                            if "a" in str(keyslist):
+                                coordinates_list_heavy_a.append(getcoordinates[0])
+                            elif "b" in str(keyslist):
+                                coordinates_list_heavy_b.append(getcoordinates[0])
 
                     elif dictionary == fragment1:
                         if "a" in keyslist[i-1] or "a" in keyslist[i-2] :
@@ -1103,6 +1124,7 @@ def Check_interactions(chains_list):
                 All_positions_and_chains[text] = [getcoordinates[0], righthanded]
                 Domain_Text.append(str(Domain_name)+mod_label)
             elif "X" in keyslist[i]:
+                print("X", getcoordinates[0])
                 if slant == True and righthanded == False:
                     Label_Locations = [getcoordinates[3][0]-20,getcoordinates[3][1]]
                 elif slant == True and  righthanded== True:
@@ -1141,7 +1163,7 @@ def Check_interactions(chains_list):
                         completed_disulphidebridges.append(coordinates)
 
 
-        chain = [x for x in chain if x != []]
+        chain    = [x for x in chain if x != []]
         allbonds = bonds
         allbonds = [x for x in bonds if x != []]
         #allbonds = bonds
@@ -1324,7 +1346,6 @@ def Check_interactions(chains_list):
     Domain_Text         = VLa_stats[14] + VHa_stats[14] + VLb_stats[14] + VHb_stats[14] + frag1_stat[14] + frag2_stat[14] + frag3_stat[14] + frag4_stat[14]
     Notes               = VHa_stats[15] + VLa_stats[15] + VHb_stats[15] + VLb_stats[15] + frag1_stat[15] + frag2_stat[15] + frag3_stat[15] + frag4_stat[15]
     Notes_positions     = VHa_stats[16] + VLa_stats[16] + VHb_stats[16] + VLb_stats[16] + frag1_stat[16] + frag2_stat[16] + frag3_stat[16] + frag4_stat[16]
-
 
     return(Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Bonds,disulphide_bridges,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions)
 
