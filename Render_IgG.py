@@ -91,7 +91,7 @@ def Get_dictionaries(x):
 
 
         for j in range(len(chain)):
-            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL[1-9].[abcd]|^VL.[abcd]|^VH\.[abcd]|^VL[1-9]|^VH[1-9]\.[abcd]|^VH[1-9]|VH[+_*]\.[abcd]|VL[+_*]\.[abcd]|^CL[0-9]|^CL|^VH|^VL|^H|^X|^L", str(chain[j]))
+            domain   =  re.findall("^CH[0-9][@+>_!*]\(.*\)\[.*\]|^CH[0-9]\(.*\)\[.*\]|^CH[0-9][@+>_!*]|^CL[0-9][@+>_!*]\(.*\)\[.*\]|^CL[0-9]\(.*\)\[.*\]|^CL[0-9][@+>_!*]|^CL[@+>_!*]|^CH[0-9]|^VL[1-9].[abcd]|^VL.[abcd]|^VH\.[abcd]|^VL[1-9]|^VH[1-9]\.[abcd]|^VH[1-9]|VH[@>+_*]\.[abcd]|VL[@>+_*]\.[abcd]|^CL[0-9]|^CL|^VH|^VL|^H|^X|^L", str(chain[j]))
             for i in range(len(domain)):
                 if "*" in domain[i]:
                     domain = str(re.sub("\(.*\)\[MOD\:","",str(domain)))
@@ -348,7 +348,7 @@ def Check_interactions(chains_list):
                 sixthx     = fifthx
             sixthy     = fifthy-75
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy]
-        elif V == True and direction == "innie":
+        elif V == True and direction == "innie" and mod != ">" and mod !="@":
             firstx      = startx
             firsty      = starty
             if righthanded == False:
@@ -386,7 +386,7 @@ def Check_interactions(chains_list):
                 seventhx = sixthx + 20
             seventhy    = sixthy
             coordinates = [firstx,firsty,secondx,secondy,thirdx,thirdy,fourthx,fourthy,fifthx,fifthy,sixthx,sixthy,seventhx,seventhy]
-        elif V == True and direction == "outie":
+        elif V == True and direction == "outie" and mod != ">" and mod !="@":
             firstx      = startx
             firsty      = starty
             if righthanded == False:
@@ -424,7 +424,7 @@ def Check_interactions(chains_list):
                 seventhx = sixthx - 20
             seventhy    = sixthy
             coordinates = [firstx,firsty,secondx,secondy,thirdx,thirdy,fourthx,fourthy,fifthx,fifthy,sixthx,sixthy,seventhx,seventhy]
-        elif V == True and direction == "Single_Fv_Chain":
+        elif V == True and direction == "Single_Fv_Chain" and  mod != ">" and mod !="@":
             firstx      = startx
             firsty      = starty
             if righthanded == False:
@@ -467,7 +467,188 @@ def Check_interactions(chains_list):
             eighthx     = secondx
             eighthy     = secondy
             coordinates = [secondx,secondy,secondx,secondy,thirdx,thirdy,fourthx,fourthy,fifthx,fifthy,sixthx,sixthy,seventhx,seventhy]
-
+        elif V == True  and mod == "@" and direction == "outie" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant== True and righthanded == True:
+                sixthx     = fourthx+15
+            elif slant== True and righthanded == False:
+                sixthx     = fourthx-15
+            else:
+                sixthx     = fourthx
+            sixthy     = fifthy-25
+            if righthanded == False and slant == True:
+                eighthx = firstx+10
+            elif righthanded==True and slant == True:
+                eighthx = firstx-10
+            else:
+                eighthx = firstx
+            eighthy = firsty+20
+            if righthanded==False:
+                seventhx=eighthx + 20
+            elif righthanded==True:
+                seventhx= eighthx - 20
+            seventhy= eighthy
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy, eighthx, eighthy]
+        elif V == True  and mod == "@" and direction == "innie" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx + 20
+            elif righthanded == True:
+                secondx = firstx - 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx - 20
+            elif righthanded == True:
+                fourthx     = thirdx + 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx - 20
+            elif righthanded == True:
+                fifthx     = fourthx + 20
+            fifthy         = fourthy
+            if slant == True:
+                sixthx     = fifthx
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx + 15
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx - 15
+            sixthy     = fifthy-25
+            if righthanded == False and slant == True:
+                eighthx = firstx+10
+            elif righthanded==True and slant == True:
+                eighthx = firstx-10
+            else:
+                eighthx = firstx
+            eighthy = firsty+20
+            if righthanded==False:
+                seventhx=eighthx - 20
+            elif righthanded==True:
+                seventhx= eighthx + 20
+            seventhy= eighthy
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy, eighthx, eighthy]
+        elif V == True  and mod == ">" and direction == "outie" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx + 20
+            elif righthanded == True:
+                secondx = firstx - 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx - 20
+            elif righthanded == True:
+                fourthx     = thirdx + 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx - 20
+            elif righthanded == True:
+                fifthx     = fourthx + 20
+            fifthy         = fourthy
+            if slant == True and righthanded == False:
+                sixthx     =  firstx - 15
+            elif slant == True and righthanded == True:
+                sixthx   =  firstx + 15
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx + 20
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx - 20
+            sixthy     = fifthy-25
+            if righthanded == False and slant == True:
+                eighthx = firstx+10
+            elif righthanded==True and slant == True:
+                eighthx = firstx-10
+            else:
+                eighthx = firstx
+            eighthy = firsty+20
+            if righthanded==False:
+                seventhx=eighthx - 20
+            elif righthanded==True:
+                seventhx= eighthx + 20
+            seventhy= eighthy
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy, eighthx, eighthy]
+        elif V == True  and mod == ">" and direction == "innie" and X == False:
+            firstx      = startx
+            firsty      = starty
+            if righthanded == False:
+                secondx = firstx - 20
+            elif righthanded == True:
+                secondx = firstx + 20
+            secondy     = firsty
+            if slant == True and righthanded == False:
+                thirdx      = secondx + 40
+            elif slant == True and righthanded == True:
+                thirdx      = secondx - 40
+            else:
+                thirdx      = secondx
+            thirdy          = secondy+ 75
+            if righthanded == False:
+                fourthx     = thirdx + 20
+            elif righthanded == True:
+                fourthx     = thirdx - 20
+            fourthy         = thirdy
+            if righthanded == False:
+                fifthx     = fourthx + 20
+            elif righthanded == True:
+                fifthx     = fourthx - 20
+            fifthy         = fourthy
+            if slant == True:
+                sixthx     = fifthx
+            elif slant == False and righthanded == False:
+                sixthx     = fifthx + 15
+            elif slant == False and righthanded == True:
+                sixthx     = fifthx - 15
+            sixthy     = fifthy-25
+            if righthanded == False and slant == True:
+                eighthx = firstx+10
+            elif righthanded==True and slant == True:
+                eighthx = firstx-10
+            else:
+                eighthx = firstx
+            eighthy = firsty+20
+            if righthanded==False:
+                seventhx=eighthx + 20
+            elif righthanded==True:
+                seventhx= eighthx - 20
+            seventhy= eighthy
+            coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy, eighthx, eighthy]
         elif V == False  and mod == "@" and direction == "outie" and X == False:
             firstx      = startx
             firsty      = starty
@@ -849,7 +1030,7 @@ def Check_interactions(chains_list):
 
             Domain_name = str(re.sub("\@|\>|\<","",str(keyslist[i])))
             #print(keyslist[i], i, len(dictionary))
-
+            print(keyslist[i], V,mod,direction)
 
 
             if i == 0:
@@ -999,7 +1180,6 @@ def Check_interactions(chains_list):
                         getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
                     elif righthanded == False:
                         getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
-                    print("Yeah, over here")
                     if H_disulphide_bridge_count > 1:
                         top_bond = getcoordinates[2]
                         if righthanded == False:
