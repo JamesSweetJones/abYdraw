@@ -125,6 +125,7 @@ def Get_dictionaries(x):
                 disulphide_bridges = re.sub("\{|\'|\}|\[|\]","", str(disulphide_bridges))
                 disulphide_bridges = int(disulphide_bridges)
                 location = [location,disulphide_bridges]
+            
 
 
             if dict == "VHa" and domain !="":
@@ -618,7 +619,7 @@ def Check_interactions(chains_list):
             seventhy   =  firsty
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy, sixthx, sixthy, seventhx, seventhy]
 
-        elif X == True:
+        elif X == True and mod != "Leucine":
             firstx      = startx
             firsty      = starty
             if righthanded == False:
@@ -640,6 +641,27 @@ def Check_interactions(chains_list):
             fifthy         =    fourthy-38
 
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy]
+        elif mod == "Leucine":
+            firstx = startx
+            firsty = starty
+            secondx= firstx+15
+            secondy= firsty+5
+            thirdx= secondx-30
+            thirdy= secondy+10
+            fourthx=thirdx+30
+            fourthy=thirdy+10
+            fifthx=fourthx-30
+            fifthy=fourthy+10
+            sixthx=fifthx+30
+            sixthy=fifthy+10
+            seventhx=sixthx-30
+            seventhy=sixthy+10
+            eighthx = seventhx+30
+            eighthy = seventhy+10
+            ninthx  = eighthx-15
+            ninthy  = eighthy+5
+
+            coordinates=[firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy,sixthx,sixthy,seventhx,seventhy,eighthx,eighthy,ninthx,ninthy]
         elif mod == "H":
             firstx, firsty = startx,starty
             secondx, secondy=startx,starty
@@ -648,17 +670,23 @@ def Check_interactions(chains_list):
             fifthx, fifthy=startx,starty
 
             coordinates = []
-        if slant == True:
+        if slant == True or mod == "Leucine":
             top_bond    = [firstx,firsty]
         else:
             top_bond    = [firstx,firsty+20]
+        if mod=="Leucine":
+            bottom_bond = [ninthx,ninthy]
+        else:
+            bottom_bond = [fourthx, fourthy]
 
-        bottom_bond = [fourthx, fourthy]
-
-        if slant == True and righthanded == False:
+        if slant == True and righthanded == False and mod != "Leucine":
             Labelbond   = [firstx+20, (firsty+thirdy)/2]
-        elif slant == True and righthanded == True:
+        elif slant == True and righthanded == True and mod != "Leucine":
             Labelbond   = [firstx-20, (firsty+thirdy)/2]
+        elif mod== "Leucine" and righthanded == False:
+            Labelbond   = [firstx-30, (firsty+ninthy)/2]
+        elif mod== "Leucine" and righthanded == True:
+            Labelbond   = [firstx+30, (firsty+ninthy)/2]
         else:
             Labelbond   = [firstx, (firsty+thirdy)/2]
         return(coordinates, bottom_bond,top_bond,Labelbond)
@@ -689,12 +717,13 @@ def Check_interactions(chains_list):
         arcs_right      = []
         arcs_left_slant = []
         arcs_right_slant= []
-
+        Build_up_downlist=[]
+        keyslist = list(dictionary.keys())
 
 
         if chain_count >= 4:
             slant = True
-        elif chain_count==2 and "H" in dictionary:
+        elif chain_count==2 and "H" in dictionary and len(keyslist) > 4:
             slant = True
         else:
             slant = False
@@ -746,12 +775,16 @@ def Check_interactions(chains_list):
             X  = False
             direction = str(innie_or_outie_list[i])
             interaction = ""
+            Extra_bond=False
             mod= ""
             mod_label=""
             if "V" in keyslist[i]:
                 V  = True
             elif "X" in keyslist[i]:
                 X  = True
+                if "LEUCINE" in str(dictionary.get(keyslist[i])):
+
+                    mod="Leucine"
             Build_up=False
             Build_down=True
 
@@ -839,59 +872,87 @@ def Check_interactions(chains_list):
 
                 if keyslist[i] == "H":
                     before_H = False
-                    if disulphide_bridge_count > 0:
-                        if slant == True and righthanded == False:
-                            disulphidebridge1 += [bottom_bond[0]+5,bottom_bond[1]+15]
-                        elif slant == True and righthanded == True:
-                            disulphidebridge1 += [bottom_bond[0]-5,bottom_bond[1]+15]
-                        else:
-                            disulphidebridge1 += [bottom_bond[0],bottom_bond[1]+15]
-                    slant = False
-                    if i+1 ==len(dictionary):
+                    if i+1 != len(dictionary):
+                        if disulphide_bridge_count > 0:
+                            if slant == True and righthanded == False:
+                                disulphidebridge1 += [bottom_bond[0]+5,bottom_bond[1]+15]
+                            elif slant == True and righthanded == True:
+                                disulphidebridge1 += [bottom_bond[0]-5,bottom_bond[1]+15]
+                            else:
+                                disulphidebridge1 += [bottom_bond[0],bottom_bond[1]+15]
+
+                    elif i+1 ==len(dictionary):
                         mod = "H"
-                        if righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
-                        elif righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
 
-                        if disulphide_bridge_count > 1:
-                            top_bond = getcoordinates[2]
-                            if righthanded == False:
-                                disulphidebridge2 += [top_bond[0]-10,top_bond[1]-30]
-                            elif  righthanded == True:
-                                disulphidebridge2 += [top_bond[0]+10,top_bond[1]-30]
-                            else:
-                                disulphidebridge2 += [top_bond[0],top_bond[1]-30]
-                        if H_disulphide_bridge_count > 2:
-                            top_bond = getcoordinates[2]
-                            if righthanded == False:
-                                disulphidebridge3 += [top_bond[0]-10,top_bond[1]-45]
-                            elif  righthanded == True:
-                                disulphidebridge3 += [top_bond[0]+10,top_bond[1]-45]
-                            else:
-                                disulphidebridge3 += [top_bond[0],top_bond[1]-45]
+                        #if disulphide_bridge_count > 0 and dictionary == VHb_chain:
 
+
+                        if dictionary == VHa_chain and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
+                            if slant == True and righthanded == True:
+                                getcoordinates = domainmaker((previous_chain[6])-50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction)
+                            elif slant == True and righthanded == False:
+                                getcoordinates = domainmaker((previous_chain[6])+50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction)
+                            elif slant==False:
+                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction)
+                            Extra_bond=True
+                            Build_up=True
+                            Build_down=False
+
+
+                        elif dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-1])[1]+2) or dictionary == VHb_chain:
+                            if slant == True and righthanded == False:
+                                disulphidebridge1 += [bottom_bond[0]+5,bottom_bond[1]+10]
+                            elif slant == True and righthanded == True:
+                                disulphidebridge1 += [bottom_bond[0]-5,bottom_bond[1]+10]
+                            else:
+                                disulphidebridge1 += [bottom_bond[0],bottom_bond[1]+10]
+
+                            if righthanded == True and slant==True:
+                                getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                            elif righthanded == False and slant==True:
+                                getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                            elif slant==False:
+                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+
+
+                            if disulphide_bridge_count > 1:
+                                top_bond = getcoordinates[2]
+                                if righthanded == False and slant==True:
+                                    disulphidebridge2 += [top_bond[0]-10,top_bond[1]-20]
+                                elif  righthanded == True and slant==True:
+                                    disulphidebridge2 += [top_bond[0]+10,top_bond[1]-20]
+                                elif slant==False:
+                                    disulphidebridge2 += [top_bond[0],top_bond[1]-20]
+                            if H_disulphide_bridge_count > 2:
+                                top_bond = getcoordinates[2]
+                                if righthanded == False and slant==True:
+                                    disulphidebridge3 += [top_bond[0]-10,top_bond[1]-20]
+                                elif  righthanded == True and slant==True:
+                                    disulphidebridge3 += [top_bond[0]+10,top_bond[1]-20]
+                                elif slant==False:
+                                    disulphidebridge3 += [top_bond[0],top_bond[1]-20]
+                    slant = False
                 elif keyslist[i-1] == "H" and keyslist[i]== "X":
-                    if righthanded == True:
-                        getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
-                    elif righthanded == False:
+                    if righthanded == False:
                         getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                    elif righthanded == True:
+                        getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
 
                     if H_disulphide_bridge_count > 1:
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge2 += [top_bond[0]-10,top_bond[1]-30]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge2 += [top_bond[0]+10,top_bond[1]-30]
-                        else:
+                        elif slant==False:
                             disulphidebridge2 += [top_bond[0],top_bond[1]-30]
                     if H_disulphide_bridge_count > 2:
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge3 += [top_bond[0]-10,top_bond[1]-45]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge3 += [top_bond[0]+10,top_bond[1]-45]
-                        else:
+                        elif slant==False:
                             disulphidebridge3 += [top_bond[0],top_bond[1]-45]
 
 
@@ -903,16 +964,26 @@ def Check_interactions(chains_list):
                         if Build_in == True:
                             Build_in = False
                             Build_out = True
-                    if righthanded == False and Build_in == True and Build_out == False:
-                        getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-                    elif righthanded == False and Build_in == False and Build_out == True:
-                        getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-                    elif righthanded == True and Build_in == True and Build_out == False:
-                        getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-                    elif righthanded == True and Build_in == False and Build_out == True:
-                        getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
-                    Build_in = True
-                    Build_out = False
+                    if mod !="Leucine":
+                        if righthanded == False and Build_in == True and Build_out == False:
+                            getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == False and Build_in == False and Build_out == True:
+                            getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == True and Build_in == True and Build_out == False:
+                            getcoordinates = domainmaker((previous_chain[0]-100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == True and Build_in == False and Build_out == True:
+                            getcoordinates = domainmaker((previous_chain[0]+100),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction)
+                        Build_in = True
+                        Build_out = False
+                    elif mod =="Leucine":
+                        if righthanded == False and slant == True:
+                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                        elif righthanded == True and slant == True:
+                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction)
+                        elif slant == False:
+                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction)
+
+
 
                 elif keyslist[i-1] == "H" and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
                     if righthanded == True:
@@ -922,40 +993,38 @@ def Check_interactions(chains_list):
 
                     if H_disulphide_bridge_count > 1:
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge2 += [top_bond[0]-10,top_bond[1]-30]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge2 += [top_bond[0]+10,top_bond[1]-30]
-                        else:
+                        elif slant==False:
                             disulphidebridge2 += [top_bond[0],top_bond[1]-30]
 
                     if H_disulphide_bridge_count > 2:
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge3 += [top_bond[0]-12,top_bond[1]-37]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge3 += [top_bond[0]+12,top_bond[1]-37]
-                        else:
+                        elif slant==False:
                             disulphidebridge3 += [top_bond[0],top_bond[1]-37]
 
                     if H_disulphide_bridge_count > 3:
-                        print("OK then")
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge4 += [top_bond[0]-18,top_bond[1]-53]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge4 += [top_bond[0]+18,top_bond[1]-53]
-                        else:
+                        elif slant==False:
                             disulphidebridge4 += [top_bond[0],top_bond[1]-50]
 
                     if H_disulphide_bridge_count > 4:
-                        print("OK then")
                         top_bond = getcoordinates[2]
-                        if righthanded == False:
+                        if righthanded == False and slant==True:
                             disulphidebridge5 += [top_bond[0]-8,top_bond[1]-23]
-                        elif  righthanded == True:
+                        elif  righthanded == True and slant==True:
                             disulphidebridge5 += [top_bond[0]+8,top_bond[1]-23]
-                        else:
+                        elif slant==False:
                             disulphidebridge5 += [top_bond[0],top_bond[1]-23]
 
 
@@ -1046,6 +1115,7 @@ def Check_interactions(chains_list):
                         all_list = list(All_positions_and_chains.keys())
                         get = (All_positions_and_chains.get(all_list[-1]))
                         yprev = get[0][1]
+
                         if dictionary.get(keyslist[i-2])[0] != dictionary.get(keyslist[i])[1] and to_joiny < yprev:
                             Build_up=True
                             Build_down=False
@@ -1127,21 +1197,21 @@ def Check_interactions(chains_list):
                             Build_in  = True
                             Build_out = False
 ##Build diagonally
-                    elif dictionary.get(keyslist[i])[0] != previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
-                        if righthanded  == True:
-                            righthanded = False
-                        elif righthanded == False:
-                            righthanded = True
-                        if Build_in == True:
-                            if righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[6]-100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
-                            elif righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[6]+100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
-                        if Build_in == False:
-                            if righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[6]+100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
-                            elif righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[6]-100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
+                    #elif dictionary.get(keyslist[i])[0] != previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
+                    #    if righthanded  == True:
+                    #        righthanded = False
+                    #    elif righthanded == False:
+                    #        righthanded = True
+                    #    if Build_in == True:
+                    #        if righthanded == False:
+                    #            getcoordinates = domainmaker((previous_chain[6]-100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
+                    #        elif righthanded == True:
+                    #            getcoordinates = domainmaker((previous_chain[6]+100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
+                    #    if Build_in == False:
+                    #        if righthanded == False:
+                    #            getcoordinates = domainmaker((previous_chain[6]+100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
+                    #        elif righthanded == True:
+                    #            getcoordinates = domainmaker((previous_chain[6]-100),(previous_chain[7]+20), righthanded,slant,V,direction,X,mod,interaction)
 
 
 ##append coordinates to chains
@@ -1150,9 +1220,12 @@ def Check_interactions(chains_list):
                 bonds.append([])
             else:
                 chain.append(getcoordinates[0])
+
             if i > 0 and Build_down==True:
                 top_bond = getcoordinates[2]
                 bonds.append(bottom_bond + top_bond)
+                if mod=="Leucine":
+                    bonds.append(getcoordinates[0])
             elif i > 0 and Build_up==True:
                 if righthanded==False and slant == True:
                     top_bond = getcoordinates[2]
@@ -1168,6 +1241,7 @@ def Check_interactions(chains_list):
                     arcbottomx= bottom_bond[0]+50
                     arcbottomy= bottom_bond[1]
                     arcs_left.append([arc_topx, arc_topy, arcbottomx,arcbottomy])
+                    print([arc_topx, arc_topy, arcbottomx,arcbottomy])
                 elif righthanded==True and slant == True:
                     top_bond = getcoordinates[2]
                     arc_topx  = top_bond[0]
@@ -1182,7 +1256,42 @@ def Check_interactions(chains_list):
                     arcbottomx= bottom_bond[0]-50
                     arcbottomy= bottom_bond[1]
                     arcs_right.append([arc_topx, arc_topy, arcbottomx,arcbottomy])
+                if Extra_bond==True:
+                    extrabondx1=top_bond[0]
+                    extrabondy1=top_bond[1]-20
+                    extrabondx2=top_bond[0]
+                    extrabondy2=top_bond[1]+20
+                    extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
+                    bonds.append(extra_bond)
+
+                    if disulphide_bridge_count > 0 and dictionary:
+                        if slant == True and righthanded == False:
+                            disulphidebridge1 += [extra_bond[0]+5,extra_bond[1]]
+                        elif slant == True and righthanded == True:
+                            disulphidebridge1 += [extra_bond[0]-5,extra_bond[1]]
+                        elif slant==False:
+                            disulphidebridge1 += [extra_bond[0],extra_bond[1]]
+
+                    if disulphide_bridge_count > 1:
+                        top_bond = getcoordinates[2]
+                        if righthanded == False and slant==True:
+                            disulphidebridge2 += [extra_bond[0]-10,extra_bond[1]+10]
+                        elif  righthanded == True and slant==True:
+                            disulphidebridge2 += [extra_bond[0]+10,extra_bond[1]+10]
+                        elif slant==False:
+                            disulphidebridge2 += [extra_bond[0],extra_bond[1]+10]
+
+                    if H_disulphide_bridge_count > 2:
+                        top_bond = getcoordinates[2]
+                        if righthanded == False and slant==True:
+                            disulphidebridge3 += [extra_bond[0]-10,extra_bond[1]+20]
+                        elif  righthanded == True and slant==True:
+                            disulphidebridge3 += [extra_bond[0]+10,extra_bond[1]+20]
+                        elif slant==False:
+                            disulphidebridge3 += [extra_bond[0],extra_bond[1]+20]
             bottom_bond = getcoordinates[1]
+            Build_up_downlist.append(Build_up)
+
 
 
 
@@ -1196,7 +1305,6 @@ def Check_interactions(chains_list):
                         else:
                             coordinates_list_heavy_a.append(getcoordinates[0])
                     elif "b" in keyslist[i]:
-                        print(keyslist[i], "B")
                         if "VL" in keyslist[i] or "CL" in keyslist[i]:
 
                             coordinates_list_light_b.append(getcoordinates[0])
@@ -1213,7 +1321,6 @@ def Check_interactions(chains_list):
                         else:
                             coordinates_list_heavy_d.append(getcoordinates[0])
                     elif "CL" in keyslist[i]:
-                        print(keyslist[i], "CL")
                         if dictionary == VHa_chain or dictionary == VLa_chain:
                             coordinates_list_light_a.append(getcoordinates[0])
                         elif dictionary == VHb_chain or dictionary == VLb_chain:
@@ -1223,7 +1330,7 @@ def Check_interactions(chains_list):
                             coordinates_list_heavy_a.append(getcoordinates[0])
                         elif "VL" in keyslist[i]:
                             coordinates_list_light_a.append(getcoordinates[0])
-                        elif "X" in keyslist[i]:
+                        elif "X" in keyslist[i] and mod != "Leucine":
                             if "a" in str(keyslist):
                                 coordinates_list_heavy_a.append(getcoordinates[0])
                             elif "b" in str(keyslist):
@@ -1234,15 +1341,13 @@ def Check_interactions(chains_list):
                             coordinates_list_heavy_a.append(getcoordinates[0])
                         elif "b" in keyslist[i-1]or "b" in keyslist[i-2] :
                             coordinates_list_heavy_b.append(getcoordinates[0])
-                elif i > 0:
+                elif i > 0 and mod != "Leucine":
                     if "a" in keyslist[i] or "a" in keyslist[i-1]:
-                        print(keyslist[i], "A")
                         if "VL" in keyslist[i] or "CL" in keyslist[i]:
                             coordinates_list_light_a.append(getcoordinates[0])
                         else:
                             coordinates_list_heavy_a.append(getcoordinates[0])
                     elif "b" in keyslist[i] or "b" in keyslist[i-1]:
-                        print(keyslist[i], "B")
                         if "VL" in keyslist[i] or "CL" in keyslist[i]:
 
                             coordinates_list_light_b.append(getcoordinates[0])
@@ -1292,7 +1397,6 @@ def Check_interactions(chains_list):
                 All_positions_and_chains[text] = [getcoordinates[0], righthanded]
                 Domain_Text.append(str(Domain_name)+mod_label)
             elif "X" in keyslist[i]:
-                print("X", getcoordinates[0])
                 if slant == True and righthanded == False:
                     Label_Locations = [getcoordinates[3][0]-20,getcoordinates[3][1]]
                 elif slant == True and  righthanded== True:
@@ -1313,7 +1417,10 @@ def Check_interactions(chains_list):
 
 
             elif keyslist[i]=="H":
-                Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]+60]
+                if Extra_bond == True:
+                    Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]+80]
+                else:
+                    Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]+60]
                 text_coordinates.append(Label_Locations)
                 text = dictionary.get(keyslist[i])[0]
                 Location_Text.append(str(text)+mod_label)
@@ -1324,11 +1431,11 @@ def Check_interactions(chains_list):
                 interactor = dictionary.get(keyslist[i])[1]
                 extra_disulphide_bridges[interactor] = bottom_bond
                 disulphidebridge_keyslist = list(extra_disulphide_bridges.keys())
-
                 for j in range(len(extra_disulphide_bridges)):
                     if int(disulphidebridge_keyslist[j]) == int(location[0]):
                         coordinates = extra_disulphide_bridges.get(disulphidebridge_keyslist[j])+bottom_bond
                         completed_disulphidebridges.append(coordinates)
+
 
 
         chain    = [x for x in chain if x != []]
@@ -1383,7 +1490,6 @@ def Check_interactions(chains_list):
     VHa_Domains_before_H = 0
     VHb_Domains_before_H = 0
     keyslista = list(VHa_chain.keys())
-    print(keyslista)
     for i in range(len(VHa_chain)):
         if keyslista[i] != "H" and "L[" not in keyslista[i]:
             VHa_Domains_before_H += 1
@@ -1434,14 +1540,23 @@ def Check_interactions(chains_list):
         if "L[" in keyslistb[1] and  VHb_chain.get(keyslistb[0])[0] == (VHb_chain.get(keyslistb[2])[1]) and "H" not in keyslistb:
             VHb_startx, VHb_starty = 400,100
         elif "H" in keyslistb:
-            try:
-                if VHb_Domains_before_H ==4 and VHb_chain.get(keyslistb[0])[0] == (VHb_chain.get(keyslistb[6])[1]):
-                    print("Yeah boi")
-                    VHb_startx, VHb_starty = 515,205
-                else:
-                    VHb_startx, VHb_starty = 560, 110
-            except IndexError:
-                VHb_startx, VHb_starty = 560, 110
+            interactor = VHb_chain.get(keyslistb[0])[1]
+            for i in range(len(keyslistb)):
+                try:
+                    interaction = VHb_chain.get(keyslistb[i][1])
+                    print(interactor, interaction)
+                    if interactor == interaction:
+                        print("dayyum")
+                        if VHb_Domains_before_H == 4:
+                            VHb_startx, VHb_starty = 515,205
+                        else:
+                            VHb_startx, VHb_starty = 560, 110
+                except IndexError:
+                    continue
+            else:
+                VHb_startx, VHb_starty = 400,100
+
+
 
         else:
             VHb_startx, VHb_starty = 350,100
@@ -1463,7 +1578,6 @@ def Check_interactions(chains_list):
 
 
     if chain_count ==2:
-        print(VLb_startx, VLb_starty)
         VHb_startx, VHb_starty = VHb_startx, VHb_starty
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VLb_stats = renderchains(VLb_chain,VLb_startx, VLb_starty)
@@ -1553,8 +1667,7 @@ def Check_interactions(chains_list):
     arcs_right          = VHa_stats[21] + VLa_stats[21] + VHb_stats[21] + VLb_stats[21] + frag1_stat[21] + frag2_stat[21] + frag3_stat[21] + frag4_stat[21]
     arcs_left_slant     = VHa_stats[22] + VLa_stats[22] + VHb_stats[22] + VLb_stats[22] + frag1_stat[22] + frag2_stat[22] + frag3_stat[22] + frag4_stat[22]
     arcs_right_slant    = VHa_stats[23] + VLa_stats[23] + VHb_stats[23] + VLb_stats[23] + frag1_stat[23] + frag2_stat[23] + frag3_stat[23] + frag4_stat[23]
-    #print(arcs_left_slant)
-    #print(arcs_right_slant)
+
     return(Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Bonds,disulphide_bridges,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant)
 
 def render(chains_list,canvas):
@@ -1578,9 +1691,7 @@ def render(chains_list,canvas):
     arcs_left          = chains_list[15]
     arcs_right         = chains_list[16]
     arcs_left_slant    = chains_list[17]
-    print(arcs_left_slant)
     arcs_right_slant   = chains_list[18]
-    print(arcs_right_slant)
 
 
 
