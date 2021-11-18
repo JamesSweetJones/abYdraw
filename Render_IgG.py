@@ -1843,12 +1843,289 @@ def render_pipeline(canvas):
     coordinates  = Check_interactions(split_chains)
     render(coordinates, canvas,True)
 ############################################
-def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H):
+def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name):
     domaincoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
-    lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill='#007ECB', width=2, tags="obj1Tag")
+    domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill='#007ECB', width=2, tags="domain")
+    label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
+    canvas_polygons[domain] = [domaincoordinates[0], domain_name]
+    canvas_labels[domain] = [domaincoordinates[3], domain_name]
+
+
+def bond_button(canvas,startx,starty,bond,disulphide,hinge,arc, righthanded,name):
+    if bond == True:
+        x1 =startx
+        x2 = startx
+        y1 = starty
+        y2 = starty+40
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+    elif disulphide == True:
+        x1 =startx
+        x2 = startx+100
+        y1 = starty
+        y2 = starty
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2, tags="disulphide")
+    elif hinge == True and righthanded == False:
+        x1 =startx
+        x2 = startx+20
+        y1 = starty
+        y2 = starty+40
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+    elif hinge == True and righthanded == True:
+        x1 =startx
+        x2 = startx-20
+        y1 = starty
+        y2 = starty+40
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+    elif arc == True and righthanded == False:
+        x1 = startx-50
+        x2 = starty-20
+        y1 = startx-50
+        y2 = starty-100
+        canvas.create_arc(x1,y1,x2,y2, start=90, extent=180, style=tk.ARC, fill='#000000', width = 2)
+    elif arc == True and righthanded == True:
+        x1 = startx+50
+        x2 = starty-20
+        y1 = startx-50
+        y2 = starty-100
+        canvas.create_arc(x1,y1,x2,y2,start=270, extent=180, style=tk.ARC, fill='#000000', width = 2)
+
+
+
+    canvas_polygons[domain] = [[x1,y1,x2,y2],name]
 ############################################
 def sequence_pipeline(canvas):
-    print(canvas.find_all())
+    polygons_keyslist = list(canvas_polygons.keys())
+    domains_list = canvas.find_withtag("domain")
+    domains_dict = {}
+    for i in range(len(domains_list)):
+        for j in range(len(polygons_keyslist)):
+            if domains_list[i] == polygons_keyslist[j]:
+                domains_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+    bonds_list = canvas.find_withtag("bonds")
+    bonds_dict = {}
+    for i in range(len(bonds_list)):
+        for j in range(len(polygons_keyslist)):
+            if bonds_list[i] == polygons_keyslist[j]:
+                bonds_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+    disulphides_list = canvas.find_withtag("disulphide")
+    print(disulphides_list)
+    disulphides_dict = {}
+    for i in range(len(disulphides_list)):
+        for j in range(len(polygons_keyslist)):
+            if disulphides_list[i] == polygons_keyslist[j]:
+                disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+    print("DOMAINs", domains_dict)
+    print("BONDS", bonds_dict)
+    print("Disulphides", disulphides_dict)
+
+    chains=[]
+    current_chain_str = []
+    current_chain_coords_lists = []
+    domains_keyslist = list(domains_dict.keys())
+    bonds_keyslist = list(bonds_dict.keys())
+    disulphides_keyslist = list(disulphides_dict.keys())
+
+    for i in range(len(domains_keyslist)):
+        start_found = True
+        continuation_found = False
+        domainx1 = domains_dict.get(domains_keyslist[i])[0][4]
+        domainx2 = domains_dict.get(domains_keyslist[i])[0][8]
+        if domainx1 > domainx2:
+            domainx1 = domains_dict.get(domains_keyslist[i])[0][8]
+            domainx2 = domains_dict.get(domains_keyslist[i])[0][4]
+        domainy1 = domains_dict.get(domains_keyslist[i])[0][1]
+        domainy2 = domains_dict.get(domains_keyslist[i])[0][5]
+
+        for j in range(len(bonds_keyslist)):
+            bondx2 = bonds_dict.get(bonds_keyslist[j])[0][2]
+            bondy2 = bonds_dict.get(bonds_keyslist[j])[0][3]
+            if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
+                start_found = False
+
+        if start_found == True:
+            chains.append(domains_keyslist[i])
+            start_found = False
+
+    strings = []
+    full_chains = []
+
+##get raw chains in format
+    for i in range(len(chains)):
+        start = chains[i]
+        string = []
+        full_chain = []
+        continuation_found = True
+        while continuation_found == True:
+            if full_chain == []:
+                connection_found = False
+                full_chain.append(chains[i])
+                string.append(domains_dict.get(chains[i])[1])
+                domainx1 = domains_dict.get(full_chain[-1])[0][4]
+                domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                if domainx1 > domainx2:
+                    domainx1 = domains_dict.get(full_chain[-1])[0][8]
+                    domainx2 = domains_dict.get(full_chain[-1])[0][4]
+                domainy1 = domains_dict.get(full_chain[-1])[0][1]
+                domainy2 = domains_dict.get(full_chain[-1])[0][5]
+                for j in range(len(bonds_keyslist)):
+                    bondx1 = bonds_dict.get(bonds_keyslist[j])[0][0]
+                    bondy1 = bonds_dict.get(bonds_keyslist[j])[0][1]
+                    if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
+                        connection_found = True
+                        full_chain.append(bonds_keyslist[j])
+                        string.append(bonds_dict.get(bonds_keyslist[j])[1])
+                        #print(full_chain)
+                        break
+                if connection_found == True:
+                    continuation_found = True
+                else:
+                    continuation_found = False
+
+            elif full_chain !=[]:
+                connection_found = False
+                ##find continuing bond
+                bondx2 = bonds_dict.get(full_chain[-1])[0][2]
+                bondy2 = bonds_dict.get(full_chain[-1])[0][3]
+                ##find domain that bond is attached to
+                for j in range(len(domains_dict)):
+                    domainx1 = domains_dict.get(domains_keyslist[j])[0][4]
+                    domainx2 = domains_dict.get(domains_keyslist[j])[0][8]
+                    if domainx1 > domainx2:
+                        domainx1 = domains_dict.get(domains_keyslist[j])[0][8]
+                        domainx2 = domains_dict.get(domains_keyslist[j])[0][4]
+                    domainy1 = domains_dict.get(domains_keyslist[j])[0][1]
+                    domainy2 = domains_dict.get(domains_keyslist[j])[0][5]
+                    if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
+                        continuation_found = True
+                        full_chain.append(domains_keyslist[j])
+                        string.append(domains_dict.get(domains_keyslist[j])[1])
+                        ##Check for another bond
+                        domainx1 = domains_dict.get(full_chain[-1])[0][4]
+                        domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                        if domainx1 > domainx2:
+                            domainx1 = domains_dict.get(full_chain[-1])[0][8]
+                            domainx2 = domains_dict.get(full_chain[-1])[0][4]
+                        domainy1 = domains_dict.get(full_chain[-1])[0][1]
+                        domainy2 = domains_dict.get(full_chain[-1])[0][5]
+                        for n in range(len(bonds_keyslist)):
+                            bondx1 = bonds_dict.get(bonds_keyslist[n])[0][0]
+                            bondy1 = bonds_dict.get(bonds_keyslist[n])[0][1]
+                            if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
+                                connection_found = True
+                                full_chain.append(bonds_keyslist[n])
+                                string.append(bonds_dict.get(bonds_keyslist[n])[1])
+                                break
+
+                if connection_found == True:
+                    continuation_found = True
+                else:
+                    continuation_found = False
+
+
+        full_chains.append(full_chain)
+        strings.append(string)
+
+##number chains
+    counter = 1
+    for i in range(len(strings)):
+        for j in range(len(strings[i])):
+            if "-" not in str(strings[i][j]):
+                strings[i][j] += str("("+str(counter)+")")
+                counter += 1
+
+##Pair chains based on closeness and check for disulphide bonds
+    paired = []
+    for i in range(len(strings)):
+        for j in range(len(strings[i])):
+            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]):
+                number =  re.findall("\((.*?)\)", str(strings[i][j]))
+                number =  int(re.sub("\[|\'|\]","", str(number)))
+
+                if number not in paired:
+                    domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
+                    index = full_chains[i][j]
+                    d1x1 = (domains_dict.get(index)[0][4])
+                    d1x2 = (domains_dict.get(index)[0][8])
+                    if d1x1 > d1x2:
+                        d1x1 = (domains_dict.get(index)[0][8])-50
+                        d1x2 = (domains_dict.get(index)[0][4])+50
+                    else:
+                        d1x1 = (domains_dict.get(index)[0][4])-50
+                        d1x2 = (domains_dict.get(index)[0][8])+50
+                    d1y1 = (domains_dict.get(index)[0][1])-50
+                    d1y2 = (domains_dict.get(index)[0][5])+50
+                    #print(number)
+                    #print(d1x1,d1x2,d1y1,d1y2)
+                    #Search for overlapping matching domains
+                    for f in range(len(domains_keyslist)):
+                        if domains_keyslist[f] != index:
+                            d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])
+                            d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])
+                            if d2x1 > d2x2:
+                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][8])-50
+                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][4])+50
+                            else:
+                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])-50
+                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])+50
+                            d2y1 = (domains_dict.get(domains_keyslist[f])[0][1])-50
+                            d2y2 = (domains_dict.get(domains_keyslist[f])[0][5])+50
+                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
+                            for g in combinations_to_try:
+                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
+                                    if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("H" == str(strings[i][j]) and "H" == str(domains_dict.get(domains_keyslist[f])[1])):
+                                        print("PAIR FOUND")
+                                        searching_for = domains_keyslist[f]
+
+                                        ##find domain in full_chains then use that index for string
+                                        for a in range(len(full_chains)):
+                                            for b in range(len(full_chains[a])):
+                                                if int(full_chains[a][b]) == int(searching_for) and ":" not in strings[a][b]:
+                                                    paired_domain = strings[a][b]
+                                                    paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                                    paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                                    paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+                                                    #print(domain_name,number,paired_name,paired_number)
+                                                    #search for disulphide bonds
+                                                    disulphide_count = 0
+                                                    for y in range(len(disulphides_keyslist)):
+                                                        print("Looking for those disulphides")
+                                                        disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
+                                                        disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
+                                                        disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
+                                                        disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                        print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                        print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+
+                                                        if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
+                                                            disulphide_count += 1
+
+                                                    if disulphide_count == 0:
+                                                        strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
+                                                        strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
+                                                    elif disulphide_count > 0:
+                                                        strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}")
+                                                        strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}")
+                                                    paired.append(int(number))
+                                                    paired.append(int(paired_number))
+
+
+
+##conver lists to expression
+    final_string = ""
+    for i in range(len(strings)):
+        for j in range(len(strings[i])):
+            if j == 0 and i == 0:
+                final_string += strings[i][j]
+            elif j == 0 and i > 0:
+                final_string+= str("|"+strings[i][j])
+            elif j > 0 :
+                final_string += strings[i][j]
+##display string to textbox
+
+
+
+    textBox.delete("1.0","end")
+    textBox.insert("1.0",str(final_string))
 
 
 def button_hover(e):
@@ -1861,22 +2138,54 @@ def button_hover_polygon(label):
     status_label.config(text=label)
 def button_hover_polygon_leave(e):
     status_label.config(text="")
+def delete_button(canvas):
+    lower_canvas.delete("all")
 
 class MouseMover():
-  def __init__(self):
-    self.item = 0; self.previous = (0, 0)
-  def select(self, event):
-    widget = event.widget                       # Get handle to canvas
-    # Convert screen coordinates to canvas coordinates
-    xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-    self.item = widget.find_closest(xc, yc)[0]        # ID for closest
-    self.previous = (xc, yc)
-    print((xc, yc, self.item))
-  def drag(self, event):
-    widget = event.widget
-    xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-    lower_canvas.move(self.item, xc-self.previous[0], yc-self.previous[1])
-    self.previous = (xc, yc)
+    startcoordinates = []
+    newcoordinates = []
+    label = ""
+    def __init__(self):
+        self.item = 0; self.previous = (0, 0)
+    def select(self, event):
+        widget = event.widget                       # Get handle to canvas
+        # Convert screen coordinates to canvas coordinates
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
+        self.previous = (xc, yc)
+        self.startcoordinates = [xc, yc]
+        #print("STARTING COORDINATES1", self.startcoordinates)
+        return(startcoordinates)
+
+    def drag(self, event):
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        lower_canvas.move(self.item, xc-self.previous[0], yc-self.previous[1])
+
+        self.previous = (xc, yc)
+        coordinates = canvas_polygons.get(self.item)
+        self.newcoordinates = [xc,yc]
+
+        return(newcoordinates)
+
+    def release(self, event):
+        x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
+        y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
+        diffx = x2-x1
+        diffy = y2-y1
+
+        coordinates    = canvas_polygons.get(self.item)[0]
+        name           = canvas_polygons.get(self.item)[1]
+        new_coordinates= []
+        #print(coordinates)
+
+        for i in range(len(coordinates)):
+            #print(coordinates[i])
+            if i%2 ==0:
+                new_coordinates.append((coordinates[i]+diffx))
+            elif i%2!=0:
+                new_coordinates.append((coordinates[i]+diffy))
+        canvas_polygons[self.item]=[new_coordinates, name]
 
 
 
@@ -2452,7 +2761,6 @@ def domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,pr
 ###############Main programme#######################
 
 root = tk.Tk()
-
 canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH, bg='#E7E0E6')
 canvas.pack()
 
@@ -2466,13 +2774,28 @@ textBox.place(relx=0.01,rely = 0.05, relwidth=0.4,relheight=0.3)
 ###Option box
 frame2 = tk.Frame(frame, bg = '#D3D3D3')
 frame2.place(relx=0.01, rely = 0.45,relheight = 0.35, relwidth = 0.4)
-InsertVDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,"","",""))
+InsertVDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,"","","","VH"))
 InsertVDomainButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertVDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,"","",""))
+InsertVDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,"","","","VL"))
 InsertVDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCDomainButton= tk.Button(frame2,text="constant",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","",""))
-InsertCDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-
+InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH1"))
+InsertCH1DomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH2"))
+InsertCH2DomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH3"))
+InsertCH3DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CL"))
+InsertCLDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertBondDomainButton= tk.Button(frame2,text="bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,True,False,False,False,False,"-"))
+InsertBondDomainButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertDBondDomainButton= tk.Button(frame2,text="disulphide bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,True,False,False,False,"-"))
+InsertDBondDomainButton.place(relx = 0.61, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertLHingeDomainButton= tk.Button(frame2,text="LHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,False,"-H-"))
+InsertLHingeDomainButton.place(relx = 0.61, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertRHingeDomainButton= tk.Button(frame2,text="RHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-H-"))
+InsertRHingeDomainButton.place(relx = 0.61, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertDelButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_button(lower_canvas))
+InsertDelButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
 
 status_label = tk.Label(root, text='test', bd=1)
 status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
@@ -2495,10 +2818,17 @@ lower_frame.place(relx=0.45, rely=0.05, relwidth=0.55,relheight=0.9)
 lower_canvas = tk.Canvas(lower_frame)
 lower_canvas.place(relheight=1,relwidth=1)
 mm = MouseMover()
-
+canvas_polygons = {}
+canvas_labels   = {}
 # Bind mouse events to methods (could also be in the constructor)
 lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
+lower_canvas.bind("<ButtonRelease-1>", mm.release)
+startcoordinates = mm.select
+newcoordinates = mm.drag
+
+
+
 
 
 
