@@ -1843,10 +1843,23 @@ def render_pipeline(canvas):
     coordinates  = Check_interactions(split_chains)
     render(coordinates, canvas,True)
 ############################################
-def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name):
+def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
     domaincoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
-    domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill='#007ECB', width=2, tags="domain")
-    label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
+    if "a" in str(domain_name):
+        heavy_colour, light_colour = '#007ECB', '#73CAFF'
+    elif "b" in str(domain_name):
+        heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
+    elif "c" in str(domain_name):
+        heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
+    elif "d" in str(domain_name):
+        heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+    else:
+        heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
+    if Heavy == True:
+        domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=2, tags="domain")
+    elif Light == True:
+        domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=light_colour, width=2, tags="domain")
+    #label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
     canvas_polygons[domain] = [domaincoordinates[0], domain_name]
     canvas_labels[domain] = [domaincoordinates[3], domain_name]
 
@@ -2029,11 +2042,16 @@ def sequence_pipeline(canvas):
     counter = 1
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            if "-" not in str(strings[i][j]):
-                strings[i][j] += str("("+str(counter)+")")
+            if str(strings[i][j]) != "-" and  str(strings[i][j]) != "-L-":
+                if "-" not in strings[i][j]:
+                    strings[i][j] += str("("+str(counter)+")")
+                elif "-H-" in strings[i][j]:
+                    strings[i][j] = str("-H("+str(counter)+")-")
+                elif "-X-" in strings[i][j]:
+                    strings[i][j] = str("-X("+str(counter)+")-")
                 counter += 1
 
-##Pair chains based on closeness and check for disulphide bonds
+##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
@@ -2072,7 +2090,7 @@ def sequence_pipeline(canvas):
                             combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
                             for g in combinations_to_try:
                                 if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                    if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("H" == str(strings[i][j]) and "H" == str(domains_dict.get(domains_keyslist[f])[1])):
+                                    if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])):
                                         print("PAIR FOUND")
                                         searching_for = domains_keyslist[f]
 
@@ -2122,8 +2140,6 @@ def sequence_pipeline(canvas):
                 final_string += strings[i][j]
 ##display string to textbox
 
-
-
     textBox.delete("1.0","end")
     textBox.insert("1.0",str(final_string))
 
@@ -2140,6 +2156,10 @@ def button_hover_polygon_leave(e):
     status_label.config(text="")
 def delete_button(canvas):
     lower_canvas.delete("all")
+def domain_type_button(letter):
+    domain_letter = str(letter)
+    global domain_type
+    domain_type = letter
 
 class MouseMover():
     startcoordinates = []
@@ -2186,6 +2206,17 @@ class MouseMover():
             elif i%2!=0:
                 new_coordinates.append((coordinates[i]+diffy))
         canvas_polygons[self.item]=[new_coordinates, name]
+
+    def change_orientation(self,event):
+        widget = event.widget                       # Get handle to canvas
+        # Convert screen coordinates to canvas coordinates
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
+        self.previous = (xc, yc)
+        self.startcoordinates = [xc, yc]
+
+        #print("STARTING COORDINATES1", self.startcoordinates)
+        return(startcoordinates)
 
 
 
@@ -2774,26 +2805,43 @@ textBox.place(relx=0.01,rely = 0.05, relwidth=0.4,relheight=0.3)
 ###Option box
 frame2 = tk.Frame(frame, bg = '#D3D3D3')
 frame2.place(relx=0.01, rely = 0.45,relheight = 0.35, relwidth = 0.4)
-InsertVDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,"","","","VH"))
-InsertVDomainButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertVDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,"","","","VL"))
-InsertVDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH1"))
-InsertCH1DomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH2"))
-InsertCH2DomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CH3"))
-InsertCH3DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","","CL"))
-InsertCLDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.2)
-InsertBondDomainButton= tk.Button(frame2,text="bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,True,False,False,False,False,"-"))
-InsertBondDomainButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertDBondDomainButton= tk.Button(frame2,text="disulphide bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,True,False,False,False,"-"))
-InsertDBondDomainButton.place(relx = 0.61, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertLHingeDomainButton= tk.Button(frame2,text="LHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,False,"-H-"))
-InsertLHingeDomainButton.place(relx = 0.61, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertRHingeDomainButton= tk.Button(frame2,text="RHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-H-"))
-InsertRHingeDomainButton.place(relx = 0.61, rely = 0.61, relheight = 0.2, relwidth=0.2)
+domain_type = "a"
+a_button= tk.Button(frame2,text="a",bg = "grey", command =lambda: domain_type_button("a"))
+a_button.place(relx = 0.41, rely = 0.01, relheight = 0.1, relwidth=0.1)
+b_button= tk.Button(frame2,text="b",bg = "grey", command =lambda: domain_type_button("b"))
+b_button.place(relx = 0.51, rely = 0.01, relheight = 0.1, relwidth=0.1)
+c_button= tk.Button(frame2,text="c",bg = "grey", command =lambda: domain_type_button("c"))
+c_button.place(relx = 0.41, rely = 0.11, relheight = 0.1, relwidth=0.1)
+d_button= tk.Button(frame2,text="d",bg = "grey", command =lambda: domain_type_button("d"))
+d_button.place(relx = 0.51, rely = 0.11, relheight = 0.1, relwidth=0.1)
+
+InsertVHDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,"","","",str("VH."+domain_type),False,True))
+InsertVHDomainButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH1"),False,True))
+InsertCH1DomainButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH2"),False,True))
+InsertCH2DomainButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH3"),False,True))
+InsertCH3DomainButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
+
+InsertVLDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,"","","",str("VL."+domain_type),True,False))
+InsertVLDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CL"),True,False))
+InsertCLDomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
+
+
+
+InsertBondButton= tk.Button(frame2,text="bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,True,False,False,False,False,"-"))
+InsertBondButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertDBondButton= tk.Button(frame2,text="disulphide bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,True,False,False,False,"-"))
+InsertDBondButton.place(relx = 0.61, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertLHingeButton= tk.Button(frame2,text="LHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,False,"-H-"))
+InsertLHingeButton.place(relx = 0.61, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertRHingeButton= tk.Button(frame2,text="RHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-H-"))
+InsertRHingeButton.place(relx = 0.61, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertLinkerButton= tk.Button(frame2,text="Liker",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-L-"))
+InsertLinkerButton.place(relx = 0.61, rely = 0.81, relheight = 0.18, relwidth=0.2)
+
 InsertDelButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_button(lower_canvas))
 InsertDelButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
 
@@ -2824,6 +2872,7 @@ canvas_labels   = {}
 lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
 lower_canvas.bind("<ButtonRelease-1>", mm.release)
+lower_canvas.bind("<Button-3>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
 
