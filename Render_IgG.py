@@ -63,13 +63,16 @@ def Get_dictionaries(x):
         chain = splitx[i].split("-")
         if i < 4:
             if  "VH" in chain[0]:
-                if chain[1] != "L":
+                try:
+                    if chain[1] != "L":
+                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    elif chain[1] == "L":
+                        if "VH" in chain[2]:
+                            dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                        elif "VL" in chain[2]:
+                            dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                except IndexError:
                     dict = str(re.sub("\.|\+|\_","",str(chains[i])))
-                elif chain[1] == "L":
-                    if "VH" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
-                    elif "VL" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
 
             elif "VL" in chain[0]:
                 try:
@@ -93,12 +96,11 @@ def Get_dictionaries(x):
 
         for j in range(len(chain)):
             domain   =  str(chain[j])
-
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.|\*","", str(domain)))
 
             if domain == "L":
                 domain = "Linker"
-            print(domain)
+            #print(domain)
             note=""
             if "[" in str(chain[j]) and "]" in str(chain[j]):
                 note_list= str(re.findall("\[.*?\]", str(chain[j])))
@@ -146,7 +148,55 @@ def Get_dictionaries(x):
             else:
                 continue
 
-    return(VHa,VLa,VHb,VLb,chain_count,fragment1,fragment2,fragment3,fragment4)
+
+    ###checker###
+    VHa_keyslist = list(VHa.keys())
+    VLa_keyslist = list(VLa.keys())
+    VHb_keyslist = list(VHb.keys())
+    VLb_keyslist = list(VLb.keys())
+    VHa_checked = {}
+    VHb_checked = {}
+    VLa_checked = {}
+    VLb_checked = {}
+    ##check VH chains interact
+
+    chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist]
+    dicts = [VHa,VLa,VHb,VLb]
+    checked_heavy_chains = []
+    checked_heavy_dicts  = []
+    checked_chains_dicts = []
+    for i in range(len(chains)):
+        for j in range(len(chains[i])):
+            try:
+                current_interactor = dicts[i].get(chains[i][j])[0][1]
+                for a in range(len(chains)):
+                    for b in range(len(chains[a])):
+                        interactor = dicts[a].get(chains[a][b])[0][0]
+                        if current_interactor == interactor and "H[" in str(chains[i][j]) and "H[" in str(chains[a][b]):
+                            VHa_checked,VHb_checked= dicts[i],dicts[a]
+                            checked_heavy_chains.append(chains[a])
+                            checked_heavy_chains.append(chains[i])
+                            checked_heavy_dicts.append(dicts[a])
+                            checked_heavy_dicts.append(dicts[i])
+            except IndexError:
+                continue
+
+    for i in range(len(checked_heavy_chains)):
+        for j in range(len(checked_heavy_chains[i])):
+            try:
+                current_interactor = checked_heavy_dicts[i].get(checked_heavy_chains[i][j])[0][1]
+                for a in range(len(chains)):
+                    for b in range(len(chains[a])):
+                        if chains[a] != checked_heavy_chains[i]:
+                            interactor = dicts[a].get(chains[a][b])[0][0]
+                            if current_interactor == interactor and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
+                                if i == 0:
+                                    VLa_checked = dicts[a]
+                                elif i == 1:
+                                    VLb_checked = dicts[a]
+            except IndexError:
+                continue
+    return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4)
 
 ######################################
 def Check_interactions(chains_list):
@@ -1530,7 +1580,6 @@ def Check_interactions(chains_list):
 
 ###Get start positions of light chains and render
     elif chain_count == 2 :
-        print("JEDIKKIAH")
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
@@ -1538,21 +1587,16 @@ def Check_interactions(chains_list):
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
         try:
-            print("OK I'M TRYING")
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
             print(VHa_chain.get(keyslista[0])[0][0], VHb_chain.get(keyslistb[0])[1])
             if VHa_chain.get(keyslista[0])[0][0] == VHb_chain.get(keyslistb[0])[1] or VHa_chain.get(keyslista[0])[0][1] in All_positions_and_chains:
-                print("Fine as hell")
                 VHa_start = find_the_fragment(VHa_inter,All_positions_and_chains)
                 if VHa_start is not None:
                     righthanded = VHa_start[1]
-                    print("A300")
                     if righthanded == True:
                         VHa_startx=VHa_start[0][0]-50
                         VHa_starty=VHa_start[0][1]
-                        print("A500")
                     elif righthanded==False:
-                        print("A200")
                         VHa_startx=VHa_start[0][0]-50
                         VHa_starty=VHa_start[0][1]
                 else:
@@ -1783,55 +1827,55 @@ def render(chains_list,canvas,text_to_image):
     #disulphide_bridge
         if disulphide_bridges != []:
             for i in range(len(disulphide_bridges)):
-                canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = 2)
+                canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = 2,tags="disulphides")
 
     #Bonds
         for i in range(len(Bonds)):
-            canvas.create_line(Bonds[i], fill='#000000', width = 2)
+            canvas.create_line(Bonds[i], fill='#000000', width = 2,tags="bonds")
         if arcs_left!=[]:
             for i in range(len(arcs_left)):
-                canvas.create_arc(arcs_left[i], start=90, extent=180, style=tk.ARC, fill='#000000', width = 2)
+                canvas.create_arc(arcs_left[i], start=90, extent=180, style=tk.ARC, fill='#000000', width = 2,tags="bonds")
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
-                canvas.create_arc(arcs_right[i], start=270, extent=180, style=tk.ARC, fill='#000000', width = 2)
+                canvas.create_arc(arcs_right[i], start=270, extent=180, style=tk.ARC, fill='#000000', width = 2,tags="bonds")
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
-                canvas.create_arc(arcs_left_slant[i], start=150, extent=120, style=tk.ARC,width=2)
+                canvas.create_arc(arcs_left_slant[i], start=150, extent=120, style=tk.ARC,width=2,tags="bonds")
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
-                canvas.create_arc(arcs_right_slant[i], start=270, extent=120, style=tk.ARC,width=2)
+                canvas.create_arc(arcs_right_slant[i], start=270, extent=120, style=tk.ARC,width=2,tags="bonds")
     #ADCs
         if ADCs != []:
             for i in range(len(ADCs)):
-                canvas.create_polygon(ADCs[i], outline='#000000',fill='#68C1C1', width=2)
+                canvas.create_polygon(ADCs[i], outline='#000000',fill='#68C1C1', width=2,tags="domain")
     #A domains
         for i in range(len(Heavy_Domains_a)):
-            canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill='#007ECB', width=2)
+            canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill='#007ECB', width=2,tags="domain")
         for i in range(len(Light_Domains_a)):
-            canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill='#73CAFF', width=2)
+            canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill='#73CAFF', width=2,tags="domain")
 
     #B domains
         for i in range(len(Heavy_Domains_b)):
-            canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill='#FF43EE', width=2)
+            canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill='#FF43EE', width=2,tags="domain")
         for i in range(len(Light_Domains_b)):
-            canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill='#F9D3F5', width=2)
+            canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill='#F9D3F5', width=2,tags="domain")
 
     #C domains
         for i in range(len(Heavy_Domains_c)):
-            canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill='#0BD05A', width=2)
+            canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill='#0BD05A', width=2,tags="domain")
         for i in range(len(Light_Domains_c)):
-            canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill='#B9FAD3', width=2)
+            canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill='#B9FAD3', width=2,tags="domain")
     #
     #D domains
         for i in range(len(Heavy_Domains_d)):
-            canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill='#D9DE4A', width=2)
+            canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill='#D9DE4A', width=2,tags="domain")
         for i in range(len(Light_Domains_d)):
-            canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill='#E2F562', width=2)
+            canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill='#E2F562', width=2,tags="domain")
 
         for i in range(len(Label_positions)):
-            canvas.create_text(Label_positions[i], text=Domain_Text[i])
+            canvas.create_text(Label_positions[i], text=Domain_Text[i],tags = "label")
         for i in range(len(Note_positions)):
-            canvas.create_text(Note_positions[i],text=Notes[i])
+            canvas.create_text(Note_positions[i],text=Notes[i],tags = "label")
 
         #canvas.pack(fill=BOTH, expand=1)
 
@@ -1844,6 +1888,7 @@ def render_pipeline(canvas):
     render(coordinates, canvas,True)
 ############################################
 def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
+    print(mod)
     domaincoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
     if "a" in str(domain_name):
         heavy_colour, light_colour = '#007ECB', '#73CAFF'
@@ -1853,6 +1898,8 @@ def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,inter
         heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
     elif "d" in str(domain_name):
         heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+    elif "X" in str(domain_name):
+        heavy_colour, light_colour = '#68C1C1','#68C1C1'
     else:
         heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
     if Heavy == True:
@@ -1862,49 +1909,11 @@ def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,inter
     #label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
     canvas_polygons[domain] = [domaincoordinates[0], domain_name]
     canvas_labels[domain] = [domaincoordinates[3], domain_name]
+    global domain_mod
+    domain_mod = ""
+    global domain_direction
+    domain_direction = "constant"
 
-
-def bond_button(canvas,startx,starty,bond,disulphide,hinge,arc, righthanded,name):
-    if bond == True:
-        x1 =startx
-        x2 = startx
-        y1 = starty
-        y2 = starty+40
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
-    elif disulphide == True:
-        x1 =startx
-        x2 = startx+100
-        y1 = starty
-        y2 = starty
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2, tags="disulphide")
-    elif hinge == True and righthanded == False:
-        x1 =startx
-        x2 = startx+20
-        y1 = starty
-        y2 = starty+40
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
-    elif hinge == True and righthanded == True:
-        x1 =startx
-        x2 = startx-20
-        y1 = starty
-        y2 = starty+40
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
-    elif arc == True and righthanded == False:
-        x1 = startx-50
-        x2 = starty-20
-        y1 = startx-50
-        y2 = starty-100
-        canvas.create_arc(x1,y1,x2,y2, start=90, extent=180, style=tk.ARC, fill='#000000', width = 2)
-    elif arc == True and righthanded == True:
-        x1 = startx+50
-        x2 = starty-20
-        y1 = startx-50
-        y2 = starty-100
-        canvas.create_arc(x1,y1,x2,y2,start=270, extent=180, style=tk.ARC, fill='#000000', width = 2)
-
-
-
-    canvas_polygons[domain] = [[x1,y1,x2,y2],name]
 ############################################
 def sequence_pipeline(canvas):
     polygons_keyslist = list(canvas_polygons.keys())
@@ -2050,6 +2059,7 @@ def sequence_pipeline(canvas):
                 elif "-X-" in strings[i][j]:
                     strings[i][j] = str("-X("+str(counter)+")-")
                 counter += 1
+    print(strings)
 
 ##Pair chains based on closeness
     paired = []
@@ -2106,13 +2116,13 @@ def sequence_pipeline(canvas):
                                                     #search for disulphide bonds
                                                     disulphide_count = 0
                                                     for y in range(len(disulphides_keyslist)):
-                                                        print("Looking for those disulphides")
+                                                        #print("Looking for those disulphides")
                                                         disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
                                                         disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
                                                         disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
                                                         disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
-                                                        print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
-                                                        print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+                                                        #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                        #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
 
                                                         if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
                                                             disulphide_count += 1
@@ -2127,6 +2137,81 @@ def sequence_pipeline(canvas):
                                                     paired.append(int(paired_number))
 
 
+            elif ":" not in str(strings[i][j]) and "-H(" in str(strings[i][j]):
+                print("looking for H pair")
+                number =  re.findall("\((.*?)\)", str(strings[i][j]))
+                number =  int(re.sub("\[|\'|\]","", str(number)))
+
+                if number not in paired:
+                    domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
+                    index = full_chains[i][j]
+                    d1x1 = (bonds_dict.get(index)[0][0])
+                    d1x2 = (bonds_dict.get(index)[0][2])
+                    if d1x1 > d1x2:
+                        d1x1 = (bonds_dict.get(index)[0][2])-100
+                        d1x2 = (bonds_dict.get(index)[0][0])+100
+                    else:
+                        d1x1 = (bonds_dict.get(index)[0][0])-100
+                        d1x2 = (bonds_dict.get(index)[0][2])+100
+                    d1y1 = (bonds_dict.get(index)[0][1])-10
+                    d1y2 = (bonds_dict.get(index)[0][3])+10
+
+                    for f in range(len(bonds_keyslist)):
+                        if bonds_keyslist[f] != index and "-H-" in bonds_dict.get(bonds_keyslist[f])[1]:
+                            print(bonds_dict.get(bonds_keyslist[f])[1])
+                            d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])
+                            d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])
+                            if d2x1 > d1x2:
+                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][2])-100
+                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][0])+100
+                            else:
+                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])-100
+                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])+100
+                            d2y1 = (bonds_dict.get(bonds_keyslist[f])[0][1])-10
+                            d2y2 = (bonds_dict.get(bonds_keyslist[f])[0][3])+10
+                            print("H1", d1x1,d1x2,d1y1,d1y2," H2 ",d2x1,d2x2,d2y1,d2y2)
+                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
+                            for g in combinations_to_try:
+                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
+                                    print("H_PAIR FOUND")
+                                    searching_for = bonds_keyslist[f]
+
+                                    ##find domain in full_chains then use that index for string
+                                    for a in range(len(full_chains)):
+                                        for b in range(len(full_chains[a])):
+                                            if int(full_chains[a][b]) == int(searching_for) and ":" not in strings[a][b]:
+                                                print(strings[i][j], strings[a][b])
+                                                paired_domain = strings[a][b]
+                                                paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                                paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                                paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+                                                print(domain_name)
+                                                print(paired_name)
+                                                #print(domain_name,number,paired_name,paired_number)
+                                                #search for disulphide bonds
+                                                disulphide_count = 0
+                                                for y in range(len(disulphides_keyslist)):
+                                                    print("Looking for those disulphides")
+                                                    disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
+                                                    disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
+                                                    disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
+                                                    disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                    print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                    print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+
+                                                    if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
+                                                        disulphide_count += 1
+
+                                                if disulphide_count == 0:
+                                                    strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")-")
+                                                    strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")-")
+                                                elif disulphide_count > 0:
+                                                    strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
+                                                    strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
+                                                paired.append(int(number))
+                                                paired.append(int(paired_number))
+
+
 
 ##conver lists to expression
     final_string = ""
@@ -2139,7 +2224,6 @@ def sequence_pipeline(canvas):
             elif j > 0 :
                 final_string += strings[i][j]
 ##display string to textbox
-
     textBox.delete("1.0","end")
     textBox.insert("1.0",str(final_string))
 
@@ -2154,12 +2238,96 @@ def button_hover_polygon(label):
     status_label.config(text=label)
 def button_hover_polygon_leave(e):
     status_label.config(text="")
-def delete_button(canvas):
+def delete_all_button(canvas):
     lower_canvas.delete("all")
+    canvas_polygons = {}
+def delete_button(canvas):
+    global Delete_lock
+    if Delete_lock == False:
+        Delete_lock = True
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>",mm.delete)
+        status_label.config(text="Delete lock on")
+
+    elif Delete_lock == True:
+        Delete_lock = False
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+
 def domain_type_button(letter):
     domain_letter = str(letter)
     global domain_type
     domain_type = letter
+def domain_mod_button(letter):
+    domain_letter = str(letter)
+    global domain_mod
+    domain_mod = str(letter)
+    if letter == ">" or letter == "@":
+        global domain_direction
+        domain_direction = "innie"
+
+def bond_drag_button(canvas,name,buttonpress):
+    global Bond_lock
+    if Bond_lock != buttonpress:
+        Bond_lock = buttonpress
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.start_bond)
+        lower_canvas.bind("<B1-Motion>", mm.drag_bond)
+        if name == "-":
+            lower_canvas.bind("<ButtonRelease-1>", mm.release_bond)
+            status_label.config(text="Bond lock on")
+        elif name == "-H-":
+            lower_canvas.bind("<ButtonRelease-1>", mm.release_Hinge_bond)
+            status_label.config(text="Hinge lock on")
+        elif name == "-L-":
+            lower_canvas.bind("<ButtonRelease-1>", mm.release_Linker_bond)
+            status_label.config(text="Linker lock on")
+        lower_canvas.config(cursor = "cross")
+
+    elif str(Bond_lock) == str(buttonpress):
+        Bond_lock = ""
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+        lower_canvas.config(cursor = "arrow")
+
+def disulphide_bond_button(canvas,name,buttonpress):
+    global Bond_lock
+    if Bond_lock != buttonpress:
+        Bond_lock = buttonpress
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.start_bond)
+        lower_canvas.bind("<B1-Motion>", mm.drag_bond)
+        if name == "-":
+            lower_canvas.bind("<ButtonRelease-1>", mm.release_Disulphide_bond)
+            status_label.config(text="Disulphide lock on")
+        lower_canvas.config(cursor = "cross")
+
+    elif str(Bond_lock) == str(buttonpress):
+        Bond_lock = ""
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+        lower_canvas.config(cursor = "arrow")
+
 
 class MouseMover():
     startcoordinates = []
@@ -2167,56 +2335,143 @@ class MouseMover():
     label = ""
     def __init__(self):
         self.item = 0; self.previous = (0, 0)
+        ###Click and drag item on canvas####
     def select(self, event):
-        widget = event.widget                       # Get handle to canvas
+        widget = event.widget
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.item = widget.find_closest(xc, yc)[0]        # ID for closest
         self.previous = (xc, yc)
         self.startcoordinates = [xc, yc]
+        lower_canvas.config(cursor = "fleur")
         #print("STARTING COORDINATES1", self.startcoordinates)
         return(startcoordinates)
-
     def drag(self, event):
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         lower_canvas.move(self.item, xc-self.previous[0], yc-self.previous[1])
-
         self.previous = (xc, yc)
         coordinates = canvas_polygons.get(self.item)
         self.newcoordinates = [xc,yc]
-
         return(newcoordinates)
-
     def release(self, event):
+        lower_canvas.config(cursor = "arrow")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         diffx = x2-x1
         diffy = y2-y1
-
         coordinates    = canvas_polygons.get(self.item)[0]
         name           = canvas_polygons.get(self.item)[1]
         new_coordinates= []
-        #print(coordinates)
-
         for i in range(len(coordinates)):
-            #print(coordinates[i])
             if i%2 ==0:
                 new_coordinates.append((coordinates[i]+diffx))
             elif i%2!=0:
                 new_coordinates.append((coordinates[i]+diffy))
         canvas_polygons[self.item]=[new_coordinates, name]
-
+        #print(canvas_polygons.get(self.item))
+        startcoordinates = []
+        newcoordinates = []
+    ####Delete selected item on canvas###
+    def delete(self,event):
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
+        lower_canvas.delete(self.item)
+        del canvas_polygons[self.item]
+    ###Click item to reverse orientation###
     def change_orientation(self,event):
         widget = event.widget                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
-        self.previous = (xc, yc)
+        self.item = widget.find_closest(xc, yc,start="domain")[0]
+        coordinates    = canvas_polygons.get(self.item)[0]
+        domain_name    = canvas_polygons.get(self.item)[1]
+        ##reverse coordinates
+        x1 = (canvas_polygons.get(self.item)[0][4])
+        x2 = (canvas_polygons.get(self.item)[0][8])
+        if x1 > x2:
+            x1 = (canvas_polygons.get(self.item)[0][8])
+            x2 = (canvas_polygons.get(self.item)[0][4])
+        new_coordinates = []
+        for i in range(len(coordinates)):
+            #print(coordinates[i])
+            if i%2 ==0:
+                if coordinates[i] == x1:
+                    coordinates[i] = x2
+                elif coordinates[i] == x2:
+                    coordinates[i] = x1
+                elif x1 < coordinates[i] and x2 < coordinates[i]:
+                    coordinates[i] = x1-20
+                elif x1 > coordinates[i] and x2 > coordinates[i]:
+                    coordinates[i] = x2+20
+                new_coordinates.append((coordinates[i]))
+            elif i%2 != 0:
+                new_coordinates.append(coordinates[i])
+        lower_canvas.delete(self.item)
+        del canvas_polygons[self.item]
+        if "a" in str(domain_name):
+            heavy_colour, light_colour = '#007ECB', '#73CAFF'
+        elif "b" in str(domain_name):
+            heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
+        elif "c" in str(domain_name):
+            heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
+        elif "d" in str(domain_name):
+            heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+        else:
+            heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
+        if "VH" in domain_name or "CH" in domain_name:
+            domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+        elif "VL" in domain_name or "CL" in domain_name:
+            domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+        canvas_polygons[domain] = [new_coordinates, domain_name]
+        #print(canvas_polygons)
+    ###Draw and drag bonds###
+    def start_bond(self,event):
+        # Convert screen coordinates to canvas coordinates
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.startcoordinates = [xc, yc]
+        print(self.startcoordinates)
+        return(self.startcoordinates)
+    def drag_bond(self,event):
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        x1 = self.startcoordinates[0]
+        y1 = self.startcoordinates[1]
+        x2 = xc
+        y2 = yc
+        #domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2)
+        self.newcoordinates = [x2,y2]
+        return(newcoordinates)
+    def release_bond(self,event):
+        x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
+        y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
+        name = "-"
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+    def release_Hinge_bond(self,event):
+        x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
+        y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
+        name = "-H-"
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+    def release_Linker_bond(self,event):
+        x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
+        y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
+        name = "-L-"
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+    def release_Disulphide_bond(self,event):
+        x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
+        y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
+        name = "-"
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2, tags="disulphide")
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
 
-        #print("STARTING COORDINATES1", self.startcoordinates)
-        return(startcoordinates)
+
+
+
 
 
 
@@ -2497,9 +2752,9 @@ def domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,pr
         elif slant == True and righthanded == True:
             sixthx   =  firstx + 15
         elif slant == False and righthanded == False:
-            sixthx     = fifthx + 20
-        elif slant == False and righthanded == True:
             sixthx     = fifthx - 20
+        elif slant == False and righthanded == True:
+            sixthx     = fifthx + 20
         sixthy     = fifthy-25
         if righthanded == False and slant == True:
             eighthx = firstx+10
@@ -2806,6 +3061,8 @@ textBox.place(relx=0.01,rely = 0.05, relwidth=0.4,relheight=0.3)
 frame2 = tk.Frame(frame, bg = '#D3D3D3')
 frame2.place(relx=0.01, rely = 0.45,relheight = 0.35, relwidth = 0.4)
 domain_type = "a"
+domain_mod  = ""
+domain_direction = "constant"
 a_button= tk.Button(frame2,text="a",bg = "grey", command =lambda: domain_type_button("a"))
 a_button.place(relx = 0.41, rely = 0.01, relheight = 0.1, relwidth=0.1)
 b_button= tk.Button(frame2,text="b",bg = "grey", command =lambda: domain_type_button("b"))
@@ -2815,36 +3072,50 @@ c_button.place(relx = 0.41, rely = 0.11, relheight = 0.1, relwidth=0.1)
 d_button= tk.Button(frame2,text="d",bg = "grey", command =lambda: domain_type_button("d"))
 d_button.place(relx = 0.51, rely = 0.11, relheight = 0.1, relwidth=0.1)
 
-InsertVHDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,"","","",str("VH."+domain_type),False,True))
+KIH_knob= tk.Button(frame2,text=">",bg = "grey", command =lambda: domain_mod_button(">"))
+KIH_knob.place(relx = 0.41, rely = 0.21, relheight = 0.1, relwidth=0.1)
+KIH_hole= tk.Button(frame2,text="@",bg = "grey", command =lambda: domain_mod_button("@"))
+KIH_hole.place(relx = 0.51, rely = 0.21, relheight = 0.1, relwidth=0.1)
+Positive_charge= tk.Button(frame2,text="+",bg = "grey", command =lambda: domain_mod_button("+"))
+Positive_charge.place(relx = 0.41, rely = 0.41, relheight = 0.1, relwidth=0.1)
+Negative_charge= tk.Button(frame2,text="-",bg = "grey", command =lambda: domain_mod_button("-"))
+Negative_charge.place(relx = 0.51, rely = 0.41, relheight = 0.1, relwidth=0.1)
+###Insert bonds buttons ###
+##Col1
+InsertVHDomainButton= tk.Button(frame2,text="VH-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
 InsertVHDomainButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH1"),False,True))
+InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
 InsertCH1DomainButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH2"),False,True))
+InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
 InsertCH2DomainButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CH3"),False,True))
+InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
 InsertCH3DomainButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
-
-InsertVLDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,"","","",str("VL."+domain_type),True,False))
+##Col2
+InsertVLDomainButton= tk.Button(frame2,text="VL-domain",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
 InsertVLDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,"constant",False,"","","",str("CL"),True,False))
+InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
 InsertCLDomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
-
-
-
-InsertBondButton= tk.Button(frame2,text="bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,True,False,False,False,False,"-"))
+InsertXDomainButton= tk.Button(frame2,text="X",bg = "grey", command=lambda: domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
+InsertXDomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
+###Drag and pull bonds###
+Bond_lock = ""
+InsertBondButton= tk.Button(frame2,text="bond",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
 InsertBondButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertDBondButton= tk.Button(frame2,text="disulphide bond",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,True,False,False,False,"-"))
+InsertDBondButton= tk.Button(frame2,text="disulphide bond",bg = "grey", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
 InsertDBondButton.place(relx = 0.61, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertLHingeButton= tk.Button(frame2,text="LHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,False,"-H-"))
+InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-H-","hinge"))
 InsertLHingeButton.place(relx = 0.61, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertRHingeButton= tk.Button(frame2,text="RHinge",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-H-"))
-InsertRHingeButton.place(relx = 0.61, rely = 0.61, relheight = 0.2, relwidth=0.2)
-InsertLinkerButton= tk.Button(frame2,text="Liker",bg = "grey", command=lambda: bond_button(lower_canvas,400,100,False,False,True,False,True,"-L-"))
-InsertLinkerButton.place(relx = 0.61, rely = 0.81, relheight = 0.18, relwidth=0.2)
+InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-L-","linker"))
+InsertLinkerButton.place(relx = 0.61, rely = 0.61, relheight = 0.18, relwidth=0.2)
 
-InsertDelButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_button(lower_canvas))
-InsertDelButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
+###Delete/clear###
+Delete_lock = False
+InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_all_button(lower_canvas))
+InsertDelAllButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
+InsertDelClickButton = tk.Button(frame2,text="Delete", bg="grey", command=lambda: delete_button(lower_canvas))
+InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
 
+##Status bar###
 status_label = tk.Label(root, text='test', bd=1)
 status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
 
@@ -2872,7 +3143,7 @@ canvas_labels   = {}
 lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
 lower_canvas.bind("<ButtonRelease-1>", mm.release)
-lower_canvas.bind("<Button-3>", mm.change_orientation)
+lower_canvas.bind("<Button-2>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
 
