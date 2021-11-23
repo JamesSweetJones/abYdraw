@@ -63,16 +63,13 @@ def Get_dictionaries(x):
         chain = splitx[i].split("-")
         if i < 4:
             if  "VH" in chain[0]:
-                try:
-                    if chain[1] != "L":
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
-                    elif chain[1] == "L":
-                        if "VH" in chain[2]:
-                            dict = str(re.sub("\.|\+|\_","",str(chains[i])))
-                        elif "VL" in chain[2]:
-                            dict = str(re.sub("\.|\+|\_","",str(chains[i])))
-                except IndexError:
+                if chain[1] != "L":
                     dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                elif chain[1] == "L":
+                    if "VH" in chain[2]:
+                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    elif "VL" in chain[2]:
+                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
 
             elif "VL" in chain[0]:
                 try:
@@ -148,7 +145,11 @@ def Get_dictionaries(x):
             else:
                 continue
 
-
+    print(VHa)
+    print(VLa)
+    print(VHb)
+    print(VLb)
+    print(fragment1)
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -165,37 +166,44 @@ def Get_dictionaries(x):
     checked_heavy_chains = []
     checked_heavy_dicts  = []
     checked_chains_dicts = []
-    for i in range(len(chains)):
-        for j in range(len(chains[i])):
-            try:
-                current_interactor = dicts[i].get(chains[i][j])[0][1]
-                for a in range(len(chains)):
-                    for b in range(len(chains[a])):
-                        interactor = dicts[a].get(chains[a][b])[0][0]
-                        if current_interactor == interactor and "H[" in str(chains[i][j]) and "H[" in str(chains[a][b]):
-                            VHa_checked,VHb_checked= dicts[i],dicts[a]
-                            checked_heavy_chains.append(chains[a])
-                            checked_heavy_chains.append(chains[i])
-                            checked_heavy_dicts.append(dicts[a])
-                            checked_heavy_dicts.append(dicts[i])
-            except IndexError:
-                continue
-
-    for i in range(len(checked_heavy_chains)):
-        for j in range(len(checked_heavy_chains[i])):
-            try:
-                current_interactor = checked_heavy_dicts[i].get(checked_heavy_chains[i][j])[0][1]
-                for a in range(len(chains)):
-                    for b in range(len(chains[a])):
-                        if chains[a] != checked_heavy_chains[i]:
+    if chain_count > 2:
+        for i in range(len(chains)):
+            for j in range(len(chains[i])):
+                try:
+                    current_interactor = dicts[i].get(chains[i][j])[0][1]
+                    for a in range(len(chains)):
+                        for b in range(len(chains[a])):
                             interactor = dicts[a].get(chains[a][b])[0][0]
-                            if current_interactor == interactor and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
-                                if i == 0:
-                                    VLa_checked = dicts[a]
-                                elif i == 1:
-                                    VLb_checked = dicts[a]
-            except IndexError:
-                continue
+                            if current_interactor == interactor and "H[" in str(chains[i][j]) and "H[" in str(chains[a][b]):
+                                VHa_checked,VHb_checked= dicts[i],dicts[a]
+                                checked_heavy_chains.append(chains[a])
+                                checked_heavy_chains.append(chains[i])
+                                checked_heavy_dicts.append(dicts[a])
+                                checked_heavy_dicts.append(dicts[i])
+                except IndexError:
+                    continue
+
+        for i in range(len(checked_heavy_chains)):
+            for j in range(len(checked_heavy_chains[i])):
+                try:
+                    current_interactor = checked_heavy_dicts[i].get(checked_heavy_chains[i][j])[0][1]
+                    for a in range(len(chains)):
+                        for b in range(len(chains[a])):
+                            if chains[a] != checked_heavy_chains[i]:
+                                interactor = dicts[a].get(chains[a][b])[0][0]
+                                if current_interactor == interactor and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
+                                    if i == 0:
+                                        VLa_checked = dicts[a]
+                                    elif i == 1:
+                                        VLb_checked = dicts[a]
+                except IndexError:
+                    continue
+    elif chain_count ==2:
+        VHa_checked = VHa
+        VHb_checked = VHb
+    elif chain_count ==1:
+        VHa_checked = VHa
+
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4)
 
 ######################################
@@ -1888,7 +1896,12 @@ def render_pipeline(canvas):
     render(coordinates, canvas,True)
 ############################################
 def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
-    print(mod)
+    Delete_lock = False
+    lower_canvas.bind("<Button-1>", mm.select)
+    lower_canvas.bind("<B1-Motion>", mm.drag)
+    lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    lower_canvas.config(cursor = "arrow")
+    status_label.config(text="")
     domaincoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
     if "a" in str(domain_name):
         heavy_colour, light_colour = '#007ECB', '#73CAFF'
@@ -1916,6 +1929,12 @@ def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,inter
 
 ############################################
 def sequence_pipeline(canvas):
+    lower_canvas.config(cursor = "arrow")
+    Bond_lock = ""
+    Delete_lock = False
+    lower_canvas.bind("<Button-1>", mm.select)
+    lower_canvas.bind("<B1-Motion>", mm.drag)
+    lower_canvas.bind("<ButtonRelease-1>", mm.release)
     polygons_keyslist = list(canvas_polygons.keys())
     domains_list = canvas.find_withtag("domain")
     domains_dict = {}
@@ -1939,7 +1958,6 @@ def sequence_pipeline(canvas):
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
     print("Disulphides", disulphides_dict)
-
     chains=[]
     current_chain_str = []
     current_chain_coords_lists = []
@@ -1950,8 +1968,12 @@ def sequence_pipeline(canvas):
     for i in range(len(domains_keyslist)):
         start_found = True
         continuation_found = False
-        domainx1 = domains_dict.get(domains_keyslist[i])[0][4]
-        domainx2 = domains_dict.get(domains_keyslist[i])[0][8]
+        if "X" not in str(domains_dict.get(domains_keyslist[i])[1]):
+            domainx1 = domains_dict.get(domains_keyslist[i])[0][4]
+            domainx2 = domains_dict.get(domains_keyslist[i])[0][8]
+        elif "X" in str(domains_dict.get(domains_keyslist[i])[1]):
+            domainx1 = domains_dict.get(domains_keyslist[i])[0][8]
+            domainx2 = domains_dict.get(domains_keyslist[i])[0][2]
         if domainx1 > domainx2:
             domainx1 = domains_dict.get(domains_keyslist[i])[0][8]
             domainx2 = domains_dict.get(domains_keyslist[i])[0][4]
@@ -1971,6 +1993,7 @@ def sequence_pipeline(canvas):
     strings = []
     full_chains = []
 
+
 ##get raw chains in format
     for i in range(len(chains)):
         start = chains[i]
@@ -1982,8 +2005,12 @@ def sequence_pipeline(canvas):
                 connection_found = False
                 full_chain.append(chains[i])
                 string.append(domains_dict.get(chains[i])[1])
-                domainx1 = domains_dict.get(full_chain[-1])[0][4]
-                domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                if "X" not in str(domains_dict.get(chains[i])[1]):
+                    domainx1 = domains_dict.get(full_chain[-1])[0][4]
+                    domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                elif "X" in str(domains_dict.get(domains_keyslist[i])[1]):
+                    domainx1 = domains_dict.get(full_chain[-1])[0][8]
+                    domainx2 = domains_dict.get(full_chain[-1])[0][2]
                 if domainx1 > domainx2:
                     domainx1 = domains_dict.get(full_chain[-1])[0][8]
                     domainx2 = domains_dict.get(full_chain[-1])[0][4]
@@ -2010,8 +2037,12 @@ def sequence_pipeline(canvas):
                 bondy2 = bonds_dict.get(full_chain[-1])[0][3]
                 ##find domain that bond is attached to
                 for j in range(len(domains_dict)):
-                    domainx1 = domains_dict.get(domains_keyslist[j])[0][4]
-                    domainx2 = domains_dict.get(domains_keyslist[j])[0][8]
+                    if "X" not in str(domains_dict.get(domains_keyslist[j])[1]):
+                        domainx1 = domains_dict.get(domains_keyslist[j])[0][4]
+                        domainx2 = domains_dict.get(domains_keyslist[j])[0][8]
+                    elif "X" in str(domains_dict.get(domains_keyslist[j])[1]):
+                        domainx1 = domains_dict.get(domains_keyslist[j])[0][8]
+                        domainx2 = domains_dict.get(domains_keyslist[j])[0][2]
                     if domainx1 > domainx2:
                         domainx1 = domains_dict.get(domains_keyslist[j])[0][8]
                         domainx2 = domains_dict.get(domains_keyslist[j])[0][4]
@@ -2022,8 +2053,12 @@ def sequence_pipeline(canvas):
                         full_chain.append(domains_keyslist[j])
                         string.append(domains_dict.get(domains_keyslist[j])[1])
                         ##Check for another bond
-                        domainx1 = domains_dict.get(full_chain[-1])[0][4]
-                        domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                        if "X" not in str(domains_dict.get(domains_keyslist[j])[1]):
+                            domainx1 = domains_dict.get(full_chain[-1])[0][4]
+                            domainx2 = domains_dict.get(full_chain[-1])[0][8]
+                        elif "X" in str(domains_dict.get(domains_keyslist[i])[1]):
+                            domainx1 = domains_dict.get(full_chain[-1])[0][8]
+                            domainx2 = domains_dict.get(full_chain[-1])[0][2]
                         if domainx1 > domainx2:
                             domainx1 = domains_dict.get(full_chain[-1])[0][8]
                             domainx2 = domains_dict.get(full_chain[-1])[0][4]
@@ -2075,66 +2110,62 @@ def sequence_pipeline(canvas):
                     d1x1 = (domains_dict.get(index)[0][4])
                     d1x2 = (domains_dict.get(index)[0][8])
                     if d1x1 > d1x2:
-                        d1x1 = (domains_dict.get(index)[0][8])-50
-                        d1x2 = (domains_dict.get(index)[0][4])+50
+                        d1x1 = (domains_dict.get(index)[0][8])-30
+                        d1x2 = (domains_dict.get(index)[0][4])+30
                     else:
-                        d1x1 = (domains_dict.get(index)[0][4])-50
-                        d1x2 = (domains_dict.get(index)[0][8])+50
-                    d1y1 = (domains_dict.get(index)[0][1])-50
-                    d1y2 = (domains_dict.get(index)[0][5])+50
+                        d1x1 = (domains_dict.get(index)[0][4])-30
+                        d1x2 = (domains_dict.get(index)[0][8])+30
+                    d1y1 = (domains_dict.get(index)[0][1])-20
+                    d1y2 = (domains_dict.get(index)[0][5])+20
                     #print(number)
                     #print(d1x1,d1x2,d1y1,d1y2)
                     #Search for overlapping matching domains
                     for f in range(len(domains_keyslist)):
                         if domains_keyslist[f] != index:
-                            d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])
-                            d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])
-                            if d2x1 > d2x2:
-                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][8])-50
-                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][4])+50
-                            else:
-                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])-50
-                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])+50
-                            d2y1 = (domains_dict.get(domains_keyslist[f])[0][1])-50
-                            d2y2 = (domains_dict.get(domains_keyslist[f])[0][5])+50
-                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
-                            for g in combinations_to_try:
-                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                    if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])):
-                                        print("PAIR FOUND")
-                                        searching_for = domains_keyslist[f]
+                            for a in range(len(full_chains)):
+                                for b in range(len(full_chains[a])):
+                                    if int(full_chains[a][b]) == int(domains_keyslist[f]) and ":" not in strings[a][b]:
+                                        paired_domain = strings[a][b]
+                                        paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                        paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                        paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+                                        if int(paired_number) not in paired:
+                                            d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])
+                                            d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])
+                                            if d2x1 > d2x2:
+                                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][8])-30
+                                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][4])+30
+                                            else:
+                                                d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])-30
+                                                d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])+30
+                                            d2y1 = (domains_dict.get(domains_keyslist[f])[0][1])-20
+                                            d2y2 = (domains_dict.get(domains_keyslist[f])[0][5])+20
+                                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
+                                            for g in combinations_to_try:
+                                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
+                                                    if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])):
+                                                        print("PAIR FOUND")
+                                                        disulphide_count = 0
+                                                        for y in range(len(disulphides_keyslist)):
+                                                            #print("Looking for those disulphides")
+                                                            disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
+                                                            disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
+                                                            disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
+                                                            disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                            #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                            #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
 
-                                        ##find domain in full_chains then use that index for string
-                                        for a in range(len(full_chains)):
-                                            for b in range(len(full_chains[a])):
-                                                if int(full_chains[a][b]) == int(searching_for) and ":" not in strings[a][b]:
-                                                    paired_domain = strings[a][b]
-                                                    paired_number =  re.findall("\((.*?)\)", str(paired_domain))
-                                                    paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
-                                                    paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
-                                                    #print(domain_name,number,paired_name,paired_number)
-                                                    #search for disulphide bonds
-                                                    disulphide_count = 0
-                                                    for y in range(len(disulphides_keyslist)):
-                                                        #print("Looking for those disulphides")
-                                                        disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
-                                                        disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
-                                                        disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
-                                                        disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
-                                                        #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
-                                                        #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+                                                            if ((d1x1 < disulphx2 < d1x2 and (d1y1+20)< disulphy2 < (d1y2-20)) and (d2x1 < disulphx1 < d2x2 and (d2y1+20)< disulphy1 < (d2y2-20))) or ((d1x1 < disulphx1 < d1x2 and (d1y1+20)< disulphy1 < (d1y2-20)) and (d2x1 < disulphx2 < d2x2 and (d2y1+20)< disulphy2 < (d2y2-20))):
+                                                                disulphide_count += 1
 
-                                                        if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
-                                                            disulphide_count += 1
-
-                                                    if disulphide_count == 0:
-                                                        strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
-                                                        strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
-                                                    elif disulphide_count > 0:
-                                                        strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}")
-                                                        strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}")
-                                                    paired.append(int(number))
-                                                    paired.append(int(paired_number))
+                                                        if disulphide_count == 0:
+                                                            strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
+                                                            strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
+                                                        elif disulphide_count > 0:
+                                                            strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}")
+                                                            strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}")
+                                                        paired.append(int(number))
+                                                        paired.append(int(paired_number))
 
 
             elif ":" not in str(strings[i][j]) and "-H(" in str(strings[i][j]):
@@ -2158,58 +2189,49 @@ def sequence_pipeline(canvas):
 
                     for f in range(len(bonds_keyslist)):
                         if bonds_keyslist[f] != index and "-H-" in bonds_dict.get(bonds_keyslist[f])[1]:
-                            print(bonds_dict.get(bonds_keyslist[f])[1])
-                            d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])
-                            d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])
-                            if d2x1 > d1x2:
-                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][2])-100
-                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][0])+100
-                            else:
-                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])-100
-                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])+100
-                            d2y1 = (bonds_dict.get(bonds_keyslist[f])[0][1])-10
-                            d2y2 = (bonds_dict.get(bonds_keyslist[f])[0][3])+10
-                            print("H1", d1x1,d1x2,d1y1,d1y2," H2 ",d2x1,d2x2,d2y1,d2y2)
-                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
-                            for g in combinations_to_try:
-                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                    print("H_PAIR FOUND")
-                                    searching_for = bonds_keyslist[f]
+                            for a in range(len(full_chains)):
+                                for b in range(len(full_chains[a])):
+                                    if int(full_chains[a][b]) == int(bonds_keyslist[f]) and ":" not in strings[a][b]:
+                                        paired_domain = strings[a][b]
+                                        paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                        paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                        paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+                                        if int(paired_number) not in paired:
+                                            d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])
+                                            d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])
+                                            if d2x1 > d1x2:
+                                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][2])-100
+                                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][0])+100
+                                            else:
+                                                d2x1 = (bonds_dict.get(bonds_keyslist[f])[0][0])-100
+                                                d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])+100
+                                            d2y1 = (bonds_dict.get(bonds_keyslist[f])[0][1])-10
+                                            d2y2 = (bonds_dict.get(bonds_keyslist[f])[0][3])+10
+                                            print("H1", d1x1,d1x2,d1y1,d1y2," H2 ",d2x1,d2x2,d2y1,d2y2)
+                                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
+                                            for g in combinations_to_try:
+                                                if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
+                                                    disulphide_count = 0
+                                                    for y in range(len(disulphides_keyslist)):
+                                                        #print("Looking for those disulphides")
+                                                        disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
+                                                        disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
+                                                        disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
+                                                        disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                        #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                        #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
 
-                                    ##find domain in full_chains then use that index for string
-                                    for a in range(len(full_chains)):
-                                        for b in range(len(full_chains[a])):
-                                            if int(full_chains[a][b]) == int(searching_for) and ":" not in strings[a][b]:
-                                                print(strings[i][j], strings[a][b])
-                                                paired_domain = strings[a][b]
-                                                paired_number =  re.findall("\((.*?)\)", str(paired_domain))
-                                                paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
-                                                paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
-                                                print(domain_name)
-                                                print(paired_name)
-                                                #print(domain_name,number,paired_name,paired_number)
-                                                #search for disulphide bonds
-                                                disulphide_count = 0
-                                                for y in range(len(disulphides_keyslist)):
-                                                    print("Looking for those disulphides")
-                                                    disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
-                                                    disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
-                                                    disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
-                                                    disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
-                                                    print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
-                                                    print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+                                                        if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
+                                                            disulphide_count += 1
 
-                                                    if ((d1x1 < disulphx2 < d1x2 and d1y1< disulphy2 < d1y2) and (d2x1 < disulphx1 < d2x2 and d2y1< disulphy1 < d2y2)) or ((d1x1 < disulphx1 < d1x2 and d1y1< disulphy1 < d1y2) and (d2x1 < disulphx2 < d2x2 and d2y1< disulphy2 < d2y2)):
-                                                        disulphide_count += 1
-
-                                                if disulphide_count == 0:
-                                                    strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")-")
-                                                    strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")-")
-                                                elif disulphide_count > 0:
-                                                    strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
-                                                    strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
-                                                paired.append(int(number))
-                                                paired.append(int(paired_number))
+                                                    if disulphide_count == 0:
+                                                        strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")-")
+                                                        strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")-")
+                                                    elif disulphide_count > 0:
+                                                        strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
+                                                        strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
+                                                    paired.append(int(number))
+                                                    paired.append(int(paired_number))
 
 
 
@@ -2223,6 +2245,9 @@ def sequence_pipeline(canvas):
                 final_string+= str("|"+strings[i][j])
             elif j > 0 :
                 final_string += strings[i][j]
+    print(str(final_string))
+
+
 ##display string to textbox
     textBox.delete("1.0","end")
     textBox.insert("1.0",str(final_string))
@@ -2243,6 +2268,8 @@ def delete_all_button(canvas):
     canvas_polygons = {}
 def delete_button(canvas):
     global Delete_lock
+    global Bond_lock
+    Bond_lock = ""
     if Delete_lock == False:
         Delete_lock = True
         lower_canvas.config(cursor = "arrow")
@@ -2274,6 +2301,8 @@ def domain_mod_button(letter):
 
 def bond_drag_button(canvas,name,buttonpress):
     global Bond_lock
+    global Delete_lock
+    Delete_lock = False
     if Bond_lock != buttonpress:
         Bond_lock = buttonpress
         lower_canvas.unbind("<Button-1>")
@@ -2305,13 +2334,15 @@ def bond_drag_button(canvas,name,buttonpress):
 
 def disulphide_bond_button(canvas,name,buttonpress):
     global Bond_lock
+    global Delete_lock
+    Delete_lock = False
     if Bond_lock != buttonpress:
         Bond_lock = buttonpress
         lower_canvas.unbind("<Button-1>")
         lower_canvas.unbind("<B1-Motion>")
         lower_canvas.unbind("<ButtonRelease-1>")
         lower_canvas.bind("<Button-1>", mm.start_bond)
-        lower_canvas.bind("<B1-Motion>", mm.drag_bond)
+        lower_canvas.bind("<B1-Motion>", mm.drag_disulphide_bond)
         if name == "-":
             lower_canvas.bind("<ButtonRelease-1>", mm.release_Disulphide_bond)
             status_label.config(text="Disulphide lock on")
@@ -2337,15 +2368,40 @@ class MouseMover():
         self.item = 0; self.previous = (0, 0)
         ###Click and drag item on canvas####
     def select(self, event):
+        self.startcoordinates = []
+        self.newcoordinates =[]
         widget = event.widget
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
+        self.item = widget.find_closest(xc, yc, halo = 5)[0]        # ID for closest
         self.previous = (xc, yc)
-        self.startcoordinates = [xc, yc]
-        lower_canvas.config(cursor = "fleur")
-        #print("STARTING COORDINATES1", self.startcoordinates)
-        return(startcoordinates)
+        if "-" not in str(canvas_polygons.get(self.item)[1]):
+            if "X" not in str(canvas_polygons.get(self.item)[1]):
+                x1 = (canvas_polygons.get(self.item)[0][4])
+                x2 = (canvas_polygons.get(self.item)[0][8])
+                if x1 > x2:
+                    x1 = (canvas_polygons.get(self.item)[0][8])
+                    x2 = (canvas_polygons.get(self.item)[0][4])
+            elif "X" in str(canvas_polygons.get(self.item)[1]):
+                x1 = (canvas_polygons.get(self.item)[0][8])
+                x2 = (canvas_polygons.get(self.item)[0][2])
+                if x1 > x2:
+                    x1 = (canvas_polygons.get(self.item)[0][2])
+                    x2 = (canvas_polygons.get(self.item)[0][8])
+            y1 = (canvas_polygons.get(self.item)[0][1])
+            y2 = (canvas_polygons.get(self.item)[0][5])
+            if x1< xc <x2 and y1 < yc < y2:
+                self.startcoordinates = [xc, yc]
+                lower_canvas.config(cursor = "fleur")
+                #print("STARTING COORDINATES1", self.startcoordinates)
+                return(startcoordinates)
+            else:
+                self.item = 0
+        elif "-" in str(canvas_polygons.get(self.item)[1]):
+            self.startcoordinates = [xc, yc]
+            lower_canvas.config(cursor = "fleur")
+            #print("STARTING COORDINATES1", self.startcoordinates)
+            return(startcoordinates)
     def drag(self, event):
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
@@ -2369,9 +2425,10 @@ class MouseMover():
             elif i%2!=0:
                 new_coordinates.append((coordinates[i]+diffy))
         canvas_polygons[self.item]=[new_coordinates, name]
-        #print(canvas_polygons.get(self.item))
+        print(canvas_polygons.get(self.item))
         startcoordinates = []
         newcoordinates = []
+
     ####Delete selected item on canvas###
     def delete(self,event):
         widget = event.widget
@@ -2381,10 +2438,12 @@ class MouseMover():
         del canvas_polygons[self.item]
     ###Click item to reverse orientation###
     def change_orientation(self,event):
+        self.startcoordinates = []
+        self.newcoordinates =[]
         widget = event.widget                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-        self.item = widget.find_closest(xc, yc,start="domain")[0]
+        self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         coordinates    = canvas_polygons.get(self.item)[0]
         domain_name    = canvas_polygons.get(self.item)[1]
         ##reverse coordinates
@@ -2393,41 +2452,54 @@ class MouseMover():
         if x1 > x2:
             x1 = (canvas_polygons.get(self.item)[0][8])
             x2 = (canvas_polygons.get(self.item)[0][4])
-        new_coordinates = []
-        for i in range(len(coordinates)):
-            #print(coordinates[i])
-            if i%2 ==0:
-                if coordinates[i] == x1:
-                    coordinates[i] = x2
-                elif coordinates[i] == x2:
-                    coordinates[i] = x1
-                elif x1 < coordinates[i] and x2 < coordinates[i]:
-                    coordinates[i] = x1-20
-                elif x1 > coordinates[i] and x2 > coordinates[i]:
-                    coordinates[i] = x2+20
-                new_coordinates.append((coordinates[i]))
-            elif i%2 != 0:
-                new_coordinates.append(coordinates[i])
-        lower_canvas.delete(self.item)
-        del canvas_polygons[self.item]
-        if "a" in str(domain_name):
-            heavy_colour, light_colour = '#007ECB', '#73CAFF'
-        elif "b" in str(domain_name):
-            heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
-        elif "c" in str(domain_name):
-            heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
-        elif "d" in str(domain_name):
-            heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+        y1 = (canvas_polygons.get(self.item)[0][1])
+        y2 = (canvas_polygons.get(self.item)[0][5])
+        if x1< xc <x2 and y1 < yc < y2:
+            new_coordinates = []
+            if "X" not in domain_name:
+                for i in range(len(coordinates)):
+                    #print(coordinates[i])
+                    if i%2 ==0:
+                        if coordinates[i] == x1:
+                            coordinates[i] = x2
+                        elif coordinates[i] == x2:
+                            coordinates[i] = x1
+                        elif x1 < coordinates[i] and x2 < coordinates[i]:
+                            coordinates[i] = x1-20
+                        elif x1 > coordinates[i] and x2 > coordinates[i]:
+                            coordinates[i] = x2+20
+                        new_coordinates.append((coordinates[i]))
+                    elif i%2 != 0:
+                        new_coordinates.append(coordinates[i])
+            elif "X" in domain_name:
+                new_coordinates = coordinates
+            lower_canvas.delete(self.item)
+            del canvas_polygons[self.item]
+            if "a" in str(domain_name):
+                heavy_colour, light_colour = '#007ECB', '#73CAFF'
+            elif "b" in str(domain_name):
+                heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
+            elif "c" in str(domain_name):
+                heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
+            elif "d" in str(domain_name):
+                heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+            else:
+                heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
+            if "VH" in domain_name or "CH" in domain_name:
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+            elif "VL" in domain_name or "CL" in domain_name:
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+            elif "X" in domain_name:
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill='#68C1C1', width=2, tags="domain")
+            canvas_polygons[domain] = [new_coordinates, domain_name]
+            print(new_coordinates, coordinates)
+            print(canvas_polygons)
         else:
-            heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
-        if "VH" in domain_name or "CH" in domain_name:
-            domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
-        elif "VL" in domain_name or "CL" in domain_name:
-            domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
-        canvas_polygons[domain] = [new_coordinates, domain_name]
-        #print(canvas_polygons)
+            self.item = 0
+
     ###Draw and drag bonds###
     def start_bond(self,event):
+        lower_canvas.delete("draggable_line")
         # Convert screen coordinates to canvas coordinates
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
@@ -2435,39 +2507,58 @@ class MouseMover():
         print(self.startcoordinates)
         return(self.startcoordinates)
     def drag_bond(self,event):
+        lower_canvas.delete("draggable_line")
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        #domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2,tags = "draggable_line")
         self.newcoordinates = [x2,y2]
         return(newcoordinates)
     def release_bond(self,event):
+        lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        self.startcoordinates, self.newcoordinates =[]
     def release_Hinge_bond(self,event):
+        lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-H-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        self.startcoordinates, self.newcoordinates =[]
     def release_Linker_bond(self,event):
+        lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-L-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        self.startcoordinates, self.newcoordinates =[]
+    def drag_disulphide_bond(self,event):
+        lower_canvas.delete("draggable_line")
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        x1 = self.startcoordinates[0]
+        y1 = self.startcoordinates[1]
+        x2 = xc
+        y2 = yc
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2,tags = "draggable_line")
+        self.newcoordinates = [x2,y2]
     def release_Disulphide_bond(self,event):
+        lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2, tags="disulphide")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        self.startcoordinates, self.newcoordinates =[]
 
 
 
@@ -3146,12 +3237,6 @@ lower_canvas.bind("<ButtonRelease-1>", mm.release)
 lower_canvas.bind("<Button-2>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
-
-
-
-
-
-
 
 
 root.mainloop()
