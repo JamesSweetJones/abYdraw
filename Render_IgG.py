@@ -163,39 +163,65 @@ def Get_dictionaries(x):
 
     chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist]
     dicts = [VHa,VLa,VHb,VLb]
-    checked_heavy_chains = []
-    checked_heavy_dicts  = []
-    checked_chains_dicts = []
+
     if chain_count > 2:
+        checked_heavy_chains = []
+        checked_heavy_dicts  = []
+        checked_chains_dicts = []
+        VHa_VHb_found = False
         for i in range(len(chains)):
             for j in range(len(chains[i])):
                 try:
                     current_interactor = dicts[i].get(chains[i][j])[0][1]
                     for a in range(len(chains)):
-                        for b in range(len(chains[a])):
-                            interactor = dicts[a].get(chains[a][b])[0][0]
-                            if current_interactor == interactor and "H[" in str(chains[i][j]) and "H[" in str(chains[a][b]):
-                                VHa_checked,VHb_checked= dicts[i],dicts[a]
-                                checked_heavy_chains.append(chains[a])
-                                checked_heavy_chains.append(chains[i])
-                                checked_heavy_dicts.append(dicts[a])
-                                checked_heavy_dicts.append(dicts[i])
-                except IndexError:
-                    continue
+                        if dicts[a] != dicts[i]:
+                            for b in range(len(chains[a])):
+                                interactor = dicts[a].get(chains[a][b])[0][0]
 
+                                if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
+                                    VHa_VHb_found = True
+                                    VHa_checked,VHb_checked= dicts[i],dicts[a]
+                                    break
+                                elif current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False:
+                                    VHa_VHb_found = True
+                                    VHa_checked,VHb_checked= dicts[i],dicts[a]
+                                    break
+                                elif current_interactor == interactor and ("H[" not in str(chains[i][j]) and "H[" not in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False :
+                                    VHa_VHb_found = True
+                                    VHa_checked,VHb_checked= dicts[i],dicts[a]
+                                    print("3 elephant")
+                                    break
+                except IndexError:
+                    print("Poopsie")
+                    continue
+        checked_heavy_dicts.append(VHa_checked)
+        checked_heavy_dicts.append(VHb_checked)
+        VHa_keyslist = list(VHa_checked.keys())
+        VHb_keyslist = list(VHb_checked.keys())
+        checked_heavy_chains.append(VHa_keyslist)
+        checked_heavy_chains.append(VHb_keyslist)
+        VLa_match = False
+        VLb_match = False
+        print("CHECKED", checked_heavy_chains)
+        print("TO CHECK", chains)
         for i in range(len(checked_heavy_chains)):
             for j in range(len(checked_heavy_chains[i])):
                 try:
                     current_interactor = checked_heavy_dicts[i].get(checked_heavy_chains[i][j])[0][1]
                     for a in range(len(chains)):
                         for b in range(len(chains[a])):
-                            if chains[a] != checked_heavy_chains[i]:
+                            if chains[a] not in checked_heavy_chains:
                                 interactor = dicts[a].get(chains[a][b])[0][0]
-                                if current_interactor == interactor and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
-                                    if i == 0:
+                                print(interactor, current_interactor)
+                                if current_interactor == interactor: # and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
+                                    print("Matching light chain found", dicts[a])
+                                    if i %2 == 0 and VLa_match == False:
                                         VLa_checked = dicts[a]
-                                    elif i == 1:
+                                        VLa_match = True
+                                    elif i %2 != 0 and VLb_match == False:
                                         VLb_checked = dicts[a]
+                                        VLb_match = True
+
                 except IndexError:
                     continue
     elif chain_count ==2:
@@ -203,7 +229,6 @@ def Get_dictionaries(x):
         VHb_checked = VHb
     elif chain_count ==1:
         VHa_checked = VHa
-
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4)
 
 ######################################
@@ -350,6 +375,34 @@ def Check_interactions(chains_list):
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
                     elif "L" in str(fragments[x][i]):
                         coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+            else:
+                for i in range(len(fragments[x])):
+                    if "a" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+                    elif "b" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_b.append(dictionary.get(fragments[x][i]))
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_b.append(dictionary.get(fragments[x][i]))
+                    elif "c" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_c.append(dictionary.get(fragments[x][i]))
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_c.append(dictionary.get(fragments[x][i]))
+                    elif "d" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_d.append(dictionary.get(fragments[x][i]))
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_d.append(dictionary.get(fragments[x][i]))
+                    else:
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+
 
 
         return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,coordinates_generic_heavy,coordinates_generic_light,ADCs)
@@ -577,58 +630,67 @@ def Check_interactions(chains_list):
 
         elif chain_count==3:
             slant = True
+            Build_in = True
+            Build_out = False
         elif chain_count==2:
             if "H[" in str(dictionary) or "X[" in str(dictionary):
-                if dictionary.get(keyslist[2])[0] != [''] and "Linker[" in keyslist[2]:
-                    if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]):
-                        print("huff")
-                        slant = True
-                    else:
-                        slant = False
+                #if dictionary.get(keyslist[2])[0] != [''] and "Linker[" in keyslist[1]:
+                #    if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) or dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[4])[0][1]):
+                #        print("huff")
+                slant = True
+                #    else:
+                #        slant = False
+                #        print("Bluff")
+                #
                 #elif (dictionary == VHb_chain and startx > 450) or (dictionary == VHa_chain and startx < 300):
                 #    print("puff")
 
-                    slant = True
-                else:
-                    slant = False
-            else: slant = False
+                    #slant = True
+                #else:
+                    #slant = False
+            else:
+                slant = False
 
 
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
-
-            if dictionary == VHb_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[0][1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0][0]):
-                print("DEAR GOD1")
-                Build_out = True
-                Build_in = False
-            elif dictionary == VHa_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0]):
-                print("DEAR GOD2")
-                Build_out = True
-                Build_in = False
-            else:
-                print(dictionary)
-                try:
-                    if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) and dictionary.get(keyslist[4])[0][0] == (dictionary.get(keyslist[6])[0][1]):
-                        print("DEAR GOD3")
-                        Build_out = True
-                        Build_in = False
-                    elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[6])[0][1]) and dictionary.get(keyslist[2])[0][0] == (dictionary.get(keyslist[4])[0][1]):
-                        print("DEAR GOD4")
-                        Build_in = False
-                        Build_out = True
-                    else:
+            try:
+                if dictionary == VHb_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[0][1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0][0]):
+                    print("DEAR GOD1")
+                    Build_out = True
+                    Build_in = False
+                elif dictionary == VHa_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0]):
+                    print("DEAR GOD2")
+                    Build_out = True
+                    Build_in = False
+                else:
+                    print(dictionary)
+                    try:
+                        if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) and dictionary.get(keyslist[4])[0][0] == (dictionary.get(keyslist[6])[0][1]):
+                            print("DEAR GOD3")
+                            Build_out = True
+                            Build_in = False
+                        elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[6])[0][1]) and dictionary.get(keyslist[2])[0][0] == (dictionary.get(keyslist[4])[0][1]):
+                            print("DEAR GOD4")
+                            Build_in = False
+                            Build_out = True
+                        else:
+                            Build_in = True
+                            Build_out = False
+                    except IndexError:
+                        print("DEAR GOD5")
                         Build_in = True
                         Build_out = False
-                except IndexError:
-                    print("DEAR GOD5")
-                    Build_in = True
-                    Build_out = False
+            except IndexError:
+                print("DEAR GOD6")
+                Build_in = False
+                Build_out = True
 
 
         elif chain_count==1 and  dictionary == VHa_chain:
             slant = False
-            Build_out = True
-            Build_in = False
+            Build_out = False
+            Build_in = True
 
         else:
             slant = False
@@ -895,7 +957,6 @@ def Check_interactions(chains_list):
                             getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == False:
                             getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
-
 
 
                 elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
@@ -1508,21 +1569,25 @@ def Check_interactions(chains_list):
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
 
-    elif  chain_count >= 3 or (chain_count == 2 and  "H[" in str(VHa_chain) and "H[" in str(VHb_chain) and str("engineereddisulphidebond") not in str(VHa_chain) and str("engineered disulphide bond") not in str(VHa_chain)):
+    elif  chain_count >= 3 or (chain_count == 2 and  ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain))):
         print(str(VHa_chain))
         print("COWABUNGA DUDE")
         VHa_1_test = VHa_chain.copy()
         VLa_1_test = VLa_chain.copy()
         VHb_1_test = VHb_chain.copy()
         VLb_1_test = VLb_chain.copy()
+        print(VHa_1_test)
+        print(VHb_1_test)
 
 ##VHa_chain
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
+            print("YO HO HO")
             VHa_H_coordinatesx = 295
             VHa_H_coordinatesy = 280
             VHb_H_coordinatesx = 420
             VHb_H_coordinatesy = 280
-        elif "X[" in str(VHa_1_test) and "X[" in str(VHb_1_test) and "H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test):
+        elif ("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
+            print("X marks the spot")
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
             Xa = ""
@@ -1538,10 +1603,16 @@ def Check_interactions(chains_list):
                                 VHa_H_coordinatesy = 280
                                 VHb_H_coordinatesx = 350
                                 VHb_H_coordinatesy = 280
+                                print("BINGO")
+                            elif Xa != Xb:
+                                VHa_H_coordinatesx = 295
+                                VHa_H_coordinatesy = 280
+                                VHb_H_coordinatesx = 420
+                                VHb_H_coordinatesy = 280
 
 
 
-
+        print("PIRATES")
         teststartx = 0
         teststarty = 0
         testHpositionVHa = renderchains(VHa_1_test,teststartx,teststarty)[25]
@@ -1588,12 +1659,14 @@ def Check_interactions(chains_list):
 
 ###Get start positions of light chains and render
     elif chain_count == 2 :
+
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
-        VHb_startx, VHb_starty = 400,100
+        VHb_startx, VHb_starty = 500,100
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
+        VHa_startx, VHa_starty= 300,100
         try:
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
             print(VHa_chain.get(keyslista[0])[0][0], VHb_chain.get(keyslistb[0])[1])
@@ -1803,6 +1876,7 @@ def Check_interactions(chains_list):
     print("Lighta",Light_Domains_a)
     print("Heavyb",Heavy_Domains_b)
     print("Lightb",Light_Domains_b)
+
     return(Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Bonds,disulphide_bridges,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs)
 
 def render(chains_list,canvas,text_to_image):
@@ -2129,7 +2203,11 @@ def sequence_pipeline(canvas):
                                         paired_number =  re.findall("\((.*?)\)", str(paired_domain))
                                         paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
                                         paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
-                                        if int(paired_number) not in paired:
+                                        in_paired = False
+                                        for x in range(len(paired)):
+                                            if paired[x] == int(number):
+                                                in_paired = True
+                                        if in_paired == False:
                                             d2x1 = (domains_dict.get(domains_keyslist[f])[0][4])
                                             d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])
                                             if d2x1 > d2x2:
@@ -2140,7 +2218,7 @@ def sequence_pipeline(canvas):
                                                 d2x2 = (domains_dict.get(domains_keyslist[f])[0][8])+30
                                             d2y1 = (domains_dict.get(domains_keyslist[f])[0][1])-20
                                             d2y2 = (domains_dict.get(domains_keyslist[f])[0][5])+20
-                                            combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
+                                            combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                             for g in combinations_to_try:
                                                 if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
                                                     if ("V" in str(strings[i][j]) and "V" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])):
@@ -2245,9 +2323,6 @@ def sequence_pipeline(canvas):
                 final_string+= str("|"+strings[i][j])
             elif j > 0 :
                 final_string += strings[i][j]
-    print(str(final_string))
-
-
 ##display string to textbox
     textBox.delete("1.0","end")
     textBox.insert("1.0",str(final_string))
@@ -3237,6 +3312,12 @@ lower_canvas.bind("<ButtonRelease-1>", mm.release)
 lower_canvas.bind("<Button-2>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
+
+
+
+
+
+
 
 
 root.mainloop()
