@@ -634,20 +634,24 @@ def Check_interactions(chains_list):
             Build_out = False
         elif chain_count==2:
             if "H[" in str(dictionary) or "X[" in str(dictionary):
-                #if dictionary.get(keyslist[2])[0] != [''] and "Linker[" in keyslist[1]:
-                #    if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) or dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[4])[0][1]):
-                #        print("huff")
-                slant = True
-                #    else:
-                #        slant = False
-                #        print("Bluff")
-                #
-                #elif (dictionary == VHb_chain and startx > 450) or (dictionary == VHa_chain and startx < 300):
-                #    print("puff")
-
-                    #slant = True
-                #else:
-                    #slant = False
+                tangle_found = False
+                if chain_count ==2:
+                    keyslista = list(VHa_chain.keys())
+                    keyslistb = list(VHb_chain.keys())
+                    try:
+                        interactor = VHa_chain.get(keyslista[0])[0][1]
+                        if "Linker[" in keyslista[1]:
+                            interactor_2 = VHa_chain.get(keyslista[2])[0][1]
+                        else:
+                            interactor_2 = VHa_chain.get(keyslista[1])[0][1]
+                        if interactor_2 < interactor and "H[" in keyslista[-1]:
+                            tangle_found = True
+                    except IndexError:
+                        pass
+                if tangle_found == False:
+                    slant = True
+                else:
+                    slant = False
             else:
                 slant = False
 
@@ -1073,6 +1077,8 @@ def Check_interactions(chains_list):
                         to_join_coordinates = find_the_fragment(to_join_number,All_positions_and_chains)
                         to_joinx            = to_join_coordinates[0][0]
                         to_joiny            = to_join_coordinates[0][1]
+                        to_join_righthanded = to_join_coordinates[1]
+                        to_join_direction   = to_join_coordinates[2]
                         if chain_count == 1 and to_joinx <= 350 and dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-2])[0]) and len(dictionary) >=8:
                             righthanded = True
                             Build_in = False
@@ -1080,22 +1086,25 @@ def Check_interactions(chains_list):
                         elif chain_count == 1 and to_joinx >= 350 and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-2])[0]):
                             Build_in = False
                             Build_out = True
-                        if i+1 != len(keyslist):
-                            if chain_count == 2 and "H[" in keyslist[i+1]:
-                                Build_in = True
-                                Build_out = False
-                        if  righthanded == False and Build_in == True and Build_out == False:
+                        print("YASS QUEEN",to_join_coordinates )
+                        if to_join_righthanded == False and to_join_direction == 'outie':
+                            print("BS1")
+                            getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        elif to_join_righthanded == False and to_join_direction == 'innie':
+                            print("BS2")
+                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        elif to_join_righthanded == False and to_join_direction == 'constant':
+                            print("BS2")
+                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        elif to_join_righthanded == True and to_join_direction == 'outie':
                             print("BS1")
                             getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
-                        elif righthanded == False and Build_in == False and Build_out == True:
+                        elif to_join_righthanded == True and to_join_direction == 'innie':
                             print("BS2")
                             getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
-                        elif  righthanded == True and Build_in == True and Build_out == False:
-                            print("BS3")
+                        elif to_join_righthanded == True and to_join_direction == 'constant':
+                            print("BS2")
                             getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
-                        elif righthanded == True and Build_in == False and Build_out == True:
-                            print("BS4")
-                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         all_list = list(All_positions_and_chains.keys())
                         get = (All_positions_and_chains.get(all_list[-1]))
                         yprev = get[0][1]
@@ -1113,6 +1122,9 @@ def Check_interactions(chains_list):
                             print("checkpoint13.2")
                             Build_in = True
                             Build_out = False
+                        #if change_side == True:
+                        #    Build_out =True
+                        #    Build_in = False
 
 
 ##ADCs
@@ -1417,7 +1429,7 @@ def Check_interactions(chains_list):
                 text_coordinates.append([Label_Locations])
                 text = dictionary.get(keyslist[i])[0]
                 Location_Text.append(str(text)+mod_label)
-                All_positions_and_chains[text] = [getcoordinates[0], righthanded]
+                All_positions_and_chains[text] = [getcoordinates[0], righthanded,direction]
                 Domain_Text.append(str(Domain_name)+mod_label)
 
 
@@ -1435,7 +1447,7 @@ def Check_interactions(chains_list):
                 Location_Text.append(str(text)+mod_label)
                 Domain_Text.append(str(Domain_name)+mod_label)
                 Domain_number = Domain_name+str([i])
-                All_positions_and_chains[text] = [getcoordinates[0], righthanded]
+                All_positions_and_chains[text] = [getcoordinates[0], righthanded, direction]
 
 
 ##append interactions
@@ -1544,7 +1556,7 @@ def Check_interactions(chains_list):
                 text_coordinates.append(Label_Locations)
                 text = dictionary.get(keyslist[i])[0]
                 Location_Text.append(str(text)+mod_label)
-                All_positions_and_chains[text] = [Label_Locations, righthanded]
+                All_positions_and_chains[text] = [Label_Locations, righthanded, innie_or_outie, direction]
                 Domain_Text.append(str(Domain_name)+mod_label)
 
 
@@ -1560,6 +1572,22 @@ def Check_interactions(chains_list):
 
 ##Get starting positions
 
+    ##tangle detector
+    tangle_found = False
+    if chain_count ==2:
+        keyslista = list(VHa_chain.keys())
+        keyslistb = list(VHb_chain.keys())
+        try:
+            interactor = VHa_chain.get(keyslista[0])[0][1]
+            if "Linker[" in keyslista[1]:
+                interactor_2 = VHa_chain.get(keyslista[2])[0][1]
+            else:
+                interactor_2 = VHa_chain.get(keyslista[1])[0][1]
+            if interactor_2 < interactor and "H[" in keyslista[-1]:
+                tangle_found = True
+        except IndexError:
+            pass
+
     if chain_count == 1:
         print("I'M COMING FOR YOU")
         VHa_startx, VHa_starty = 350,100
@@ -1569,7 +1597,7 @@ def Check_interactions(chains_list):
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
 
-    elif  chain_count >= 3 or (chain_count == 2 and  ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain))):
+    elif  chain_count >= 3 or (chain_count == 2  and tangle_found == False and ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain))):
         print(str(VHa_chain))
         print("COWABUNGA DUDE")
         VHa_1_test = VHa_chain.copy()
@@ -1578,6 +1606,7 @@ def Check_interactions(chains_list):
         VLb_1_test = VLb_chain.copy()
         print(VHa_1_test)
         print(VHb_1_test)
+
 
 ##VHa_chain
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
