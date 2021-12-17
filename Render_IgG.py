@@ -1,14 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import re
 import sys
 import os
 from PIL import Image
 import tkinter as tk
+from tkinter import filedialog
+from tkinter import colorchooser
+import tkinter.ttk as ttk
+
 
 HEIGHT = 1200
 WIDTH  = 1600
 
-####If numbers cut out, need to be doubled
 ######################################
 def Get_input(x):
     input = ""
@@ -16,7 +19,7 @@ def Get_input(x):
         for line in f:
             input += line
 
-    return input
+    return(input)
 ######################################
 def Get_dictionaries(x):
     """
@@ -61,26 +64,27 @@ def Get_dictionaries(x):
             y+=brackets[i]
             y+="]"
         #y+=non_brackets[counter]
+    location_counting = []
     if "|" in y:
         splitx  = y.split("|")
     else:
         splitx = [y]
     if len(splitx) == 4:
-        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a']
+        chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b']
     elif len(splitx) == 3:
-        chains  = ['VH.b', 'VL.b','VH.a']
+        chains  = ['VH.a', 'VL.a','VH.b']
     elif len(splitx) == 2:
-        chains  = ['VH.b','VH.a']
+        chains  = ['VH.a','VH.b']
     elif len(splitx) == 1:
         chains  = ['VH.a']
     elif len(splitx) ==5:
-        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a', 'fragment1']
+        chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1']
     elif len(splitx) ==6:
-        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a', 'fragment1', 'fragment2']
+        chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1', 'fragment2']
     elif len(splitx) ==7:
-        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a', 'fragment1', 'fragment2', 'fragment3']
+        chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1', 'fragment2', 'fragment3']
     elif len(splitx) ==8:
-        chains  = ['VH.b', 'VL.b', 'VH.a', 'VL.a', 'fragment1', 'fragment2', 'fragment3', 'fragment4']
+        chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1', 'fragment2', 'fragment3', 'fragment4']
 
     chain_count = len(splitx)
     VHa     = {}
@@ -104,30 +108,34 @@ def Get_dictionaries(x):
         if i < 4:
             if "VH" in chain[0]:
                 if len(chain)==1:
-                    dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                 elif chain[1] != "L":
-                    dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                 elif chain[1] == "L":
                     if "VH" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                     elif "VL" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
+                    else:
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
 
             elif "VL" in chain[0]:
                 try:
                     if  chain[1] != "L":
-                        dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                     elif chain[1] == "L":
                         if len(chain) > 2:
                             if "VH" in chain[2]:
-                                dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                             elif "VL" in chain[2]:
-                                dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
+                            else:
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
                 except IndexError:
-                    dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano","",str(chains[i])))
 
             elif "X" in chain[0]:
-                 dict = str(re.sub("\.|\+|\_","",str(chains[i])))
+                 dict = str(re.sub("\.|\+|\_|\*|\!","",str(chains[i])))
         elif i >= 4:
             dict_number = i-3
             dict = str("fragment"+str(dict_number))
@@ -135,7 +143,9 @@ def Get_dictionaries(x):
 
         for j in range(len(chain)):
             domain   =  str(chain[j])
-            domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.|\*","", str(domain)))
+            domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
+            if domain == "H*":
+                domain = re.sub("\*","", str(domain))
 
             if domain == "L":
                 domain = "Linker"
@@ -149,10 +159,16 @@ def Get_dictionaries(x):
             locationstr =  re.findall("\((.*?)\)", str(chain[j]))
             locationstr =  str(re.sub("\[|\'|\]","", str(locationstr)))
             locationstr =  str(re.sub(":",",", str(locationstr)))
-            locationstr = locationstr.split(",")
+            locationstr = list(locationstr.split(","))
             if domain != "Linker":
-                for i in locationstr:
-                    location.append(int(i))
+                if len(locationstr) == 0:
+                    error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
+                    raise_error(lower_canvas, error_message)
+                for i in range(len(locationstr)):
+                    if i == 0:
+                        location_counting.append(int(locationstr[i]))
+                    location.append(int(locationstr[i]))
+
             else:
                 location = ['']
 
@@ -167,6 +183,7 @@ def Get_dictionaries(x):
 
             location = [location, disulphide_bridges,note]
             domain = domain+str([j])
+
 
             if dict == "VHa" and domain !="":
                 VHa[domain] = location
@@ -186,12 +203,14 @@ def Get_dictionaries(x):
                 fragment4[domain] = location
             else:
                 continue
+    ###check locations all appear only once and none are missing###
+
+
 
     print(VHa)
     print(VLa)
     print(VHb)
     print(VLb)
-    print(fragment1)
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -232,6 +251,10 @@ def Get_dictionaries(x):
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
                                     break
+                                elif current_interactor == interactor and ("H[" not in str(chains[i]) and "H[" not in str(chains[a])) and ("X[" not in str(chains[i]) and "X[" not in str(chains[a])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "VL" not in str(chains[a])) and ("VH" in str(chains[i]) and "VH" in str(chains[a])):
+                                    VHa_VHb_found = True
+                                    VHa_checked,VHb_checked= dicts[i],dicts[a]
+                                    break
                 except IndexError:
                     continue
         checked_heavy_dicts.append(VHa_checked)
@@ -266,6 +289,35 @@ def Get_dictionaries(x):
         VHb_checked = VHb
     elif chain_count ==1:
         VHa_checked = VHa
+    if chain_count >= 4:
+        if VHa_checked == {} or VHb_checked == {} or VLa_checked == {} or VLb_checked == {}:
+            error_message = "ERROR: There has been an error in pairing chains in your antibody"
+            raise_error(lower_canvas, error_message)
+    all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
+    for i in range(len(all_to_check_keys)):
+        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L"]
+        domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
+        if "V" in str(all_to_check_keys[i]):
+            if bool(re.search("[a-h]",all_to_check_keys[i])) == False:
+                domain = re.sub("\[.*\]","",all_to_check_keys[i])
+                error_message = str("ERROR: Specificity not noted in domain "+domain+"\nAll variable domains must have a specificity attached")
+                raise_error(lower_canvas, error_message)
+        if "+" in str(all_to_check_keys[i]) and "_" in str(all_to_check_keys[i]):
+            error_message= (str("ERROR: Domain cannot be both + and _ "+ domain_to_print))
+            raise_error(lower_canvas, error_message)
+        if "@" in str(all_to_check_keys[i]) and ">" in str(all_to_check_keys[i]):
+            error_message = (str("ERROR: Domain cannot be both @ and > "+domain_to_print))
+            raise_error(lower_canvas, error_message)
+        if "!" in str(all_to_check_keys[i]) and "CH2" not in str(all_to_check_keys[i]):
+            error_message = str("ERROR: ! modifications are only allowed in CH2 domains, not "+ domain_to_print)
+            raise_error(lower_canvas, error_message)
+        if "Linker[" not in all_to_check_keys[i]:
+            domain = re.sub("\.|nano|[a-h]|\@|>|\+|\-|\_|\!|\*","", domain_to_print)
+            if domain not in possible_domains:
+                print(domain)
+                error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
+                raise_error(lower_canvas, error_message)
+
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4)
 
 ######################################
@@ -364,6 +416,14 @@ def Check_interactions(chains_list):
         coordinates_list_light_c= []
         coordinates_list_heavy_d= []
         coordinates_list_light_d= []
+        coordinates_list_heavy_e= []
+        coordinates_list_light_e= []
+        coordinates_list_heavy_f= []
+        coordinates_list_light_f= []
+        coordinates_list_heavy_g= []
+        coordinates_list_light_g= []
+        coordinates_list_heavy_h= []
+        coordinates_list_light_h= []
         names_list_heavy_a      = []
         names_list_light_a      = []
         names_list_heavy_b      = []
@@ -372,6 +432,15 @@ def Check_interactions(chains_list):
         names_list_light_c      = []
         names_list_heavy_d      = []
         names_list_light_d      = []
+        names_list_heavy_e      = []
+        names_list_light_e      = []
+        names_list_heavy_f      = []
+        names_list_light_f      = []
+        names_list_heavy_g      = []
+        names_list_light_g      = []
+        names_list_heavy_h      = []
+        names_list_light_h      = []
+
         for x in range(len(keyslist)):
             print(len(keyslist),x)
             if "Linker" in keyslist[x]:
@@ -401,12 +470,20 @@ def Check_interactions(chains_list):
                     x = re.sub("c",".c", x)
                 elif "d" in x:
                     x = re.sub("d",".d", x)
+                elif "e" in x:
+                    x = re.sub("e",".e", x)
+                elif "f" in x:
+                    x = re.sub("f",".f", x)
+                elif "g" in x:
+                    x = re.sub("g",".g", x)
+                elif "h" in x:
+                    x = re.sub("h",".h", x)
                 x_cleaned_up = re.sub("\[.*\]","", x)
 
                 return(str(x_cleaned_up))
 
 
-            if "a" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]):
+            if "a" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
@@ -416,7 +493,7 @@ def Check_interactions(chains_list):
                         coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_a.append(cleaned_up)
-            elif "b" in str(fragments[x]) and "a" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]):
+            elif "b" in str(fragments[x]) and "a" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
                         coordinates_list_heavy_b.append(dictionary.get(fragments[x][i]))
@@ -426,7 +503,7 @@ def Check_interactions(chains_list):
                         coordinates_list_light_b.append(dictionary.get(fragments[x][i]))
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_b.append(cleaned_up)
-            elif "c" in str(fragments[x]) and "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "d" not in str(fragments[x]):
+            elif "c" in str(fragments[x]) and "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
                         coordinates_list_heavy_c.append(dictionary.get(fragments[x][i]))
@@ -436,7 +513,7 @@ def Check_interactions(chains_list):
                         coordinates_list_light_c.append(dictionary.get(fragments[x][i]))
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_c.append(cleaned_up)
-            elif "d" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]):
+            elif "d" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
                         coordinates_list_heavy_d.append(dictionary.get(fragments[x][i]))
@@ -446,7 +523,47 @@ def Check_interactions(chains_list):
                         coordinates_list_light_d.append(dictionary.get(fragments[x][i]))
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_d.append(cleaned_up)
-            elif "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]):
+            elif "e" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
+                for i in range(len(fragments[x])):
+                    if "H" in str(fragments[x][i]):
+                        coordinates_list_heavy_e.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_heavy_e.append(cleaned_up)
+                    elif "L" in str(fragments[x][i]):
+                        coordinates_list_light_e.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_light_e.append(cleaned_up)
+            elif "f" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
+                for i in range(len(fragments[x])):
+                    if "H" in str(fragments[x][i]):
+                        coordinates_list_heavy_f.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_heavy_f.append(cleaned_up)
+                    elif "L" in str(fragments[x][i]):
+                        coordinates_list_light_f.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_light_f.append(cleaned_up)
+            elif "g" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "e" not in str(fragments[x]) and "h" not in str(fragments[x]):
+                for i in range(len(fragments[x])):
+                    if "H" in str(fragments[x][i]):
+                        coordinates_list_heavy_g.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_heavy_g.append(cleaned_up)
+                    elif "L" in str(fragments[x][i]):
+                        coordinates_list_light_g.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_light_g.append(cleaned_up)
+            elif "h" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "e" not in str(fragments[x]):
+                for i in range(len(fragments[x])):
+                    if "H" in str(fragments[x][i]):
+                        coordinates_list_heavy_h.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_heavy_h.append(cleaned_up)
+                    elif "L" in str(fragments[x][i]):
+                        coordinates_list_light_h.append(dictionary.get(fragments[x][i]))
+                        cleaned_up = fragment_cleanup(fragments[x][i])
+                        names_list_light_h.append(cleaned_up)
+            elif "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
@@ -494,6 +611,42 @@ def Check_interactions(chains_list):
                             coordinates_list_light_d.append(dictionary.get(fragments[x][i]))
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_d.append(cleaned_up)
+                    elif "e" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_e.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_heavy_e.append(cleaned_up)
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_e.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_light_e.append(cleaned_up)
+                    elif "f" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_f.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_heavy_f.append(cleaned_up)
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_f.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_light_f.append(cleaned_up)
+                    elif "g" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_g.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_heavy_g.append(cleaned_up)
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_g.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_light_g.append(cleaned_up)
+                    elif "h" in str(fragments[x][i]):
+                        if "H" in str(fragments[x][i]):
+                            coordinates_list_heavy_h.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_heavy_h.append(cleaned_up)
+                        elif "L" in str(fragments[x][i]):
+                            coordinates_list_light_h.append(dictionary.get(fragments[x][i]))
+                            cleaned_up = fragment_cleanup(fragments[x][i])
+                            names_list_light_h.append(cleaned_up)
                     else:
                         if "H" in str(fragments[x][i]):
                             coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
@@ -503,9 +656,8 @@ def Check_interactions(chains_list):
                             coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_a.append(cleaned_up)
-        print("OKILY DOKILY", coordinates_list_heavy_a)
-        print("DOOBIE DOOBIE", coordinates_list_heavy_a)
-        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d)
+
+        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h)
 
 
     def innie_or_outie(chain,VHa_chain,VHb_chain,VLa_chain,VLb_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4, righthanded):
@@ -535,7 +687,6 @@ def Check_interactions(chains_list):
                 if check_VHa_VLa_interactor == True:
                     innie_or_outie_list.append("outie")
                 else:
-                    print("CUM ERE LUV 2")
                     check_VHa_VHb_interactor = False
                     second_comp_keyslist = list(second_comp.keys())
                     for i in range(len(second_comp_keyslist)):
@@ -543,7 +694,6 @@ def Check_interactions(chains_list):
                         if interactor == current_interactor:
                             check_VHa_VHb_interactor = True
                     if check_VHa_VHb_interactor == True:
-                        print("WHY OH WHY OH WHY")
                         innie_or_outie_list.append("innie")
                     else:
                         check_VH_Fragment_interactor = False
@@ -562,7 +712,6 @@ def Check_interactions(chains_list):
                                 print(current_interactor,interactor)
                                 if interactor == current_interactor:
                                     check_VH_Fragment_interactor = True
-                                    print("OH MY GOD WE FOUND IT")
                         if check_VH_Fragment_interactor == True:
                             innie_or_outie_list.append("outie")
                         elif n > 0:
@@ -573,7 +722,6 @@ def Check_interactions(chains_list):
                                     elif innie_or_outie_list[-2] == "innie":
                                         innie_or_outie_list.append("outie")
                                 elif  chain.get(keyslist[n-2])[0][0] != (chain.get(keyslist[n])[0][1]):
-                                    print("WHat a fucktard")
                                     previous_domain_interaction = False
                                     previous_interactor = ""
                                     if "X" not in str(keyslist[n-2]):
@@ -597,26 +745,19 @@ def Check_interactions(chains_list):
                                                     elif interactor_in_or_out == "outie":
                                                         innie_or_outie_list.append("innie")
                                                 else:
-                                                    print("UMM WTF")
                                                     innie_or_outie_list.append("innie")
                                             else:
-                                                print("OOOH FFS")
                                                 innie_or_outie_list.append("outie")
                                         except IndexError:
-                                            print("oopsie")
                                             innie_or_outie_list.append("outie")
                                     elif previous_domain_interaction == True:
                                         if innie_or_outie_list[-2] == "outie":
-                                            print("OUT THOT")
                                             innie_or_outie_list.append("innie")
                                         elif innie_or_outie_list[-2] == "innie":
-                                            print("IN THOT")
                                             innie_or_outie_list.append("outie")
                                     elif innie_or_outie_list[-2] == "outie":
-                                        print("OUT THOT")
                                         innie_or_outie_list.append("outie")
                                     elif innie_or_outie_list[-2] == "innie":
-                                        print("IN THOT")
                                         innie_or_outie_list.append("innie")
 
         def in_or_out_light(n,chain,first_comp,Build_in,Build_out,Light_chain_check):
@@ -625,7 +766,8 @@ def Check_interactions(chains_list):
             interactor = chain.get(chain_keyslist[n])[0][1]
             first_comp_keyslist = list(first_comp.keys())
             for i in range(len(first_comp_keyslist)):
-                current_interactor = first_comp.get(first_comp_keyslist[i])[0]
+                current_interactor = first_comp.get(first_comp_keyslist[i])[0][0]
+                print("OOOARRRGGGG",interactor, current_interactor)
                 if interactor == current_interactor:
                     check_VHa_VLa_interactor = True
             if check_VHa_VLa_interactor == True:
@@ -681,7 +823,6 @@ def Check_interactions(chains_list):
                                             innie_or_outie_list.append("innie")
 
                                     elif chain.get(keyslist[n])[0][0] != (chain.get(keyslist[n+2])[0][1]):
-                                        print("LATERS LUV")
                                         if chain_count == 1:
                                             innie_or_outie_list.append("outie")
                                         elif chain_count == 2:
@@ -724,10 +865,8 @@ def Check_interactions(chains_list):
 
 
             elif "V" not in keyslist[n] and "H[" not in keyslist[n]:
-                "YEAH RIGHT"
                 innie_or_outie_list.append("constant")
             elif "V" not in keyslist[n] and "H[" in keyslist[n]:
-                "FFS"
                 innie_or_outie_list.append("constant")
                 before_H = False
         return(innie_or_outie_list)
@@ -792,6 +931,22 @@ def Check_interactions(chains_list):
         names_list_light_c      = []
         names_list_heavy_d      = []
         names_list_light_d      = []
+        coordinates_list_heavy_e= []
+        coordinates_list_light_e= []
+        coordinates_list_heavy_f= []
+        coordinates_list_light_f= []
+        coordinates_list_heavy_g= []
+        coordinates_list_light_g= []
+        coordinates_list_heavy_h= []
+        coordinates_list_light_h= []
+        names_list_heavy_e      = []
+        names_list_light_e      = []
+        names_list_heavy_f      = []
+        names_list_light_f      = []
+        names_list_heavy_g      = []
+        names_list_light_g      = []
+        names_list_heavy_h      = []
+        names_list_light_h      = []
         bonds                   = []
         hinges                  = []
         linkers                 = []
@@ -818,7 +973,12 @@ def Check_interactions(chains_list):
 
 
         if chain_count >= 4 :
-            slant = True
+            keyslista = list(VHa_chain.keys())
+            keyslistb = list(VHb_chain.keys())
+            if "H[" not in str(keyslistb) and "H[" not in str(keyslista):
+                slant = False
+            else:
+                slant = True
             if dictionary == VHa_chain or dictionary == VHb_chain:
                 keyslist = list(dictionary.keys())
                 try:
@@ -877,11 +1037,9 @@ def Check_interactions(chains_list):
             keyslistb = list(VHb_chain.keys())
             try:
                 if dictionary == VHb_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[0][1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0][0]):
-                    print("Dear god 1")
                     Build_out = True
                     Build_in = False
                 elif dictionary == VHa_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0]):
-                    print("Dear god 2")
                     Build_out = True
                     Build_in = False
                 else:
@@ -891,23 +1049,18 @@ def Check_interactions(chains_list):
                             Build_in = True
                             Build_out = False
                         elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) and dictionary.get(keyslist[4])[0][0] == (dictionary.get(keyslist[6])[0][1]):
-                            print("Dear god 3")
                             Build_out = True
                             Build_in = False
                         elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[6])[0][1]) and dictionary.get(keyslist[2])[0][0] == (dictionary.get(keyslist[4])[0][1]):
-                            print("Dear god 4")
                             Build_in = False
                             Build_out = True
                         else:
-                            print("Dear god 5")
                             Build_in = True
                             Build_out = False
                     except IndexError:
-                        print("Dear god 6")
                         Build_in = True
                         Build_out = False
             except IndexError:
-                print("Dear god 7")
                 Build_in = False
                 Build_out = True
 
@@ -984,6 +1137,9 @@ def Check_interactions(chains_list):
 
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
+                if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
+                    error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
+                    raise_error(lower_canvas, error_message)
                 Notes.append(Domain_name+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([200,600])
@@ -1047,10 +1203,10 @@ def Check_interactions(chains_list):
             #print(keyslist[i], i, len(dictionary))
             print(keyslist[i])
 
-
+            all
             if i == 0:
                 print("checkpoint1")
-                getcoordinates = domainmaker(startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
             elif i > 0:
                 previous_domain = keyslist[i-1]
@@ -1090,7 +1246,7 @@ def Check_interactions(chains_list):
                     starty = All_positions_and_chains.get(checker)[0][1]
                     print(startx)
                     print(startx)
-                    getcoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                    getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                 if "H[" in keyslist[i]:
                     before_H = False
@@ -1104,11 +1260,11 @@ def Check_interactions(chains_list):
                         mod = "H"
                         if dictionary == VHa_chain and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
                             if slant == True and righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[6])-50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif slant == True and righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[6])+50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif slant==False:
-                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             Extra_bond=True
                             Build_up=True
                             Build_down=False
@@ -1119,20 +1275,20 @@ def Check_interactions(chains_list):
 
 
                             if righthanded == True and slant==True:
-                                getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == False and slant==True:
-                                getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif slant==False:
-                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 
 
                 elif "H[" in keyslist[i-1]  and "X" in keyslist[i] :
                     print("checkpoint4")
                     if righthanded == False:
-                        getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     elif righthanded == True:
-                        getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 
 
@@ -1149,52 +1305,52 @@ def Check_interactions(chains_list):
                             Build_in = False
                             Build_out = True
                         if righthanded == False and slant == True:
-                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True and slant == True:
-                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == False:
-                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                     elif chain_count !=2 and mod !="Leucine" and "X" not in keyslist[i-1]:
                         print("DOCCY WHOO",innie_or_outie_list[i-2])
                         if innie_or_outie_list[i-2] == "innie" and righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif innie_or_outie_list[i-2] == "outie" and righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif innie_or_outie_list[i-2] == "innie" and righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif innie_or_outie_list[i-2] == "outie" and righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                         elif righthanded == False and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker((previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == False and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker((previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker((previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker((previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_in = True
                         Build_out = False
                     elif chain_count !=2 and mod !="Leucine" and "X" in keyslist[i-1]:
                         if righthanded == False and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker((previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == False and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker((previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker((previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker((previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_up = True
                         Build_in = True
                         Build_out = False
                     elif mod =="Leucine":
                         if righthanded == False :
-                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == True :
-                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == False:
-                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 
                 elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
@@ -1204,24 +1360,24 @@ def Check_interactions(chains_list):
                     if chain_count <=2:
                         if dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
                             if dictionary.get(keyslist[0])[0] != (dictionary.get(keyslist[2])[1]) :
-                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                         else:
                             if righthanded == True :
-                                getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                     elif H_count ==1 :
                         if righthanded == True :
-                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     elif H_count==2 :
                         if righthanded == True :
-                            getcoordinates = domainmaker((previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                     Build_in = False
                     Build_out = True
@@ -1232,11 +1388,11 @@ def Check_interactions(chains_list):
                         pass
                         print("checkpoint7.5")
                     elif slant == True and righthanded == True:
-                        getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     elif slant == True and righthanded == False:
-                        getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     else:
-                        getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     Build_in  = False
                     Build_out = True
 
@@ -1245,20 +1401,20 @@ def Check_interactions(chains_list):
                     if chain_count == 2:
                         if dictionary == VHa_chain:
                             if slant == True and righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[6])-50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif slant == True and righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[6])+50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+50,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             else:
-                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             Build_up=True
                             Build_down=False
                         elif dictionary == VHb_chain:
                                 if slant == True and righthanded == True:
-                                    getcoordinates = domainmaker((previous_chain[6])-50,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-50,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                 elif slant == True and righthanded == False:
-                                    getcoordinates = domainmaker((previous_chain[6])+50,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+50,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                 else:
-                                    getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                     #Build_in  = False
                     #Build_out = True
@@ -1267,11 +1423,11 @@ def Check_interactions(chains_list):
                 elif "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
                     print("checkpoint9")
                     if slant == True and righthanded == True:
-                        getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     elif slant == True and righthanded == False:
-                        getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     else:
-                        getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 
                     #Build_in  = False
@@ -1286,21 +1442,21 @@ def Check_interactions(chains_list):
                     if len(dictionary.get(keyslist[i])) == 1:
                         print("checkpoint11")
                         if slant == True and righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == True and righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         else:
-                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_in  = False
                         Build_out = True
                     elif len(dictionary.get(keyslist[i-2])) ==1 and "X" not in keyslist[i-2]:
                         print("checkpoint11")
                         if slant == True and righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == True and righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         else:
-                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_in  = False
                         Build_out = True
 
@@ -1322,22 +1478,22 @@ def Check_interactions(chains_list):
                             Build_out = True
                         if to_join_righthanded == False and to_join_direction == 'outie':
                             print("BS1")
-                            getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == False and to_join_direction == 'innie':
                             print("BS2")
-                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == False and to_join_direction == 'constant':
                             print("BS2")
-                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'outie':
                             print("BS1")
-                            getcoordinates = domainmaker(to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'innie':
                             print("BS2")
-                            getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'constant':
                             print("BS2")
-                            getcoordinates = domainmaker(to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         all_list = list(All_positions_and_chains.keys())
                         get = (All_positions_and_chains.get(all_list[-1]))
                         yprev = get[0][1]
@@ -1366,25 +1522,25 @@ def Check_interactions(chains_list):
                         if chain_count ==1:
                             if Build_in == True:
                                 if righthanded == False:
-                                    getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                 elif righthanded == True:
-                                    getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif Build_out == True:
                                 if righthanded == False:
-                                    getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                 elif righthanded == True:
-                                    getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif chain_count > 1:
                             if chain_count == 2:
                                 slant = False
                             if righthanded == False and Build_in == True and Build_out == False:
-                                getcoordinates = domainmaker((previous_chain[6]-50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == False and Build_in == False and Build_out == True:
-                                getcoordinates = domainmaker((previous_chain[6]-50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == True and Build_in == True and Build_out == False:
-                                getcoordinates = domainmaker((previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == True and Build_in == False and Build_out == True:
-                                getcoordinates = domainmaker((previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             if chain_count==2:
                                 Build_out = True
                                 Build_in = False
@@ -1394,35 +1550,35 @@ def Check_interactions(chains_list):
 ##Build up
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
                         print("checkpoint15")
-                        getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_up=True
                         Build_down=False
                     elif chain_count == 2 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+1 == dictionary.get(keyslist[i-2])[1]:
                         print("checkpoint16")
                         if dictionary == VHa_chain:
                             if slant==True and righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif  slant==True and righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif slant==False:
-                                getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             Build_up=True
                             Build_down=False
                         elif dictionary == VHb_chain:
                             try:
                                 if "Linker[" in keyslist[i+1]:
                                     if slant==True and righthanded == True:
-                                        getcoordinates = domainmaker((previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                     elif  slant==True and righthanded == True:
-                                        getcoordinates = domainmaker((previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                     elif slant==False:
-                                        getcoordinates = domainmaker((previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                                     Build_up=True
                                     Build_down=False
                                 else:
-                                    getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             except IndexError:
-                                getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                         if Build_out == True:
                             Build_in = True
@@ -1437,14 +1593,14 @@ def Check_interactions(chains_list):
                         print("checkpoint17")
                         if Build_in == True:
                             if righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[0]+60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[0]-60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif Build_out == True:
                             if righthanded == False:
-                                getcoordinates = domainmaker((previous_chain[0]-60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == True:
-                                getcoordinates = domainmaker((previous_chain[0]+60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 ##Build down
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
@@ -1452,11 +1608,11 @@ def Check_interactions(chains_list):
                         if "V" in keyslist[i]:
                             in_out_counter +=1
                         if slant == True and righthanded == True:
-                            getcoordinates = domainmaker((previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif slant == True and righthanded == False:
-                            getcoordinates = domainmaker((previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         else:
-                            getcoordinates = domainmaker((previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 ##H disulphides
             if "H[" in keyslist[i] or "H*[" in keyslist[i]  and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
@@ -1522,7 +1678,7 @@ def Check_interactions(chains_list):
             if i > 0 and Build_down==True and ("H[" not in keyslist[i] and not "Linker[" in keyslist[i]):
                 print("checkpoint19")
                 top_bond = getcoordinates[2]
-                if "H[" in keyslist[i-1] and i+1 != len(keyslist):
+                if "H[" in keyslist[i-1]:
                     hinges.append(bottom_bond + top_bond)
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
@@ -1582,7 +1738,10 @@ def Check_interactions(chains_list):
                         extrabondx2=top_bond[0]
                         extrabondy2=top_bond[1]+20
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
-                        bonds.append(extra_bond)
+                        if "H[" in keyslist[i]:
+                            hinges.append(extra_bond)
+                        else:
+                            bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
                             bottomx=extrabondx1
                             bottomy=extrabondy1
@@ -1633,6 +1792,22 @@ def Check_interactions(chains_list):
                 names_list_light_c       += dictionaries_to_append[13]
                 names_list_heavy_d       += dictionaries_to_append[14]
                 names_list_light_d       += dictionaries_to_append[15]
+                coordinates_list_heavy_e += dictionaries_to_append[16]
+                coordinates_list_light_e += dictionaries_to_append[17]
+                coordinates_list_heavy_f += dictionaries_to_append[18]
+                coordinates_list_light_f += dictionaries_to_append[19]
+                coordinates_list_heavy_g += dictionaries_to_append[20]
+                coordinates_list_light_g += dictionaries_to_append[21]
+                coordinates_list_heavy_h += dictionaries_to_append[22]
+                coordinates_list_light_h += dictionaries_to_append[23]
+                names_list_heavy_e       += dictionaries_to_append[24]
+                names_list_light_e       += dictionaries_to_append[25]
+                names_list_heavy_f       += dictionaries_to_append[26]
+                names_list_light_f       += dictionaries_to_append[27]
+                names_list_heavy_g       += dictionaries_to_append[28]
+                names_list_light_g       += dictionaries_to_append[29]
+                names_list_heavy_h       += dictionaries_to_append[30]
+                names_list_light_h       += dictionaries_to_append[31]
 
                 #print(All_positions_and_chains)
                 #ADCs += dictionaries_to_append[10]
@@ -1763,7 +1938,8 @@ def Check_interactions(chains_list):
                         Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]+80]
                     else:
                         Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]+60]
-                elif i+1 == len(dictionary) and keyslist:
+                elif i+1 == len(dictionary):
+                    print("OH CHRIST")
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
                         hinges.append([bottomx,bottomy,topx,topy])
@@ -1804,7 +1980,7 @@ def Check_interactions(chains_list):
         allbonds = bonds
         allbonds = [x for x in bonds if x != []]
         #allbonds = bonds
-        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d)
+        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h)
 
 ##Get starting positions
     VHa_2_test = VHa_chain.copy()
@@ -1846,7 +2022,7 @@ def Check_interactions(chains_list):
 
 ##VHa_chain
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
-            VHa_H_coordinatesx = 295
+            VHa_H_coordinatesx = 320
             VHa_H_coordinatesy = 280
             VHb_H_coordinatesx = 420
             VHb_H_coordinatesy = 280
@@ -1867,12 +2043,16 @@ def Check_interactions(chains_list):
                                 VHb_H_coordinatesx = 350
                                 VHb_H_coordinatesy = 280
                             elif Xa != Xb:
-                                VHa_H_coordinatesx = 295
+                                VHa_H_coordinatesx = 320
                                 VHa_H_coordinatesy = 280
                                 VHb_H_coordinatesx = 420
                                 VHb_H_coordinatesy = 280
 
-
+        elif chain_count == 4 and "H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test) and "X[" not in str(VHa_1_test) and "X[" not in str(VHb_1_test):
+            VHa_H_coordinatesx = 325
+            VHa_H_coordinatesy = 350
+            VHb_H_coordinatesx = 390
+            VHb_H_coordinatesy = 350
 
         teststartx = 0
         teststarty = 0
@@ -1924,10 +2104,10 @@ def Check_interactions(chains_list):
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
-        VHb_startx, VHb_starty = 400,100
+        VHb_startx, VHb_starty = 500,100
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
-        VHa_startx, VHa_starty= 200,100
+        VHa_startx, VHa_starty= 300,100
         try:
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
             print(VHa_chain.get(keyslista[0])[0][0], VHb_chain.get(keyslistb[0])[1])
@@ -1944,8 +2124,9 @@ def Check_interactions(chains_list):
                 else:
                     VHa_startx, VHa_starty= 150,100
         except IndexError:
-            if VHa_chain.get(VHa_list[1])[0][0] == VHb_chain.get(keyslistb[1])[1]:
-                VHa_startx, VHa_starty= 340,100
+            if len(VHa_chain.get(VHa_list[1])[0]) > 1:
+                if VHa_chain.get(VHa_list[1])[0][0] == VHb_chain.get(keyslistb[1])[1]:
+                    VHa_startx, VHa_starty= 340,100
 
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
 
@@ -1999,7 +2180,7 @@ def Check_interactions(chains_list):
                         VLb_reference_pos = find_the_fragment2(interactor,All_positions_and_chains)
                         VLb_refx = VLb_reference_pos[0]
                         VLb_refy = VLb_reference_pos[1]
-                        teststartx = 0
+                        teststartx = 800
                         teststarty = 0
                         testHpositionVLb = renderchains(VLb_1_test,teststartx,teststarty)[25]
                         test_H_positionx = testHpositionVLb[0]
@@ -2079,16 +2260,16 @@ def Check_interactions(chains_list):
     frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
     print(All_positions_and_chains)
 
-    keyslist_all_positions_and_chains = list(All_positions_and_chains.keys())
+    keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
     out_of_range = False
     how_much = 0
-    for i in range(len(keyslist_all_positions_and_chains)):
-        for j in range(len(All_positions_and_chains.get(keyslist_all_positions_and_chains[i])[0])):
-            if isinstance(All_positions_and_chains.get(keyslist_all_positions_and_chains[i])[0][j], int) == True:
-                if All_positions_and_chains.get(keyslist_all_positions_and_chains[i])[0][j] < 0:
+    for i in range(len(keyslist_All_positions_and_chains)):
+        for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
+            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], int) == True:
+                if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] < 0:
                     out_of_range = True
-                    if how_much > All_positions_and_chains.get(keyslist_all_positions_and_chains[i])[0][j]:
-                        how_much = All_positions_and_chains.get(keyslist_all_positions_and_chains[i])[0][j]
+                    if how_much > All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
+                        how_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
 
     if out_of_range == True:
         new_start = how_much+5
@@ -2130,10 +2311,26 @@ def Check_interactions(chains_list):
     names_list_light_c  = VHa_stats[33] + VLa_stats[33] + VHb_stats[33] + VLb_stats[33] + frag1_stat[33] + frag2_stat[33] + frag3_stat[33] + frag4_stat[33]
     names_list_heavy_d  = VHa_stats[34] + VLa_stats[34] + VHb_stats[34] + VLb_stats[34] + frag1_stat[34] + frag2_stat[34] + frag3_stat[34] + frag4_stat[34]
     names_list_light_d  = VHa_stats[35] + VLa_stats[35] + VHb_stats[35] + VLb_stats[35] + frag1_stat[35] + frag2_stat[35] + frag3_stat[35] + frag4_stat[35]
-
+    Heavy_Domains_e     = VHa_stats[36] + VLa_stats[36] + VHb_stats[36] + VLb_stats[36] + frag1_stat[36] + frag2_stat[36] + frag3_stat[36] + frag4_stat[36]
+    Light_Domains_e     = VHa_stats[37] + VLa_stats[37] + VHb_stats[37] + VLb_stats[37] + frag1_stat[37] + frag2_stat[37] + frag3_stat[37] + frag4_stat[37]
+    Heavy_Domains_f     = VHa_stats[38] + VLa_stats[38] + VHb_stats[38] + VLb_stats[38] + frag1_stat[38] + frag2_stat[38] + frag3_stat[38] + frag4_stat[38]
+    Light_Domains_f     = VHa_stats[39] + VLa_stats[39] + VHb_stats[39] + VLb_stats[39] + frag1_stat[39] + frag2_stat[39] + frag3_stat[39] + frag4_stat[39]
+    Heavy_Domains_g     = VHa_stats[40] + VLa_stats[40] + VHb_stats[40] + VLb_stats[40] + frag1_stat[40] + frag2_stat[40] + frag3_stat[40] + frag4_stat[40]
+    Light_Domains_g     = VHa_stats[41] + VLa_stats[41] + VHb_stats[41] + VLb_stats[41] + frag1_stat[41] + frag2_stat[41] + frag3_stat[41] + frag4_stat[41]
+    Heavy_Domains_h     = VHa_stats[42] + VLa_stats[42] + VHb_stats[42] + VLb_stats[42] + frag1_stat[42] + frag2_stat[42] + frag3_stat[42] + frag4_stat[42]
+    Light_Domains_h     = VHa_stats[43] + VLa_stats[43] + VHb_stats[43] + VLb_stats[43] + frag1_stat[43] + frag2_stat[43] + frag3_stat[43] + frag4_stat[43]
+    names_list_heavy_e  = VHa_stats[44] + VLa_stats[44] + VHb_stats[44] + VLb_stats[44] + frag1_stat[44] + frag2_stat[44] + frag3_stat[44] + frag4_stat[44]
+    names_list_light_e  = VHa_stats[45] + VLa_stats[45] + VHb_stats[45] + VLb_stats[45] + frag1_stat[45] + frag2_stat[45] + frag3_stat[45] + frag4_stat[45]
+    names_list_heavy_f  = VHa_stats[46] + VLa_stats[46] + VHb_stats[46] + VLb_stats[46] + frag1_stat[46] + frag2_stat[46] + frag3_stat[46] + frag4_stat[46]
+    names_list_light_f  = VHa_stats[47] + VLa_stats[47] + VHb_stats[47] + VLb_stats[47] + frag1_stat[47] + frag2_stat[47] + frag3_stat[47] + frag4_stat[47]
+    names_list_heavy_g  = VHa_stats[48] + VLa_stats[48] + VHb_stats[48] + VLb_stats[48] + frag1_stat[48] + frag2_stat[48] + frag3_stat[48] + frag4_stat[48]
+    names_list_light_g  = VHa_stats[49] + VLa_stats[49] + VHb_stats[49] + VLb_stats[49] + frag1_stat[49] + frag2_stat[49] + frag3_stat[49] + frag4_stat[49]
+    names_list_heavy_h  = VHa_stats[50] + VLa_stats[50] + VHb_stats[50] + VLb_stats[50] + frag1_stat[50] + frag2_stat[50] + frag3_stat[50] + frag4_stat[50]
+    names_list_light_h  = VHa_stats[51] + VLa_stats[51] + VHb_stats[51] + VLb_stats[51] + frag1_stat[51] + frag2_stat[51] + frag3_stat[51] + frag4_stat[51]
+    print(Hinges)
     if out_of_range == True:
         new_start = how_much-10
-        coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
+        coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
         for i in range(len(coordinates_to_change)):
             for j in range(len(coordinates_to_change[i])):
                 for k in range(len(coordinates_to_change[i][j])):
@@ -2147,18 +2344,30 @@ def Check_interactions(chains_list):
                                 if l %2 != 0:
                                     coordinates_to_change[i][j][k][l] -= new_start
 
-    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs)
+    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
 
 def render(chains_list,canvas,text_to_image):
     if text_to_image == True:
         canvas.delete("all")
+        global all_buttons
+        global specificity_colours
+        for i in range(len(all_buttons)):
+            all_buttons[i].config(fg = "black")
         global canvas_polygons
         canvas_polygons = {}
         global canvas_labels
         canvas_labels= {}
         global Label_lock
-        global custom_labels
-        custom_labels = {}
+        global TYPE_labels
+        TYPE_labels = {}
+        global NOTE_labels
+        NOTE_labels = {}
+        global MOD_labels
+        MOD_labels   = {}
+        global ANTI_labels
+        ANTI_labels = {}
+        global LENGTH_labels
+        LENGTH_labels = {}
 
         Bonds              = chains_list[0]
         disulphide_bridges = chains_list[1]
@@ -2180,6 +2389,22 @@ def render(chains_list,canvas,text_to_image):
         names_Heavy_d      = chains_list[17]
         Light_Domains_d    = chains_list[18]
         names_Light_d      = chains_list[19]
+        Heavy_Domains_e    = chains_list[30]
+        names_Heavy_e      = chains_list[31]
+        Light_Domains_e    = chains_list[32]
+        names_Light_e      = chains_list[33]
+        Heavy_Domains_f    = chains_list[34]
+        names_Heavy_f      = chains_list[35]
+        Light_Domains_f    = chains_list[36]
+        names_Light_f      = chains_list[37]
+        Heavy_Domains_g    = chains_list[38]
+        names_Heavy_g      = chains_list[39]
+        Light_Domains_g    = chains_list[40]
+        names_Light_g      = chains_list[41]
+        Heavy_Domains_h    = chains_list[42]
+        names_Heavy_h      = chains_list[43]
+        Light_Domains_h    = chains_list[44]
+        names_Light_h      = chains_list[45]
         Label_Text         = chains_list[20]
         Label_positions    = chains_list[21]
         Domain_Text        = chains_list[22]
@@ -2202,71 +2427,102 @@ def render(chains_list,canvas,text_to_image):
 
     #Bonds
         for i in range(len(Bonds)):
-            domain = canvas.create_line(Bonds[i], fill='#000000', width = 2,tags="bonds")
+            domain = canvas.create_line(Bonds[i], fill=bond_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Bonds[i], "-"]
         if arcs_left!=[]:
             for i in range(len(arcs_left)):
-                domain = canvas.create_arc(arcs_left[i], start=90, extent=180, style=tk.ARC, fill='#000000', width = 2,tags="bonds")
+                domain = canvas.create_arc(arcs_left[i], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags="bonds")
                 canvas_polygons[domain] = [arcs_left[i], "-"]
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
-                domain = canvas.create_arc(arcs_right[i], start=270, extent=180, style=tk.ARC, fill='#000000', width = 2,tags="bonds")
+                domain = canvas.create_arc(arcs_right[i], start=270, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags="bonds")
                 canvas_polygons[domain] = [arcs_right[i], "-"]
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
-                domain = canvas.create_arc(arcs_left_slant[i], start=150, extent=120, style=tk.ARC,width=2,tags="bonds")
+                domain = canvas.create_arc(arcs_left_slant[i], start=150, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags="bonds")
                 canvas_polygons[domain] = [arcs_left_slant[i], "-"]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
-                domain = canvas.create_arc(arcs_right_slant[i], start=270, extent=120, style=tk.ARC,width=2,tags="bonds")
+                domain = canvas.create_arc(arcs_right_slant[i], start=270, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags="bonds")
                 canvas_polygons[domain] = [arcs_right_slant[i], "-"]
         for i in range(len(Linkers)):
-            domain = canvas.create_line(Linkers[i], fill='#000000', width = 2,tags="bonds")
+            domain = canvas.create_line(Linkers[i], fill=linker_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Linkers[i], "-L-"]
         for i in range(len(Hinges)):
-            domain = canvas.create_line(Hinges[i], fill='#000000', width = 2,tags="bonds")
+            domain = canvas.create_line(Hinges[i], fill=hinge_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Hinges[i], "-H-"]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
-            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill='#007ECB', width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i]]
         for i in range(len(Light_Domains_a)):
-            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill='#73CAFF', width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i]]
     #B domains
         for i in range(len(Heavy_Domains_b)):
-            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill='#FF43EE', width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i]]
         for i in range(len(Light_Domains_b)):
-            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill='#F9D3F5', width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i]]
     #C domains
         for i in range(len(Heavy_Domains_c)):
-            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill='#0BD05A', width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i]]
         for i in range(len(Light_Domains_c)):
-            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill='#B9FAD3', width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i]]
     #D domains
         for i in range(len(Heavy_Domains_d)):
-            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill='#D9DE4A', width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i]]
         for i in range(len(Light_Domains_d)):
-            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill='#E2F562', width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i]]
+    #E domains
+        for i in range(len(Heavy_Domains_e)):
+            domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
+            canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i]]
+        for i in range(len(Light_Domains_e)):
+            domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
+            canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i]]
+    #F domains
+        for i in range(len(Heavy_Domains_f)):
+            domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
+            canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i]]
+        for i in range(len(Light_Domains_f)):
+            domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
+            canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i]]
+    #G domains
+        for i in range(len(Heavy_Domains_g)):
+            domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
+            canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i]]
+        for i in range(len(Light_Domains_g)):
+            domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
+            canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i]]
+    #H domains
+        for i in range(len(Heavy_Domains_h)):
+            domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
+            canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i]]
+        for i in range(len(Light_Domains_h)):
+            domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
+            canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
     #ADCs
         if ADCs != []:
             for i in range(len(ADCs)):
-                domain = canvas.create_polygon(ADCs[i], outline='#000000',fill='#68C1C1', width=2,tags="domain")
+
+                domain = canvas.create_polygon(ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
                 canvas_polygons[domain] = [ADCs[i],  "X"]
+
     #Labels
         if Label_lock == True:
             for i in range(len(Label_positions)):
                 x = Label_positions[i][0][0]
                 y = Label_positions[i][0][1]
                 print(x,y)
-                Domain_Text[i] = re.sub("sd","",Domain_Text[i])
+                Domain_Text[i] = re.sub("\_","-", Domain_Text[i])
+                Domain_Text[i] = re.sub("nano","",Domain_Text[i])
                 label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label")
                 canvas_labels[label] = [[x,y], Domain_Text[i]]
 
@@ -2277,7 +2533,7 @@ def render(chains_list,canvas,text_to_image):
             setlist = list(notes_set)
             for i in range(len(setlist)):
                 note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "label")
-                custom_labels[note] = [Note_positions[i],setlist[i]]
+                TYPE_labels[note] = [Note_positions[i],setlist[i]]
 
 
         print(canvas_polygons)
@@ -2291,8 +2547,23 @@ def sequence_render_pipeline(canvas):
     '''
     global Bond_lock
     global Delete_lock
+    global CustomLabelLock
+    global Domain_Primer
+    global Domain_Primer_Lock
+    global domain_type
+    global domain_charge
+    global domain_mod
+    global all_buttons
     Delete_lock = False
     Bond_lock = ""
+    domain_mod = ""
+    domain_type = ""
+    domain_charge = ""
+    Domain_Primer_Lock =""
+    CustomLabelLock = ""
+    Domain_Primer = []
+    for i in range(len(all_buttons)):
+        all_buttons[i].config(fg = "black")
     exp = sequence_pipeline(canvas)
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -2312,8 +2583,23 @@ def render_pipeline(canvas):
     '''
     global Bond_lock
     global Delete_lock
+    global CustomLabelLock
+    global Domain_Primer
+    global Domain_Primer_Lock
+    global domain_type
+    global domain_charge
+    global domain_mod
+    global all_buttons
     Delete_lock = False
     Bond_lock = ""
+    domain_mod = ""
+    domain_type = ""
+    domain_charge = ""
+    Domain_Primer_Lock =""
+    CustomLabelLock = ""
+    Domain_Primer = []
+    for i in range(len(all_buttons)):
+        all_buttons[i].config(fg = "black")
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
@@ -2331,76 +2617,116 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
     global Label_lock
     global Domain_Primer
     global Domain_Primer_Lock
-    if Domain_Primer_Lock != domain_name:
-        Domain_Primer_Lock = domain_name
-        Delete_lock = False
-        Bond_lock = ""
-        lower_canvas.bind("<Button-1>", mm.place_domain)
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-        lower_canvas.config(cursor = "plus")
-        status_label.config(text=domain_name)
-        Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy]
-    elif Domain_Primer_Lock == domain_name:
-        Domain_Primer_Lock = ""
-        Bond_lock = ""
-        lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.release)
-        lower_canvas.config(cursor = "arrow")
-        status_label.config(text="")
-        Domain_Primer = ()
-    print(Domain_Primer)
-############################################
-
-def domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
-    '''
-    Draw domains onto canvas with domainmaker
-    '''
+    global all_buttons
+    global domain_type
+    global domain_mod
+    global domain_charge
+    global extra_mods
     global Bond_lock
     global Delete_lock
     global Label_lock
+    global Domain_Primer_Lock
+    global Domain_Primer
     Delete_lock = False
     Bond_lock = ""
-    lower_canvas.bind("<Button-1>", mm.place_domain)
-    lower_canvas.bind("<B1-Motion>", mm.drag)
-    lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    lower_canvas.config(cursor = "arrow")
-    status_label.config(text="")
-    domaincoordinates = domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
-    if "a" in str(domain_name):
-        heavy_colour, light_colour = '#007ECB', '#73CAFF'
-    elif "b" in str(domain_name):
-        heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
-    elif "c" in str(domain_name):
-        heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
-    elif "d" in str(domain_name):
-        heavy_colour, light_colour = '#D9DE4A', '#E2F562'
-    elif "X" in str(domain_name):
-        heavy_colour, light_colour = '#68C1C1','#68C1C1'
-    else:
-        heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
-    if Heavy == True:
-        domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=2, tags="domain")
-    elif Light == True:
-        domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=light_colour, width=2, tags="domain")
-    canvas_polygons[domain] = [domaincoordinates[0], domain_name]
-    if Label_lock == True:
-        domain_name = re.sub("\.|@|>","",domain_name)
-        label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
-        canvas_labels[label] = [domaincoordinates[3], domain_name]
-    global domain_mod
-    domain_mod = ""
-    global domain_direction
-    domain_direction = "constant"
+    Domain_Primer = []
+    global domain_buttons
+    global bond_buttons
+    for i in domain_buttons:
+        i.config(fg = "black")
+    for i in bond_buttons:
+        i.config(fg="black")
+    if domain_type != "":
+        if Domain_Primer_Lock != domain_name:
+            Domain_Primer_Lock = domain_name
+            Delete_lock = False
+            Bond_lock = ""
+            lower_canvas.bind("<Button-1>", mm.place_domain)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+            lower_canvas.config(cursor = "plus")
+            status_label.config(text=domain_name)
+            Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy]
+            if domain_mod != "":
+                if  domain_mod == "@" or domain_mod== ">":
+                    Domain_Primer[5] == domain_mod
+
+            if domain_charge !="":
+                if domain_charge == "+" or domain_charge == "_":
+                    domain_charge = re.sub("\_","-", domain_charge)
+                    Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
+                    if "V" in Domain_Primer[8]:
+                        Domain_Primer[8] = re.sub("\.",domain_charge+".",Domain_Primer[8])
+                    else:
+                        Domain_Primer[8] += domain_charge
+            if extra_mods !="":
+                Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
+                if "V" in Domain_Primer[8]:
+                    Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
+                else:
+                    Domain_Primer[8] += extra_mods
+            if  "nano" in domain_name:
+                nanobody_button.config(fg="red")
+            elif "VH" in domain_name:
+                InsertVHDomainButton.config(fg="red")
+            elif "VL" in domain_name:
+                InsertVLDomainButton.config(fg="red")
+            elif "CH1" in domain_name:
+                InsertCH1DomainButton.config(fg="red")
+            elif "CH2" in domain_name:
+                InsertCH2DomainButton.config(fg="red")
+            elif "CH3" in domain_name:
+                InsertCH3DomainButton.config(fg="red")
+            elif "CH4" in domain_name:
+                InsertCH4DomainButton.config(fg="red")
+            elif "CL" in domain_name:
+                InsertCLDomainButton.config(fg="red")
+            elif "X" in domain_name:
+                InsertXDomainButton.config(fg="red")
+
+        elif Domain_Primer_Lock == domain_name:
+            Domain_Primer_Lock = ""
+            Bond_lock = ""
+            lower_canvas.bind("<Button-1>", mm.select)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.release)
+            lower_canvas.config(cursor = "arrow")
+            status_label.config(text="")
+            Domain_Primer = []
+            if domain_type != "":
+                Domain_Primer_Lock = ""
+                lower_canvas.config(cursor = "arrow")
+                lower_canvas.bind("<Button-1>", mm.change_specificity)
+                lower_canvas.unbind("<B1-Motion>")
+                lower_canvas.unbind("<ButtonRelease-1>")
+            #domain_type = ""
+            domain_charge = ""
+            domain_mod = ""
+            extra_mods = ""
+    elif domain_type == "":
+        Delete_lock = False
+        Bond_lock = ""
+        Domain_Primer = []
+        Domain_Primer_Lock = ""
+
 
 ############################################
 def save_as_png(canvas):
     fileName = "AbYdraw_export"
     # save postscipt image
+    eps = canvas.postscript(file = fileName + '.eps')
     canvas.postscript(file = fileName + '.eps')
     # use PIL to convert to PNG
     img = Image.open(fileName + '.eps')
+    img.save(fileName + '.png', 'png')
+    #image_eps = str(fileName + '.eps')
+    #im = Image.open(image_eps)
+    #fig = im.convert('RGBA')
+    #image_png= str(fileName+'.png')
+    #fig.save(image_png, lossless = True)
+    #os.remove(str(fileName + '.eps'))
+    # use PIL to convert to PNG
+    #img = Image.open(fileName + '.eps')
     #img.save(fileName + '.png', 'png')
 ###########################################
 def get_min_max_coordinates(domain_coordinates):
@@ -2457,6 +2783,8 @@ def Get_Template_File(canvas):
 
 
     def Get_Domain_stats_printout(string,dict,indexing):
+        print(string)
+        print(dict)
         Type = []
         Chain_Class_Strings = []
         NGlycos_Strings = []
@@ -2467,12 +2795,39 @@ def Get_Template_File(canvas):
         DisulphidesInter = []
         HVJC_Germline_Strings = []
         H_chain_Ranges_Strings = []
+        H_Mutations = []
         LVJC_Germline_Strings = []
         L_chain_Ranges_Strings = []
+        L_Mutations = []
         H_CDR_Strings = []
         L_CDR_Strings =[]
-        all = [Type,Chain_Class_Strings,NGlycos_Strings,Heavy_CysPositions,Heavy_Disulphides_Intra,Light_CysPositions,Light_Disulphides_Intra,DisulphidesInter,HVJC_Germline_Strings,H_chain_Ranges_Strings,LVJC_Germline_Strings,L_chain_Ranges_Strings,H_CDR_Strings,L_CDR_Strings, [], []]
+        all = [Type,Chain_Class_Strings,NGlycos_Strings,Heavy_CysPositions,Heavy_Disulphides_Intra,Light_CysPositions,Light_Disulphides_Intra,DisulphidesInter,HVJC_Germline_Strings,H_chain_Ranges_Strings,H_Mutations,LVJC_Germline_Strings,L_chain_Ranges_Strings,L_Mutations,H_CDR_Strings,L_CDR_Strings, [], []]
         index = str("["+str(indexing)+"]")
+        #dict_keys_list = list(dict.keys())
+        #disulphides_connected = []
+        #disulphides_inter = 0
+        #disulphides_intra = 0
+        #for i in range(len(dict_keys_list)):
+        #    if dict.get(dict_keys_list[i])[1] > 0:
+        #        disulphides_connected.append(dict.get(dict_keys_list[i])[0])[1]
+        #for i in range(len(disulphides_connected)):
+        #    found= False
+        #    for j in range(len(dict_keys_list)):
+        #        if disulphides_connected == dict.get(dict_keys_list[j])[0]:
+        #            disulphides_intra += 0.5
+        #            found = True
+        #    if found == False:
+        #        disulphides_inter +=1
+        #if disulphides_intra > 0:
+        #    Heavy_Disulphides_Intra.append(str("HeavyCysPositions"+index+":"))
+        #    Heavy_Disulphides_Intra.append(str("HeavyPotentialNGlycos"+index+":"))
+        #    if "L" in str(string):
+        #        Light_Disulphides_Intra.append(str("LightCysPositions"+index+":"))
+        #        Light_Disulphides_Intra.append(str("LightPotentialNGlycos"+index+":"))
+
+        #if disuphides_inter > 0:
+        #    DisulphidesInter.append(str("DisulfidesInter"+index+":"))
+
         if "X" in str(string):
             Type.append(str("Type"+index+": OTHER"))
         else:
@@ -2522,7 +2877,14 @@ def Get_Template_File(canvas):
         if "CL" in str(string):
             LVJC_Germline_Strings.append(str("LCGermline"+index+":"))
             L_chain_Ranges_Strings.append(str("CLRange"+index+":"))
-
+        if "H@" in str(string):
+            H_Mutations.append(str("MutationH"+index+":"+"          heterodimer formation hole "))
+        if "H>" in str(string):
+            L_Mutations.append(str("MutationH"+index+":"+"          heterodimer formation knob "))
+        if "L@" in str(string):
+            L_Mutations.append(str("MutationH"+index+":"+"          heterodimer formation hole "))
+        if "L>" in str(string):
+            H_Mutations.append(str("MutationH"+index+":"+"          heterodimer formation knob "))
         Template_File.append("")
         Template_File.append("")
         for j in range(len(all)):
@@ -2633,7 +2995,7 @@ def Get_Template_File(canvas):
     for i in range(len(fusions_dicts)):
         for j in range(len(fusions_dicts[i])):
             listing = list(fusions_dicts[i][j].keys())
-            listier = re.sub("\[[0-9]\]|\[|\]|'|,","",str(listing))
+            listier = re.sub("\[[0-9]\]|\[|\]|a|b|c|d|e|f|g|h|'|,","",str(listing))
             index = str(counter)
             counter +=1
             Template_File.append(str("Domains["+index+"]   "+listier))
@@ -2693,7 +3055,11 @@ def sequence_pipeline(canvas):
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
     polygons_keyslist = list(canvas_polygons.keys())
-    custom_keyslist = list(custom_labels.keys())
+    TYPE_keyslist = list(TYPE_labels.keys())
+    NOTE_keyslist = list(NOTE_labels.keys())
+    MOD_keyslist  = list(MOD_labels.keys())
+    ANTI_keyslist = list(ANTI_labels.keys())
+    LENGTH_keyslist=list(LENGTH_labels.keys())
     domains_list = canvas.find_withtag("domain")
     domains_dict = {}
     for i in range(len(domains_list)):
@@ -2707,23 +3073,51 @@ def sequence_pipeline(canvas):
             if bonds_list[i] == polygons_keyslist[j]:
                 bonds_dict[j] = canvas_polygons.get(polygons_keyslist[j])
     disulphides_list = canvas.find_withtag("disulphide")
-    print(disulphides_list)
+    #print(disulphides_list)
     disulphides_dict = {}
     for i in range(len(disulphides_list)):
         for j in range(len(polygons_keyslist)):
             if disulphides_list[i] == polygons_keyslist[j]:
                 disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    custom_list = canvas.find_withtag("custom_labels")
-    custom_dict = {}
-    for i in range(len(custom_list)):
-        for j in range(len(custom_keyslist)):
-            if custom_list[i] == custom_keyslist[j]:
-                custom_dict[j] = custom_labels.get(custom_keyslist[j])
-
+    type_list = canvas.find_withtag("TYPE_labels")
+    type_dict = {}
+    for i in range(len(type_list)):
+        for j in range(len(TYPE_keyslist)):
+            if type_list[i] == TYPE_keyslist[j]:
+                type_dict[j] = TYPE_labels.get(TYPE_keyslist[j])
+    note_list = canvas.find_withtag("NOTE_labels")
+    note_dict = {}
+    for i in range(len(note_list)):
+        for j in range(len(NOTE_keyslist)):
+            if note_list[i] == NOTE_keyslist[j]:
+                note_dict[j] = NOTE_labels.get(NOTE_keyslist[j])
+    mod_list = canvas.find_withtag("MOD_labels")
+    mod_dict = {}
+    for i in range(len(mod_list)):
+        for j in range(len(MOD_keyslist)):
+            if mod_list[i] == MOD_keyslist[j]:
+                mod_dict[j] = MOD_labels.get(MOD_keyslist[j])
+    anti_list = canvas.find_withtag("ANTI_labels")
+    anti_dict = {}
+    for i in range(len(anti_list)):
+        for j in range(len(ANTI_keyslist)):
+            if anti_list[i] == ANTI_keyslist[j]:
+                anti_dict[j] = ANTI_labels.get(ANTI_keyslist[j])
+    length_list = canvas.find_withtag("MOD_labels")
+    length_dict = {}
+    for i in range(len(length_list)):
+        for j in range(len(LENGTH_keyslist)):
+            if length_list[i] == LENGTH_keyslist[j]:
+                length_dict[j] = LENGTH_labels.get(LENGTH_keyslist[j])
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
     print("Disulphides", disulphides_dict)
-    print("Labels", custom_dict)
+    print("Types", type_dict)
+    print("Notes", note_dict)
+    print("anti", anti_dict)
+    print("mod", mod_dict)
+    print("length", length_dict)
+
     chains=[]
     current_chain_str = []
     current_chain_coords_lists = []
@@ -2731,9 +3125,11 @@ def sequence_pipeline(canvas):
     domains_keyslist = list(domains_dict.keys())
     bonds_keyslist = list(bonds_dict.keys())
     disulphides_keyslist = list(disulphides_dict.keys())
-    labels_keyslist = list(custom_dict.keys())
-    print(labels_keyslist)
-
+    type_keyslist = list(type_dict.keys())
+    note_keyslist = list(note_dict.keys())
+    mod_keyslist  = list(mod_dict.keys())
+    anti_keyslist = list(anti_dict.keys())
+    length_keyslist= list(length_dict.keys())
     for i in range(len(domains_keyslist)):
         start_found = True
         continuation_found = False
@@ -2849,7 +3245,7 @@ def sequence_pipeline(canvas):
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "sd" not in str(strings[i][j]):
+            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "nano" not in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
@@ -2909,10 +3305,8 @@ def sequence_pipeline(canvas):
                                                 d2y2 = min_max[3]+5
                                             combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                             for g in combinations_to_try:
-                                                print(d1x1, g[0],d1x2,"HMM", d1y1, g[1],d1y2)
                                                 if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                    print("YES ALRIGHT")
-                                                    if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                    if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])):
                                                         disulphide_count = 0
                                                         for y in range(len(disulphides_keyslist)):
                                                             #print("Looking for those disulphides")
@@ -3013,13 +3407,45 @@ def sequence_pipeline(canvas):
                 d1y1 = min_max[2]
                 d1y2 = min_max[3]
                 print(d1x1,d1x2,d1y1,d1y2)
-                for k in range(len(labels_keyslist)):
-                    labelx = custom_dict.get(labels_keyslist[k])[0][0]
-                    labely = custom_dict.get(labels_keyslist[k])[0][1]
+                for k in range(len(type_keyslist)):
+                    labelx = type_dict.get(type_keyslist[k])[0][0]
+                    labely = type_dict.get(type_keyslist[k])[0][1]
                     #print(labelx,labely)
                     if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
-                        note = custom_dict.get(labels_keyslist[k])[1]
+                        note = type_dict.get(type_keyslist[k])[1]
                         noting = str("[TYPE:"+note+"]")
+                        strings[i][j] += noting
+                for k in range(len(note_keyslist)):
+                    labelx = note_dict.get(note_keyslist[k])[0][0]
+                    labely = note_dict.get(note_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        note = note_dict.get(note_keyslist[k])[1]
+                        noting = str("[NOTE:"+note+"]")
+                        strings[i][j] += noting
+                for k in range(len(mod_keyslist)):
+                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
+                    labely = mod_dict.get(mod_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        note = mod_dict.get(mod_keyslist[k])[1]
+                        noting = str("[MOD:"+note+"]")
+                        strings[i][j] += noting
+                for k in range(len(anti_keyslist)):
+                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
+                    labely = anti_dict.get(anti_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        note = anti_dict.get(anti_keyslist[k])[1]
+                        noting = str("[ANTI:"+note+"]")
+                        strings[i][j] += noting
+                for k in range(len(length_keyslist)):
+                    labelx = length_dict.get(length_keyslist[k])[0][0]
+                    labely = length_dict.get(length_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        note = length_dict.get(length_keyslist[k])[1]
+                        noting = str("[LENGTH:"+note+"]")
                         strings[i][j] += noting
             elif "-H" in strings[i][j]:
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
@@ -3028,17 +3454,51 @@ def sequence_pipeline(canvas):
                 d1x2 = min_max[1]+50
                 d1y1 = min_max[2]
                 d1y2 = min_max[3]
-                print(d1x1,d1x2,d1y1,d1y2)
-                for k in range(len(labels_keyslist)):
-                    labelx = custom_dict.get(labels_keyslist[k])[0][0]
-                    labely = custom_dict.get(labels_keyslist[k])[0][1]
+                for k in range(len(type_keyslist)):
+                    labelx = type_dict.get(type_keyslist[k])[0][0]
+                    labely = type_dict.get(type_keyslist[k])[0][1]
                     #print(labelx,labely)
                     if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
                         domain = strings[i][j].split("-")[1]
-                        note = custom_dict.get(labels_keyslist[k])[1]
+                        note = type_dict.get(type_keyslist[k])[1]
                         noting = str("-"+domain+"[TYPE:"+note+"]-")
                         strings[i][j] = noting
-
+                for k in range(len(note_keyslist)):
+                    labelx = note_dict.get(note_keyslist[k])[0][0]
+                    labely = note_dict.get(note_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        domain = strings[i][j].split("-")[1]
+                        note = note_dict.get(note_keyslist[k])[1]
+                        noting = str("-"+domain+"[NOTE:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(mod_keyslist)):
+                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
+                    labely = mod_dict.get(mod_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        domain = strings[i][j].split("-")[1]
+                        note = mod_dict.get(mod_keyslist[k])[1]
+                        noting = str("-"+domain+"[MOD:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(anti_keyslist)):
+                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
+                    labely = anti_dict.get(anti_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        domain = strings[i][j].split("-")[1]
+                        note = anti_dict.get(anti_keyslist[k])[1]
+                        noting = str("-"+domain+"[ANTI:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(length_keyslist)):
+                    labelx = length_dict.get(length_keyslist[k])[0][0]
+                    labely = length_dict.get(length_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                        domain = strings[i][j].split("-")[1]
+                        note = length_dict.get(length_keyslist[k])[1]
+                        noting = str("-"+domain+"[LENGTH:"+note+"]-")
+                        strings[i][j] = noting
 ##conver lists to expression
     final_string = ""
     for i in range(len(strings)):
@@ -3073,11 +3533,37 @@ def delete_all_button(canvas):
     global canvas_polygons
     global canvas_labels
     global temp_label
-    global custom_labels
+    global TYPE_labels
+    global NOTE_labels
+    global domain_type
+    global domain_mod
+    global domain_charge
+    global Delete_lock
+    global Bond_lock
+    global Domain_Primer
+    global Domain_Primer_Lock
+    global extra_mods
+    global all_buttons
+    for i in all_buttons:
+        i.config(fg = "black")
     canvas_polygons = {}
     canvas_labels = {}
-    temp_label = {}
-    custom_labels = {}
+    temp_label    = {}
+    TYPE_labels   = {}
+    NOTE_labels   = {}
+    MOD_labels    = {}
+    ANTI_labels   = {}
+    LENGTH_labels = {}
+    Delete_lock   = ""
+    domain_type   = ""
+    domain_charge = ""
+    domain_mod    = ""
+    extra_domains = ""
+    Bond_lock     = ""
+    Domain_Primer = []
+    Domain_Primer_Lock=""
+    textBox.delete("1.0","end")
+
 
 def delete_button(canvas):
     '''
@@ -3085,8 +3571,26 @@ def delete_button(canvas):
     '''
     global Delete_lock
     global Bond_lock
+    global InsertDelClickButton
+    global Domain_Primer
+    global Domain_Primer_Lock
+    global extra_mods
+    global domain_type
+    global domain_charge
+    global domain_mod
+    global all_buttons
     Bond_lock = ""
+    domain_type = ""
+    domain_mod = ""
+    domain_charge = ""
+    extra_mods = ""
+    Domain_Primer = []
+    Domain_Primer_Lock = ""
+
+    for i in all_buttons:
+        i.config(fg = "black")
     if Delete_lock == False:
+        InsertDelClickButton.config(fg="red")
         Delete_lock = True
         lower_canvas.config(cursor = "arrow")
         lower_canvas.unbind("<Button-1>")
@@ -3097,6 +3601,9 @@ def delete_button(canvas):
 
     elif Delete_lock == True:
         Delete_lock = False
+        InsertDelClickButton.config(fg="black")
+        InsertDelClickButton = tk.Button(frame2,text="Delete",bg="grey", command=lambda: delete_button(lower_canvas))
+        InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
         lower_canvas.unbind("<Button-1>")
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -3104,21 +3611,341 @@ def delete_button(canvas):
         status_label.config(text="")
 
 def domain_type_button(letter):
-    domain_letter = str(letter)
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global domain_charge
+    global domain_mod
+    global extra_mods
     global domain_type
-    domain_type = letter
+    global Domain_Primer_Lock
+    global Domain_Primer
+    global bond_buttons
+    global comments_buttons
+    global domain_buttons
+    global delete_buttons
+    global specificity_buttons
+    for i in bond_buttons:
+        i.config(fg = "black")
+    for i in comments_buttons:
+        i.config(fg = "black")
+    for i in delete_buttons:
+        i.config(fg = "black")
+    #for i in specificity_buttons:
+    #    i.config(fg = "black")
+    Delete_lock = False
+    Bond_lock = ""
+    if Domain_Primer_Lock != "":
+        lower_canvas.bind("<Button-1>", mm.place_domain)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        lower_canvas.config(cursor = "plus")
+    if Domain_Primer_Lock == "":
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    status_label.config(text="")
+    domain_letter = str(letter)
+
+    if letter not in str(domain_type):
+        domain_type += letter
+        if letter == "a":
+            a_button.config(fg="red")
+        elif letter == "b":
+            b_button.config(fg="red")
+        elif letter == "c":
+            c_button.config(fg="red")
+        elif letter == "d":
+            d_button.config(fg="red")
+        elif letter == "e":
+            e_button.config(fg="red")
+        elif letter == "f":
+            f_button.config(fg="red")
+        elif letter == "g":
+            g_button.config(fg="red")
+        elif letter == "h":
+            h_button.config(fg="red")
+        if Domain_Primer != []:
+            Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
+            Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
+        elif Domain_Primer_Lock == "":
+            lower_canvas.config(cursor = "arrow")
+            lower_canvas.bind("<Button-1>", mm.change_specificity)
+            lower_canvas.unbind("<B1-Motion>")
+            lower_canvas.unbind("<ButtonRelease-1>")
+
+    elif letter in str(domain_type): #and Domain_Primer_Lock == "":
+        domain_type = re.sub(str(letter),"",domain_type)
+        print(domain_type)
+
+        Domain_Primer_Lock = ""
+        Domain_Primer = []
+        for i in domain_buttons:
+            i.config(fg="black")
+
+
+        if letter == "a":
+            a_button.config(fg="black")
+        elif letter == "b":
+            b_button.config(fg="black")
+        elif letter == "c":
+            c_button.config(fg="black")
+        elif letter == "d":
+            d_button.config(fg="black")
+        elif letter == "e":
+            e_button.config(fg="black")
+        elif letter == "f":
+            f_button.config(fg="black")
+        elif letter == "g":
+            g_button.config(fg="black")
+        elif letter == "h":
+            h_button.config(fg="black")
+        if domain_type == "" and Domain_Primer_Lock != "":
+            print("A-OK")
+            lower_canvas.bind("<Button-1>", mm.select)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.release)
+            lower_canvas.config(cursor = "arrow")
+        elif domain_type != "" and Domain_Primer_Lock == "":
+            if (domain_charge != "" or domain_mod !="" or extra_mods != ""):
+                lower_canvas.config(cursor = "arrow")
+                lower_canvas.bind("<Button-1>", mm.change_modification)
+                lower_canvas.unbind("<B1-Motion>")
+                lower_canvas.unbind("<ButtonRelease-1>")
+            elif (domain_charge == "" and domain_mod =="" and extra_mods == ""):
+                lower_canvas.config(cursor = "arrow")
+                lower_canvas.bind("<Button-1>", mm.change_specificity)
+                lower_canvas.unbind("<B1-Motion>")
+                lower_canvas.unbind("<ButtonRelease-1>")
+        else:
+            print("C-OK")
+            lower_canvas.bind("<Button-1>", mm.select)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.release)
+            lower_canvas.config(cursor = "arrow")
+
+def extra_mod_button(letter):
+    global extra_mods
+    global domain_type
+    global domain_charge
+    global domain_mod
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global Domain_Primer
+    global Domain_Primer_Lock
+    Delete_lock = False
+    Bond_lock = ""
+    global bond_buttons
+    global delete_buttons
+    global comments_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+    if Domain_Primer_Lock != "":
+        lower_canvas.bind("<Button-1>", mm.place_domain)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        lower_canvas.config(cursor = "plus")
+    elif Domain_Primer_Lock == "":
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    selected_mod = str(letter)
+    if selected_mod not in str(extra_mods):
+        extra_mods += selected_mod
+        if selected_mod == "!":
+            Gly_button.config(fg = "red")
+        elif selected_mod == "*":
+            Mod_button.config(fg="red")
+        print(Domain_Primer)
+        if Domain_Primer != [] and (selected_mod == "!" or selected_mod == "*"):
+            Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
+            if "V" in Domain_Primer[8]:
+                Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
+            else:
+                Domain_Primer[8] += extra_mods
+
+    elif selected_mod in str(extra_mods):
+        if selected_mod == "!":
+            extra_mods = re.sub("\!","",extra_mods)
+            Gly_button.config(fg = "black")
+            if Domain_Primer != []:
+                Domain_Primer[8] = re.sub("\!","",Domain_Primer[8])
+        elif selected_mod == "*":
+            extra_mods = re.sub("\*","",extra_mods)
+            Mod_button.config(fg="black")
+            if Domain_Primer !=[]:
+                Domain_Primer[8] = re.sub("\*","",Domain_Primer[8])
+
+    if (domain_charge != "" or domain_mod !="" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_modification)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+
+
 def domain_mod_button(letter):
     domain_letter = str(letter)
     global domain_mod
-    domain_mod = str(letter)
-    if letter == ">" or letter == "@":
-        global domain_direction
-        domain_direction = "innie"
+    global domain_charge
+    global extra_mods
+    global domain_type
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global Domain_Primer
+    global Domain_Primer_Lock
+    Delete_lock = False
+    Bond_lock = ""
+    global bond_buttons
+    global delete_buttons
+    global comments_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+
+    if Domain_Primer_Lock != "":
+        lower_canvas.bind("<Button-1>", mm.place_domain)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        lower_canvas.config(cursor = "plus")
+    elif Domain_Primer_Lock == "":
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    buttons = [KIH_hole, KIH_knob]
+    for i in buttons:
+        i.config(fg="black")
+    if domain_mod != str(letter):
+        domain_mod = str(letter)
+        if letter == ">" or letter == "@":
+            global domain_direction
+            domain_direction = "innie"
+            if letter == ">":
+                KIH_knob.configure(fg="red")
+            elif letter == "@":
+                KIH_hole.configure(fg="red")
+
+        if Domain_Primer != [] and (letter == "@" or letter == ">"):
+            Domain_Primer[5] = re.sub(Domain_Primer[5],letter,Domain_Primer[5])
+            re.sub("\@|\>","", Domain_Primer[8])
+            if "." in Domain_Primer[8]:
+                Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
+            else:
+                Domain_Primer[8]+=letter
+
+    elif domain_mod == str(letter) and Domain_Primer_Lock != "":
+        domain_mod = ""
+        if Domain_Primer != []:
+            Domain_Primer[5] = re.sub(".*",letter,Domain_Primer[5])
+            re.sub("\@|\>","", Domain_Primer[8])
+            if "." in Domain_Primer[8]:
+                Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
+            else:
+                Domain_Primer[8]+=letter
+
+    elif domain_mod == str(letter):
+        domain_mod = ""
+        if Domain_Primer != []:
+            Domain_Primer[8] = re.sub("@|>","", Domain_Primer[8])
+    if (domain_charge != "" or domain_mod != "" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_modification)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+
+
+
+def domain_charge_button(charge):
+    letter = str(charge)
+    global domain_mod
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global domain_charge
+    global Domain_Primer_Lock
+    global Domain_Primer
+    Delete_lock = False
+    Bond_lock = ""
+    if Domain_Primer_Lock != "":
+        lower_canvas.bind("<Button-1>", mm.place_domain)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        lower_canvas.config(cursor = "plus")
+    elif Domain_Primer_Lock == "":
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    global bond_buttons
+    global delete_buttons
+    global comments_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+    buttons = [Positive_charge, Negative_charge]
+    for i in buttons:
+        i.config(fg="black")
+    if domain_charge != str(letter):
+        domain_charge = str(letter)
+        if letter == "+":
+            Positive_charge.configure(fg="red")
+        elif letter == "_":
+            Negative_charge.configure(fg="red")
+        if Domain_Primer_Lock != "" and (letter == "+" or letter == "_"):
+            Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
+            if "V" in Domain_Primer[8]:
+                Domain_Primer[8] = re.sub("\.",letter+".",Domain_Primer[8])
+            else:
+                Domain_Primer[8] += letter
+
+    elif domain_charge == str(letter):
+        domain_charge = ""
+        if Domain_Primer != []:
+            Domain_Primer[8] = re.sub("\+|\_|\-","",Domain_Primer[8])
+
+    if (domain_charge != "" or domain_mod !="" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
+        print("YEAH BABY")
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_modification)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
 
 def bond_drag_button(canvas,name,buttonpress):
     global Bond_lock
     global Delete_lock
     Delete_lock = False
+    global delete_buttons
+    global domain_buttons
+    global comments_buttons
+    global mod_buttons
+    global specificity_buttons
+    global bond_buttons
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in domain_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+    for i in specificity_buttons:
+        i.config(fg="black")
+    for i in mod_buttons:
+        i.config(fg="black")
+    for i in bond_buttons:
+        i.config(fg="black")
     if Bond_lock != buttonpress:
         Bond_lock = buttonpress
         lower_canvas.unbind("<Button-1>")
@@ -3129,12 +3956,11 @@ def bond_drag_button(canvas,name,buttonpress):
         if name == "-":
             lower_canvas.bind("<ButtonRelease-1>", mm.release_bond)
             status_label.config(text="Bond lock on")
-        elif name == "-H-":
-            lower_canvas.bind("<ButtonRelease-1>", mm.release_Hinge_bond)
-            status_label.config(text="Hinge lock on")
+            InsertBondButton.config(fg="red")
         elif name == "-L-":
             lower_canvas.bind("<ButtonRelease-1>", mm.release_Linker_bond)
             status_label.config(text="Linker lock on")
+            InsertLinkerButton.config(fg="red")
         lower_canvas.config(cursor = "cross")
 
     elif str(Bond_lock) == str(buttonpress):
@@ -3151,6 +3977,24 @@ def bond_drag_button(canvas,name,buttonpress):
 def disulphide_bond_button(canvas,name,buttonpress):
     global Bond_lock
     global Delete_lock
+    global delete_buttons
+    global domain_buttons
+    global comments_buttons
+    global mod_buttons
+    global specificity_buttons
+    global bond_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in domain_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+    for i in specificity_buttons:
+        i.config(fg="black")
+    for i in mod_buttons:
+        i.config(fg="black")
     Delete_lock = False
     if Bond_lock != buttonpress:
         Bond_lock = buttonpress
@@ -3159,9 +4003,55 @@ def disulphide_bond_button(canvas,name,buttonpress):
         lower_canvas.unbind("<ButtonRelease-1>")
         lower_canvas.bind("<Button-1>", mm.start_bond)
         lower_canvas.bind("<B1-Motion>", mm.drag_disulphide_bond)
+        InsertDBondButton.config(fg="red")
         if name == "-":
             lower_canvas.bind("<ButtonRelease-1>", mm.release_Disulphide_bond)
             status_label.config(text="Disulphide lock on")
+        lower_canvas.config(cursor = "cross")
+
+    elif str(Bond_lock) == str(buttonpress):
+        Bond_lock = ""
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+        lower_canvas.config(cursor = "arrow")
+
+def Hinge_bond_button(canvas,name,buttonpress):
+    global Bond_lock
+    global Delete_lock
+    global delete_buttons
+    global domain_buttons
+    global comments_buttons
+    global mod_buttons
+    global specificity_buttons
+    global bond_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in domain_buttons:
+        i.config(fg="black")
+    for i in comments_buttons:
+        i.config(fg="black")
+    for i in specificity_buttons:
+        i.config(fg="black")
+    for i in mod_buttons:
+        i.config(fg="black")
+    Delete_lock = False
+    if Bond_lock != buttonpress:
+        Bond_lock = buttonpress
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.start_bond)
+        lower_canvas.bind("<B1-Motion>", mm.drag_Hinge_bond)
+        InsertLHingeButton.config(fg="red")
+        lower_canvas.bind("<ButtonRelease-1>", mm.release_Hinge_bond)
+        status_label.config(text="Hinge lock on")
         lower_canvas.config(cursor = "cross")
 
     elif str(Bond_lock) == str(buttonpress):
@@ -3217,29 +4107,129 @@ def labels_button(canvas):
                 label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label")
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
+def SelectCommentTypeButton(letter):
+    global CustomLabelLock
+    global domain_mod
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global domain_charge
+    global domain_mod
+    global Domain_Primer
+    global Domain_Primer_Lock
+    Delete_lock = False
+    Bond_lock = ""
+    Domain_Primer = []
+    Domain_Primer_Lock = ""
+    domain_type = ""
+    extra_mods = ""
+    domain_mod = ""
+    domain_charge  = ""
+    global all_buttons
+    for i in all_buttons:
+        i.config(fg="black")
+    if CustomLabelLock != letter:
+        CustomLabelLock = letter
+        if letter == "TYPE":
+            TypeLabelButton.config(fg="red")
+        elif letter == "NOTE":
+            NoteLabelButton.config(fg="red")
+        elif letter == "MOD":
+            ModLabelButton.config(fg="red")
+        elif letter == "ANTI":
+            AntiLabelButton.config(fg="red")
+        elif letter == "LENGTH":
+            LengthLabelButton.config(fg="red")
+        CommentLabelButton_function(lower_canvas)
+    elif CustomLabelLock == letter:
+        CustomLabelLock = ""
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+        lower_canvas.config(cursor = "arrow")
 
-def CustomLabelButton_function(canvas):
-        global CustomLabelLock
-        if CustomLabelLock == False:
-            CustomLabelLock = True
-            entry=CustomLabelEntry.get("1.0","end-1c")
-            lower_canvas.bind("<Button-1>", mm.place_custom_label)
-            lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-            status_label.config(text=entry)
-            lower_canvas.config(cursor = "plus")
+def CommentLabelButton_function(canvas):
+    global CustomLabelLock
+    global Bond_lock
+    global Delete_lock
+    global Label_lock
+    global Domain_Primer_Lock
+    global Domain_Primer
+    Delete_lock = False
+    Bond_lock = ""
+    Domain_Primer_Lock = ""
+    Domain_Primer = []
+    global delete_buttons
+    global domain_buttons
+    global mod_buttons
+    global specificity_buttons
+    global bond_buttons
+    for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
+        i.config(fg="black")
+    for i in domain_buttons:
+        i.config(fg="black")
+    for i in specificity_buttons:
+        i.config(fg="black")
+    for i in mod_buttons:
+        i.config(fg="black")
 
-        elif CustomLabelLock == True:
-            CustomLabelLock = False
-            lower_canvas.unbind("<Button-1>")
-            lower_canvas.unbind("<B1-Motion>")
-            lower_canvas.unbind("<ButtonRelease-1>")
-            lower_canvas.bind("<Button-1>", mm.select)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            status_label.config(text="")
-            lower_canvas.config(cursor = "arrow")
+    if CustomLabelLock == "TYPE":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_type_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
+    elif CustomLabelLock == "NOTE":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_note_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
+    elif CustomLabelLock == "MOD":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_mod_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
+    elif CustomLabelLock == "ANTI":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_anti_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
+    elif CustomLabelLock == "LENGTH":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_length_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
 
+    elif CustomLabelLock == "":
+        CustomLabelButton.configure(fg="black")
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        status_label.config(text="")
+        lower_canvas.config(cursor = "arrow")
 
+def raise_error(canvas,message):
+    lower_canvas.delete("all")
+    lower_canvas.create_text(400,100, text = message, fill = "red")
+    raise IndexError
 def items_selected(e):
     '''
     Render item selected in library
@@ -3249,6 +4239,9 @@ def items_selected(e):
     global Delete_lock
     global antibodyformats
     global formats_keyslist
+    global all_buttons
+    for i in all_buttons:
+        i.config(bg="black")
     Delete_lock = False
     Bond_lock = ""
     lower_canvas.bind("<Button-1>", mm.select)
@@ -3287,9 +4280,9 @@ class MouseMover():
         #check you haven't selected text and then change self.item
         global canvas_labels
         global temp_label
-        global custom_labels
+        global TYPE_labels
         label_keyslist = list(canvas_labels.keys())
-        custom_keyslist = list(custom_labels.keys())
+        TYPE_keyslist = list(TYPE_labels.keys())
         if self.item in label_keyslist:
             polygons_keyslist = list(canvas_polygons.keys())
             for i in range(len(polygons_keyslist)):
@@ -3303,7 +4296,7 @@ class MouseMover():
                     if x1< xc <x2 and y1 < yc < y2:
                         self.item = polygons_keyslist[i]
 
-        elif self.item in custom_keyslist:
+        elif self.item in TYPE_keyslist:
             self.startcoordinates = [xc, yc]
             lower_canvas.config(cursor = "fleur")
             return(startcoordinates)
@@ -3364,7 +4357,7 @@ class MouseMover():
             self.newcoordinates.append(self.startcoordinates[0])
             self.newcoordinates.append(self.startcoordinates[1])
         canvas_keyslist = list(canvas_polygons.keys())
-        custom_keyslist = list(custom_labels.keys())
+        TYPE_keyslist = list(TYPE_labels.keys())
         if self.item in canvas_keyslist:
             x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
             y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
@@ -3383,8 +4376,9 @@ class MouseMover():
 
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
-                print(temp_label.get(temp_label_key[0])[0])
-                label_name = temp_label.get(temp_label_key[0])[1]
+                if len(temp_label_key) >0:
+                    print(temp_label.get(temp_label_key[0])[0])
+                    label_name = temp_label.get(temp_label_key[0])[1]
                 #label_d1 = temp_label.get(temp_label_key[0])[0]
                 firstx  = new_coordinates[2]
                 secondx = new_coordinates[4]
@@ -3407,23 +4401,24 @@ class MouseMover():
                 canvas_labels[label] = [[labelx2, labely2], label_name]
                 del temp_label[temp_label_key[0]]
 
-        elif self.item in custom_keyslist:
+        elif self.item in TYPE_keyslist:
             x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
             y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
             diffx = x2-x1
             diffy = y2-y1
-            coordinates    = custom_labels.get(self.item)[0]
-            name           = custom_labels.get(self.item)[1]
+            coordinates    = TYPE_labels.get(self.item)[0]
+            name           = TYPE_labels.get(self.item)[1]
             new_coordinates= []
             for i in range(len(coordinates)):
                 if i%2 ==0:
                     new_coordinates.append((coordinates[i]+diffx))
                 elif i%2!=0:
                     new_coordinates.append((coordinates[i]+diffy))
-            custom_labels[self.item]=[new_coordinates, name]
-            print(custom_labels.get(self.item))
+            TYPE_labels[self.item]=[new_coordinates, name]
+            print(TYPE_labels.get(self.item))
         print(canvas_polygons)
         print(canvas_labels)
+        print(TYPE_labels)
         startcoordinates = []
         newcoordinates = []
     ####Delete selected item on canvas###
@@ -3462,6 +4457,137 @@ class MouseMover():
         lower_canvas.delete(self.item)
         del canvas_polygons[self.item]
     ###Click item to reverse orientation###
+    def change_specificity(self,event):
+        widget = event.widget                       # Get handle to canvas
+        # Convert screen coordinates to canvas coordinates
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
+        global canvas_polygons
+        global domain_type
+        global canvas_labels
+        global temp_label
+        global specificity_colours
+        label_keyslist = list(canvas_labels.keys())
+        polygons_keyslist = list(canvas_polygons.keys())
+        if domain_type != "":
+            if self.item not in polygons_keyslist:
+                if self.item in label_keyslist:
+                    polygons_keyslist = list(canvas_polygons.keys())
+                    for i in range(len(polygons_keyslist)):
+                        if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
+                            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+                            min_max = get_min_max_coordinates(domain_coordinates)
+                            x1 = min_max[0]
+                            x2 = min_max[1]
+                            y1 = min_max[2]
+                            y2 = min_max[3]
+                            if x1< xc <x2 and y1 < yc < y2:
+                                self.item = polygons_keyslist[i]
+            domain_name = canvas_polygons.get(self.item)[1]
+            if "V" in domain_name:
+                new_domain_name = re.sub("a|b|c|d|e|f|g|h","",domain_name)
+                new_domain_name = re.sub("\.","."+domain_type,new_domain_name)
+                new_display_name= re.sub("\.|@|>|nano","", new_domain_name)
+
+                if "a" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+                elif "b" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+                elif "c" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+                elif "d" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+                elif "e" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+                elif "f" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+                elif "g" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+                elif "h" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+                elif "X" in str(new_domain_name):
+                    heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
+                else:
+                    heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
+                if "H" in new_domain_name:
+                    lower_canvas.itemconfig(self.item, fill = heavy_colour)
+                elif "L" in new_domain_name:
+                    lower_canvas.itemconfig(self.item, fill = light_colour)
+                canvas_polygons[self.item][1] = new_domain_name
+                ###change display label
+                domain_coordinates = (canvas_polygons.get(self.item)[0])
+                min_max = get_min_max_coordinates(domain_coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
+                for i in range(len(label_keyslist)):
+                    labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                    labely = canvas_labels.get(label_keyslist[i])[0][1]
+                    if x1 <= labelx <=x2 and y1 <= labely <= y2:
+                        print("AYY OK")
+                        del canvas_labels[label_keyslist[i]]
+                        lower_canvas.delete(label_keyslist[i])
+                        label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label")
+                        canvas_labels[label] = [[labelx,labely], new_display_name]
+                        temp_label[label] = [[labelx,labely], new_domain_name]
+
+    def change_modification(self,event):
+        widget = event.widget                       # Get handle to canvas
+        # Convert screen coordinates to canvas coordinates
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
+        global canvas_polygons
+        global domain_type
+        global domain_mod
+        global extra_mods
+        global domain_charge
+        global canvas_labels
+        global temp_label
+        label_keyslist = list(canvas_labels.keys())
+        polygons_keyslist = list(canvas_polygons.keys())
+        if domain_mod!= "" or domain_charge != "" or extra_mods != "":
+            if self.item not in polygons_keyslist:
+                if self.item in label_keyslist:
+                    polygons_keyslist = list(canvas_polygons.keys())
+                    for i in range(len(polygons_keyslist)):
+                        if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
+                            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+                            min_max = get_min_max_coordinates(domain_coordinates)
+                            x1 = min_max[0]
+                            x2 = min_max[1]
+                            y1 = min_max[2]
+                            y2 = min_max[3]
+                            if x1< xc <x2 and y1 < yc < y2:
+                                self.item = polygons_keyslist[i]
+            domain_name = canvas_polygons.get(self.item)[1]
+            new_domain_name = re.sub("\+|\-|\_|\!|\*","",domain_name)
+            domain_charge = re.sub("\_","-",domain_charge)
+            if "V" in domain_name:
+                new_domain_name = re.sub("\.",extra_mods+domain_mod+domain_charge+".",new_domain_name)
+                new_display_name= re.sub("\.|nano","", new_domain_name)
+            else:
+                new_domain_name +=extra_mods+domain_mod+domain_charge
+                new_display_name=  re.sub("\.|nano","", new_domain_name)
+            canvas_polygons[self.item][1] = new_domain_name
+                ###change display label
+            domain_coordinates = (canvas_polygons.get(self.item)[0])
+            min_max = get_min_max_coordinates(domain_coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            for i in range(len(label_keyslist)):
+                labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                labely = canvas_labels.get(label_keyslist[i])[0][1]
+                if x1 <= labelx <=x2 and y1 <= labely <= y2:
+                    print("AYY OK")
+                    del canvas_labels[label_keyslist[i]]
+                    lower_canvas.delete(label_keyslist[i])
+                    label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label")
+                    canvas_labels[label] = [[labelx,labely], new_display_name]
+                    temp_label[label] = [[labelx,labely], new_domain_name]
+
     def change_orientation(self,event):
         self.startcoordinates = []
         self.newcoordinates =[]
@@ -3471,6 +4597,7 @@ class MouseMover():
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         global canvas_labels
         global temp_label
+        global specificity_colours
         label_keyslist = list(canvas_labels.keys())
         if self.item in label_keyslist:
             polygons_keyslist = list(canvas_polygons.keys())
@@ -3522,23 +4649,34 @@ class MouseMover():
                 new_coordinates = coordinates
             lower_canvas.delete(self.item)
             del canvas_polygons[self.item]
+            new_domain_name = domain_name
 
-            if "a" in str(domain_name):
-                heavy_colour, light_colour = '#007ECB', '#73CAFF'
-            elif "b" in str(domain_name):
-                heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
-            elif "c" in str(domain_name):
-                heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
-            elif "d" in str(domain_name):
-                heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+            if "a" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+            elif "b" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+            elif "c" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+            elif "d" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+            elif "e" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+            elif "f" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+            elif "g" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+            elif "h" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+            elif "X" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
             else:
-                heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
+                heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
             if "VH" in domain_name or "CH" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
             elif "VL" in domain_name or "CL" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
             elif "X" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill='#68C1C1', width=2, tags="domain")
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=X_colour, width=2, tags="domain")
 
             if Label_lock == True:
                 label_keyslist = list(canvas_labels.keys())
@@ -3563,25 +4701,39 @@ class MouseMover():
     def place_domain(self,event):
         global Domain_Primer
         global Label_lock
+        global specificity_colours
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         startx = xc
         starty = yc-40
-        Domain_Primer[5] = re.sub("\+|\-","",Domain_Primer[5])
-        domaincoordinates = domainmaker(startx,starty,Domain_Primer[0],Domain_Primer[1],Domain_Primer[2],Domain_Primer[3],Domain_Primer[4],Domain_Primer[5],Domain_Primer[6],Domain_Primer[7])
-        domain_name = Domain_Primer[8]
+        Domain_Primer[5] = re.sub("\+|\-|\_","",Domain_Primer[5])
+        if Domain_Primer[5] == "@" or Domain_Primer[5] == ">":
+            global domain_direction
+            Domain_Primer[3] = "innie"
+        All_positions_and_chains = {}
+        print(Domain_Primer)
+        domaincoordinates = domainmaker(All_positions_and_chains,startx,starty,Domain_Primer[0],Domain_Primer[1],Domain_Primer[2],Domain_Primer[3],Domain_Primer[4],Domain_Primer[5],Domain_Primer[6],Domain_Primer[7])
+        domain_name = re.sub("nano","",Domain_Primer[8])
         if "a" in str(domain_name):
-            heavy_colour, light_colour = '#007ECB', '#73CAFF'
+            heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
         elif "b" in str(domain_name):
-            heavy_colour, light_colour = '#FF43EE', '#F9D3F5'
+            heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
         elif "c" in str(domain_name):
-            heavy_colour, light_colour = '#0BD05A', '#B9FAD3'
+            heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
         elif "d" in str(domain_name):
-            heavy_colour, light_colour = '#D9DE4A', '#E2F562'
+            heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+        elif "e" in str(domain_name):
+            heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+        elif "f" in str(domain_name):
+            heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+        elif "g" in str(domain_name):
+            heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+        elif "h" in str(domain_name):
+            heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
         elif "X" in str(domain_name):
-            heavy_colour, light_colour = '#68C1C1','#68C1C1'
+            heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
         else:
-            heavy_colour, light_colour = '#5C5C5C','#B0B0B0'
+            heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
         if Domain_Primer[10] == True:
             domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=2, tags="domain")
         elif Domain_Primer[9] == True:
@@ -3592,21 +4744,52 @@ class MouseMover():
             label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
             canvas_labels[label] = [domaincoordinates[3], domain_name]
         global domain_mod
-        domain_mod = ""
+        #domain_mod = ""
         global domain_direction
         domain_direction = "constant"
-
     def place_domain_release(self,event):
         lower_canvas.config(cursor = "plus")
 
-    def place_custom_label(self,event):
-        global custom_labels
+    def place_type_label(self,event):
+        global TYPE_labels
         widget = event.widget
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "custom_labels")
-            custom_labels[label] = [[xc,yc], entry]
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "TYPE_labels")
+            TYPE_labels[label] = [[xc,yc], entry]
+    def place_note_label(self,event):
+        global NOTE_labels
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        if entry != "":
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels")
+            NOTE_labels[label] = [[xc,yc], entry]
+    def place_mod_label(self,event):
+        global MOD_labels
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        if entry != "":
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "MOD_labels")
+            MOD_labels[label] = [[xc,yc], entry]
+    def place_anti_label(self,event):
+        global ANTI_labels
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        if entry != "":
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels")
+            ANTI_labels[label] = [[xc,yc], entry]
+    def place_length_label(self,event):
+        global LENGTH_labels
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        if entry != "":
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels")
+            LENGTH_labels[label] = [[xc,yc], entry]
     ###Draw and drag bonds###
     def start_bond(self,event):
         lower_canvas.delete("draggable_line")
@@ -3632,7 +4815,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[1], width=2, tags=("bonds","connector"))
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates   = []
@@ -3641,7 +4824,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-H-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=2, tags=("bonds","hinge"))
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordiantes   = []
@@ -3650,7 +4833,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-L-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2, tags="bonds")
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=2, tags=("bonds","linker"))
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates =[]
@@ -3662,14 +4845,24 @@ class MouseMover():
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2,tags = "draggable_line")
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=2,tags = "draggable_line")
+        self.newcoordinates = [x2,y2]
+    def drag_Hinge_bond(self,event):
+        lower_canvas.delete("draggable_line")
+        widget = event.widget
+        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        x1 = self.startcoordinates[0]
+        y1 = self.startcoordinates[1]
+        x2 = xc
+        y2 = yc
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=2,tags = "draggable_line")
         self.newcoordinates = [x2,y2]
     def release_Disulphide_bond(self,event):
         lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#FF4040', width=2, tags="disulphide")
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=2, tags="disulphide")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates =[]
@@ -3684,7 +4877,32 @@ class MouseMover():
 
 
 ################Domain Drawer######################
-def domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H):
+def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H):
+    '''
+    Most important function, calculates coordinates needed to draw domain polygons
+    '''
+    ##First check this domain is not overlapping another that has already been drawn###
+    ##Only allow overlap if both domains are "X"
+    All_positions_and_chains_list = list(All_positions_and_chains.keys())
+    for i in range(len(All_positions_and_chains_list)):
+        coordinates = All_positions_and_chains.get(All_positions_and_chains_list[i])[0]
+        print(coordinates)
+        if len(coordinates) > 2:
+            x1 = get_min_max_coordinates(coordinates)[0]
+            x2 = get_min_max_coordinates(coordinates)[1]
+            y1 = get_min_max_coordinates(coordinates)[2]
+            y2 = get_min_max_coordinates(coordinates)[3]
+            if startx == coordinates[0] and starty == y1:
+                if mod == "X":
+                    starty -=80
+                elif righthanded == False and direction == "innie":
+                    startx -=120
+                elif righthanded == True and direction == "innie":
+                    startx +=120
+
+
+
+
     if V == False and  direction == "constant" and mod == "" and X == False:
         firstx      = startx
         firsty      = starty
@@ -4255,6 +5473,171 @@ def domainmaker(startx,starty,righthanded,slant,V,direction,X,mod,interaction,pr
 ###############Main programme#######################
 
 root = tk.Tk()
+
+
+def browseFiles():
+    global textBox
+    filename = filedialog.askopenfilename(initialdir = "/",title = "Open File",filetypes = (("Text files","*.txt"),("all files","*.*")))
+    entry = Get_input(filename)
+    print(entry)
+    textBox.delete("1.0","end")
+    textBox.insert("1.0",str(entry))
+    render_pipeline(lower_canvas)
+
+def save_txt_file():
+    to_save = textBox.get("1.0","end")
+    f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+    if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+        return
+    f.write(to_save)
+    f.close()
+
+def quit():
+    root.destroy()
+
+def donothing():
+   filewin = Toplevel(root)
+   button = Button(filewin, text="Do nothing button")
+   button.pack()
+def undo():
+    global NOTE_to_redo
+    global TYPE_to_redo
+    global LENGTH_to_redo
+    global MOD_to_redo
+    global ANTI_to_redo
+    global Polygon_to_redo
+    global canvas_polygons
+    global canvas_labels
+    global temp_label
+    global TYPE_labels
+    global NOTE_labels
+    global MOD_labels
+    global ANTI_labels
+    global LENGTH_labels
+    label_keyslist = list(canvas_labels.keys())
+    keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())
+    to_delete = max(keys)
+    if to_delete in (canvas_polygons.keys()):
+        lower_canvas.delete(to_delete)
+        Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
+        domain_coordinates = canvas_polygons.get(to_delete)[0]
+        min_max = get_min_max_coordinates(domain_coordinates)
+        x1 = min_max[0]
+        x2 = min_max[1]
+        y1 = min_max[2]
+        y2 = min_max[3]
+        del canvas_polygons[to_delete]
+        for i in range(len(label_keyslist)):
+            labelx = canvas_labels.get(label_keyslist[i])[0][0]
+            labely = canvas_labels.get(label_keyslist[i])[0][1]
+            if x1 <= labelx <= x2 and y1 <= labely <= y2:
+                lower_canvas.delete(label_keyslist[i])
+                del canvas_labels[label_keyslist[i]]
+    elif to_delete in list(TYPE_labels.keys()):
+        lower_canvas.delete(to_delete)
+        TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
+        del TYPE_labels[to_delete]
+    elif to_delete in list(NOTE_labels.keys()):
+        lower_canvas.delete(to_delete)
+        NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
+        del NOTE_labels[to_delete]
+    elif to_delete in list(MOD_labels.keys()):
+        lower_canvas.delete(to_delete)
+        MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
+        del MOD_labels[to_delete]
+    elif to_delete in list(ANTI_labels.keys()):
+        lower_canvas.delete(to_delete)
+        ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
+        del ANTI_labels[to_delete]
+    elif to_delete in list(LENGTH_labels.keys()):
+        lower_canvas.delete(to_delete)
+        LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
+        del LENGTH_labels[to_delete]
+
+def redo():
+    global Polygon_to_redo
+    global NOTE_to_redo
+    global TYPE_to_redo
+    global LENGTH_to_redo
+    global MOD_to_redo
+    global ANTI_to_redo
+    global canvas_polygons
+    global canvas_labels
+    global temp_label
+    global TYPE_labels
+    global NOTE_labels
+    global MOD_labels
+    global ANTI_labels
+    global LENGTH_labels
+    global specificity_colours
+    keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
+    to_redo = min(keys)
+    domain_name = Polygon_to_redo.get(to_redo)[1]
+    domain_coordinates = Polygon_to_redo.get(to_redo)[0]
+    if to_redo in (Polygon_to_redo.keys()):
+        if "-" not in domain_name:
+            if "a" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+            elif "b" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+            elif "c" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+            elif "d" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+            elif "e" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+            elif "f" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+            elif "g" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+            elif "h" in str(domain_name):
+                heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+            elif "X" in str(domain_name):
+                heavy_colour, light_colour = settings,specificity_colours[18]
+            else:
+                heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
+            if "H" in domain_name:
+                domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+            elif "L" in domain_name:
+                domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+            canvas_polygons[domain] = [domain_coordinates, domain_name]
+            if Label_lock == True:
+                domain_name = re.sub("\.|@|>","",domain_name)
+                labelx = get_min_max_coordinates(domain_coordinates)[4]
+                labely = get_min_max_coordinates(domain_coordinates)[5]
+                label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
+                canvas_labels[label] = [[labelx,labely], domain_name]
+        elif "-" in domain_name:####
+            domain = lower_canvas.create_line(domain_coordinates, fill='#000000', width=2, tags="bonds")
+            canvas_polygons[domain] = [domain_coordinates, domain_name]
+        del Polygon_to_redo[to_redo]
+    elif to_redo in list(TYPE_labels.keys()):
+        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
+        TYPE_labels[label] = [domain_coordinates, domain_name]
+        del TYPE_to_redo[to_redo]
+    elif to_redo in list(NOTE_labels.keys()):
+        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
+        NOTE_labels[label] = [domain_coordinates, domain_name]
+        del NOTE_to_redo[to_redo]
+    elif to_redo in list(MOD_labels.keys()):
+        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
+        MOD_labels[label] = [domain_coordinates, domain_name]
+        del MOD_to_redo[to_redo]
+    elif to_redo in list(ANTI_labels.keys()):
+        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
+        ANTI_labels[label] = [domain_coordinates, domain_name]
+        del ANTI_to_redo[to_redo]
+    elif to_redo in list(LENGTH_labels.keys()):
+        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
+        LENGTH_labels[label] = [domain_coordinates, domain_name]
+        del LENGTH_to_redo[to_redo]
+
+
+
+
+
+
+
 canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH, bg='#E7E0E6')
 canvas.pack()
 
@@ -4270,70 +5653,92 @@ frame2.place(relx=0.01, rely = 0.05,relheight = 0.35, relwidth = 0.4)
 
 Domain_Primer = []
 Domain_Primer_Lock = ""
-domain_type = "a"
+domain_type = ""
 domain_mod  = ""
+extra_mods  = ""
+domain_charge=""
 domain_direction = "constant"
 a_button= tk.Button(frame2,text="a",bg = "grey", command =lambda: domain_type_button("a"))
-a_button.place(relx = 0.41, rely = 0.21, relheight = 0.1, relwidth=0.1)
+a_button.place(relx = 0.61, rely = 0.21, relheight = 0.1, relwidth=0.05)
 b_button= tk.Button(frame2,text="b",bg = "grey", command =lambda: domain_type_button("b"))
-b_button.place(relx = 0.51, rely = 0.21, relheight = 0.1, relwidth=0.1)
+b_button.place(relx = 0.66, rely = 0.21, relheight = 0.1, relwidth=0.05)
 c_button= tk.Button(frame2,text="c",bg = "grey", command =lambda: domain_type_button("c"))
-c_button.place(relx = 0.41, rely = 0.31, relheight = 0.1, relwidth=0.1)
+c_button.place(relx = 0.71, rely = 0.21, relheight = 0.1, relwidth=0.05)
 d_button= tk.Button(frame2,text="d",bg = "grey", command =lambda: domain_type_button("d"))
-d_button.place(relx = 0.51, rely = 0.31, relheight = 0.1, relwidth=0.1)
-KIH_knob= tk.Button(frame2,text="Knob",bg = "grey", command =lambda: domain_mod_button(">"))
-KIH_knob.place(relx = 0.41, rely = 0.41, relheight = 0.1, relwidth=0.1)
-KIH_hole= tk.Button(frame2,text="Hole",bg = "grey", command =lambda: domain_mod_button("@"))
-KIH_hole.place(relx = 0.51, rely = 0.41, relheight = 0.1, relwidth=0.1)
-Positive_charge= tk.Button(frame2,text="+",bg = "grey", command =lambda: domain_mod_button("+"))
-Positive_charge.place(relx = 0.41, rely = 0.51, relheight = 0.1, relwidth=0.1)
-Negative_charge= tk.Button(frame2,text="-",bg = "grey", command =lambda: domain_mod_button("-"))
-Negative_charge.place(relx = 0.51, rely = 0.51, relheight = 0.1, relwidth=0.1)
-Zip_button=tk.Button(frame2,text="Zip",bg = "grey", command =lambda: domain_mod_button("Leucine"))
-Zip_button.place(relx = 0.41, rely = 0.61, relheight = 0.1, relwidth=0.1)
-sdFV_button = tk.Button(frame2,text="sdFV",bg = "grey", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("sdVH"+domain_mod+"."+domain_type),False,True))
-sdFV_button.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
+d_button.place(relx = 0.76, rely = 0.21, relheight = 0.1, relwidth=0.05)
+e_button= tk.Button(frame2,text="e",bg = "grey", command =lambda: domain_type_button("e"))
+e_button.place(relx = 0.61, rely = 0.31, relheight = 0.1, relwidth=0.05)
+f_button= tk.Button(frame2,text="f",bg = "grey", command =lambda: domain_type_button("f"))
+f_button.place(relx = 0.66, rely = 0.31, relheight = 0.1, relwidth=0.05)
+g_button= tk.Button(frame2,text="g",bg = "grey", command =lambda: domain_type_button("g"))
+g_button.place(relx = 0.71, rely = 0.31, relheight = 0.1, relwidth=0.05)
+h_button= tk.Button(frame2,text="h",bg = "grey", command =lambda: domain_type_button("h"))
+h_button.place(relx = 0.76, rely = 0.31, relheight = 0.1, relwidth=0.05)
+Mod_button = tk.Button(frame2,text="*",bg = "grey", command =lambda: extra_mod_button("*"))
+Mod_button.place(relx = 0.61, rely = 0.41, relheight = 0.1, relwidth=0.05)
+Gly_button = tk.Button(frame2,text="!",bg = "grey", command =lambda: extra_mod_button("!"))
+Gly_button.place(relx = 0.66, rely = 0.41, relheight = 0.1, relwidth=0.05)
+KIH_knob= tk.Button(frame2,text=">",bg = "grey", command =lambda: domain_mod_button(">"))
+KIH_knob.place(relx = 0.71, rely = 0.41, relheight = 0.1, relwidth=0.05)
+KIH_hole= tk.Button(frame2,text="@",bg = "grey", command =lambda: domain_mod_button("@"))
+KIH_hole.place(relx = 0.76, rely = 0.41, relheight = 0.1, relwidth=0.05)
+Positive_charge= tk.Button(frame2,text="+",bg = "grey", command =lambda: domain_charge_button("+"))
+Positive_charge.place(relx = 0.61, rely = 0.51, relheight = 0.1, relwidth=0.05)
+Negative_charge= tk.Button(frame2,text="-",bg = "grey", command =lambda: domain_charge_button("_"))
+Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
+LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="grey", command=lambda: SelectCommentTypeButton("LENGTH"))
+LengthLabelButton.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.1)
+NoteLabelButton = tk.Button(frame2,text="NOTE", bg="grey", command=lambda: SelectCommentTypeButton("NOTE"))
+NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
+TypeLabelButton = tk.Button(frame2,text="TYPE", bg="grey", command=lambda: SelectCommentTypeButton("TYPE"))
+TypeLabelButton.place(relx = 0.71,rely = 0.61, relheight = 0.1, relwidth= 0.1)
+AntiLabelButton = tk.Button(frame2,text="ANTI", bg="grey", command=lambda: SelectCommentTypeButton("ANTI"))
+AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
+ModLabelButton = tk.Button(frame2,text="MOD", bg="grey", command=lambda: SelectCommentTypeButton("MOD"))
+ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
+nanobody_button = tk.Button(frame2,text="nanobody",bg = "grey", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
+nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
 ###Insert bonds buttons ###
 ##Col1
 InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
-InsertVHDomainButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
 InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
-InsertCH1DomainButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
 InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
-InsertCH2DomainButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
 InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
-InsertCH3DomainButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
 ##Col2
 InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
-InsertVLDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
 InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
-InsertCLDomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
 InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
-InsertCH4DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
 InsertXDomainButton= tk.Button(frame2,text="Other",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
-InsertXDomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.2)
 ###Drag and pull bonds###
 Bond_lock = ""
 InsertBondButton= tk.Button(frame2,text="Connect",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
-InsertBondButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+InsertBondButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
 InsertDBondButton= tk.Button(frame2,text="Disulphide",bg = "grey", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
-InsertDBondButton.place(relx = 0.61, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-H-","hinge"))
-InsertLHingeButton.place(relx = 0.61, rely = 0.41, relheight = 0.2, relwidth=0.2)
+InsertDBondButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
+InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "grey", command=lambda: Hinge_bond_button(lower_canvas,"-H-","hinge"))
+InsertLHingeButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
 InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-L-","linker"))
-InsertLinkerButton.place(relx = 0.61, rely = 0.61, relheight = 0.2, relwidth=0.2)
+InsertLinkerButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
 
 ###Delete/clear###
 Delete_lock = False
 Label_lock = True
-CustomLabelLock = False
+CustomLabelLock = ""
 InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_all_button(lower_canvas))
 InsertDelAllButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
-InsertDelClickButton = tk.Button(frame2,text="Delete", bg="grey", command=lambda: delete_button(lower_canvas))
+InsertDelClickButton = tk.Button(frame2,text="Delete",bg="grey", command=lambda: delete_button(lower_canvas))
 InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
 Labels_buttons = tk.Button(frame2,text="Labels", bg="grey", command=lambda: labels_button(lower_canvas))
 Labels_buttons.place(relx = 0.81,rely = 0.41, relheight = 0.2, relwidth= 0.18)
-CustomLabelButton = tk.Button(frame2,text="Custom Label", bg="grey", command=lambda: CustomLabelButton_function(lower_canvas))
+CustomLabelButton = tk.Button(frame2,text="Comment", bg="grey", command=lambda: CommentLabelButton_function(lower_canvas))
 CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
 CustomLabelEntry = tk.Text(frame2, font=40)
 CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
@@ -4362,33 +5767,36 @@ button.bind("<Leave>", button_hover_leave)
 Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
 antibodyformats = {
 "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
-"Knobs in Holes":"VH.b(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.b(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.a(13:8)-CL(14:9){1}",
+"Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
+"Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.b(13:8)-CL(14:9){1}",
+"Orthagonal Fab":"VH+.a(1:6)-CH1>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3@(5:12)|VL_.a(6:1)-CL@(7:2){1}|VH.b(8:13)-CH1>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5)|VL.b(13:8)-CL@(14:9){1}",
 "IgG-H-scFV":"VH.a(1:8)-CH1(2:9){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L-VH.b(6:7)-L-VL.b(7:6)|VL.a(8:1)-CL(9:2){1}|VH.a(10:17)-CH1(11:18){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L-VH.b(15:16)-L-VL.b(16:15)|VL.a(17:10)-CL(18:11){1}",
-"IgG-L-scFV":"VH.b(1:6) -CH1(2:7){1} -H(3:12){2} -CH2(4:13) -CH3(5:14) |VL.b(6:1) -CL(7:2){1} -L -VH.b(8:9) -L -VL.b(9:8) |VH.a(10:15) -CH1(11:16){1} -H(12:3){2} -CH2(13:4) -CH3(14:5) | VL.a(15:10) -CL(16:11){1} -L -VH.a(17:18) -L -VL.a(18:17)",
-"scFV-H-scFV": "VL.b(1:2)-L-VH.b(2:1)-H(3:8){2}-VH.c(4:5)-L-VL.c(5:4)|VL.a(6:7)-L-VH.a(7:6)-H(8:3){2}-VH.d(9:10)-L-VL.d(10:9)",
-"F(ab)2":"VH.b(1:4) - CH1(2:5){1} -H(3:8){2} | VL.b(4:1) - CL(5:2){1} | VH.a(6:9) - CH1(7:10){1} - H(8:3){2} | VL.a(9:6) - CL(10:7){1}",
+"IgG-L-scFV":"VH.a(1:6) -CH1(2:7){1} -H(3:12){2} -CH2(4:13) -CH3(5:14) |VL.a(6:1) -CL(7:2){1} -L -VH.b(8:9) -L -VL.b(9:8) |VH.a(10:15) -CH1(11:16){1} -H(12:3){2} -CH2(13:4) -CH3(14:5) | VL.a(15:10) -CL(16:11){1} -L -VH.b(17:18) -L -VL.b(18:17)",
+"scFV-H-scFV": "VL.a(1:2)-L-VH.a(2:1)-H(3:8){2}-VH.b(4:5)-L-VL.b(5:4)|VL.c(6:7)-L-VH.c(7:6)-H(8:3){2}-VH.d(9:10)-L-VL.d(10:9)",
+"F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
 "scFV":"VH.a(1:2)-L-VL.a(2:1)",
-"scFV4":"VH.b(4:5)-L-VL.b(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VL.b(1:2)-L-VH.b(2:1)-CL(3:6){1} | VH.a(13:14)-L-VL.a(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VL.a(10:11)-L-VH.a(11:10)-CL(12:15){1}",
-"sdFV4":"VH.b(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VH.b(6)  -CL(7:2){1} | VH.a(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VH.a(13) -CL(14:9){1}",
+"scFV4":"VL.a(4:5)-L-VH.a(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VH.a(1:2)-L-VL.a(2:1)-CL(3:6){1} | VL.b(13:14)-L-VH.b(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VH.b(10:11)-L-VL.b(11:10)-CL(12:15){1}",
+"sdFV4":"VH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VH.a(6)  -CL(7:2){1} | VH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VH.b(13) -CL(14:9){1}",
 "Nanobody":"VH.a(1)",
 "BiTE":"VH.a(1:2) -L -VL.a(2:1) -L -VH.b(3:4) -L -VL.b(4:3)",
 "HSAbody":"VL.a(1:2)-L-VH.a(2:1)-L-X(3)[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(4:5)-L-VL.b(5:4)",
-"Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.b(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.b(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.a(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.a(15:10)-CL(16:11){1}",
+"Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
 "Diabody":"VH.a(1:3) -L -VH.b(2:4) | VL.a(3:1) -L -VL.b(4:2)",
-"Miniantibody":"VH.b(1:2)-L-VL.b(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4)[TYPE:LEUCINE] | VH.a(5:6)-L-VL.a(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8)[TYPE:LEUCINE]",
+"Miniantibody":"VH.a(1:2)-L-VL.a(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4)[TYPE:LEUCINE] | VH.b(5:6)-L-VL.b(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8)[TYPE:LEUCINE]",
 "scDiabody":"VH.a(1:4) -L -VL.a(2:3) -L -VH.b(3:2) -L -VL.b(4:1)",
-"scDiabody-CH3":"VL.b(1:4){1} -L -VL.b(2:3) -L -VH.b(3:2) -L -VH.b(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.a(8:11){1}-L-VL.a(9:10)-L-VH.a(10:9)-L-VH.a(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
+"scDiabody-CH3":"VL.a(1:4){1} -L -VL.a(2:3) -L -VH.a(3:2) -L -VH.a(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.b(8:11){1}-L-VL.b(9:10)-L-VH.b(10:9)-L-VH.b(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
 "DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
-"Intrabody":"VL.b(1:2) -L -VH.b(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.a(6:7) -L -VL.a(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VL.b(13:14) -L -VH.b(14:13)",
-"Fv-Fc":"VH.b(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.b(5:1){1}|VH.a(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.a(10:6){1}",
+"Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
+"Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VL.b(13:14) -L -VH.b(14:13)",
+"Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
 "Triplebody":"VH.a(1:5)-CH1(2:6){1} -L- VL.b(3:4) -L -VH.b(4:3) | VL.a(5:1) -CL(6:2){1} -L - VL.c(7:8) -L -VH.c(8:7)",
-"scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VH.b(3:4){1}-L-VL.b(4:3){1}-L-VL.a(5:1)-CH2(6:2){2}-L-VH.c(7:8){1}-L-VL.c(8:7){1}",
-"TriBiMinibody":"VH.b(1:2) -L -VL.b(2:1) -H(3:9){2} -CH3@(4:10){2} -L -VH.c(5:6) -L - VL.c(6:5) | VH.a(7:8) -L -VL.a(8:7) -H(9:3){2}-CH3>(10:4)",
-"LUZ-Y":"VL.b(1:3)-CL(2:4){1}-L -VH.b(3:1)-CH1(4:2){1}-H(5:13){2}-CH2(6:14) -CH3(7:15) -X(8)[TYPE: LEUCINE] | VL.a(9:11)-CL(10:12){1} -L -VH.a(11:9) -CH1(12:10){1}-H(13:5){2}-CH2(14:6)-CH3(15:7)-X(16)[TYPE: LEUCINE]",
-"Dock and Lock":"VH.b(1:6)-CH1(2:7){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(4:14){1}-VH.c(5:15) | VL.b(6:1)-CL(7:2){1} | VH.a(8:10)-CH1(9:13){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(10:16){1}-VH.d(11:17) |  VL2.a(12:8)-CL(13:9){1}|CL(14:4){1}-VL.c(15:5)|CL(16:10){1}-VL.d(17:11)",
-"scFV-IgG-scFV-scFV": "VL2.a(1:2)-L-VH2.a(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL2.a(14:15)-L-VH2.a(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
-"scFV-scFV-Fc":"VH.b(1:2)-L-VL.b(2:1)-L-VH.a(3:4)-L-VL.a(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
-"Trimeric Fusion Protein":"X(8)[NOTE:FUSION]-X(9:14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:9)[NOTE:FUSION]-CL(15:10){1}|VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}"
+"scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VL.b(3:4){1}-L-VH.b(4:3){1}-L-VL.a(5:1)-CL(6:2){2}-L-VL.c(7:8){1}-L-VH.c(8:7){1}",
+"TriBiMinibody":"VH.a(1:2) -L -VL.a(2:1) -H(3:9){2} -CH3@(4:10){2} -L -VH.b(5:6) -L - VL.b(6:5) | VH.c(7:8) -L -VL.c(8:7) -H(9:3){2}-CH3>(10:4)",
+"LUZ-Y":"VL.a(1:3)-CL(2:4){1}-L -VH.a(3:1)-CH1(4:2){1}-H(5:13){2}-CH2(6:14) -CH3(7:15) -X(8)[TYPE: LEUCINE] | VL.b(9:11)-CL(10:12){1} -L -VH.b(11:9) -CH1(12:10){1}-H(13:5){2}-CH2(14:6)-CH3(15:7)-X(16)[TYPE: LEUCINE]",
+"Dock and Lock":"VH.a(1:6)-CH1(2:7){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(4:14){1}-VH.c(5:15) | VL.a(6:1)-CL(7:2){1} | VH.b(8:10)-CH1(9:13){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(10:16){1}-VH.d(11:17) |  VL.b(12:8)-CL(13:9){1}|CL(14:4){1}-VL.c(15:5)|CL(16:10){1}-VL.d(17:11)",
+"scFV-IgG-scFV-scFV": "VL.b(1:2)-L-VH.b(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL.b(14:15)-L-VH.b(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
+"scFV-scFV-Fc":"VH.a(1:2)-L-VL.a(2:1)-L-VH.b(3:4)-L-VL.b(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
+"Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8)[NOTE:FUSION]-X(9:14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:9)[NOTE:FUSION]-CL(15:10){1}"
 }
 
 formats_keyslist= list(antibodyformats.keys())
@@ -4401,7 +5809,483 @@ for i in range(len(formats_keyslist)):
 Library.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
 Library.bind('<<ListboxSelect>>', items_selected)
 
+
 #Library.place(frame1, relheight=0.05, relwidth=0.3)
+####Colours
+a_heavy_colour, a_light_colour = '#007ECB', '#73CAFF'
+b_heavy_colour, b_light_colour = '#FF43EE', '#F9D3F5'
+c_heavy_colour, c_light_colour = '#0BD05A', '#B9FAD3'
+d_heavy_colour, d_light_colour = '#D9DE4A', '#E2F562'
+e_heavy_colour, e_light_colour = '#FF0000', '#FF8585'
+f_heavy_colour, f_light_colour = '#FE6D03', '#FFC296'
+g_heavy_colour, g_light_colour = '#5C54FF', '#AFABFF'
+h_heavy_colour, h_light_colour = '#0FFBFF', '#CCFEFF'
+generic_heavy_colour, generic_light_colour = '#5C5C5C','#B0B0B0'
+disulphide_colour = "red"
+bond_colour = "black"
+hinge_colour = "dark green"
+linker_colour = "purple"
+X_colour = "#68C1C1"
+
+specificity_colours = [a_heavy_colour, a_light_colour,b_heavy_colour, b_light_colour,c_heavy_colour, c_light_colour,d_heavy_colour, d_light_colour,e_heavy_colour, e_light_colour,f_heavy_colour, f_light_colour,g_heavy_colour, g_light_colour,h_heavy_colour, h_light_colour,generic_heavy_colour,generic_light_colour,X_colour]
+bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
+
+#Coloursettings = tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
+def open_settings():
+    top = tk.Toplevel()
+    top.title = "Settings"
+    top.geometry('500x400')
+    tabControl = ttk.Notebook(top)
+
+    tab1 = ttk.Frame(tabControl)
+    tab2 = ttk.Frame(tabControl)
+
+    tabControl.add(tab1, text ='Pairing Sensitivity')
+    tabControl.add(tab2, text ='Colour Changer')
+    tabControl.pack(expand = 1, fill ="both")
+
+    ttk.Label(tab1,text ="Pairing").grid(column = 0,
+                                   row = 0,
+                                   padx = 30,
+                                   pady = 30)
+
+    ttk.Label(tab2,text ="Domains").place(relx= 0.1, rely = 0.1)
+    ttk.Label(tab2,text = "Colour changer")
+    global specificity_colours
+    global bond_colours
+    selected_domain = ""
+    selected_colour = ""
+    colourindex = 0
+    def recolorise(string1,string2,new_colour):
+        global canvas_polygons
+        polygons_keyslist = list(canvas_polygons.keys())
+        for i in range(len(polygons_keyslist)):
+            if string1 in canvas_polygons.get(polygons_keyslist[i])[1] and string2 in canvas_polygons.get(polygons_keyslist[i])[1]:
+                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+    def browse_colour():
+        global selected_colour
+        global colourindex
+        global selected_domain
+        global canvas_polygons
+        new_colour = colorchooser.askcolor()[1]
+        selected_colour = new_colour
+        colours[coloursettings_keyslist[colourindex]] = new_colour
+        polygons_keyslist = list(canvas_polygons.keys())
+
+        if   selected_domain == "VHa":
+            specificity_colours[0] = new_colour
+            recolorise("VH","a",new_colour)
+        elif selected_domain == "VLa":
+            specificity_colours[1] = new_colour
+            recolorise("VL","a",new_colour)
+        elif selected_domain == "VHb":
+            specificity_colours[2] = new_colour
+            recolorise("VH","b",new_colour)
+        elif selected_domain == "VLb":
+            specificity_colours[3] = new_colour
+            recolorise("VL","b",new_colour)
+        elif selected_domain == "VHc":
+            specificity_colours[4] = new_colour
+            recolorise("VH","c",new_colour)
+        elif selected_domain == "VLc":
+            specificity_colours[5] = new_colour
+            recolorise("VL","c",new_colour)
+        elif selected_domain == "VHd":
+            specificity_colours[6] = new_colour
+            recolorise("VH","d",new_colour)
+        elif selected_domain == "VLd":
+            specificity_colours[7] = new_colour
+            recolorise("VL","d",new_colour)
+        elif selected_domain == "VHe":
+            specificity_colours[8] = new_colour
+            recolorise("VH","e",new_colour)
+        elif selected_domain == "VLe":
+            specificity_colours[9] = new_colour
+            recolorise("VL","e",new_colour)
+        elif selected_domain == "VHf":
+            specificity_colours[10] = new_colour
+            recolorise("VH","f",new_colour)
+        elif selected_domain == "VLf":
+            specificity_colours[11] = new_colour
+            recolorise("VL","f",new_colour)
+        elif selected_domain == "VHg":
+            specificity_colours[12] = new_colour
+            recolorise("VH","g",new_colour)
+        elif selected_domain == "VLg":
+            specificity_colours[13] = new_colour
+            recolorise("VL","g",new_colour)
+        elif selected_domain == "VHh":
+            specificity_colours[14] = new_colour
+            recolorise("VH","h",new_colour)
+        elif selected_domain == "VLh":
+            specificity_colours[15] = new_colour
+            recolorise("VL","h",new_colour)
+        elif selected_domain == "X":
+            specificity_colours[18] = new_colour
+            for i in range(len(polygons_keyslist)):
+                if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        elif selected_domain == "-":
+            bond_colours[1] = new_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        elif selected_domain == "-L-":
+            bond_colours[3] = new_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        elif selected_domain == "-H-":
+            bond_colours[2] = new_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        elif selected_domain == "Disulphide":
+            bond_colours[0] = new_colour
+            disulphides_list = lower_canvas.find_withtag("disulphide")
+            disulphides_dict = {}
+            for i in range(len(disulphides_list)):
+                for j in range(len(polygons_keyslist)):
+                    if disulphides_list[i] == polygons_keyslist[j]:
+                        disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+            disulphides_keyslist = list(disulphides_dict.keys())
+            for i in range(len(disulphides_keyslist)):
+                lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
+        colour_checker.config(bg=new_colour)
+
+    def revertcolor():
+        global specificity_colours
+        global bond_colours
+        global selected_domain
+        global canvas_polygons
+        polygons_keyslist = list(canvas_polygons.keys())
+        if   selected_domain == "VHa":
+            specificity_colours[0] = a_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = a_heavy_colour
+            recolorise("VH","a",a_heavy_colour)
+            colour_checker.config(bg=a_heavy_colour)
+        elif selected_domain == "VLa":
+            specificity_colours[1] = a_light_colour
+            colours[coloursettings_keyslist[colourindex]] = a_light_colour
+            recolorise("VL","a",a_light_colour)
+            colour_checker.config(bg=a_light_colour)
+        elif selected_domain == "VHb":
+            specificity_colours[2] = b_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = b_heavy_colour
+            recolorise("VH","b",b_heavy_colour)
+            colour_checker.config(bg=b_heavy_colour)
+        elif selected_domain == "VLb":
+            specificity_colours[3] = b_light_colour
+            colours[coloursettings_keyslist[colourindex]] = b_light_colour
+            recolorise("VL","b",b_light_colour)
+            colour_checker.config(bg=b_light_colour)
+        elif selected_domain == "VHc":
+            specificity_colours[4] = c_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = c_heavy_colour
+            recolorise("VH","c",c_heavy_colour)
+            colour_checker.config(bg=c_heavy_colour)
+        elif selected_domain == "VLc":
+            specificity_colours[5] = c_light_colour
+            colours[coloursettings_keyslist[colourindex]] = c_light_colour
+            recolorise("VL","c",c_light_colour)
+            colour_checker.config(bg=c_light_colour)
+        elif selected_domain == "VHd":
+            specificity_colours[6] = d_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = d_heavy_colour
+            recolorise("VH","d",d_heavy_colour)
+            colour_checker.config(bg=d_heavy_colour)
+        elif selected_domain == "VLd":
+            specificity_colours[7] = d_light_colour
+            colours[coloursettings_keyslist[colourindex]] = d_light_colour
+            recolorise("VL","d",d_light_colour)
+            colour_checker.config(bg=d_light_colour)
+        elif selected_domain == "VHe":
+            specificity_colours[8] = e_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = e_heavy_colour
+            recolorise("VH","e",e_heavy_colour)
+            colour_checker.config(bg=e_heavy_colour)
+        elif selected_domain == "VLe":
+            specificity_colours[9] = e_light_colour
+            colours[coloursettings_keyslist[colourindex]] = e_light_colour
+            recolorise("VL","e",e_light_colour)
+            colour_checker.config(bg=e_light_colour)
+        elif selected_domain == "VHf":
+            specificity_colours[10] = f_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = f_heavy_colour
+            recolorise("VH","f",f_heavy_colour)
+            colour_checker.config(bg=f_heavy_colour)
+        elif selected_domain == "VLf":
+            specificity_colours[11] = f_light_colour
+            colours[coloursettings_keyslist[colourindex]] = f_light_colour
+            recolorise("VL","f",f_light_colour)
+            colour_checker.config(bg=f_light_colour)
+        elif selected_domain == "VHg":
+            specificity_colours[12] = g_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = g_heavy_colour
+            recolorise("VH","g",g_heavy_colour)
+            colour_checker.config(bg=g_heavy_colour)
+        elif selected_domain == "VLg":
+            specificity_colours[13] = g_light_colour
+            colours[coloursettings_keyslist[colourindex]] = g_light_colour
+            recolorise("VL","g",g_light_colour)
+            colour_checker.config(bg=g_light_colour)
+        elif selected_domain == "VHh":
+            specificity_colours[14] = h_heavy_colour
+            colours[coloursettings_keyslist[colourindex]] = h_heavy_colour
+            recolorise("VH","h",h_heavy_colour)
+            colour_checker.config(bg=h_heavy_colour)
+        elif selected_domain == "VLh":
+            specificity_colours[15] = h_light_colour
+            colours[coloursettings_keyslist[colourindex]] = h_light_colour
+            recolorise("VL","h",h_light_colour)
+            colour_checker.config(bg=h_light_colour)
+        elif selected_domain == "X":
+            specificity_colours[18] = X_colour
+            for i in range(len(polygons_keyslist)):
+                if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = X_colour)
+            colours[coloursettings_keyslist[colourindex]] = X_colour
+            colour_checker.config(bg=X_colour)
+        elif selected_domain == "-":
+            bond_colours[1] = bond_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = bond_colour)
+            colours[coloursettings_keyslist[colourindex]] = bond_colour
+            colour_checker.config(bg=bond_colour)
+        elif selected_domain == "-L-":
+            bond_colours[3] = linker_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = linker_colour)
+            colours[coloursettings_keyslist[colourindex]] = linker_colour
+            colour_checker.config(bg=linker_colour)
+        elif selected_domain == "-H-":
+            bond_colours[2] = hinge_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = hinge_colour)
+            colours[coloursettings_keyslist[colourindex]] = hinge_colour
+            colour_checker.config(bg=hinge_colour)
+        elif selected_domain == "Disulphide":
+            bond_colours[0] = disulphide_colour
+            disulphides_list = lower_canvas.find_withtag("disulphide")
+            disulphides_dict = {}
+            for i in range(len(disulphides_list)):
+                for j in range(len(polygons_keyslist)):
+                    if disulphides_list[i] == polygons_keyslist[j]:
+                        disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+            disulphides_keyslist = list(disulphides_dict.keys())
+            for i in range(len(disulphides_keyslist)):
+                lower_canvas.itemconfig(disulphides_keyslist[i], fill = disulphide_colour)
+            colours[coloursettings_keyslist[colourindex]] = disulphide_colour
+            colour_checker.config(bg=disulphide_colour)
+
+
+
+
+    def revertallcolours():
+        global specificity_colours
+        global bond_colours
+        global selected_domain
+        global selected_colour
+        specificity_colours[0] = a_heavy_colour
+        specificity_colours[1] = a_light_colour
+        specificity_colours[2] = b_heavy_colour
+        specificity_colours[3] = b_light_colour
+        specificity_colours[4] = c_heavy_colour
+        specificity_colours[5] = c_light_colour
+        specificity_colours[6] = d_heavy_colour
+        specificity_colours[7] = d_light_colour
+        specificity_colours[8] = e_heavy_colour
+        specificity_colours[9] = e_light_colour
+        specificity_colours[10] = f_heavy_colour
+        specificity_colours[11] = f_light_colour
+        specificity_colours[12] = g_heavy_colour
+        specificity_colours[13] = g_light_colour
+        specificity_colours[14] = h_heavy_colour
+        specificity_colours[15] = h_light_colour
+        specificity_colours[18] = X_colour
+        bond_colours[1] = bond_colour
+        bond_colours[3] = linker_colour
+        bond_colours[2] = hinge_colour
+        bond_colours[0] = disulphide_colour
+        recolorise("VH","a",a_heavy_colour)
+        recolorise("VH","b",b_heavy_colour)
+        recolorise("VH","c",c_heavy_colour)
+        recolorise("VH","d",d_heavy_colour)
+        recolorise("VH","e",e_heavy_colour)
+        recolorise("VH","f",f_heavy_colour)
+        recolorise("VH","g",g_heavy_colour)
+        recolorise("VH","h",h_heavy_colour)
+        recolorise("VL","a",a_light_colour)
+        recolorise("VL","b",b_light_colour)
+        recolorise("VL","c",c_light_colour)
+        recolorise("VL","d",d_light_colour)
+        recolorise("VL","e",e_light_colour)
+        recolorise("VL","f",f_light_colour)
+        recolorise("VL","g",g_light_colour)
+        recolorise("VL","h",h_light_colour)
+        colours["VHa"] = a_heavy_colour
+        colours["VHb"] = b_heavy_colour
+        colours["VHc"] = c_heavy_colour
+        colours["VHd"] = d_heavy_colour
+        colours["VHe"] = e_heavy_colour
+        colours["VHf"] = f_heavy_colour
+        colours["VHg"] = g_heavy_colour
+        colours["VHh"] = h_heavy_colour
+        colours["VLa"] = a_light_colour
+        colours["VLb"] = b_light_colour
+        colours["VLc"] = c_light_colour
+        colours["VLd"] = d_light_colour
+        colours["VLe"] = e_light_colour
+        colours["VLf"] = f_light_colour
+        colours["VLg"] = g_light_colour
+        colours["VLh"] = h_light_colour
+        colours["X"]   = X_colour
+        colours["-"]   = bond_colour
+        colours["-L-"] = linker_colour
+        colours["-H-"] = hinge_colour
+        colours["Disulphide"] = disulphide_colour
+        for i in range(len(polygons_keyslist)):
+            if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
+                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        bond_colours[1] = bond_colour
+        bond_colours[1] = new_colour
+        for i in range(len(polygons_keyslist)):
+            if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
+                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        bond_colours[3] = linker_colour
+        bond_colours[1] = new_colour
+        for i in range(len(polygons_keyslist)):
+            if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
+                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        bond_colours[2] = hinge_colour
+        bond_colours[1] = new_colour
+        for i in range(len(polygons_keyslist)):
+            if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
+                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        bond_colours[0] = disulphide_colour
+        disulphides_list = lower_canvas.find_withtag("disulphide")
+        disulphides_dict = {}
+        for i in range(len(disulphides_list)):
+            for j in range(len(polygons_keyslist)):
+                if disulphides_list[i] == polygons_keyslist[j]:
+                    disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+        disulphides_keyslist = list(disulphides_dict.keys())
+        for i in range(len(disulphides_keyslist)):
+            lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
+        if   selected_domain == "VHa":
+            colour_checker.config(bg=a_heavy_colour)
+        elif selected_domain == "VLa":
+            colour_checker.config(bg=a_light_colour)
+        elif selected_domain == "VHb":
+            colour_checker.config(bg=b_heavy_colour)
+        elif selected_domain == "VLb":
+            colour_checker.config(bg=b_light_colour)
+        elif selected_domain == "VHc":
+            colour_checker.config(bg=c_heavy_colour)
+        elif selected_domain == "VLc":
+            colour_checker.config(bg=c_light_colour)
+        elif selected_domain == "VHd":
+            colour_checker.config(bg=d_heavy_colour)
+        elif selected_domain == "VLd":
+            colour_checker.config(bg=d_light_colour)
+        elif selected_domain == "VHe":
+            colour_checker.config(bg=e_heavy_colour)
+        elif selected_domain == "VLe":
+            colour_checker.config(bg=e_light_colour)
+        elif selected_domain == "VHf":
+            colour_checker.config(bg=f_heavy_colour)
+        elif selected_domain == "VLf":
+            colour_checker.config(bg=f_light_colour)
+        elif selected_domain == "VHg":
+            colour_checker.config(bg=g_heavy_colour)
+        elif selected_domain == "VLg":
+            colour_checker.config(bg=g_light_colour)
+        elif selected_domain == "VHh":
+            colour_checker.config(bg=h_heavy_colour)
+        elif selected_domain == "VLh":
+            colour_checker.config(bg=h_light_colour)
+        elif selected_domain == "X":
+            colour_checker.config(bg=X_colour)
+        elif selected_domain == "-":
+            colour_checker.config(bg=bond_colour)
+        elif selected_domain == "-L-":
+            colour_checker.config(bg=linker_colour)
+        elif selected_domain == "-H-":
+            colour_checker.config(bg=hinge_colour)
+        elif selected_domain == "Disulphide":
+            colour_checker.config(bg=disulphide_colour)
+
+    def colourchange_select(e):
+        global specificity_colours
+        global bond_colours
+        global selected_colour
+        global selected_domain
+        global colourindex
+        i=ColoursettingsLibrary.curselection()
+        colourindex = i[0]
+        current_colour = colours.get(coloursettings_keyslist[colourindex])
+        colour_checker.config(bg=current_colour)
+        selected_colour = current_colour
+        selected_domain = str(coloursettings_keyslist[colourindex])
+
+
+
+
+
+    ColoursettingsLibrary= tk.Listbox(tab2, selectbackground='#D3D3D3', height=20)
+    colours = {
+    "VHa": specificity_colours[0],
+    "VLa":specificity_colours[1]  ,
+    "VHb":specificity_colours[2] ,
+    "VLb": specificity_colours[3],
+    "VHc": specificity_colours[4],
+    "VLc":specificity_colours[5]  ,
+    "VHd":specificity_colours[6] ,
+    "VLd": specificity_colours[7],
+    "VHe": specificity_colours[8],
+    "VLe":specificity_colours[9]  ,
+    "VHf":specificity_colours[10] ,
+    "VLf": specificity_colours[11],
+    "VHg": specificity_colours[12],
+    "VLg":specificity_colours[13]  ,
+    "VHh":specificity_colours[14] ,
+    "VLh": specificity_colours[15],
+    "X"  : specificity_colours[18],
+    "-"  : bond_colours[1],
+    "-L-": bond_colours[3],
+    "-H-": bond_colours[2],
+    "Disulphide": bond_colours[0]
+    }
+
+    coloursettings_keyslist= list(colours.keys())
+    for i in range(len(coloursettings_keyslist)):
+        ColoursettingsLibrary.insert("end",coloursettings_keyslist[i])
+        if i %2==0:
+            ColoursettingsLibrary.itemconfig(i, bg='#D3D3D3')
+
+    ColoursettingsLibrary.bind('<<ListboxSelect>>', colourchange_select)
+    ColoursettingsLibrary.place(relx=0.01, rely = 0.1,relheight = 0.8, relwidth = 0.3)
+
+    changerframe = tk.Frame(tab2, bg = "#D3D3D3")
+    changerframe.place(relx=0.4, rely = 0.1,relheight = 0.8, relwidth = 0.49)
+
+    colour_checker = tk.Frame(changerframe, pady = 5, bd = 5,highlightbackground="black", highlightthickness=1)
+    colour_checker.place(relx=0.2, rely = 0.2,relheight = 0.2, relwidth = 0.6)
+
+    changecolourbutton = tk.Button(changerframe, font=40, text = "Change colour", command =lambda: browse_colour())
+    changecolourbutton.place(relx=0.25, rely = 0.5,relheight = 0.05, relwidth = 0.5)
+
+    revertcolorbutton = tk.Button(changerframe, font=40, text = "Revert colour", command =lambda: revertcolor())
+    revertcolorbutton.place(relx=0.25, rely = 0.7,relheight = 0.05, relwidth = 0.5)
+
+    revertallcoloursbutton= tk.Button(changerframe, font=40, text = "Revert all colours", command =lambda: revertallcolours())
+    revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.05, relwidth = 0.5)
+
+#Coloursettings.place(relx=0.21, rely = 0.425,relheight = 0.2, relwidth = 0.19)
+
 ###Results canvas
 
 lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
@@ -4414,7 +6298,17 @@ mm = MouseMover()
 canvas_polygons = {}
 canvas_labels   = {}
 temp_label      = {}
-custom_labels   = {}
+TYPE_labels     = {}
+NOTE_labels     = {}
+ANTI_labels     = {}
+MOD_labels      = {}
+LENGTH_labels   = {}
+TYPE_to_redo    = {}
+NOTE_to_redo    = {}
+ANTI_to_redo    = {}
+MOD_to_redo     = {}
+LENGTH_to_redo  = {}
+Polygon_to_redo = {}
 # Bind mouse events to methods (could also be in the constructor)
 lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -4423,17 +6317,48 @@ lower_canvas.bind("<Button-2>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
 
+domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, nanobody_button]
+bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
+specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
+mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button]
+comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton]
+delete_buttons = [InsertDelAllButton, InsertDelClickButton]
+all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons + comments_buttons + delete_buttons
+
 export_frame = tk.Frame(root, bg='#FF0000')
 export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
 template_file_button = tk.Button(export_frame, text = "Export template file", bg = "grey", font=40, command=lambda: Get_Template_File(lower_canvas))
 template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
 Image_file_button = tk.Button(export_frame, text = "Export PNG", bg = "grey", font=40, command=lambda: save_as_png(lower_canvas))
 Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
+img = tk.PhotoImage(file = './AbYdraw_icon.png')
+root.tk.call('wm', 'iconphoto', root._w, img)
 
+tite = root.title('abYdraw')
+menubar = tk.Menu(root)
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="Settings", command=open_settings())
+filemenu.add_command(label="Open", command=lambda: browseFiles())
+filemenu.add_command(label="Save", command=lambda: save_txt_file())
+filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
+filemenu.add_command(label="Export PNG", command=lambda: save_as_png(lower_canvas))
 
+filemenu.add_separator()
 
+filemenu.add_command(label="Exit", command=root.quit)
+menubar.add_cascade(label="File", menu=filemenu)
 
+editmenu = tk.Menu(menubar, tearoff=0)
+editmenu.add_command(label="Undo", command=lambda: undo())
+editmenu.add_command(label="Redo", command=lambda: redo())
+menubar.add_cascade(label="Edit", menu=editmenu)
 
+helpmenu = tk.Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Help Index", command=donothing)
+helpmenu.add_command(label="About...", command=donothing)
+menubar.add_cascade(label="Help", menu=helpmenu)
+
+root.config(menu=menubar)
 
 
 root.mainloop()
