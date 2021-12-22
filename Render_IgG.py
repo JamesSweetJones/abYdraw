@@ -136,6 +136,10 @@ def Get_dictionaries(x):
 
             elif "X" in chain[0]:
                  dict = str(re.sub("\.|\+|\_|\*|\!","",str(chains[i])))
+            elif "L" in chain[0]:
+                dict = str(re.sub("\.|\+|\_|\*|\!","",str(chains[i])))
+            else:
+                dict = str(re.sub("\.|\+|\_|\*|\!","",str(chains[i])))
         elif i >= 4:
             dict_number = i-3
             dict = str("fragment"+str(dict_number))
@@ -161,6 +165,7 @@ def Get_dictionaries(x):
             locationstr =  str(re.sub(":",",", str(locationstr)))
             locationstr = list(locationstr.split(","))
             if domain != "Linker":
+                print(domain)
                 if len(locationstr) == 0:
                     error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
                     raise_error(lower_canvas, error_message)
@@ -207,10 +212,10 @@ def Get_dictionaries(x):
 
 
 
-    print(VHa)
-    print(VLa)
-    print(VHb)
-    print(VLb)
+    #print(VHa)
+    #print(VLa)
+    #print(VHb)
+    #print(VLb)
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -247,11 +252,11 @@ def Get_dictionaries(x):
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
                                     break
-                                elif current_interactor == interactor and ("H[" not in str(chains[i][j]) and "H[" not in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False :
+                                elif current_interactor == interactor and ("H[" not in str(chains[i][j]) and "H[" not in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "CL" not in str(chains[i]) and "VL" not in str(chains[a]) and  "CL" not in str(chains[a])):
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
                                     break
-                                elif current_interactor == interactor and ("H[" not in str(chains[i]) and "H[" not in str(chains[a])) and ("X[" not in str(chains[i]) and "X[" not in str(chains[a])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "VL" not in str(chains[a])) and ("VH" in str(chains[i]) and "VH" in str(chains[a])):
+                                elif current_interactor == interactor and ("H[" not in str(chains[i]) and "H[" not in str(chains[a])) and ("X[" not in str(chains[i]) and "X[" not in str(chains[a])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "CL" not in str(chains[i]) and "VL" not in str(chains[a]) and  "CL" not in str(chains[a])) and ("VH" in str(chains[i]) and "VH" in str(chains[a])):
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
                                     break
@@ -293,6 +298,78 @@ def Get_dictionaries(x):
         if VHa_checked == {} or VHb_checked == {} or VLa_checked == {} or VLb_checked == {}:
             error_message = "ERROR: There has been an error in pairing chains in your antibody"
             raise_error(lower_canvas, error_message)
+        if fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}: #Check for second IgG
+            fragment1_keyslist = list(fragment1.keys())
+            fragment2_keyslist = list(fragment2.keys())
+            fragment3_keyslist = list(fragment3.keys())
+            fragment4_keyslist = list(fragment4.keys())
+            fragment1_checked = {}
+            fragment2_checked = {}
+            fragment3_checked = {}
+            fragment4_checked = {}
+            ##check VH chains interact
+            chains = [fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
+            dicts = [fragment1,fragment2,fragment3,fragment4]
+            if chain_count > 2:
+                checked_heavy_chains = []
+                checked_heavy_dicts  = []
+                checked_chains_dicts = []
+                VHa_VHb_found = False
+                for i in range(len(chains)):
+                    for j in range(len(chains[i])):
+                        try:
+                            current_interactor = dicts[i].get(chains[i][j])[0][1]
+                            for a in range(len(chains)):
+                                if dicts[a] != dicts[i]:
+                                    for b in range(len(chains[a])):
+                                        interactor = dicts[a].get(chains[a][b])[0][0]
+
+                                        if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
+                                            VHa_VHb_found = True
+                                            fragment1_checked,fragment3_checked= dicts[i],dicts[a]
+                                            break
+                                        elif current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False:
+                                            VHa_VHb_found = True
+                                            fragment1_checked,fragment3_checked= dicts[i],dicts[a]
+                                            break
+                                        elif current_interactor == interactor and ("H[" not in str(chains[i][j]) and "H[" not in str(chains[a][b])) and ("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "CL" not in str(chains[i]) and "VL" not in str(chains[a]) and  "CL" not in str(chains[a])):
+                                            VHa_VHb_found = True
+                                            fragment1_checked,fragment3_checked= dicts[i],dicts[a]
+                                            break
+                                        elif current_interactor == interactor and ("H[" not in str(chains[i]) and "H[" not in str(chains[a])) and ("X[" not in str(chains[i]) and "X[" not in str(chains[a])) and VHa_VHb_found == False and ("VL" not in str(chains[i]) and "CL" not in str(chains[i]) and "VL" not in str(chains[a]) and  "CL" not in str(chains[a])) and ("VH" in str(chains[i]) and "VH" in str(chains[a])):
+                                            VHa_VHb_found = True
+                                            fragment1_checked,fragment3_checked= dicts[i],dicts[a]
+                                            break
+                        except IndexError:
+                            continue
+                checked_heavy_dicts.append(fragment1_checked)
+                checked_heavy_dicts.append(fragment3_checked)
+                fragment1_keyslist = list(fragment1_checked.keys())
+                fragment3_keyslist = list(fragment3_checked.keys())
+                checked_heavy_chains.append(fragment1_keyslist)
+                checked_heavy_chains.append(fragment3_keyslist)
+                fragment2_match = False
+                fragment4_match = False
+                for i in range(len(checked_heavy_chains)):
+                    for j in range(len(checked_heavy_chains[i])):
+                        try:
+                            current_interactor = checked_heavy_dicts[i].get(checked_heavy_chains[i][j])[0][1]
+                            for a in range(len(chains)):
+                                for b in range(len(chains[a])):
+                                    if chains[a] not in checked_heavy_chains:
+                                        interactor = dicts[a].get(chains[a][b])[0][0]
+                                        print(interactor, current_interactor)
+                                        if current_interactor == interactor: # and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
+                                            if i %2 == 0 and fragment2_match == False:
+                                                fragment2_checked = dicts[a]
+                                                fragment2_match = True
+                                            elif i %2 != 0 and fragment4_match == False:
+                                                fragment4_checked = dicts[a]
+                                                fragment4_match = True
+
+                        except IndexError:
+                            continue
+
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
     for i in range(len(all_to_check_keys)):
         possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L"]
@@ -317,8 +394,12 @@ def Get_dictionaries(x):
                 print(domain)
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
-
-    return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4)
+    if  fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}:
+        IgG2 = True
+        return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2)
+    else:
+        IgG2 = False
+        return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1,fragment2,fragment3,fragment4,IgG2)
 
 ######################################
 def Check_interactions(chains_list):
@@ -332,6 +413,10 @@ def Check_interactions(chains_list):
     print(chains_list[1])
     print(chains_list[2])
     print(chains_list[3])
+    print(chains_list[5])
+    print(chains_list[6])
+    print(chains_list[7])
+    print(chains_list[8])
     VHa_chain_master       = VHa_chain.copy()
     VLa_chain_master       = VLa_chain.copy()
     VHb_chain_master       = VHb_chain.copy()
@@ -341,6 +426,7 @@ def Check_interactions(chains_list):
     fragment2       = chains_list[6]
     fragment3       = chains_list[7]
     fragment4       = chains_list[8]
+    IgG2            = chains_list[9]
     All_positions_and_chains    ={}
     extra_disulphide_bridges    ={}
     H_disulphide_coordinates    ={}
@@ -350,6 +436,69 @@ def Check_interactions(chains_list):
     noted_Hbonds=False
     H_coordinatey   = []
 
+
+    def protein_multimer(VHa_chain,VHb_chain,VLa_chain,VLb_chain,fragment1,fragment2,fragment3,fragment4):
+    #Get interactors
+        domains_in_multimer = {}
+        def get_Xs(chain):
+            chain_keyslist = list(chain.keys())
+            for i in range(len(chain_keyslist)):
+                if "X" in chain_keyslist[i]:
+                    if len(chain.get(chain_keyslist[i])[0]) > 2:
+                        list_of_interactions = []
+                        for j in range(len(chain.get(chain_keyslist[i])[0])):
+                            list_of_interactions.append(chain.get(chain_keyslist[i])[0][j])
+                        domains_in_multimer[chain.get(chain_keyslist[i])[0][0]] = list_of_interactions
+        get_Xs(VHa_chain)
+        get_Xs(VLa_chain)
+        get_Xs(VHb_chain)
+        get_Xs(VLb_chain)
+        get_Xs(fragment1)
+        get_Xs(fragment2)
+        get_Xs(fragment3)
+        get_Xs(fragment4)
+
+        #check how many multimers are in the antibody
+        domains_in_multimer_keyslist = list(domains_in_multimer.keys())
+
+        multimer_combinations = []
+        set_multimer_combinations = []
+        for i in range(len(domains_in_multimer_keyslist)):
+            combination = domains_in_multimer.get(domains_in_multimer_keyslist[i])
+            multimer_combinations.append(combination)
+
+        for i in multimer_combinations:
+            i.sort()
+        set_multimer_combinations = set(tuple(row) for row in multimer_combinations)
+        multimer_tuple = list(set_multimer_combinations)
+
+        premade_start_coordinates = {}
+        for i in range(len(multimer_tuple)):
+            len_multimer = len(multimer_tuple[i])
+            for j in range(len(multimer_tuple[i])):
+                if j == 0:
+                    startx,starty =0,0
+                elif j == 1:
+                    startx,starty =-30,40
+                elif j == 2:
+                    startx,starty =60,0
+                elif j == 3:
+                    startx,starty =-30,40
+                elif j == 4:
+                    startx,starty = 7,-20
+                elif j == 5:
+                    startx,starty =-15,0
+
+                premade_start_coordinates[multimer_tuple[i][j]] =[[startx,starty],i+1]
+
+        return(premade_start_coordinates)
+
+    multimers = protein_multimer(VHa_chain,VLa_chain,VHb_chain,VLb_chain,fragment1,fragment2,fragment3,fragment4)
+    multimers_keyslist = (multimers.keys())
+    finished_multimers = []
+    finished_multimers_numbers = []
+    finished_multimers_indexes = []
+    print(multimers)
 
     def disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
         number_of_bonds = n+1
@@ -660,7 +809,9 @@ def Check_interactions(chains_list):
         return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h)
 
 
-    def innie_or_outie(chain,VHa_chain,VHb_chain,VLa_chain,VLb_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4, righthanded):
+
+    def innie_or_outie(chain,VHa_chain,VHb_chain,VLa_chain,VLb_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4, righthanded, IgG2):
+        #global IgG2
         innie_or_outie_list = []
         before_H = True
         keyslist = list(chain.keys())
@@ -797,6 +948,9 @@ def Check_interactions(chains_list):
                 elif chain == VLa_chain or chain == VLb_chain:
                     Light_chain_check = True
                     default = "innie"
+                elif IgG2 == True and (chain == fragment1 or chain == fragment3):
+                    Light_chain_check = False
+                    default = "outie"
                 else:
                     Light_chain_check = True
                     default = "innie"
@@ -860,7 +1014,11 @@ def Check_interactions(chains_list):
                         in_or_out(n,chain, VLb_chain,VHa_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4,Light_chain_check)
                     elif chain == VLb_chain:
                         in_or_out_light(n,chain,VHb_chain,Build_in,Build_out,Light_chain_check)
+                    elif IgG2 == True and (chain == fragment1 or chain == fragment3):
+                        print("AND THERE YOU HAVE IT FOLKS")
+                        innie_or_outie_list.append("outie")
                     else:
+                        print("WE DON'T GOT IT FOLKS")
                         innie_or_outie_list.append("innie")
 
 
@@ -1087,18 +1245,34 @@ def Check_interactions(chains_list):
             Heavy_chain = VHa_chain
             Light_chain = VLa_chain
             righthanded = False
-        if dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2:
+        if dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
             Light_chain_check = True
-        if dictionary == fragment1 or dictionary == fragment2:
-
-            if starty < 200:
+        if IgG2 == False:
+            if dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
+                if starty < 200:
+                    slant = True
+                else:
+                    slant = False
+                if startx < 350:
+                    righthanded=False
+                elif startx>350:
+                    righthanded=True
+        elif IgG2 == True:
+            if dictionary == fragment1 or dictionary == fragment2:
                 slant = True
-            else:
-                slant = False
-            if startx < 350:
-                righthanded=False
-            elif startx>350:
-                righthanded=True
+                righthanded = False
+                if dictionary == fragment1:
+                    Light_chain_check == False
+                elif dictionary == fragment2:
+                    Light_chain_check == True
+            elif dictionary == fragment3 or dictionary == fragment4:
+                slant = True
+                righthanded = True
+                if dictionary == fragment3:
+                    Light_chain_check == False
+                elif dictionary == fragment4:
+                    Light_chain_check == True
+
         if dictionary == VHa_chain or dictionary == VHb_chain:
             if (len(VHa_chain) == len(VHb_chain)):
                 equal_chain_lengths = True
@@ -1106,12 +1280,10 @@ def Check_interactions(chains_list):
                 equal_chain_lengths = False
         else:
             equal_chain_lengths = True
-        innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded)
-        print(innie_or_outie_list)
+        innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded, IgG2)
+        #print(innie_or_outie_list)
 
         for i in range(len(dictionary)):
-
-
             keyslist = list(dictionary.keys())
             V  = False
             X  = False
@@ -1147,11 +1319,9 @@ def Check_interactions(chains_list):
                     XY = (Notes_positions[-1][1])+20
                     Notes_positions.append([200,XY])
 
-            print(mod_label, mod)
+            #print(mod_label, mod)
 
-            if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2:
-            #    pass
-            #elif dictionary != VHa_1_test and dictionary != VHb_1_test and dictionary != VLa_1_test and dictionary != VLb_1_test:
+            if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
                     location = dictionary.get(keyslist[i])[0][0]
                     disulphide_bridge_count = int(dictionary.get(keyslist[i])[1])
@@ -1203,10 +1373,40 @@ def Check_interactions(chains_list):
             #print(keyslist[i], i, len(dictionary))
             print(keyslist[i])
 
-            all
+
             if i == 0:
-                print("checkpoint1")
-                getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                if "X" in keyslist[i] and dictionary.get(keyslist[i])[0] in multimers_keyslist:
+                    current_number = dictionary.get(keyslist[i])[0]
+                    if dictionary != VHa_chain and dictionary != VHb_chain and dictionary != VLa_chain and dictionary != VLb_chain and dictionary != fragment1 and dictionary != fragment2:
+                        additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
+                    else:
+                        additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
+                    print(finished_multimers)
+                    print("ADDITIONS", additions)
+                    if finished_multimers == []:
+                        print("GOOD LORD WHAT IS HAPPENING IN THERE")
+                        getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                    elif additions != [0,0]:
+                        multimer_number =  multimers.get(dictionary.get(keyslist[i])[0])[1]
+                        previous_index = 0
+                        for f in range(len(finished_multimers_numbers)):
+                            if finished_multimers_indexes[f] == multimer_number:
+                                previous_index = f
+                                print(finished_multimers_numbers[f], multimer_number)
+                        if righthanded == False:
+                            startx = finished_multimers[f][0]-(additions[0]/2)
+                        elif righthanded == True:
+                            startx = (finished_multimers[f][0]+(additions[0]/2))
+                        starty =finished_multimers[f][1]
+                        print(startx,starty)
+                        getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                    else:
+                        print("EXTRA checkpoint1")
+                        getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
+
+                else:
+                    print("checkpoint1")
+                    getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
             elif i > 0:
                 previous_domain = keyslist[i-1]
@@ -1241,14 +1441,14 @@ def Check_interactions(chains_list):
 
                 #print(keyslist[i], dictionary.get(keyslist[i])[0], previous_number, dictionary.get(keyslist[i])[0] , (dictionary.get(previous_domain)[1]))
 
-                if checker in All_positions_and_chains:
+                if checker in All_positions_and_chains and "X" in keyslist[i] and len(dictionary.get(keyslist[i])) == 1:
                     startx = All_positions_and_chains.get(checker)[0][0]
                     starty = All_positions_and_chains.get(checker)[0][1]
                     print(startx)
                     print(startx)
                     getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
-                if "H[" in keyslist[i]:
+                elif "H[" in keyslist[i]:
                     before_H = False
                     H_count += 1
                     Build_out = True
@@ -1282,6 +1482,25 @@ def Check_interactions(chains_list):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
 
+                elif "X" in keyslist[i] and dictionary.get(keyslist[i])[0] in multimers_keyslist:
+                    print("FUCK ME AND FUCK PROTEINS")
+                    current_number = dictionary.get(keyslist[i])[0]
+                    additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
+                    print(multimers)
+                    print("ADDITIONS" , additions)
+                    print(finished_multimers)
+                    #print(finished_multimers[-1][0]+additions[0])
+                    #print(finished_multimers[-1][1]+additions[1])
+                    if finished_multimers != []:
+                        if righthanded == False:
+                            getcoordinates = domainmaker(All_positions_and_chains,(finished_multimers[-1][0]-additions[0]),(finished_multimers[-1][1]+additions[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        elif righthanded == True:
+                            getcoordinates = domainmaker(All_positions_and_chains,(finished_multimers[-1][0]+additions[0]),(finished_multimers[-1][1]+additions[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                    elif finished_multimers == []:
+                        if righthanded == False:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-80),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
+                        elif righthanded == True:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+80),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                 elif "H[" in keyslist[i-1]  and "X" in keyslist[i] :
                     print("checkpoint4")
@@ -1396,7 +1615,7 @@ def Check_interactions(chains_list):
                     Build_in  = False
                     Build_out = True
 
-                elif "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
+                elif chain_count == 2 and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
                     print("checkpoint8")
                     if chain_count == 2:
                         if dictionary == VHa_chain:
@@ -1843,7 +2062,7 @@ def Check_interactions(chains_list):
 
 ##append interactions
 
-            if dictionary != VHa_chain and dictionary != VHb_chain and dictionary != VLa_chain and dictionary != VLb_chain and dictionary != fragment1 and dictionary != fragment2:
+            if dictionary != VHa_chain and dictionary != VHb_chain and dictionary != VLa_chain and dictionary != VLb_chain and dictionary != fragment1 and dictionary != fragment2 and dictionary != fragment3 and dictionary != fragment4:
 
                 if len(dictionary.get(keyslist[i])) > 1 and interaction_counter ==0:
                     if dictionary == VHa_1_test:
@@ -1884,9 +2103,19 @@ def Check_interactions(chains_list):
                                 first_interaction =[getcoordinates[0][0],getcoordinates[0][1]]
                                 interaction_counter +=1
 
+##Protein multimers
+            if "X" in keyslist[i] and dictionary.get(keyslist[i])[0] in multimers_keyslist:
+                index = dictionary.get(keyslist[i])[0]
+                current_multimer = multimers.get(index)[1]
+                finished_multimers_numbers.append(current_multimer)
+                finished_multimers_indexes.append(index)
+                #multimers[dictionary.get(keyslist[i])[0]] = getcoordinates[0]
+                print("MULTIMERRR", multimers)
+                finished_multimers.append(getcoordinates[0])
+
 
 ##Sort extra disulphide bridges
-            if  dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2:
+            if  dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 if disulphide_bridge_count > 0 and "H[" not in keyslist[i]:#  and "X" not in keyslist[i]:
                     bottom_bond_extra = getcoordinates[1]
                     bottomx=bottom_bond_extra[0]
@@ -1944,7 +2173,11 @@ def Check_interactions(chains_list):
                         top_bond[1] = top_bond[1]+5
                         hinges.append([bottomx,bottomy,topx,topy])
                     elif slant == False:
-                        hinges.append([bottomx,bottomy,topx,topy+20])
+                        if tangle_found == True and dictionary == VHa_chain:
+                            continue
+                        else:
+                            hinges.append([bottomx,bottomy,topx,topy+20])
+
                     if Extra_bond == True and righthanded == False:
                         Label_Locations = [getcoordinates[3][0]-60,getcoordinates[3][1]]
                     elif Extra_bond == True and righthanded == True:
@@ -2022,10 +2255,16 @@ def Check_interactions(chains_list):
 
 ##VHa_chain
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
-            VHa_H_coordinatesx = 320
-            VHa_H_coordinatesy = 280
-            VHb_H_coordinatesx = 420
-            VHb_H_coordinatesy = 280
+            if IgG2 == False:
+                VHa_H_coordinatesx = 320
+                VHa_H_coordinatesy = 280
+                VHb_H_coordinatesx = 420
+                VHb_H_coordinatesy = 280
+            elif IgG2 == True:
+                VHa_H_coordinatesx = 170
+                VHa_H_coordinatesy = 200
+                VHb_H_coordinatesx = 270
+                VHb_H_coordinatesy = 200
         elif ("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
@@ -2087,7 +2326,12 @@ def Check_interactions(chains_list):
         Notes_positions = []
         noted_Hbonds=False
         H_coordinatey   = []
-
+        #print("MULTIMER RESET")
+        multimers =  protein_multimer(VHa_chain,VLa_chain,VHb_chain,VLb_chain,fragment1,fragment2,fragment3,fragment4)
+        multimers_keyslist = (multimers.keys())
+        finished_multimers = []
+        finished_multimers_numbers = []
+        finidhed_multimers_indexes = []
 
 
 
@@ -2104,10 +2348,10 @@ def Check_interactions(chains_list):
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
-        VHb_startx, VHb_starty = 500,100
+        VHb_startx, VHb_starty = 400,100
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
-        VHa_startx, VHa_starty= 300,100
+        VHa_startx, VHa_starty= 200,100
         try:
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
             print(VHa_chain.get(keyslista[0])[0][0], VHb_chain.get(keyslistb[0])[1])
@@ -2207,72 +2451,93 @@ def Check_interactions(chains_list):
 
 ##Two-chained Abs
 
-
+    if IgG2 == True:
+        print("IgG-IgG FOUND")
+    elif IgG2 == False:
+        print("IgG-IgG NOT FOUND")
     frag1_startx,frag1_starty,frag2_startx,frag2_starty,frag3_startx,frag3_starty,frag4_startx,frag4_starty = 0,0,0,0,0,0,0,0
-
-    if fragment1 != {}:
-        fragment1_list = list(fragment1.keys())
-        fragment_inter = fragment1.get(fragment1_list[0])[0][1]
-        frag1_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-        righthanded = frag1_start[1]
-        if righthanded == True:
-            frag1_startx=frag1_start[0][0]+60
-            frag1_starty=frag1_start[0][1]
-        elif righthanded==False:
-            frag1_startx=frag1_start[0][0]-60
-            frag1_starty=frag1_start[0][1]
-    if fragment2 != {}:
-        fragment2_list = list(fragment2.keys())
-        fragment_inter = fragment2.get(fragment2_list[0])[0][1]
-        frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-        righthanded = frag2_start[1]
-        if righthanded == True:
-            frag2_startx=frag2_start[0][0]+60
-            frag2_starty=frag2_start[0][1]
-        elif righthanded==False:
-            frag2_startx=frag2_start[0][0]-60
-            frag2_starty=frag2_start[0][1]
-    if fragment3 != {}:
-        fragment3_list = list(fragment3.keys())
-        fragment_inter = fragment3.get(fragment3_list[0])[0][1]
-        frag3_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-        righthanded = frag3_start[1]
-        if righthanded == True:
-            frag3_startx=frag3_start[0][0]+60
-            frag3_starty=frag3_start[0][1]
-        elif righthanded==False:
-            frag3_startx=frag3_start[0][0]-60
-            frag3_starty=frag3_start[0][1]
-    if fragment4 != {}:
-        fragment4_list = list(fragment4.keys())
-        fragment_inter = fragment2.get(fragment4_list[0])[0][1]
-        frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-        righthanded = frag4_start[1]
-        if righthanded == True:
-            frag4_startx=frag4_start[0][0]+60
-            frag4_starty=frag4_start[0][1]
-        elif righthanded==False:
-            frag4_startx=frag4_start[0][0]-60
-            frag4_starty=frag4_start[0][1]
-    frag1_stat= renderchains(fragment1,frag1_startx,frag1_starty)
-    frag2_stat= renderchains(fragment2,frag2_startx,frag2_starty)
-    frag3_stat= renderchains(fragment3,frag3_startx,frag3_starty)
-    frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
-    print(All_positions_and_chains)
+    if IgG2 == False:
+        if fragment1 != {}:
+            fragment1_list = list(fragment1.keys())
+            fragment_inter = fragment1.get(fragment1_list[0])[0][1]
+            frag1_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag1_start[1]
+            if righthanded == True:
+                frag1_startx=frag1_start[0][0]+60
+                frag1_starty=frag1_start[0][1]
+            elif righthanded==False:
+                frag1_startx=frag1_start[0][0]-60
+                frag1_starty=frag1_start[0][1]
+        if fragment2 != {}:
+            fragment2_list = list(fragment2.keys())
+            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
+            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag2_start[1]
+            if righthanded == True:
+                frag2_startx=frag2_start[0][0]+60
+                frag2_starty=frag2_start[0][1]
+            elif righthanded==False:
+                frag2_startx=frag2_start[0][0]-60
+                frag2_starty=frag2_start[0][1]
+        if fragment3 != {}:
+            fragment3_list = list(fragment3.keys())
+            fragment_inter = fragment3.get(fragment3_list[0])[0][1]
+            frag3_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag3_start[1]
+            if righthanded == True:
+                frag3_startx=frag3_start[0][0]+60
+                frag3_starty=frag3_start[0][1]
+            elif righthanded==False:
+                frag3_startx=frag3_start[0][0]-60
+                frag3_starty=frag3_start[0][1]
+        if fragment4 != {}:
+            fragment4_list = list(fragment4.keys())
+            fragment_inter = fragment2.get(fragment4_list[0])[0][1]
+            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag4_start[1]
+            if righthanded == True:
+                frag4_startx=frag4_start[0][0]+60
+                frag4_starty=frag4_start[0][1]
+            elif righthanded==False:
+                frag4_startx=frag4_start[0][0]-60
+                frag4_starty=frag4_start[0][1]
+        frag1_stat= renderchains(fragment1,frag1_startx,frag1_starty)
+        frag2_stat= renderchains(fragment2,frag2_startx,frag2_starty)
+        frag3_stat= renderchains(fragment3,frag3_startx,frag3_starty)
+        frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+        print(All_positions_and_chains)
+    elif IgG2 == True:
+        print("IGGGG@@@@@@@@")
+        frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
+        frag2_stat= renderchains(fragment2,VLa_startx+325,VLa_starty+200)
+        frag3_stat= renderchains(fragment3,VHb_startx+325,VHb_starty+200)
+        frag4_stat= renderchains(fragment4,VLb_startx+325,VLb_starty+200)
 
     keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
-    out_of_range = False
-    how_much = 0
+    Yout_of_range = False
+    Yhow_much = 0
+    Xout_of_range = False
+    Xhow_much = 0
     for i in range(len(keyslist_All_positions_and_chains)):
         for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
             if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], int) == True:
                 if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] < 0:
-                    out_of_range = True
-                    if how_much > All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
-                        how_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
+                    Yout_of_range = True
+                    if Yhow_much > All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
+                        Yhow_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
+    for i in range(len(keyslist_All_positions_and_chains)):
+        for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
+            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], int) == True:
+                if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] > 800:
+                    Xout_of_range = True
+                    if Xhow_much < All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
+                        Xhow_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
 
-    if out_of_range == True:
-        new_start = how_much+5
+    if Yout_of_range == True:
+        Ynew_start = Yhow_much+5
+    #if Xout_of_range == True:
+    #    Xnew_start = Xhow_much-1000
+    #print("X out og range", Xnew_start)
 
 
 
@@ -2328,8 +2593,8 @@ def Check_interactions(chains_list):
     names_list_heavy_h  = VHa_stats[50] + VLa_stats[50] + VHb_stats[50] + VLb_stats[50] + frag1_stat[50] + frag2_stat[50] + frag3_stat[50] + frag4_stat[50]
     names_list_light_h  = VHa_stats[51] + VLa_stats[51] + VHb_stats[51] + VLb_stats[51] + frag1_stat[51] + frag2_stat[51] + frag3_stat[51] + frag4_stat[51]
     print(Hinges)
-    if out_of_range == True:
-        new_start = how_much-10
+    if Yout_of_range == True:
+        Ynew_start = Yhow_much-10
         coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
         for i in range(len(coordinates_to_change)):
             for j in range(len(coordinates_to_change[i])):
@@ -2337,13 +2602,27 @@ def Check_interactions(chains_list):
                     print(coordinates_to_change[i][j][k])
                     if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
                         if  k %2 != 0:
-                            coordinates_to_change[i][j][k] -= new_start
+                            coordinates_to_change[i][j][k] -= Ynew_start
                     else:
                         for l in range(len(coordinates_to_change[i][j][k])):
                             if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
                                 if l %2 != 0:
-                                    coordinates_to_change[i][j][k][l] -= new_start
-
+                                    coordinates_to_change[i][j][k][l] -= Ynew_start
+    #if Xout_of_range == True:
+    #    Xnew_start = Xhow_much-10
+    #    coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
+    #    for i in range(len(coordinates_to_change)):
+    #        for j in range(len(coordinates_to_change[i])):
+    #            for k in range(len(coordinates_to_change[i][j])):
+    #                print(coordinates_to_change[i][j][k])
+    #                if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
+    #                    if  k %2 == 0:
+    #                        coordinates_to_change[i][j][k] += Xnew_start
+    #                else:
+    #                    for l in range(len(coordinates_to_change[i][j][k])):
+    #                        if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
+    #                            if l %2 == 0:
+    #                                coordinates_to_change[i][j][k][l] += Xnew_start
     return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
 
 def render(chains_list,canvas,text_to_image):
@@ -2532,9 +2811,21 @@ def render(chains_list,canvas,text_to_image):
             notes_set = set(Notes)
             setlist = list(notes_set)
             for i in range(len(setlist)):
-                note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "label")
-                TYPE_labels[note] = [Note_positions[i],setlist[i]]
-
+                if "NOTE:" in setlist[i]:
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels")
+                    NOTE_labels[note] = [Note_positions[i],setlist[i]]
+                elif "TYPE:" in setlist[i]:
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels")
+                    TYPE_labels[note] = [Note_positions[i],setlist[i]]
+                elif "ANTI:" in setlist[i]:
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels")
+                    ANTI_labels[note] = [Note_positions[i],setlist[i]]
+                elif "MOD:" in setlist[i]:
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels")
+                    MOD_labels[note] = [Note_positions[i],setlist[i]]
+                elif "LENGTH:" in setlist[i]:
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels")
+                    LENGTH_labels[note] = [Note_positions[i],setlist[i]]
 
         print(canvas_polygons)
         print(canvas_labels)
@@ -2635,6 +2926,8 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
     for i in domain_buttons:
         i.config(fg = "black")
     for i in bond_buttons:
+        i.config(fg="black")
+    for i in delete_buttons:
         i.config(fg="black")
     if domain_type != "":
         if Domain_Primer_Lock != domain_name:
@@ -3073,7 +3366,6 @@ def sequence_pipeline(canvas):
             if bonds_list[i] == polygons_keyslist[j]:
                 bonds_dict[j] = canvas_polygons.get(polygons_keyslist[j])
     disulphides_list = canvas.find_withtag("disulphide")
-    #print(disulphides_list)
     disulphides_dict = {}
     for i in range(len(disulphides_list)):
         for j in range(len(polygons_keyslist)):
@@ -3245,11 +3537,12 @@ def sequence_pipeline(canvas):
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
+            print(i,j)
             if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "nano" not in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
-                if number not in paired:
+                if number not in paired and "X" not in str(strings[i][j]):
                     domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
                     index = full_chains[i][j]
                     min_max = get_min_max_coordinates((domains_dict.get(index)[0]))
@@ -3329,6 +3622,95 @@ def sequence_pipeline(canvas):
                                                         paired.append(int(number))
                                                         paired.append(int(paired_number))
 
+                elif "X" in str(strings[i][j]):
+                    domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
+                    paired_X_domains = []
+                    index = full_chains[i][j]
+                    min_max = get_min_max_coordinates((domains_dict.get(index)[0]))
+                    d1x1 = min_max[0]-30
+                    d1x2 = min_max[1]+30
+                    d1y1 = min_max[2]-20
+                    d1y2 = min_max[3]+20
+                    #Search for overlapping matching domains
+                    for f in range(len(domains_keyslist)):
+                        if domains_keyslist[f] != index:
+                            for a in range(len(full_chains)):
+                                for b in range(len(full_chains[a])):
+                                    if int(full_chains[a][b]) == int(domains_keyslist[f]) and ":" not in strings[a][b]:
+                                        paired_domain = strings[a][b]
+                                        paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                        paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                        paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+
+                                        min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[f])[0])
+                                        d2x1 = min_max[0]-30
+                                        d2x2 = min_max[1]+30
+                                        d2y1 = min_max[2]-20
+                                        d2y2 = min_max[3]+20
+                                        combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
+                                        for g in combinations_to_try:
+                                            if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
+                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                    disulphide_count = 0
+                                                    paired_X_domains.append(int(paired_number))
+                                                    for y in range(len(disulphides_keyslist)):
+                                                            #print("Looking for those disulphides")
+                                                        disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
+                                                        disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
+                                                        disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
+                                                        disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                            #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
+                                                            #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
+
+                                                        if ((d1x1 <= disulphx2 <= d1x2 and d1y1 <= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1 <= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1 <= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
+                                                            disulphide_count += 1
+
+
+
+                    if len(paired_X_domains) > 1:
+                        set_paired = set(paired_X_domains)
+                        list_set_paired = list(set_paired)
+                    else:
+                        list_set_paired = paired_X_domains
+                    list_paired_X_domains = list_set_paired
+                    if len(list_paired_X_domains) > 0:
+                        strings[i][j] = str(domain_name+"("+str(number)+":"+str(list_paired_X_domains)+")")
+                        strings[i][j] = re.sub("\[|\]","",strings[i][j])
+                        print(list_paired_X_domains)
+                        for f in range(len(list_paired_X_domains)):
+                            for a in range(len(full_chains)):
+                                for b in range(len(full_chains[a])):
+                                    if ":" not in strings[a][b] and "X" in strings[a][b] and "-" not in strings[a][b]  :
+                                        print(full_chains)
+                                        print("FUll chains a b", full_chains[a][b], "pairedxf", list_paired_X_domains[f] )
+                                    #if int(full_chains[a][b]) == int(list_paired_X_domains[f]) and ":" not in strings[a][b]:
+                                        paired_domain = strings[a][b]
+                                        paired_number =  re.findall("\((.*?)\)", str(paired_domain))
+                                        paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
+                                        paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
+                                        print(paired_number, list_paired_X_domains[f])
+                                        if int(paired_number) == int(list_paired_X_domains[f]):
+                                            print(number)
+                                            list_paired_X_domains.append(number)
+                                            print("list_of_paired ", list_paired_X_domains)
+                                            list_to_add = []
+                                            for k in list_paired_X_domains:
+                                                if int(k) != int(paired_number) and int(k) not in list_to_add:
+                                                    list_to_add.append(int(k))
+                                            list_to_add_sorted = list_to_add.sort()
+                                            strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(list_to_add)+")")
+                                            strings[a][b] = re.sub("\[|\]","",strings[a][b])
+                                            list_paired_X_domains.remove(int(number))
+
+                    print(strings)
+                                                        #if disulphide_count == 0:
+                                                        #    strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
+                                                        #    strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
+                                                        #elif disulphide_count > 0:
+                                                        #    strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}")
+                                                        #    strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}")
+                                                        #paired.append(int(number))
+                                                        #paired.append(int(paired_number))
 
             elif ":" not in str(strings[i][j]) and "-H(" in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
@@ -3395,56 +3777,72 @@ def sequence_pipeline(canvas):
                                                     paired.append(int(paired_number))
 
 
-
+##Find comments on domains and not on domains
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
             #print(domains_dict.get(full_chains[i][j])[0])
             if "-" not in strings[i][j]:
+                domain_type = strings[i][j].split("(")[0]
+                domain_type = re.sub("\.","", str(domain_type))
                 coordinates = domains_dict.get(full_chains[i][j])[0]
                 min_max = get_min_max_coordinates(coordinates)
                 d1x1 = min_max[0]
                 d1x2 = min_max[1]
                 d1y1 = min_max[2]
                 d1y2 = min_max[3]
-                print(d1x1,d1x2,d1y1,d1y2)
                 for k in range(len(type_keyslist)):
+                    comment = type_dict.get(type_keyslist[k])[1]
                     labelx = type_dict.get(type_keyslist[k])[0][0]
                     labely = type_dict.get(type_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = type_dict.get(type_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("[TYPE:"+note+"]")
                         strings[i][j] += noting
                 for k in range(len(note_keyslist)):
+                    comment =note_dict.get(note_keyslist[k])[1]
                     labelx = note_dict.get(note_keyslist[k])[0][0]
                     labely = note_dict.get(note_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = note_dict.get(note_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("[NOTE:"+note+"]")
                         strings[i][j] += noting
                 for k in range(len(mod_keyslist)):
+                    comment =mod_dict.get(mod_keyslist[k])[1]
                     labelx = mod_dict.get(mod_keyslist[k])[0][0]
                     labely = mod_dict.get(mod_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = mod_dict.get(mod_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("[MOD:"+note+"]")
                         strings[i][j] += noting
                 for k in range(len(anti_keyslist)):
+                    comment =anti_dict.get(anti_keyslist[k])[1]
                     labelx = anti_dict.get(anti_keyslist[k])[0][0]
                     labely = anti_dict.get(anti_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = anti_dict.get(anti_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("[ANTI:"+note+"]")
                         strings[i][j] += noting
                 for k in range(len(length_keyslist)):
+                    comment =length_dict.get(length_keyslist[k])[1]
                     labelx = length_dict.get(length_keyslist[k])[0][0]
                     labely = length_dict.get(length_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = length_dict.get(length_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("[LENGTH:"+note+"]")
                         strings[i][j] += noting
             elif "-H" in strings[i][j]:
@@ -3455,50 +3853,67 @@ def sequence_pipeline(canvas):
                 d1y1 = min_max[2]
                 d1y2 = min_max[3]
                 for k in range(len(type_keyslist)):
+                    comment = type_dict.get(type_keyslist[k])[1]
                     labelx = type_dict.get(type_keyslist[k])[0][0]
                     labely = type_dict.get(type_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         domain = strings[i][j].split("-")[1]
                         note = type_dict.get(type_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[TYPE:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(note_keyslist)):
+                    comment =note_dict.get(note_keyslist[k])[1]
                     labelx = note_dict.get(note_keyslist[k])[0][0]
                     labely = note_dict.get(note_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         domain = strings[i][j].split("-")[1]
                         note = note_dict.get(note_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[NOTE:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(mod_keyslist)):
+                    comment =mod_dict.get(mod_keyslist[k])[1]
                     labelx = mod_dict.get(mod_keyslist[k])[0][0]
                     labely = mod_dict.get(mod_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         domain = strings[i][j].split("-")[1]
                         note = mod_dict.get(mod_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[MOD:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(anti_keyslist)):
+                    comment =anti_dict.get(anti_keyslist[k])[1]
                     labelx = anti_dict.get(anti_keyslist[k])[0][0]
                     labely = anti_dict.get(anti_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         domain = strings[i][j].split("-")[1]
                         note = anti_dict.get(anti_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[ANTI:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(length_keyslist)):
+                    comment =length_dict.get(length_keyslist[k])[1]
                     labelx = length_dict.get(length_keyslist[k])[0][0]
                     labely = length_dict.get(length_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if (d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         domain = strings[i][j].split("-")[1]
                         note = length_dict.get(length_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[LENGTH:"+note+"]-")
                         strings[i][j] = noting
+
+
 ##conver lists to expression
     final_string = ""
     for i in range(len(strings)):
@@ -4886,7 +5301,6 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
     All_positions_and_chains_list = list(All_positions_and_chains.keys())
     for i in range(len(All_positions_and_chains_list)):
         coordinates = All_positions_and_chains.get(All_positions_and_chains_list[i])[0]
-        print(coordinates)
         if len(coordinates) > 2:
             x1 = get_min_max_coordinates(coordinates)[0]
             x2 = get_min_max_coordinates(coordinates)[1]
@@ -5785,6 +6199,7 @@ antibodyformats = {
 "Miniantibody":"VH.a(1:2)-L-VL.a(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4)[TYPE:LEUCINE] | VH.b(5:6)-L-VL.b(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8)[TYPE:LEUCINE]",
 "scDiabody":"VH.a(1:4) -L -VL.a(2:3) -L -VH.b(3:2) -L -VL.b(4:1)",
 "scDiabody-CH3":"VL.a(1:4){1} -L -VL.a(2:3) -L -VH.a(3:2) -L -VH.a(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.b(8:11){1}-L-VL.b(9:10)-L-VH.b(10:9)-L-VH.b(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
+"scDiabody-Fc":"VH.b(1:2) -L -VL.b(2:1) -L -VH.a(3:4) -L -VL.a(4:3) -H(5:12){2} -CH2(6:13) -CH3(7:14) | VH.b(8:9) -L -VL.b(9:8) -L -VH.a(10:11) -L -VL.a(11:10) -H(12:5){2} -CH2(13:6) -CH3(14:7)",
 "DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
 "Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
 "Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VL.b(13:14) -L -VH.b(14:13)",
@@ -5796,7 +6211,8 @@ antibodyformats = {
 "Dock and Lock":"VH.a(1:6)-CH1(2:7){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(4:14){1}-VH.c(5:15) | VL.a(6:1)-CL(7:2){1} | VH.b(8:10)-CH1(9:13){1}-L-X(3:3)[TYPE:FUSION]-L-CH2(10:16){1}-VH.d(11:17) |  VL.b(12:8)-CL(13:9){1}|CL(14:4){1}-VL.c(15:5)|CL(16:10){1}-VL.d(17:11)",
 "scFV-IgG-scFV-scFV": "VL.b(1:2)-L-VH.b(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL.b(14:15)-L-VH.b(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
 "scFV-scFV-Fc":"VH.a(1:2)-L-VL.a(2:1)-L-VH.b(3:4)-L-VL.b(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
-"Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8)[NOTE:FUSION]-X(9:14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:9)[NOTE:FUSION]-CL(15:10){1}"
+"Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
+"IgG-IgG":"VH.a(1:12)-CH1(2:13){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VL.a(12:1)-CL(13:2){1}|VH.a(6:14)-CH1(7:15){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L-X(11)[MOD: orthophenylenedimaleimide fusion]|VL.a(14:6)-CL(15:7){1}|VH.b(16:26)-CH1(17:27){1}-H(18:23){2}-CH2(19:24)-CH3(20:25)-L-X(11)[MOD: orthophenylenedimaleimide fusion]|VH.b(21:28)-CH1(22:29){1}-H(23:18){2}-CH2(24:19)-CH3(25:20)|VL.b(26:16)-CL(27:17){1}|VL.b(28:21)-CL(29:22){1}"
 }
 
 formats_keyslist= list(antibodyformats.keys())
