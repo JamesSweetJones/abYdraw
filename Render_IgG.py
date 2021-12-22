@@ -2174,7 +2174,7 @@ def Check_interactions(chains_list):
                         hinges.append([bottomx,bottomy,topx,topy])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
-                            continue
+                            pass
                         else:
                             hinges.append([bottomx,bottomy,topx,topy+20])
 
