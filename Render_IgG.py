@@ -1427,7 +1427,8 @@ def Check_interactions(chains_list):
                 if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
                     error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
                     raise_error(lower_canvas, error_message)
-                Notes.append(Domain_name+" "+note_label)
+                Domain_name_to_add = re.sub("\*|\+|\-","",Domain_name)
+                Notes.append(Domain_name_to_add+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
                 elif len(Notes_positions) > 0:
@@ -3677,15 +3678,12 @@ def sequence_pipeline(canvas):
                         assigned_coordinates = assigned_numbers.get(assigned_keyslist[k])
                         #print("OK THIS IS A RAID", coordinates, assigned_coordinates)
                         if coordinates == assigned_coordinates:
-                            print("OH MY GOOOOOD")
                             assigned_match = True
                             assigned_keyslist_check = assigned_keyslist[k]
                             print(assigned_keyslist[k],coordinates, assigned_coordinates)
                     if assigned_match == True:
-                        print("SMACKAROONIES", assigned_keyslist_check, strings[i][j])
                         if "X" in strings[i][j]:
                             strings[i][j] = str("-X("+str(assigned_keyslist_check)+")-")
-                            print("SMACKAROONIES2")
                     elif assigned_match == False:
                         if "-" not in strings[i][j]:
                             strings[i][j] += str("("+str(counter)+")")
@@ -3842,23 +3840,17 @@ def sequence_pipeline(canvas):
                     if len(list_paired_X_domains) > 0:
                         strings[i][j] = str(domain_name+"("+str(number)+":"+str(list_paired_X_domains)+")")
                         strings[i][j] = re.sub("\[|\]","",strings[i][j])
-                        print(list_paired_X_domains)
                         for f in range(len(list_paired_X_domains)):
                             for a in range(len(full_chains)):
                                 for b in range(len(full_chains[a])):
                                     if ":" not in strings[a][b] and "X" in strings[a][b] and "-" not in strings[a][b]  :
-                                        print(full_chains)
-                                        print("FUll chains a b", full_chains[a][b], "pairedxf", list_paired_X_domains[f] )
-                                    #if int(full_chains[a][b]) == int(list_paired_X_domains[f]) and ":" not in strings[a][b]:
+                                        #if int(full_chains[a][b]) == int(list_paired_X_domains[f]) and ":" not in strings[a][b]:
                                         paired_domain = strings[a][b]
                                         paired_number =  re.findall("\((.*?)\)", str(paired_domain))
                                         paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
                                         paired_name   = re.sub("\((.*?)\)", "", str(paired_domain))
-                                        print(paired_number, list_paired_X_domains[f])
                                         if int(paired_number) == int(list_paired_X_domains[f]):
-                                            print(number)
                                             list_paired_X_domains.append(number)
-                                            print("list_of_paired ", list_paired_X_domains)
                                             list_to_add = []
                                             for k in list_paired_X_domains:
                                                 if int(k) != int(paired_number) and int(k) not in list_to_add:
@@ -3868,7 +3860,6 @@ def sequence_pipeline(canvas):
                                             strings[a][b] = re.sub("\[|\]","",strings[a][b])
                                             list_paired_X_domains.remove(int(number))
 
-                    print(strings)
                                                         #if disulphide_count == 0:
                                                         #    strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
                                                         #    strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
@@ -3916,7 +3907,6 @@ def sequence_pipeline(canvas):
                                                 d2x2 = (bonds_dict.get(bonds_keyslist[f])[0][2])+150
                                             d2y1 = (bonds_dict.get(bonds_keyslist[f])[0][1])-5
                                             d2y2 = (bonds_dict.get(bonds_keyslist[f])[0][3])+5
-                                            print("H1", d1x1,d1x2,d1y1,d1y2," H2 ",d2x1,d2x2,d2y1,d2y2)
                                             combinations_to_try = [[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2],[d2x1,(d2y1+d2y2/2)],[d2x2,(d2y1+d2y2/2)]]
                                             for g in combinations_to_try:
                                                 if d1x1 <= g[0] <= d1x2 and d1y1 <= g[1] <= d1y2:
@@ -3949,7 +3939,7 @@ def sequence_pipeline(canvas):
             #print(domains_dict.get(full_chains[i][j])[0])
             if "-" not in strings[i][j]:
                 domain_type = strings[i][j].split("(")[0]
-                domain_type = re.sub("\.","", str(domain_type))
+                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
                 coordinates = domains_dict.get(full_chains[i][j])[0]
                 min_max = get_min_max_coordinates(coordinates)
                 d1x1 = min_max[0]
@@ -5200,7 +5190,7 @@ class MouseMover():
                     extra_mods_to_add = re.sub("\*","",extra_mods_to_add)
                 elif "!" in extra_mods:
                     extra_mods_to_add = re.sub("\!","",extra_mods_to_add)
-                    
+
             if "V" in domain_name:
                 new_domain_name = re.sub("\.",extra_mods_to_add+domain_mod_to_add+domain_charge_to_add+".",new_domain_name)
                 new_display_name= re.sub("\.|nano","", new_domain_name)
