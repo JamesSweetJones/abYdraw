@@ -2484,10 +2484,10 @@ def Check_interactions(chains_list):
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
-        VHb_startx, VHb_starty = (width/2)+50,(height/2)-100
+        VHb_startx, VHb_starty = (width/2)+50,(height/2)-200
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
-        VHa_startx, VHa_starty= (width/2)-100,(height/2)-100
+        VHa_startx, VHa_starty= (width/2)-100,(height/2)-200
         try:
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
             if VHa_chain.get(keyslista[0])[0][0] == VHb_chain.get(keyslistb[0])[1] or VHa_chain.get(keyslista[0])[0][1] in All_positions_and_chains:
@@ -2501,11 +2501,11 @@ def Check_interactions(chains_list):
                         VHa_startx=VHa_start[0][0]-60
                         VHa_starty=VHa_start[0][1]
                 else:
-                    VHa_startx, VHa_starty= (width/2)-150,(height/2)-100
+                    VHa_startx, VHa_starty= (width/2)-150,(height/2)-200
         except IndexError:
             if len(VHa_chain.get(VHa_list[1])[0]) > 1:
                 if VHa_chain.get(VHa_list[1])[0][0] == VHb_chain.get(keyslistb[1])[1]:
-                    VHa_startx, VHa_starty= (width/2)-50,(height/2)-100
+                    VHa_startx, VHa_starty= (width/2)-50,(height/2)-200
 
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
 
@@ -4421,7 +4421,7 @@ def domain_mod_button(letter):
             if "." in Domain_Primer[8]:
                 Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
             else:
-                Domain_Primer[8]+=letter
+                Domain_Primer[8] += letter
 
     elif domain_mod == str(letter) and Domain_Primer_Lock != "":
         domain_mod = ""
@@ -4431,12 +4431,12 @@ def domain_mod_button(letter):
             if "." in Domain_Primer[8]:
                 Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
             else:
-                Domain_Primer[8]+=letter
+                Domain_Primer[8] += letter
 
     elif domain_mod == str(letter):
         domain_mod = ""
         if Domain_Primer != []:
-            Domain_Primer[8] = re.sub("@|>","", Domain_Primer[8])
+            Domain_Primer[8] = re.sub("\@|\>","", Domain_Primer[8])
     if (domain_charge != "" or domain_mod != "" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
         lower_canvas.config(cursor = "arrow")
         lower_canvas.bind("<Button-1>", mm.change_modification)
@@ -4848,7 +4848,7 @@ def CommentLabelButton_function(canvas):
 
 def raise_error(canvas,message):
     lower_canvas.delete("all")
-    lower_canvas.create_text(400,100, text = message, fill = "red")
+    lower_canvas.create_text((width/2),(height/3), text = message, fill = "red")
     raise IndexError
 def items_selected(e):
     '''
@@ -5180,13 +5180,32 @@ class MouseMover():
                             if x1< xc <x2 and y1 < yc < y2:
                                 self.item = polygons_keyslist[i]
             domain_name = canvas_polygons.get(self.item)[1]
-            new_domain_name = re.sub("\+|\-|\_|\!|\*","",domain_name)
+            new_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*","",domain_name)
+
             domain_charge = re.sub("\_","-",domain_charge)
+            domain_charge_to_add = domain_charge
+            if domain_charge in str(domain_name):
+                if "+" in domain_charge:
+                    domain_charge_to_add = re.sub("\+","",domain_charge_to_add)
+                elif "-" in domain_charge:
+                    domain_charge_to_add = re.sub("\-","",domain_charge_to_add)
+
+            domain_mod_to_add = domain_mod
+            if domain_mod in str(domain_name):
+                domain_mod_to_add = re.sub(domain_mod,"",domain_mod_to_add)
+
+            extra_mods_to_add = extra_mods
+            if extra_mods in str(domain_name):
+                if "*" in extra_mods:
+                    extra_mods_to_add = re.sub("\*","",extra_mods_to_add)
+                elif "!" in extra_mods:
+                    extra_mods_to_add = re.sub("\!","",extra_mods_to_add)
+                    
             if "V" in domain_name:
-                new_domain_name = re.sub("\.",extra_mods+domain_mod+domain_charge+".",new_domain_name)
+                new_domain_name = re.sub("\.",extra_mods_to_add+domain_mod_to_add+domain_charge_to_add+".",new_domain_name)
                 new_display_name= re.sub("\.|nano","", new_domain_name)
             else:
-                new_domain_name +=extra_mods+domain_mod+domain_charge
+                new_domain_name +=extra_mods_to_add+domain_mod_to_add+domain_charge_to_add
                 new_display_name=  re.sub("\.|nano","", new_domain_name)
             canvas_polygons[self.item][1] = new_domain_name
                 ###change display label
