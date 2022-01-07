@@ -3,6 +3,7 @@ import re
 import sys
 import os
 from PIL import Image
+import PIL
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import colorchooser
@@ -1277,11 +1278,11 @@ def Check_interactions(chains_list):
             Build_in = True
             Build_out = False
         elif chain_count==2:
+            keyslista = list(VHa_chain.keys())
+            keyslistb = list(VHb_chain.keys())
             if "H[" in str(dictionary) or "X[" in str(dictionary):
                 tangle_found = False
                 if chain_count ==2:
-                    keyslista = list(VHa_chain.keys())
-                    keyslistb = list(VHb_chain.keys())
                     try:
                         interactor1a = VHa_chain.get(keyslista[0])[0][1]
                         interactor1b = VHa_chain.get(keyslista[0])[0][0]
@@ -1299,20 +1300,31 @@ def Check_interactions(chains_list):
                     if "X" in str(dictionary):
                         if "LEUCINE" in str(dictionary):
                             slant = True
+                            print("FUCK It 1")
                         else:
                             slant = False
-                    elif "H[" in str(dictionary) or "H*[" in str(dictionary) :
+                            print("FUCK It 2")
+                    elif ("H[" in str(keyslista) and "H[" in str(keyslistb)) or ("H*[" in str(keyslista) and "H*[" in str(keyslistb)) :
                         slant = True
+                        print("FUCK It 3")
+                    else:
+                        slant = False
                 else:
                     if tangle_found == True:
                         slant = False
+                        print("FUCK It 4")
                     elif "H[" in str(dictionary) or "H*[" in str(dictionary) :
                         slant = True
+                        print("FUCK It 5")
                     else:
                         slant = False
+                        print("FUCK It 6")
+            #elif dictionary == VHa_chain and "H[" in str(keyslistb) or dictionary == VHb_chain and  "H[" in str(keyslista):
+            #    slant = True
+            #    print("FUCK It 7")
             else:
                 slant = False
-
+                print("FUCK IT 8")
 
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
@@ -1364,6 +1376,7 @@ def Check_interactions(chains_list):
             Heavy_chain = VHb_chain
             Light_chain = VLb_chain
             righthanded = True
+
         elif dictionary == VHa_chain or dictionary == VLa_chain:
             Heavy_chain = VHa_chain
             Light_chain = VLa_chain
@@ -2488,7 +2501,7 @@ def Check_interactions(chains_list):
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
-        VHb_startx, VHb_starty = (width/2)+150,(height/2)-200
+        VHb_startx, VHb_starty = (width/2)+100,(height/2)-200
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
         VHa_list = list(VHa_chain.keys())
         VHa_startx, VHa_starty= (width/2)-150,(height/2)-200
@@ -3155,20 +3168,25 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
 def save_as_png(canvas):
     fileName = "AbYdraw_export"
     # save postscipt image
-    eps = canvas.postscript(file = fileName + '.eps')
-    canvas.postscript(file = fileName + '.eps')
+    eps = canvas.postscript(file = fileName + '.eps',colormode='color')
+    #canvas.postscript(file = fileName + '.eps')
     # use PIL to convert to PNG
     img = Image.open(fileName + '.eps')
-    img.save(fileName + '.png', 'png')
-    #image_eps = str(fileName + '.eps')
-    #im = Image.open(image_eps)
-    #fig = im.convert('RGBA')
-    #image_png= str(fileName+'.png')
-    #fig.save(image_png, lossless = True)
-    #os.remove(str(fileName + '.eps'))
-    # use PIL to convert to PNG
-    #img = Image.open(fileName + '.eps')
-    #img.save(fileName + '.png', 'png')
+
+    #f = filedialog.asksaveasfile(mode='wb', defaultextension=".png")
+    #if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+    #    return
+    #f.save(img)
+    #f.close()
+    #
+    file = filedialog.asksaveasfile(mode='w', defaultextension=".png", filetypes=(("PNG file", "*.png"),("All Files", "*.*") ))
+    if file:
+        abs_path = os.path.abspath(file.name)
+        img = Image.open(fileName + '.eps')
+        rgb_img = img.convert('RGB')
+        rgb_img.save(abs_path, 'png', lossless = True) # saves the image to the input file name.
+        os.remove(str(fileName + '.eps'))
+
 ###########################################
 def get_min_max_coordinates(domain_coordinates):
     xs= []
@@ -5019,7 +5037,7 @@ def items_selected(e):
     global formats_keyslist
     global all_buttons
     for i in all_buttons:
-        i.config(bg="black")
+        i.config(fg="black")
     Delete_lock = False
     Bond_lock = ""
     lower_canvas.bind("<Button-1>", mm.select)
@@ -5127,8 +5145,8 @@ class MouseMover():
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
-
-                    if x1<= labelx <=x2 and y1 <= labely <= y2:
+                    label_text_test = re.sub("\.","",canvas_polygons.get(self.item)[1])
+                    if x1<= labelx <=x2 and y1 <= labely <= y2 and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
                         temp_label = {}
