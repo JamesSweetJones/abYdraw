@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 import re
 import sys
@@ -171,6 +172,7 @@ def Get_dictionaries(x):
                     raise_error(lower_canvas, error_message)
                 for i in range(len(locationstr)):
                     if i == 0:
+                        print(domain, locationstr[i])
                         location_counting.append(int(locationstr[i]))
                     location.append(int(locationstr[i]))
 
@@ -1561,7 +1563,7 @@ def Check_interactions(chains_list):
                     checker = dictionary.get(keyslist[i])[0]
                 else:
                     checker = 0
-                if "H[" not in keyslist[i-1] and "Linker[" not in keyslist[i-1] and "X" not in keyslist[i-1]:
+                if "H[" not in keyslist[i-1] and "Linker[" not in keyslist[i-1]:# and "X" not in keyslist[i-1]:
                     previous_number = (dictionary.get(previous_domain)[0])+1
                 elif "X[" in keyslist[i-1] and "Linker[" not in keyslist[i]:
                     print("checkpointX")
@@ -2421,9 +2423,9 @@ def Check_interactions(chains_list):
                 VHb_H_coordinatesx = (width/2)+50
                 VHb_H_coordinatesy = (height/2)-50
             elif IgG2 == True:
-                VHa_H_coordinatesx = (width/2)-200
+                VHa_H_coordinatesx = (width/2)-230
                 VHa_H_coordinatesy = (height/2)-100
-                VHb_H_coordinatesx = (width/2)-100
+                VHb_H_coordinatesx = (width/2)-130
                 VHb_H_coordinatesy = (height/2)-100
         elif (("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) or ("C[" in str(VHa_1_test) and "C[" in str(VHb_1_test)))and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
             keyslista = list(VHa_chain.keys())
@@ -2601,7 +2603,7 @@ def Check_interactions(chains_list):
 
 ##Two-chained Abs
 
-    
+
     frag1_startx,frag1_starty,frag2_startx,frag2_starty,frag3_startx,frag3_starty,frag4_startx,frag4_starty = 0,0,0,0,0,0,0,0
     if IgG2 == False:
         if fragment1 != {}:
@@ -2653,16 +2655,68 @@ def Check_interactions(chains_list):
         frag3_stat= renderchains(fragment3,frag3_startx,frag3_starty)
         frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
     elif IgG2 == True:
-        if ("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys()))) :
-            frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200)
-            frag2_stat= renderchains(fragment2,VLa_startx-0,VLa_starty+200)
+        if (("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys()))) :
+            frag1_stat= renderchains(fragment1,VHa_startx+0,VHa_starty+200)
+            #
+            fragment2_list = list(fragment2.keys())
+            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
+            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag2_start[1]
+            if righthanded == True:
+                frag2_startx=frag2_start[0][0]+60
+                frag2_starty=frag2_start[0][1]
+            elif righthanded==False:
+                frag2_startx=frag2_start[0][0]-60
+                frag2_starty=frag2_start[0][1]
+            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
+
             frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200)
-            frag4_stat= renderchains(fragment4,VLb_startx+0,VLb_starty+200)
+
+            fragment4_list = list(fragment4.keys())
+            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
+            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag4_start[1]
+            if righthanded == True:
+                frag4_startx=frag4_start[0][0]+60
+                frag4_starty=frag4_start[0][1]
+            elif righthanded==False:
+                frag4_startx=frag4_start[0][0]-60
+                frag4_starty=frag4_start[0][1]
+            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+
         else:
-            frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
-            frag2_stat= renderchains(fragment2,VLa_startx+325,VLa_starty+200)
-            frag3_stat= renderchains(fragment3,VHb_startx+325,VHb_starty+200)
-            frag4_stat= renderchains(fragment4,VLb_startx+325,VLb_starty+200)
+            frag1_stat= renderchains(fragment1,VHa_startx+350,VHa_starty+200)
+            test_H_positionVHa = frag1_stat[25]
+            test_H_positionx = testHpositionVHa[0]
+            test_H_positiony = testHpositionVHa[1]
+            differencetest_desiredx = VHa_H_coordinatesx - test_H_positionx
+            differencetest_desiredy = VHa_H_coordinatesy - test_H_positiony
+            #
+            #
+            fragment2_list = list(fragment2.keys())
+            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
+            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag2_start[1]
+            if righthanded == True:
+                frag2_startx=frag2_start[0][0]+60
+                frag2_starty=frag2_start[0][1]
+            elif righthanded==False:
+                frag2_startx=frag2_start[0][0]-60
+                frag2_starty=frag2_start[0][1]
+            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
+
+            frag3_stat= renderchains(fragment3,VHb_startx+350,VHb_starty+200)
+            fragment4_list = list(fragment4.keys())
+            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
+            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag4_start[1]
+            if righthanded == True:
+                frag4_startx=frag4_start[0][0]+60
+                frag4_starty=frag4_start[0][1]
+            elif righthanded==False:
+                frag4_startx=frag4_start[0][0]-60
+                frag4_starty=frag4_start[0][1]
+            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
 
 
     keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
@@ -3908,7 +3962,7 @@ def sequence_pipeline(canvas):
                                             combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                             for g in combinations_to_try:
                                                 if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                    if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("C" in str(strings[i][j]) and "C" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                    if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
                                                         disulphide_count = 0
                                                         for y in range(len(disulphides_keyslist)):
                                                             #print("Looking for those disulphides")
@@ -3959,7 +4013,7 @@ def sequence_pipeline(canvas):
                                         combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                         for g in combinations_to_try:
                                             if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("C[" in str(strings[i][j]) and "C[" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
                                                     disulphide_count = 0
                                                     paired_X_domains.append(int(paired_number))
                                                     for y in range(len(disulphides_keyslist)):
