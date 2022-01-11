@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 import re
 import sys
@@ -377,7 +376,6 @@ def Get_dictionaries(x):
                                     fragment3 = unused[k]
                                 elif i==3:
                                     fragment4 = unused[k]
-                                print("Halla-FUCKING-luia")
 
             fragment1_keyslist = list(fragment1.keys())
             fragment2_keyslist = list(fragment2.keys())
@@ -1308,31 +1306,23 @@ def Check_interactions(chains_list):
                     if "X" in str(dictionary):
                         if "LEUCINE" in str(dictionary):
                             slant = True
-                            print("FUCK It 1")
                         else:
                             slant = False
-                            print("FUCK It 2")
                     elif ("H[" in str(keyslista) and "H[" in str(keyslistb)) or ("H*[" in str(keyslista) and "H*[" in str(keyslistb)) :
                         slant = True
-                        print("FUCK It 3")
                     else:
                         slant = False
                 else:
                     if tangle_found == True:
                         slant = False
-                        print("FUCK It 4")
                     elif "H[" in str(dictionary) or "H*[" in str(dictionary) :
                         slant = True
-                        print("FUCK It 5")
                     else:
                         slant = False
-                        print("FUCK It 6")
             #elif dictionary == VHa_chain and "H[" in str(keyslistb) or dictionary == VHb_chain and  "H[" in str(keyslista):
             #    slant = True
-            #    print("FUCK It 7")
             else:
                 slant = False
-                print("FUCK IT 8")
 
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
@@ -1529,10 +1519,8 @@ def Check_interactions(chains_list):
                         additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
                     else:
                         additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
-                    print(finished_multimers)
-                    print("ADDITIONS", additions)
+
                     if finished_multimers == []:
-                        print("GOOD LORD WHAT IS HAPPENING IN THERE")
                         getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     elif additions != [0,0]:
                         multimer_number =  multimers.get(dictionary.get(keyslist[i])[0])[1]
@@ -1540,7 +1528,6 @@ def Check_interactions(chains_list):
                         for f in range(len(finished_multimers_numbers)):
                             if finished_multimers_indexes[f] == multimer_number:
                                 previous_index = f
-                                print(finished_multimers_numbers[f], multimer_number)
                         if righthanded == False:
                             startx = finished_multimers[f][0]-(additions[0]/2)
                         elif righthanded == True:
@@ -1579,7 +1566,6 @@ def Check_interactions(chains_list):
 
                     previous_domain = keyslist[i-2]
                     previous_chain  = chain[i-2]
-                    print(dictionary.get(previous_domain))
                     previous_number = int(dictionary.get(previous_domain)[0])+2
 
 
@@ -1592,8 +1578,7 @@ def Check_interactions(chains_list):
                 if checker in All_positions_and_chains and ("X" in keyslist[i] or "C[" in keyslist[i]) and len(dictionary.get(keyslist[i])) == 1:
                     startx = All_positions_and_chains.get(checker)[0][0]
                     starty = All_positions_and_chains.get(checker)[0][1]
-                    print(startx)
-                    print(startx)
+
                     getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                 elif "H[" in keyslist[i]:
@@ -1838,22 +1823,16 @@ def Check_interactions(chains_list):
                             Build_in = False
                             Build_out = True
                         if to_join_righthanded == False and to_join_direction == 'outie':
-                            print("BS1")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == False and to_join_direction == 'innie':
-                            print("BS2")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == False and to_join_direction == 'constant':
-                            print("BS2")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'outie':
-                            print("BS1")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'innie':
-                            print("BS2")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif to_join_righthanded == True and to_join_direction == 'constant':
-                            print("BS2")
                             getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         all_list = list(All_positions_and_chains.keys())
                         get = (All_positions_and_chains.get(all_list[-1]))
@@ -2217,7 +2196,6 @@ def Check_interactions(chains_list):
                     if dictionary == VHa_1_test:
                         keyslistb = list(VHb_chain.keys())
                         for x in range(len(keyslistb)):
-                            print(dictionary.get(keyslist[i])[1], VHb_chain.get(keyslistb[x])[0])
                             if dictionary.get(keyslist[i])[1] == VHb_chain.get(keyslistb[x])[0][0]:
                                 if "H[" in str(keyslist[i]) and i+1 == len(keyslist):
                                     if righthanded == False:
@@ -2251,6 +2229,7 @@ def Check_interactions(chains_list):
                             if dictionary.get(keyslist[i])[1] == VHb_1_test.get(keyslistb[x])[0]:
                                 first_interaction =[getcoordinates[0][0],getcoordinates[0][1]]
                                 interaction_counter +=1
+
 
                 elif len(dictionary.get(keyslist[i])) == 1 and interaction_counter ==0 and ("X[" in keyslist[i] or "C[" in keyslist[i]):
                     if dictionary == VHa_1_test:
@@ -2398,6 +2377,7 @@ def Check_interactions(chains_list):
     ##Get canvas sizes
     width = lower_canvas.winfo_width()
     height = lower_canvas.winfo_height()
+
     if chain_count == 1:
         VHa_startx, VHa_starty = (width/2),(height/2)-200
         VHb_startx, VHb_starty = 0,0
@@ -2423,9 +2403,9 @@ def Check_interactions(chains_list):
                 VHb_H_coordinatesx = (width/2)+50
                 VHb_H_coordinatesy = (height/2)-50
             elif IgG2 == True:
-                VHa_H_coordinatesx = (width/2)-230
+                VHa_H_coordinatesx = (width/2)-200
                 VHa_H_coordinatesy = (height/2)-100
-                VHb_H_coordinatesx = (width/2)-130
+                VHb_H_coordinatesx = (width/2)-100
                 VHb_H_coordinatesy = (height/2)-100
         elif (("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) or ("C[" in str(VHa_1_test) and "C[" in str(VHb_1_test)))and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
             keyslista = list(VHa_chain.keys())
@@ -2656,36 +2636,7 @@ def Check_interactions(chains_list):
         frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
     elif IgG2 == True:
         if (("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys()))) :
-            frag1_stat= renderchains(fragment1,VHa_startx+0,VHa_starty+200)
-            #
-            fragment2_list = list(fragment2.keys())
-            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
-            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag2_start[1]
-            if righthanded == True:
-                frag2_startx=frag2_start[0][0]+60
-                frag2_starty=frag2_start[0][1]
-            elif righthanded==False:
-                frag2_startx=frag2_start[0][0]-60
-                frag2_starty=frag2_start[0][1]
-            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
-
-            frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200)
-
-            fragment4_list = list(fragment4.keys())
-            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
-            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag4_start[1]
-            if righthanded == True:
-                frag4_startx=frag4_start[0][0]+60
-                frag4_starty=frag4_start[0][1]
-            elif righthanded==False:
-                frag4_startx=frag4_start[0][0]-60
-                frag4_starty=frag4_start[0][1]
-            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
-
-        else:
-            frag1_stat= renderchains(fragment1,VHa_startx+350,VHa_starty+200)
+            frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200)
             test_H_positionVHa = frag1_stat[25]
             test_H_positionx = testHpositionVHa[0]
             test_H_positiony = testHpositionVHa[1]
@@ -2705,7 +2656,7 @@ def Check_interactions(chains_list):
                 frag2_starty=frag2_start[0][1]
             frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
 
-            frag3_stat= renderchains(fragment3,VHb_startx+350,VHb_starty+200)
+            frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200)
             fragment4_list = list(fragment4.keys())
             fragment_inter = fragment4.get(fragment4_list[0])[0][1]
             frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
@@ -2717,6 +2668,216 @@ def Check_interactions(chains_list):
                 frag4_startx=frag4_start[0][0]-60
                 frag4_starty=frag4_start[0][1]
             frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+
+        else:
+
+            VHa_H_coordinatesx = ((width/6)*4)
+            VHa_H_coordinatesy = (height/2)+100
+            VHb_H_coordinatesx = VHa_H_coordinatesx+100
+            VHb_H_coordinatesy = (height/2)+100
+
+            frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
+            test_H_positionfrag1 = frag1_stat[26]
+
+
+            test_H_positionx = test_H_positionfrag1[0][0]
+            test_H_positiony = test_H_positionfrag1[0][1]
+            frag1_differencetest_desiredx = test_H_positionx - VHa_H_coordinatesx
+            frag1_differencetest_desiredy = test_H_positiony - VHa_H_coordinatesy
+            coordinates_to_change = [frag1_stat[0],frag1_stat[1],frag1_stat[2],frag1_stat[3],frag1_stat[4],frag1_stat[5],frag1_stat[6],frag1_stat[7],frag1_stat[36],frag1_stat[37],frag1_stat[38],frag1_stat[39],frag1_stat[40],frag1_stat[41],frag1_stat[42],frag1_stat[43],frag1_stat[8],frag1_stat[26],frag1_stat[27],frag1_stat[24],frag1_stat[11], frag1_stat[10]]
+            conj_x1 = get_min_max_coordinates(frag1_stat[52][0])[0]
+            conj_x2 = get_min_max_coordinates(frag1_stat[52][0])[1]
+            conj_y1 = get_min_max_coordinates(frag1_stat[52][0])[2]
+            conj_y2 = get_min_max_coordinates(frag1_stat[52][0])[3]
+            conj_fixed = False
+            for i in range(len(coordinates_to_change)):
+                for j in range(len(coordinates_to_change[i])):
+                    for k in range(len(coordinates_to_change[i][j])):
+                        if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
+                            try:
+                                if conj_x1 <= coordinates_to_change[i][j][2] <= conj_x2 and conj_y1 <= coordinates_to_change[i][j][3] <= conj_y2 and conj_fixed == False:
+                                    coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
+                                    #coordinates_to_change[i][j][1]-= frag1_differencetest_desiredy
+                                    coordinates_to_change[i][j][2]= frag1_stat[52][0][0] + frag1_differencetest_desiredx
+                                    coordinates_to_change[i][j][3]= frag1_stat[52][0][1] + frag1_differencetest_desiredy+20
+                                    conj_fixed = True
+
+#
+                                else:
+                                    if k %2 != 0:
+                                        coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
+                                    elif k%2 ==0:
+                                        coordinates_to_change[i][j][k] -= frag1_differencetest_desiredx
+
+                            except IndexError:
+                                if  k %2 != 0:
+                                    coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
+                                elif k %2 == 0:
+                                    coordinates_to_change[i][j][k] -= frag1_differencetest_desiredx
+                        else:
+                            for l in range(len(coordinates_to_change[i][j][k])):
+                                if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
+                                    if l %2 != 0:
+                                        coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredy
+                                    elif l%2 ==0:
+                                        coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredx
+            #All_positions_and_chains_list = list(All_positions_and_chains.keys())
+            #print(All_positions_and_chains)
+            for i in range(len(frag1_stat[52][0])):
+                if i % 2 == 0:
+                    frag1_stat[52][0][i] += frag1_differencetest_desiredx
+                elif i % 2 != 0:
+                    frag1_stat[52][0][i] += frag1_differencetest_desiredy
+
+            fragment1_keyslist = list(fragment1.keys())
+            for i in range(len(All_positions_and_chains_list)):
+                number = All_positions_and_chains_list[i]
+                for j in range(len(fragment1_keyslist)):
+                    try:
+                        keyslist_number = fragment1.get(fragment1_keyslist[j])[0]
+                        if number == keyslist_number:
+                            for l in range(len(All_positions_and_chains.get(All_positions_and_chains_list[i])[0])):
+                                #if All_positions_and_chains.get(All_positions_and_chains_list[i])[0] != frag1_stat[52][0]:
+                                if l %2 != 0:
+                                    All_positions_and_chains.get(All_positions_and_chains_list[i])[0][l] -= frag1_differencetest_desiredy
+                                elif l%2 ==0:
+                                    All_positions_and_chains.get(All_positions_and_chains_list[i])[0][l] -= frag1_differencetest_desiredx
+                    except IndexError:
+                        pass
+            disulphide_keyslist = list(extra_disulphide_bridges.keys())
+            for i in range(len(disulphide_keyslist)):
+                number = disulphide_keyslist[i]
+                for j in range(len(fragment1_keyslist)):
+                    try:
+                        keyslist_number = fragment1.get(fragment1_keyslist[j])[1]
+
+                        if number == keyslist_number:
+
+                            for l in range(len(extra_disulphide_bridges.get(disulphide_keyslist[i])[0])):
+                                if l %2 != 0:
+                                    extra_disulphide_bridges.get(disulphide_keyslist[i])[0][l] -= frag1_differencetest_desiredy
+                                elif l%2 ==0:
+                                    extra_disulphide_bridges.get(disulphide_keyslist[i])[0][l] -= frag1_differencetest_desiredx
+                    except IndexError:
+                        pass
+            for i in range(len(frag1_stat[17])):
+                if frag1_stat[17][i] == "C":
+                    #for j in range(len(frag1_stat[9][i])):
+                        #if j % 2 == 0:
+                    frag1_stat[10][i][0][0] += frag1_differencetest_desiredx
+                        #elif j % 2 != 0:
+                    frag1_stat[10][i][0][1] += frag1_differencetest_desiredy
+
+
+            #H_keyslist = list(H_disulphide_coordinates.keys())
+            #for i in range(len(H_keyslist)):
+            #    number = H_keyslist[i]
+            #    for j in range(len(fragment1_keyslist)):
+            #        try:
+            #            keyslist_number = fragment1.get(fragment1_keyslist[j])[1]
+            #            print()
+            #            if number == keyslist_number:
+            #                for l in range(len(H_disulphide_coordinates.get(H_keyslist[i])[0])):
+            #                    print("ELLO ELLO", H_disulphide_coordinates.get(H_keyslist[i])[0][l])
+            #                    if l %2 != 0:
+            #                        H_disulphide_coordinates.get(H_keyslist[i])[0][l] += frag1_differencetest_desiredy
+            #                    elif l%2 ==0:
+            #                        H_disulphide_coordinates.get(H_keyslist[i])[0][l] += frag1_differencetest_desiredx
+            #        except IndexError:
+            #            pass
+            fragment2_list = list(fragment2.keys())
+            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
+            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag2_start[1]
+            if righthanded == True:
+                frag2_startx=frag2_start[0][0]+60
+                frag2_starty=frag2_start[0][1]
+            elif righthanded==False:
+                frag2_startx=frag2_start[0][0]-60
+                frag2_starty=frag2_start[0][1]
+            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
+
+            frag3_stat= renderchains(fragment3,VHb_startx+325,VHb_starty+200)
+            test_H_positionfrag3 = frag3_stat[26]
+
+
+            test_H_positionx = test_H_positionfrag3[0][0]
+            test_H_positiony = test_H_positionfrag3[0][1]
+            frag3_differencetest_desiredx = VHb_H_coordinatesx- test_H_positionx
+            frag3_differencetest_desiredy = VHb_H_coordinatesy- test_H_positiony
+            coordinates_to_change = [frag3_stat[0],frag3_stat[1],frag3_stat[2],frag3_stat[3],frag3_stat[4],frag3_stat[5],frag3_stat[6],frag3_stat[7],frag3_stat[36],frag3_stat[37],frag3_stat[38],frag3_stat[39],frag3_stat[40],frag3_stat[41],frag3_stat[42],frag3_stat[43],frag3_stat[8],frag3_stat[26],frag3_stat[27],frag3_stat[24],frag3_stat[11], frag3_stat[10]]
+            for i in range(len(coordinates_to_change)):
+                for j in range(len(coordinates_to_change[i])):
+                    for k in range(len(coordinates_to_change[i][j])):
+                        print(coordinates_to_change[i][j][k])
+                        if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
+
+                            if  k %2 != 0:
+                                coordinates_to_change[i][j][k] += frag3_differencetest_desiredy
+                            elif k %2 == 0:
+                                coordinates_to_change[i][j][k] += frag3_differencetest_desiredx
+                        else:
+                            for l in range(len(coordinates_to_change[i][j][k])):
+                                if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
+                                    if l %2 != 0:
+                                        coordinates_to_change[i][j][k][l] += frag3_differencetest_desiredy
+                                    elif l%2 ==0:
+                                        coordinates_to_change[i][j][k][l] += frag3_differencetest_desiredx
+            fragment3_keyslist = list(fragment3.keys())
+            disulphide_keyslist = list(extra_disulphide_bridges.keys())
+            for i in range(len(disulphide_keyslist)):
+                number = disulphide_keyslist[i]
+                for j in range(len(fragment3_keyslist)):
+                    try:
+                        keyslist_number = fragment3.get(fragment3_keyslist[j])[1]
+                        if number == keyslist_number:
+
+                            for l in range(len(extra_disulphide_bridges.get(disulphide_keyslist[i])[0])):
+                                if l %2 != 0:
+                                    extra_disulphide_bridges.get(disulphide_keyslist[i])[0][l] += frag3_differencetest_desiredy
+                                elif l%2 ==0:
+                                    extra_disulphide_bridges.get(disulphide_keyslist[i])[0][l] += frag3_differencetest_desiredx
+                    except IndexError:
+                        pass
+            
+
+
+            #H_keyslist = list(H_disulphide_coordinates.keys())
+            #for i in range(len(H_keyslist)):
+            #    number = H_keyslist[i]
+            #    for j in range(len(fragment3_keyslist)):
+            #        try:
+            #            keyslist_number = fragment3.get(fragment3_keyslist[j])[1]
+            #            if number == keyslist_number:
+            #                for l in range(len(H_disulphide_coordinates.get(H_keyslist[i])[0])):
+            #                    print("ELLO ELLO", H_disulphide_coordinates.get(H_keyslist[i])[0][l])
+            #                    if l %2 != 0:
+            #                        H_disulphide_coordinates.get(H_keyslist[i])[0][l] += differencetest_desiredy
+            #                    elif l%2 ==0:
+            #                        H_disulphide_coordinates.get(H_keyslist[i])[0][l] += differencetest_desiredx
+            #        except IndexError:
+            #            pass
+
+            fragment4_list = list(fragment4.keys())
+            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
+            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+            righthanded = frag4_start[1]
+            if righthanded == True:
+                frag4_startx=frag4_start[0][0]+60
+                frag4_starty=frag4_start[0][1]
+            elif righthanded==False:
+                frag4_startx=frag4_start[0][0]-60
+                frag4_starty=frag4_start[0][1]
+            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+            hingey1 = frag3_stat[26][0][1]
+
+
+            for i in range(len(completed_disulphidebridges)):
+                if completed_disulphidebridges[i][1] > hingey1:
+                    completed_disulphidebridges[i][0] -= frag1_differencetest_desiredx
+            #        completed_disulphidebridges[i][1] -= frag1_differencetest_desiredy
+                    completed_disulphidebridges[i][2] += frag3_differencetest_desiredx
+            #        completed_disulphidebridges[i][3] -= frag3_differencetest_desiredy
 
 
     keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
@@ -2948,6 +3109,7 @@ def render(chains_list,canvas,text_to_image):
         for i in range(len(Linkers)):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Linkers[i], "-L-"]
+        print(Linkers)
         for i in range(len(Hinges)):
             domain = canvas.create_line(Hinges[i], fill=hinge_colour, width = 2,tags=("bonds","hinges"))
             canvas_polygons[domain] = [Hinges[i], "-H-"]
@@ -3010,7 +3172,6 @@ def render(chains_list,canvas,text_to_image):
             canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
     #ADCs
         if ADCs != []:
-            print("ADCs", ADCs)
             non_redundant_ADCs = []
             non_redundant_ADCs_sorted = []
             for i in range(len(ADCs)):
@@ -3023,7 +3184,7 @@ def render(chains_list,canvas,text_to_image):
                 canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
-            print("CCs", CCs)
+            print(CCs)
             non_redundant_CCs = []
             non_redundant_CCs_sorted = []
             for i in range(len(CCs)):
