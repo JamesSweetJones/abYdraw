@@ -2696,8 +2696,9 @@ def Check_interactions(chains_list):
                         if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
                             try:
                                 if conj_x1 <= coordinates_to_change[i][j][2] <= conj_x2 and conj_y1 <= coordinates_to_change[i][j][3] <= conj_y2 and conj_fixed == False:
+                                    print("LINK TO CONJUGATE")
                                     coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
-                                    #coordinates_to_change[i][j][1]-= frag1_differencetest_desiredy
+                                    coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
                                     coordinates_to_change[i][j][2]= frag1_stat[52][0][0] + frag1_differencetest_desiredx
                                     coordinates_to_change[i][j][3]= frag1_stat[52][0][1] + frag1_differencetest_desiredy+20
                                     conj_fixed = True
@@ -2839,7 +2840,7 @@ def Check_interactions(chains_list):
                                     extra_disulphide_bridges.get(disulphide_keyslist[i])[0][l] += frag3_differencetest_desiredx
                     except IndexError:
                         pass
-            
+
 
 
             #H_keyslist = list(H_disulphide_coordinates.keys())
@@ -2875,9 +2876,9 @@ def Check_interactions(chains_list):
             for i in range(len(completed_disulphidebridges)):
                 if completed_disulphidebridges[i][1] > hingey1:
                     completed_disulphidebridges[i][0] -= frag1_differencetest_desiredx
-            #        completed_disulphidebridges[i][1] -= frag1_differencetest_desiredy
+                    completed_disulphidebridges[i][1] -= frag1_differencetest_desiredy
                     completed_disulphidebridges[i][2] += frag3_differencetest_desiredx
-            #        completed_disulphidebridges[i][3] -= frag3_differencetest_desiredy
+                    completed_disulphidebridges[i][3] += frag3_differencetest_desiredy
 
 
     keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
