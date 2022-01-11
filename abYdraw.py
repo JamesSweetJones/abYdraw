@@ -2671,7 +2671,7 @@ def Check_interactions(chains_list):
 
         else:
 
-            VHa_H_coordinatesx = ((width/6)*4)
+            VHa_H_coordinatesx = ((width/6)*4)-10
             VHa_H_coordinatesy = (height/2)+100
             VHb_H_coordinatesx = VHa_H_coordinatesx+100
             VHb_H_coordinatesy = (height/2)+100
@@ -5535,6 +5535,7 @@ class MouseMover():
                         self.item = polygons_keyslist[i]
 
             domain_coordinates = (canvas_polygons.get(self.item)[0])
+            Domain_name = (canvas_polygons.get(self.item)[1])
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
             x2 = min_max[1]
@@ -5543,13 +5544,16 @@ class MouseMover():
             for i in range(len(labels_keyslist)):
                 labelx = canvas_labels.get(labels_keyslist[i])[0][0]
                 labely = canvas_labels.get(labels_keyslist[i])[0][1]
-                if x1< labelx <x2 and y1 < labely < y2:
+                label = canvas_labels.get(labels_keyslist[i])[1]
+                print(Domain_name, label)
+                if (x1< labelx <x2 and y1 < labely < y2) :
                     lower_canvas.delete(labels_keyslist[i])
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
             del canvas_polygons[self.item]
         else:
             domain_coordinates = (canvas_polygons.get(self.item)[0])
+            Domain_name = (canvas_polygons.get(self.item)[1])
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
             x2 = min_max[1]
@@ -5558,7 +5562,8 @@ class MouseMover():
             for i in range(len(labels_keyslist)):
                 labelx = canvas_labels.get(labels_keyslist[i])[0][0]
                 labely = canvas_labels.get(labels_keyslist[i])[0][1]
-                if x1< labelx <x2 and y1 < labely < y2:
+                label = canvas_labels.get(labels_keyslist[i])[1]
+                if x1< labelx <x2 and y1 < labely < y2 and str(Domain_name) == str(label):
                     lower_canvas.delete(labels_keyslist[i])
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
