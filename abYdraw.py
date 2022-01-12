@@ -5631,8 +5631,9 @@ class MouseMover():
                 labelx = canvas_labels.get(labels_keyslist[i])[0][0]
                 labely = canvas_labels.get(labels_keyslist[i])[0][1]
                 label = canvas_labels.get(labels_keyslist[i])[1]
-                print(Domain_name, label)
-                if (x1< labelx <x2 and y1 < labely < y2) :
+                Domain_name_to_compare = re.sub("\.|\@|\>","",Domain_name)
+                Domain_name_to_compare = re.sub("\_","-",Domain_name_to_compare)
+                if x1< labelx <x2 and y1 < labely < y2 and str(Domain_name_to_compare) == str(label):
                     lower_canvas.delete(labels_keyslist[i])
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
@@ -5650,7 +5651,9 @@ class MouseMover():
                 labelx = canvas_labels.get(labels_keyslist[i])[0][0]
                 labely = canvas_labels.get(labels_keyslist[i])[0][1]
                 label = canvas_labels.get(labels_keyslist[i])[1]
-                if x1< labelx <x2 and y1 < labely < y2 and str(Domain_name) == str(label):
+                Domain_name_to_compare = re.sub("\.|\@|\>","",Domain_name)
+                Domain_name_to_compare = re.sub("\_","-",Domain_name_to_compare)
+                if x1< labelx <x2 and y1 < labely < y2 and str(Domain_name_to_compare) == str(label):
                     lower_canvas.delete(labels_keyslist[i])
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
