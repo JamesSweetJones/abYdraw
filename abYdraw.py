@@ -1192,6 +1192,8 @@ def Check_interactions(chains_list):
     def renderchains(dictionary,startx,starty):
         width = lower_canvas.winfo_width()
         height = lower_canvas.winfo_height()
+        print(width)
+        print(height)
         chain                   = []
         chain_dict              = {}
         coordinates_list_heavy_a= []
@@ -2888,14 +2890,14 @@ def Check_interactions(chains_list):
     Xhow_much = 0
     for i in range(len(keyslist_All_positions_and_chains)):
         for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
-            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], int) == True:
+            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], float) == True:
                 if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] < 0:
                     Yout_of_range = True
                     if Yhow_much > All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
                         Yhow_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
     for i in range(len(keyslist_All_positions_and_chains)):
         for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
-            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], int) == True:
+            if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], float) == True:
                 if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] > 800:
                     Xout_of_range = True
                     if Xhow_much < All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
@@ -2962,6 +2964,7 @@ def Check_interactions(chains_list):
     names_list_light_h  = VHa_stats[51] + VLa_stats[51] + VHb_stats[51] + VLb_stats[51] + frag1_stat[51] + frag2_stat[51] + frag3_stat[51] + frag4_stat[51]
     Chem_con            = VHa_stats[52] + VLa_stats[52] + VHb_stats[52] + VLb_stats[52] + frag1_stat[52] + frag2_stat[52] + frag3_stat[52] + frag4_stat[52]
     if Yout_of_range == True:
+        print("OH MY GOSH YES")
         Ynew_start = Yhow_much-10
         coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
         for i in range(len(coordinates_to_change)):
@@ -2991,6 +2994,7 @@ def Check_interactions(chains_list):
     #                        if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
     #                            if l %2 == 0:
     #                                coordinates_to_change[i][j][k][l] += Xnew_start
+    print(Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
     return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con)
 
 def render(chains_list,canvas,text_to_image):
@@ -3492,7 +3496,7 @@ def save_as_png(canvas):
     file = filedialog.asksaveasfile(mode='w', defaultextension=".eps", filetypes=(("EPS file", "*.eps"),("All Files", "*.*") ))
     if file:
         abs_path = os.path.abspath(file.name)
-        eps = canvas.postscript(file = abs_path,colormode='color')
+        eps = canvas.postscript(file = abs_path,colormode='color',height=1000)
         file.close()
         #eps.save(abs_path, 'eps', lossless = True) # saves the image to the input file name.
         #s.remove(str(fileName + '.eps'))
@@ -7678,10 +7682,15 @@ def open_settings():
 
 lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
 lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
-scrollbar = tk.Scrollbar(root)
-scrollbar.pack( side = "right", fill = "y" )
-lower_canvas = tk.Canvas(lower_frame, yscrollcommand = scrollbar.set)
-lower_canvas.place(relheight=1,relwidth=1)
+lower_frame2 = tk.Frame(lower_frame, width =  782, height = 700, bg = '#80c1ff', bd=5)
+lower_frame2.pack(expand=True, fill="both")
+lower_canvas = tk.Canvas(lower_frame2,width=782,height=700+300, scrollregion=(0,0,0,300+700))
+scrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
+scrollbar.config(command=lower_canvas.yview)
+scrollbar.pack(side="right",fill="y")
+lower_canvas.config(yscrollcommand=scrollbar.set)
+lower_canvas.pack(side="left",expand=True)
+
 mm = MouseMover()
 canvas_polygons = {}
 canvas_labels   = {}
