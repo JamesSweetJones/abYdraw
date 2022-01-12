@@ -3069,7 +3069,7 @@ def render(chains_list,canvas,text_to_image):
         if disulphide_bridges != []:
             for i in range(len(disulphide_bridges)):
                 domain = canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = 2,tags="disulphide")
-                canvas_polygons[domain] = [disulphide_bridges[i], "-"]
+                canvas_polygons[domain] = [disulphide_bridges[i], "-disulphide-"]
 
     #Bonds
         for i in range(len(Bonds)):
@@ -3399,11 +3399,80 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
             domain_mod = ""
             extra_mods = ""
     elif domain_type == "":
-        Delete_lock = False
-        Bond_lock = ""
-        Domain_Primer = []
-        Domain_Primer_Lock = ""
+        domain_type = "a"
 
+        a_button.config(fg="red")
+        if Domain_Primer_Lock != domain_name:
+            Domain_Primer_Lock = domain_name
+            Delete_lock = False
+            Bond_lock = ""
+            lower_canvas.bind("<Button-1>", mm.place_domain)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+            lower_canvas.config(cursor = "plus")
+            status_label.config(text=domain_name)
+            Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy]
+            if Domain_Primer != []:
+                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
+                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
+            if domain_mod != "":
+                if  domain_mod == "@" or domain_mod== ">":
+                    Domain_Primer[5] == domain_mod
+
+            if domain_charge !="":
+                if domain_charge == "+" or domain_charge == "_":
+                    domain_charge = re.sub("\_","-", domain_charge)
+                    Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
+                    if "V" in Domain_Primer[8]:
+                        Domain_Primer[8] = re.sub("\.",domain_charge+".",Domain_Primer[8])
+                    else:
+                        Domain_Primer[8] += domain_charge
+            if extra_mods !="":
+                Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
+                if "V" in Domain_Primer[8]:
+                    Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
+                else:
+                    Domain_Primer[8] += extra_mods
+            if  "nano" in domain_name:
+                nanobody_button.config(fg="red")
+            elif "VH" in domain_name:
+                InsertVHDomainButton.config(fg="red")
+            elif "VL" in domain_name:
+                InsertVLDomainButton.config(fg="red")
+            elif "CH1" in domain_name:
+                InsertCH1DomainButton.config(fg="red")
+            elif "CH2" in domain_name:
+                InsertCH2DomainButton.config(fg="red")
+            elif "CH3" in domain_name:
+                InsertCH3DomainButton.config(fg="red")
+            elif "CH4" in domain_name:
+                InsertCH4DomainButton.config(fg="red")
+            elif "CL" in domain_name:
+                InsertCLDomainButton.config(fg="red")
+            elif "X" in domain_name:
+                InsertXDomainButton.config(fg="red")
+            elif "C" in domain_name:
+                InsertCDomainButton.config(fg="red")
+
+        elif Domain_Primer_Lock == domain_name:
+            Domain_Primer_Lock = ""
+            Bond_lock = ""
+            lower_canvas.bind("<Button-1>", mm.select)
+            lower_canvas.bind("<B1-Motion>", mm.drag)
+            lower_canvas.bind("<ButtonRelease-1>", mm.release)
+            lower_canvas.config(cursor = "arrow")
+            status_label.config(text="")
+            Domain_Primer = []
+            if domain_type != "":
+                Domain_Primer_Lock = ""
+                lower_canvas.config(cursor = "arrow")
+                lower_canvas.bind("<Button-1>", mm.change_specificity)
+                lower_canvas.unbind("<B1-Motion>")
+                lower_canvas.unbind("<ButtonRelease-1>")
+            #domain_type = ""
+            domain_charge = ""
+            domain_mod = ""
+            extra_mods = ""
 
 ############################################
 def save_as_png(canvas):
@@ -3451,6 +3520,7 @@ def Get_Template_File(canvas):
     '''
     global Bond_lock
     global Delete_lock
+    global textBox
     Delete_lock = False
     Bond_lock = ""
     lower_canvas.bind("<Button-1>", mm.select)
@@ -3458,7 +3528,6 @@ def Get_Template_File(canvas):
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
     lower_canvas.config(cursor = "arrow")
     status_label.config(text="")
-    output = open("Template_File_Export.txt","w")
     entry=textBox.get("1.0","end-1c")
     Template_File = []
     Sequences = []
@@ -3483,8 +3552,8 @@ def Get_Template_File(canvas):
 
 
     def Get_Domain_stats_printout(string,dict,indexing):
-        print(string)
-        print(dict)
+        #print(string)
+        #print(dict)
         Type = []
         Chain_Class_Strings = []
         NGlycos_Strings = []
@@ -3598,6 +3667,16 @@ def Get_Template_File(canvas):
         Template_File.append(str("Linker["+str(j)+","+str(j+1)+"]:"))
         Template_File.append("")
         Template_File.append("")
+
+    def save_txt_file(Template_File):
+        to_save = ""
+        for i in Template_File:
+            to_save += (str(i)+"\n")
+        f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+        if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+            return
+        f.write(to_save)
+        f.close()
 
 
 
@@ -3721,7 +3800,8 @@ def Get_Template_File(canvas):
             if j+1 != len(fusions_dicts[i]):
                 Get_Linker_stats_printout(counter)
             counter +=1
-        if "VH" and "VL" in str(listing):
+        print(str(listing))
+        if "VH" in str(listing) and "VL" in str(listing):
             Sequences.append("")
             Sequences.append(str("Chain"+str(sequences_to_append)+"Heavy:"))
             Sequences.append("")
@@ -3736,9 +3816,10 @@ def Get_Template_File(canvas):
 
     for i in Sequences:
         Template_File.append(i)
-    for i in Template_File:
-        output.write(str(i)+"\n")
+    String = textBox.get("1.0","end")
+    Template_File.append(str("AbML String: "+String))
 
+    save_txt_file(Template_File)
 
 
 
@@ -5490,6 +5571,7 @@ class MouseMover():
         newcoordinates = []
     ####Delete selected item on canvas###
     def delete(self,event):
+        global deleted_polygons
         global canvas_polygons
         global canvas_labels
         global TYPE_labels
@@ -5551,6 +5633,7 @@ class MouseMover():
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
             del canvas_polygons[self.item]
+            deleted_polygons = {self.item:[domain_coordinates,Domain_name]}
         else:
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             Domain_name = (canvas_polygons.get(self.item)[1])
@@ -5568,6 +5651,7 @@ class MouseMover():
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
             del canvas_polygons[self.item]
+            deleted_polygons = {self.item:[domain_coordinates,Domain_name]}
     ###Click item to reverse orientation###
     def change_specificity(self,event):
         widget = event.widget                       # Get handle to canvas
@@ -5864,7 +5948,7 @@ class MouseMover():
             heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
         elif "X" in str(domain_name):
             heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
-        elif "C" in str(domain_name):
+        elif (domain_name) == "C":
             heavy_colour, light_colour = specificity_colours[19],specificity_colours[19]
         else:
             heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
@@ -6006,7 +6090,7 @@ class MouseMover():
         lower_canvas.delete("draggable_line")
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
-        name = "-"
+        name = "-disulphide-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=2, tags="disulphide")
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
@@ -6679,67 +6763,14 @@ def undo():
     global MOD_labels
     global ANTI_labels
     global LENGTH_labels
+    global deleted_polygons
+    global Deletes_to_redo
     label_keyslist = list(canvas_labels.keys())
-    keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())
-    to_delete = max(keys)
-    if to_delete in (canvas_polygons.keys()):
-        lower_canvas.delete(to_delete)
-        Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
-        domain_coordinates = canvas_polygons.get(to_delete)[0]
-        min_max = get_min_max_coordinates(domain_coordinates)
-        x1 = min_max[0]
-        x2 = min_max[1]
-        y1 = min_max[2]
-        y2 = min_max[3]
-        del canvas_polygons[to_delete]
-        for i in range(len(label_keyslist)):
-            labelx = canvas_labels.get(label_keyslist[i])[0][0]
-            labely = canvas_labels.get(label_keyslist[i])[0][1]
-            if x1 <= labelx <= x2 and y1 <= labely <= y2:
-                lower_canvas.delete(label_keyslist[i])
-                del canvas_labels[label_keyslist[i]]
-    elif to_delete in list(TYPE_labels.keys()):
-        lower_canvas.delete(to_delete)
-        TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
-        del TYPE_labels[to_delete]
-    elif to_delete in list(NOTE_labels.keys()):
-        lower_canvas.delete(to_delete)
-        NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
-        del NOTE_labels[to_delete]
-    elif to_delete in list(MOD_labels.keys()):
-        lower_canvas.delete(to_delete)
-        MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
-        del MOD_labels[to_delete]
-    elif to_delete in list(ANTI_labels.keys()):
-        lower_canvas.delete(to_delete)
-        ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
-        del ANTI_labels[to_delete]
-    elif to_delete in list(LENGTH_labels.keys()):
-        lower_canvas.delete(to_delete)
-        LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
-        del LENGTH_labels[to_delete]
-
-def redo():
-    global Polygon_to_redo
-    global NOTE_to_redo
-    global TYPE_to_redo
-    global LENGTH_to_redo
-    global MOD_to_redo
-    global ANTI_to_redo
-    global canvas_polygons
-    global canvas_labels
-    global temp_label
-    global TYPE_labels
-    global NOTE_labels
-    global MOD_labels
-    global ANTI_labels
-    global LENGTH_labels
-    global specificity_colours
-    keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
-    to_redo = min(keys)
-    domain_name = Polygon_to_redo.get(to_redo)[1]
-    domain_coordinates = Polygon_to_redo.get(to_redo)[0]
-    if to_redo in (Polygon_to_redo.keys()):
+    if deleted_polygons != {}:
+        deleted_polygons_keys = list(deleted_polygons.keys())
+        to_replace = max(deleted_polygons_keys)
+        domain_coordinates = deleted_polygons.get(to_replace)[0]
+        domain_name = deleted_polygons.get(to_replace)[1]
         if "-" not in domain_name:
             if "a" in str(domain_name):
                 heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
@@ -6758,7 +6789,9 @@ def redo():
             elif "h" in str(domain_name):
                 heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
             elif "X" in str(domain_name):
-                heavy_colour, light_colour = settings,specificity_colours[18]
+                heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
+            elif str(domain_name) == "C":
+                heavy_colour, light_colour = specificity_colours[19],specificity_colours[19]
             else:
                 heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
             if "H" in domain_name:
@@ -6772,30 +6805,195 @@ def redo():
                 labely = get_min_max_coordinates(domain_coordinates)[5]
                 label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                 canvas_labels[label] = [[labelx,labely], domain_name]
-        elif "-" in domain_name:####
-            domain = lower_canvas.create_line(domain_coordinates, fill='#000000', width=2, tags="bonds")
+        elif domain_name == "-" :####
+            domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
             canvas_polygons[domain] = [domain_coordinates, domain_name]
-        del Polygon_to_redo[to_redo]
-    elif to_redo in list(TYPE_labels.keys()):
-        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
-        TYPE_labels[label] = [domain_coordinates, domain_name]
-        del TYPE_to_redo[to_redo]
-    elif to_redo in list(NOTE_labels.keys()):
-        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
-        NOTE_labels[label] = [domain_coordinates, domain_name]
-        del NOTE_to_redo[to_redo]
-    elif to_redo in list(MOD_labels.keys()):
-        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
-        MOD_labels[label] = [domain_coordinates, domain_name]
-        del MOD_to_redo[to_redo]
-    elif to_redo in list(ANTI_labels.keys()):
-        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
-        ANTI_labels[label] = [domain_coordinates, domain_name]
-        del ANTI_to_redo[to_redo]
-    elif to_redo in list(LENGTH_labels.keys()):
-        label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
-        LENGTH_labels[label] = [domain_coordinates, domain_name]
-        del LENGTH_to_redo[to_redo]
+        elif domain_name == "-H-" :####
+            domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+            canvas_polygons[domain] = [domain_coordinates, domain_name]
+        elif domain_name == "-L-" :####
+            domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+            canvas_polygons[domain] = [domain_coordinates, domain_name]
+        elif domain_name == "-disulphide-":####
+            domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+            canvas_polygons[domain] = [domain_coordinates, domain_name]
+        deleted_polygons = {}
+        Deletes_to_redo[to_replace] = [domain_coordinates, domain_name]
+    else:
+        keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())+list(MOD_labels.keys())+list(ANTI_labels.keys())+list(LENGTH_labels.keys())
+        to_delete = max(keys)
+        if to_delete in (canvas_polygons.keys()):
+            lower_canvas.delete(to_delete)
+            Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
+            domain_coordinates = canvas_polygons.get(to_delete)[0]
+            min_max = get_min_max_coordinates(domain_coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            del canvas_polygons[to_delete]
+            for i in range(len(label_keyslist)):
+                labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                labely = canvas_labels.get(label_keyslist[i])[0][1]
+                if x1 <= labelx <= x2 and y1 <= labely <= y2:
+                    lower_canvas.delete(label_keyslist[i])
+                    del canvas_labels[label_keyslist[i]]
+        elif to_delete in list(TYPE_labels.keys()):
+            lower_canvas.delete(to_delete)
+            TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
+            del TYPE_labels[to_delete]
+        elif to_delete in list(NOTE_labels.keys()):
+            lower_canvas.delete(to_delete)
+            NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
+            del NOTE_labels[to_delete]
+        elif to_delete in list(MOD_labels.keys()):
+            lower_canvas.delete(to_delete)
+            MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
+            del MOD_labels[to_delete]
+        elif to_delete in list(ANTI_labels.keys()):
+            lower_canvas.delete(to_delete)
+            ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
+            del ANTI_labels[to_delete]
+        elif to_delete in list(LENGTH_labels.keys()):
+            lower_canvas.delete(to_delete)
+            LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
+            del LENGTH_labels[to_delete]
+
+def redo():
+    global Polygon_to_redo
+    global NOTE_to_redo
+    global TYPE_to_redo
+    global LENGTH_to_redo
+    global MOD_to_redo
+    global ANTI_to_redo
+    global canvas_polygons
+    global canvas_labels
+    global temp_label
+    global TYPE_labels
+    global NOTE_labels
+    global MOD_labels
+    global ANTI_labels
+    global LENGTH_labels
+    global specificity_colours
+    global Deletes_to_redo
+    global deleted_polygons
+    if Deletes_to_redo != {}:
+        keys = list(Deletes_to_redo.keys())
+        to_delete = max(keys)
+        domain_coordinates = Deletes_to_redo.get(to_delete)[0]
+        domain_name = Deletes_to_redo.get(to_delete)[1]
+        if "-" not in domain_name:
+            lower_canvas.delete(to_delete)
+            Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
+            domain_coordinates = canvas_polygons.get(to_delete)[0]
+            min_max = get_min_max_coordinates(domain_coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            del canvas_polygons[to_delete]
+            for i in range(len(label_keyslist)):
+                labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                labely = canvas_labels.get(label_keyslist[i])[0][1]
+                if x1 <= labelx <= x2 and y1 <= labely <= y2:
+                    lower_canvas.delete(label_keyslist[i])
+                    del canvas_labels[label_keyslist[i]]
+        elif to_delete in list(TYPE_labels.keys()):
+            lower_canvas.delete(to_delete)
+            TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
+            del TYPE_labels[to_delete]
+        elif to_delete in list(NOTE_labels.keys()):
+            lower_canvas.delete(to_delete)
+            NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
+            del NOTE_labels[to_delete]
+        elif to_delete in list(MOD_labels.keys()):
+            lower_canvas.delete(to_delete)
+            MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
+            del MOD_labels[to_delete]
+        elif to_delete in list(ANTI_labels.keys()):
+            lower_canvas.delete(to_delete)
+            ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
+            del ANTI_labels[to_delete]
+        elif to_delete in list(LENGTH_labels.keys()):
+            lower_canvas.delete(to_delete)
+            LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
+            del LENGTH_labels[to_delete]
+        Deletes_to_redo= {}
+        deleted_polygons={}
+    else:
+        keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
+        to_redo = min(keys)
+        domain_name = Polygon_to_redo.get(to_redo)[1]
+        domain_coordinates = Polygon_to_redo.get(to_redo)[0]
+        print(domain_name)
+        if to_redo in (Polygon_to_redo.keys()):
+            if "-" not in domain_name:
+                if "a" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+                elif "b" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+                elif "c" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+                elif "d" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+                elif "e" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+                elif "f" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+                elif "g" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+                elif "h" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+                elif "X" in str(domain_name):
+                    heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
+                elif str(domain_name) == "C":
+                    heavy_colour, light_colour = specificity_colours[19],specificity_colours[19]
+                else:
+                    heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
+                if "H" in domain_name:
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                elif "L" in domain_name:
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                if Label_lock == True:
+                    domain_name = re.sub("\.|@|>","",domain_name)
+                    labelx = get_min_max_coordinates(domain_coordinates)[4]
+                    labely = get_min_max_coordinates(domain_coordinates)[5]
+                    label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
+                    canvas_labels[label] = [[labelx,labely], domain_name]
+            elif domain_name == "-" :####
+                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
+                canvas_polygons[domain] = [domain_coordinates, domain_name]
+            elif domain_name == "-H-" :####
+                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+                canvas_polygons[domain] = [domain_coordinates, domain_name]
+            elif domain_name == "-L-" :####
+                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+                canvas_polygons[domain] = [domain_coordinates, domain_name]
+            elif domain_name == "-disulphide-":####
+                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+                canvas_polygons[domain] = [domain_coordinates, domain_name]
+            del Polygon_to_redo[to_redo]
+        elif to_redo in list(TYPE_labels.keys()):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
+            TYPE_labels[label] = [domain_coordinates, domain_name]
+            del TYPE_to_redo[to_redo]
+        elif to_redo in list(NOTE_labels.keys()):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
+            NOTE_labels[label] = [domain_coordinates, domain_name]
+            del NOTE_to_redo[to_redo]
+        elif to_redo in list(MOD_labels.keys()):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
+            MOD_labels[label] = [domain_coordinates, domain_name]
+            del MOD_to_redo[to_redo]
+        elif to_redo in list(ANTI_labels.keys()):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
+            ANTI_labels[label] = [domain_coordinates, domain_name]
+            del ANTI_to_redo[to_redo]
+        elif to_redo in list(LENGTH_labels.keys()):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
+            LENGTH_labels[label] = [domain_coordinates, domain_name]
+            del LENGTH_to_redo[to_redo]
 
 
 
@@ -6990,7 +7188,7 @@ e_heavy_colour, e_light_colour = '#FF0000', '#FF8585'
 f_heavy_colour, f_light_colour = '#FE6D03', '#FFC296'
 g_heavy_colour, g_light_colour = '#5C54FF', '#AFABFF'
 h_heavy_colour, h_light_colour = '#0FFBFF', '#CCFEFF'
-generic_heavy_colour, generic_light_colour = '#5C5C5C','#B0B0B0'
+generic_heavy_colour, generic_light_colour = '#8E8E8E','#C6C4C4'
 disulphide_colour = "red"
 bond_colour = "black"
 hinge_colour = "dark green"
@@ -7493,12 +7691,14 @@ NOTE_labels     = {}
 ANTI_labels     = {}
 MOD_labels      = {}
 LENGTH_labels   = {}
+deleted_polygons= {}
 TYPE_to_redo    = {}
 NOTE_to_redo    = {}
 ANTI_to_redo    = {}
 MOD_to_redo     = {}
 LENGTH_to_redo  = {}
 Polygon_to_redo = {}
+Deletes_to_redo = {}
 # Bind mouse events to methods (could also be in the constructor)
 lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
