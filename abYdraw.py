@@ -2996,7 +2996,7 @@ def Check_interactions(chains_list):
 
 def render(chains_list,canvas,text_to_image):
     if text_to_image == True:
-        canvas.delete("all")
+        lower_canvas.delete("all")
         global all_buttons
         global specificity_colours
         for i in range(len(all_buttons)):
@@ -3069,108 +3069,108 @@ def render(chains_list,canvas,text_to_image):
     #disulphide_bridge
         if disulphide_bridges != []:
             for i in range(len(disulphide_bridges)):
-                domain = canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = 2,tags="disulphide")
+                domain = lower_canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = 2,tags="disulphide")
                 canvas_polygons[domain] = [disulphide_bridges[i], "-disulphide-"]
 
     #Bonds
         for i in range(len(Bonds)):
-            domain = canvas.create_line(Bonds[i], fill=bond_colour, width = 2,tags="bonds")
+            domain = lower_canvas.create_line(Bonds[i], fill=bond_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Bonds[i], "-"]
         if arcs_left!=[]:
             for i in range(len(arcs_left)):
                 if arcs_left[i][1] == False:
-                    domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags=("bonds","arcs_left","arcs"))
+                    domain = lower_canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags=("bonds","arcs_left","arcs"))
                     canvas_polygons[domain] = [arcs_left[i][0], "-"]
                 elif arcs_left[i][1] == True:
-                    domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = 2,tags=("bonds","arcs_left","arcs"))
+                    domain = lower_canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = 2,tags=("bonds","arcs_left","arcs"))
                     canvas_polygons[domain] = [arcs_left[i][0], "-L-"]
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
                 if arcs_right[i][1] == False:
-                    domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags=("bonds","arcs_right","arcs"))
+                    domain = lower_canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, fill=bond_colour, width = 2,tags=("bonds","arcs_right","arcs"))
                     canvas_polygons[domain] = [arcs_right[i][0], "-"]
                 elif arcs_right[i][1] == True:
-                    domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = 2,tags=("bonds","arcs_right","arcs"))
+                    domain = lower_canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = 2,tags=("bonds","arcs_right","arcs"))
                     canvas_polygons[domain] = [arcs_right[i][0], "-L-"]
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
                 if arcs_left_slant[i][1] == False:
-                    domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags=("bonds","arcs_left_slant","arcs"))
+                    domain = lower_canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags=("bonds","arcs_left_slant","arcs"))
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-"]
                 elif arcs_left_slant[i][1] == True:
-                    domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=2,tags=("bonds","arcs_left_slant","arcs"))
+                    domain = lower_canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=2,tags=("bonds","arcs_left_slant","arcs"))
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-"]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
                 if arcs_right_slant[i][1] == False:
-                    domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags=("bonds","arcs_right_slant","arcs"))
+                    domain = lower_canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, fill = bond_colour, style=tk.ARC,width=2,tags=("bonds","arcs_right_slant","arcs"))
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-"]
                 elif  arcs_right_slant[i][1] == True:
-                    domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=2,tags=("bonds","arcs_right_slant","arcs"))
+                    domain = lower_canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=2,tags=("bonds","arcs_right_slant","arcs"))
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-"]
         for i in range(len(Linkers)):
-            domain = canvas.create_line(Linkers[i], fill=linker_colour, width = 2,tags="bonds")
+            domain = lower_canvas.create_line(Linkers[i], fill=linker_colour, width = 2,tags="bonds")
             canvas_polygons[domain] = [Linkers[i], "-L-"]
         print(Linkers)
         for i in range(len(Hinges)):
-            domain = canvas.create_line(Hinges[i], fill=hinge_colour, width = 2,tags=("bonds","hinges"))
+            domain = lower_canvas.create_line(Hinges[i], fill=hinge_colour, width = 2,tags=("bonds","hinges"))
             canvas_polygons[domain] = [Hinges[i], "-H-"]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
-            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i]]
         for i in range(len(Light_Domains_a)):
-            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i]]
     #B domains
         for i in range(len(Heavy_Domains_b)):
-            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i]]
         for i in range(len(Light_Domains_b)):
-            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i]]
     #C domains
         for i in range(len(Heavy_Domains_c)):
-            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i]]
         for i in range(len(Light_Domains_c)):
-            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i]]
     #D domains
         for i in range(len(Heavy_Domains_d)):
-            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i]]
         for i in range(len(Light_Domains_d)):
-            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i]]
     #E domains
         for i in range(len(Heavy_Domains_e)):
-            domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i]]
         for i in range(len(Light_Domains_e)):
-            domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i]]
     #F domains
         for i in range(len(Heavy_Domains_f)):
-            domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i]]
         for i in range(len(Light_Domains_f)):
-            domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i]]
     #G domains
         for i in range(len(Heavy_Domains_g)):
-            domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i]]
         for i in range(len(Light_Domains_g)):
-            domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i]]
     #H domains
         for i in range(len(Heavy_Domains_h)):
-            domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i]]
         for i in range(len(Light_Domains_h)):
-            domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
+            domain = lower_canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
     #ADCs
         if ADCs != []:
@@ -3182,7 +3182,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_ADCs.append(ADCs[i])
                     non_redundant_ADCs_sorted.append(j)
             for i in range(len(non_redundant_ADCs)):
-                domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
+                domain = lower_canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
                 canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
@@ -3195,7 +3195,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_CCs.append(CCs[i])
                     non_redundant_CCs_sorted.append(j)
             for i in range(len(non_redundant_CCs)):
-                domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=2,tags="domain")
+                domain = lower_canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=2,tags="domain")
                 canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
 
     #Labels
@@ -3205,7 +3205,7 @@ def render(chains_list,canvas,text_to_image):
                 y = Label_positions[i][0][1]
                 Domain_Text[i] = re.sub("\_","-", Domain_Text[i])
                 Domain_Text[i] = re.sub("nano","",Domain_Text[i])
-                label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label")
+                label  = lower_canvas.create_text(x,y, text=Domain_Text[i],tags = "label")
                 canvas_labels[label] = [[x,y], Domain_Text[i]]
 
 
@@ -3214,19 +3214,19 @@ def render(chains_list,canvas,text_to_image):
             setlist = list(notes_set)
             for i in range(len(setlist)):
                 if "NOTE:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels")
+                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels")
                     NOTE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "TYPE:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels")
+                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels")
                     TYPE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "ANTI:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels")
+                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels")
                     ANTI_labels[note] = [Note_positions[i],setlist[i]]
                 elif "MOD:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels")
+                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels")
                     MOD_labels[note] = [Note_positions[i],setlist[i]]
                 elif "LENGTH:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels")
+                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels")
                     LENGTH_labels[note] = [Note_positions[i],setlist[i]]
 
 
@@ -3265,7 +3265,7 @@ def sequence_render_pipeline(canvas):
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
     coordinates  = Check_interactions(split_chains)
-    render(coordinates, canvas,True)
+    render(coordinates, lower_canvas,True)
 
 
 ############################################
@@ -3300,7 +3300,7 @@ def render_pipeline(canvas):
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
     coordinates  = Check_interactions(split_chains)
-    render(coordinates, canvas,True)
+    render(coordinates, lower_canvas,True)
 
 ############################################
 def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
@@ -3845,61 +3845,61 @@ def sequence_pipeline(canvas):
     MOD_keyslist  = list(MOD_labels.keys())
     ANTI_keyslist = list(ANTI_labels.keys())
     LENGTH_keyslist=list(LENGTH_labels.keys())
-    domains_list = canvas.find_withtag("domain")
+    domains_list = lower_canvas.find_withtag("domain")
     domains_dict = {}
     for i in range(len(domains_list)):
         for j in range(len(polygons_keyslist)):
             if domains_list[i] == polygons_keyslist[j]:
                 domains_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    bonds_list = canvas.find_withtag("bonds")
+    bonds_list = lower_canvas.find_withtag("bonds")
     bonds_dict = {}
     for i in range(len(bonds_list)):
         for j in range(len(polygons_keyslist)):
             if bonds_list[i] == polygons_keyslist[j]:
                 bonds_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    disulphides_list = canvas.find_withtag("disulphide")
+    disulphides_list = lower_canvas.find_withtag("disulphide")
     disulphides_dict = {}
     for i in range(len(disulphides_list)):
         for j in range(len(polygons_keyslist)):
             if disulphides_list[i] == polygons_keyslist[j]:
                 disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    type_list = canvas.find_withtag("TYPE_labels")
+    type_list = lower_canvas.find_withtag("TYPE_labels")
     type_dict = {}
     for i in range(len(type_list)):
         for j in range(len(TYPE_keyslist)):
             if type_list[i] == TYPE_keyslist[j]:
                 type_dict[j] = TYPE_labels.get(TYPE_keyslist[j])
-    note_list = canvas.find_withtag("NOTE_labels")
+    note_list = lower_canvas.find_withtag("NOTE_labels")
     note_dict = {}
     for i in range(len(note_list)):
         for j in range(len(NOTE_keyslist)):
             if note_list[i] == NOTE_keyslist[j]:
                 note_dict[j] = NOTE_labels.get(NOTE_keyslist[j])
-    mod_list = canvas.find_withtag("MOD_labels")
+    mod_list = lower_canvas.find_withtag("MOD_labels")
     mod_dict = {}
     for i in range(len(mod_list)):
         for j in range(len(MOD_keyslist)):
             if mod_list[i] == MOD_keyslist[j]:
                 mod_dict[j] = MOD_labels.get(MOD_keyslist[j])
-    anti_list = canvas.find_withtag("ANTI_labels")
+    anti_list = lower_canvas.find_withtag("ANTI_labels")
     anti_dict = {}
     for i in range(len(anti_list)):
         for j in range(len(ANTI_keyslist)):
             if anti_list[i] == ANTI_keyslist[j]:
                 anti_dict[j] = ANTI_labels.get(ANTI_keyslist[j])
-    length_list = canvas.find_withtag("LENGTH_labels")
+    length_list = lower_canvas.find_withtag("LENGTH_labels")
     length_dict = {}
     for i in range(len(length_list)):
         for j in range(len(LENGTH_keyslist)):
             if length_list[i] == LENGTH_keyslist[j]:
                 length_dict[j] = LENGTH_labels.get(LENGTH_keyslist[j])
-    arcs_list = canvas.find_withtag("arcs")
+    arcs_list = lower_canvas.find_withtag("arcs")
     arcs_dict = {}
     for i in range(len(arcs_list)):
         for j in range(len(polygons_keyslist)):
             if arcs_list[i] == polygons_keyslist[j]:
                 arcs_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    hinges_list = canvas.find_withtag("hinges")
+    hinges_list = lower_canvas.find_withtag("hinges")
     hinges_dict = {}
     for i in range(len(hinges_list)):
         for j in range(len(polygons_keyslist)):
@@ -5397,9 +5397,17 @@ class MouseMover():
         global canvas_polygons
         self.startcoordinates = []
         self.newcoordinates =[]
-        widget = event.widget
+        widget = lower_canvas
+        yscrollbar_pos = yscrollbar.get()
+        xscrollbar_pos = xscrollbar.get()
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+
+        print("SCROLLBAR", yscrollbar_pos)
+        print("SCROLLBAR", xscrollbar_pos)
+        print("X",xc)
+        print("Y",yc)
+
         self.item = widget.find_closest(xc, yc, halo = 5)[0]        # ID for closest
         self.previous = (xc, yc)
         #check you haven't selected text and then change self.item
@@ -5474,7 +5482,7 @@ class MouseMover():
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
-                    label_text_test = re.sub("\.","",canvas_polygons.get(self.item)[1])
+                    label_text_test = re.sub("\.|\+|\-|\>|\@|\_","",canvas_polygons.get(self.item)[1])
                     if x1<= labelx <=x2 and y1 <= labely <= y2 and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5492,7 +5500,7 @@ class MouseMover():
             return(startcoordinates)
 
     def drag(self, event):
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         lower_canvas.move(self.item, xc-self.previous[0], yc-self.previous[1])
         self.previous = (xc, yc)
@@ -5546,6 +5554,7 @@ class MouseMover():
                 #labely2 = (new_coordinates[1]+new_coordinates[5])/2
                 labelx2 = (x1+x2)/2
                 labely2 = (y1+y2)/2
+                label_name = temp_label.get(temp_label_key[0])[1]
                 label  = lower_canvas.create_text([labelx2,labely2], text = label_name, tags = "label")
                 canvas_labels[label] = [[labelx2, labely2], label_name]
                 del temp_label[temp_label_key[0]]
@@ -5580,7 +5589,7 @@ class MouseMover():
         global ANTI_labels
         global MOD_labels
         global LENGTH_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.item = widget.find_closest(xc, yc)[0]        # ID for closest
         polygons_keyslist = list(canvas_polygons.keys())
@@ -5658,7 +5667,7 @@ class MouseMover():
             deleted_polygons = {self.item:[domain_coordinates,Domain_name]}
     ###Click item to reverse orientation###
     def change_specificity(self,event):
-        widget = event.widget                       # Get handle to canvas
+        widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
@@ -5732,7 +5741,7 @@ class MouseMover():
                         temp_label[label] = [[labelx,labely], new_domain_name]
 
     def change_modification(self,event):
-        widget = event.widget                       # Get handle to canvas
+        widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
@@ -5808,7 +5817,7 @@ class MouseMover():
     def change_orientation(self,event):
         self.startcoordinates = []
         self.newcoordinates =[]
-        widget = event.widget                       # Get handle to canvas
+        widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
@@ -5922,7 +5931,7 @@ class MouseMover():
         global Domain_Primer
         global Label_lock
         global specificity_colours
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         startx = xc
         starty = yc-40
@@ -5974,7 +5983,7 @@ class MouseMover():
 
     def place_type_label(self,event):
         global TYPE_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
@@ -5982,7 +5991,7 @@ class MouseMover():
             TYPE_labels[label] = [[xc,yc], entry]
     def place_note_label(self,event):
         global NOTE_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
@@ -5990,7 +5999,7 @@ class MouseMover():
             NOTE_labels[label] = [[xc,yc], entry]
     def place_mod_label(self,event):
         global MOD_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
@@ -5998,7 +6007,7 @@ class MouseMover():
             MOD_labels[label] = [[xc,yc], entry]
     def place_anti_label(self,event):
         global ANTI_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
@@ -6006,7 +6015,7 @@ class MouseMover():
             ANTI_labels[label] = [[xc,yc], entry]
     def place_length_label(self,event):
         global LENGTH_labels
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
@@ -6016,14 +6025,14 @@ class MouseMover():
     def start_bond(self,event):
         lower_canvas.delete("draggable_line")
         # Convert screen coordinates to canvas coordinates
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         self.startcoordinates = [xc, yc]
         print(self.startcoordinates)
         return(self.startcoordinates)
     def drag_bond(self,event):
         lower_canvas.delete("draggable_line")
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
@@ -6061,7 +6070,7 @@ class MouseMover():
         self.newcoordinates =[]
     def drag_disulphide_bond(self,event):
         lower_canvas.delete("draggable_line")
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
@@ -6071,7 +6080,7 @@ class MouseMover():
         self.newcoordinates = [x2,y2]
     def drag_Hinge_bond(self,event):
         lower_canvas.delete("draggable_line")
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
@@ -6081,7 +6090,7 @@ class MouseMover():
         self.newcoordinates = [x2,y2]
     def drag_Linker_bond(self,event):
         lower_canvas.delete("draggable_line")
-        widget = event.widget
+        widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
@@ -7684,7 +7693,7 @@ def open_settings():
 
 lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
 lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
-lower_frame2 = tk.Frame(lower_frame, width =  700, height = 700, bg = '#80c1ff', bd=5)
+lower_frame2 = tk.Frame(lower_frame, width =  700+200, height = 700+300, bg = '#80c1ff', bd=5)
 lower_frame2.place(relwidth=1,relheight=1)
 lower_canvas = tk.Canvas(lower_frame2,width=700+200,height=700+300, scrollregion=(0,0,700+200,700+300))
 yscrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
@@ -7734,7 +7743,7 @@ export_frame = tk.Frame(root, bg='#FF0000')
 export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
 template_file_button = tk.Button(export_frame, text = "Export template file", bg = "grey", font=40, command=lambda: Get_Template_File(lower_canvas))
 template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
-Image_file_button = tk.Button(export_frame, text = "Export PNG", bg = "grey", font=40, command=lambda: save_as_png(lower_canvas))
+Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "grey", font=40, command=lambda: save_as_png(lower_canvas))
 Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
 img = tk.PhotoImage(file = './AbYdraw_icon.png')
 root.tk.call('wm', 'iconphoto', root._w, img)
@@ -7746,7 +7755,7 @@ filemenu.add_command(label="Settings", command=open_settings())
 filemenu.add_command(label="Open", command=lambda: browseFiles())
 filemenu.add_command(label="Save", command=lambda: save_txt_file())
 filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
-filemenu.add_command(label="Export PNG", command=lambda: save_as_png(lower_canvas))
+filemenu.add_command(label="Export EPS", command=lambda: save_as_png(lower_canvas))
 
 filemenu.add_separator()
 
