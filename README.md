@@ -16,6 +16,7 @@ Contents
 
 1. Installing and Executing
 
+
 abYdraw may be downloaded and ran as an executable Python script.
 
 
@@ -60,3 +61,6 @@ Finally you may export a Template File from the expression in the entry box whic
 
 
 Users may change colour-coding by opening the "File>Settings" menu which will pop up a new window with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. "Change colour" allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by "Revert colour" or "Revert all colours"
+
+
+Software authors: James Sweet-Jones and Andrew Martin (Darwin Building, University College London, Gower Street, London)
