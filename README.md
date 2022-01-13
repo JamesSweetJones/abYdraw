@@ -12,7 +12,12 @@ Contents
 7. Saving and exporting
 8. Settings
 
+
+
 1. Installing and Executing
+
+abYdraw may be downloaded and ran as an executable Python script.
+
 
 2. Interface
 
