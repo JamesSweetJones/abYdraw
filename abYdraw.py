@@ -10,9 +10,6 @@ from tkinter import colorchooser
 import tkinter.ttk as ttk
 
 
-HEIGHT = 1200
-WIDTH  = 1600
-
 ######################################
 def Get_input(x):
     input = ""
@@ -6730,7 +6727,9 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
 
 root = tk.Tk()
 
-
+HEIGHT = root.winfo_screenheight()
+WIDTH  = root.winfo_screenwidth()
+print(HEIGHT,WIDTH)
 def browseFiles():
     global textBox
     filename = filedialog.askopenfilename(initialdir = "/",title = "Open File",filetypes = (("Text files","*.txt"),("all files","*.*")))
@@ -7685,14 +7684,19 @@ def open_settings():
 
 lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
 lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
-lower_frame2 = tk.Frame(lower_frame, width =  782, height = 700, bg = '#80c1ff', bd=5)
-lower_frame2.pack(expand=True, fill="both")
-lower_canvas = tk.Canvas(lower_frame2,width=782,height=700+300, scrollregion=(0,0,0,300+700))
+#lower_frame.update()
+frame_width = lower_frame.winfo_width()
+frame_height= lower_frame.winfo_height()
+print(frame_width)
+print(frame_height)
+lower_frame2 = tk.Frame(lower_frame, width =  700, height = 700, bg = '#80c1ff', bd=5)
+lower_frame2.place(relwidth=1,relheight=1)
+lower_canvas = tk.Canvas(lower_frame2,width=700,height=700+300, scrollregion=(0,0,0,700+300))
 scrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
 scrollbar.config(command=lower_canvas.yview)
 scrollbar.pack(side="right",fill="y")
 lower_canvas.config(yscrollcommand=scrollbar.set)
-lower_canvas.pack(side="left",expand=True)
+lower_canvas.place(relheight=1,relwidth=1)
 
 mm = MouseMover()
 canvas_polygons = {}
