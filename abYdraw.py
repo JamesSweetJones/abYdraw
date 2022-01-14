@@ -3256,7 +3256,7 @@ def sequence_render_pipeline(canvas):
     Domain_Primer = []
     for i in range(len(all_buttons)):
         all_buttons[i].config(fg = "black")
-    exp = sequence_pipeline(canvas)
+    exp = sequence_pipeline(lower_canvas)
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
@@ -5375,6 +5375,7 @@ def items_selected(e):
     lower_canvas.config(cursor = "arrow")
     status_label.config(text="")
     i=Library.curselection()
+
     index = i[0]
     entry = antibodyformats.get(formats_keyslist[index])
     #print(i)
@@ -5392,21 +5393,15 @@ class MouseMover():
         self.item = 0; self.previous = (0, 0)
         ###Click and drag item on canvas####
     def select(self, event):
+        global lower_canvas
         global canvas_labels
         global temp_label
         global canvas_polygons
         self.startcoordinates = []
         self.newcoordinates =[]
-        widget = lower_canvas
-        yscrollbar_pos = yscrollbar.get()
-        xscrollbar_pos = xscrollbar.get()
+        widget =  lower_canvas
         # Convert screen coordinates to canvas coordinates
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
-
-        print("SCROLLBAR", yscrollbar_pos)
-        print("SCROLLBAR", xscrollbar_pos)
-        print("X",xc)
-        print("Y",yc)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
 
         self.item = widget.find_closest(xc, yc, halo = 5)[0]        # ID for closest
         self.previous = (xc, yc)
@@ -5501,7 +5496,7 @@ class MouseMover():
 
     def drag(self, event):
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         lower_canvas.move(self.item, xc-self.previous[0], yc-self.previous[1])
         self.previous = (xc, yc)
         coordinates = canvas_polygons.get(self.item)
@@ -5590,7 +5585,7 @@ class MouseMover():
         global MOD_labels
         global LENGTH_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.item = widget.find_closest(xc, yc)[0]        # ID for closest
         polygons_keyslist = list(canvas_polygons.keys())
         labels_keyslist = list(canvas_labels.keys())
@@ -5669,7 +5664,7 @@ class MouseMover():
     def change_specificity(self,event):
         widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         global canvas_polygons
         global domain_type
@@ -5743,7 +5738,7 @@ class MouseMover():
     def change_modification(self,event):
         widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         global canvas_polygons
         global domain_type
@@ -5819,7 +5814,7 @@ class MouseMover():
         self.newcoordinates =[]
         widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         global canvas_labels
         global temp_label
@@ -5932,7 +5927,7 @@ class MouseMover():
         global Label_lock
         global specificity_colours
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         startx = xc
         starty = yc-40
         Domain_Primer[5] = re.sub("\+|\-|\_","",Domain_Primer[5])
@@ -5984,7 +5979,7 @@ class MouseMover():
     def place_type_label(self,event):
         global TYPE_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "TYPE_labels")
@@ -5992,7 +5987,7 @@ class MouseMover():
     def place_note_label(self,event):
         global NOTE_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels")
@@ -6000,7 +5995,7 @@ class MouseMover():
     def place_mod_label(self,event):
         global MOD_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "MOD_labels")
@@ -6008,7 +6003,7 @@ class MouseMover():
     def place_anti_label(self,event):
         global ANTI_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels")
@@ -6016,7 +6011,7 @@ class MouseMover():
     def place_length_label(self,event):
         global LENGTH_labels
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels")
@@ -6026,14 +6021,14 @@ class MouseMover():
         lower_canvas.delete("draggable_line")
         # Convert screen coordinates to canvas coordinates
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.startcoordinates = [xc, yc]
         print(self.startcoordinates)
         return(self.startcoordinates)
     def drag_bond(self,event):
         lower_canvas.delete("draggable_line")
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
         x2 = xc
@@ -6071,7 +6066,7 @@ class MouseMover():
     def drag_disulphide_bond(self,event):
         lower_canvas.delete("draggable_line")
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
         x2 = xc
@@ -6081,7 +6076,7 @@ class MouseMover():
     def drag_Hinge_bond(self,event):
         lower_canvas.delete("draggable_line")
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
         x2 = xc
@@ -6091,7 +6086,7 @@ class MouseMover():
     def drag_Linker_bond(self,event):
         lower_canvas.delete("draggable_line")
         widget = lower_canvas
-        xc = widget.canvasx(event.x); yc = widget.canvasx(event.y)
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         x1 = self.startcoordinates[0]
         y1 = self.startcoordinates[1]
         x2 = xc
@@ -7093,9 +7088,9 @@ InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: pr
 InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
 InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
 InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertXDomainButton= tk.Button(frame2,text="Other",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
+InsertXDomainButton= tk.Button(frame2,text="X",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
 InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
-InsertCDomainButton= tk.Button(frame2,text="Chem",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
+InsertCDomainButton= tk.Button(frame2,text="C",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
 InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
 
 ###Drag and pull bonds###
@@ -7132,7 +7127,7 @@ button = tk.Button(frame, text = "Get Structure", bg = "grey", font=40, command=
 button.place(relx=0.05,rely=0.825,relheight=0.1, relwidth=0.15)
 button.bind("<Enter>", button_hover)
 button.bind("<Leave>", button_hover_leave)
-button = tk.Button(frame, text = "Get Sequence", bg = "grey", font=40, command=lambda: sequence_pipeline(lower_canvas))
+button = tk.Button(frame, text = "Get AbML", bg = "grey", font=40, command=lambda: sequence_pipeline(lower_canvas))
 button.place(relx=0.2,rely=0.825,relheight=0.1, relwidth=0.15)
 button.bind("<Enter>", button_hover)
 button.bind("<Leave>", button_hover_leave)
@@ -7694,7 +7689,8 @@ def open_settings():
 lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
 lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
 lower_frame2 = tk.Frame(lower_frame, width =  700+200, height = 700+300, bg = '#80c1ff', bd=5)
-lower_frame2.place(relwidth=1,relheight=1)
+#lower_frame2.place(relwidth=1,relheight=1)
+lower_frame2.pack(expand=True,fill="both")
 lower_canvas = tk.Canvas(lower_frame2,width=700+200,height=700+300, scrollregion=(0,0,700+200,700+300))
 yscrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
 yscrollbar.config(command=lower_canvas.yview)
@@ -7704,7 +7700,9 @@ xscrollbar.config(command=lower_canvas.xview)
 xscrollbar.pack(side="bottom",fill="x")
 lower_canvas.config(yscrollcommand=yscrollbar.set)
 lower_canvas.config(xscrollcommand=xscrollbar.set)
-lower_canvas.place(relheight=1,relwidth=1)
+#lower_canvas.place(relheight=1,relwidth=1)
+lower_canvas.pack(expand=True,fill="both")
+
 
 mm = MouseMover()
 canvas_polygons = {}
