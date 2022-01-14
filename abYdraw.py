@@ -168,7 +168,6 @@ def Get_dictionaries(x):
                     raise_error(lower_canvas, error_message)
                 for i in range(len(locationstr)):
                     if i == 0:
-                        print(domain, locationstr[i])
                         location_counting.append(int(locationstr[i]))
                     location.append(int(locationstr[i]))
 
@@ -231,7 +230,6 @@ def Get_dictionaries(x):
     used = []
     chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist,fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
     dicts = [VHa,VLa,VHb,VLb,fragment1,fragment2,fragment3,fragment4]
-    print(dicts)
     if chain_count > 2:
         checked_heavy_chains = []
         checked_heavy_dicts  = []
@@ -323,7 +321,6 @@ def Get_dictionaries(x):
                         for b in range(len(chains[a])):
                             if chains[a] not in checked_heavy_chains:
                                 interactor = dicts[a].get(chains[a][b])[0][0]
-                                print(interactor, current_interactor)
                                 if current_interactor == interactor: # and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
                                     if i %2 == 0 and VLa_match == False:
                                         VLa_checked = dicts[a]
@@ -348,7 +345,6 @@ def Get_dictionaries(x):
         for j in range(len(used)):
             if dicts[i] == used[j]:
                 found = True
-                print(dicts[i], used[j])
         if found == False:
             unused.append(dicts[i])
     if chain_count >= 4:
@@ -358,8 +354,6 @@ def Get_dictionaries(x):
         if fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}: #Check for second IgG
         ##Get chains that haven't been used yet
             dicts = [fragment1,fragment2,fragment3,fragment4]
-            print("THE UNUSED LOT", unused)
-            print("THE USED LOT", used)
             for i in range(len(dicts)):
                 for j in range(len(used)):
                     if dicts[i] == used[j]:
@@ -426,7 +420,7 @@ def Get_dictionaries(x):
                                 for a in range(len(chains)):
                                     if dicts[a] != dicts[i]:
                                         for b in range(len(chains[a])):
-                                            if ("X" in chains[a][b] or "C[" in chains[a][b]):
+                                            if "X" in chains[a][b]:# or "C[" in chains[a][b]):
                                                 interactor = dicts[a].get(chains[a][b])[0][0]
                                                 if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
                                                     frag1_frag3_found = True
@@ -498,7 +492,6 @@ def Get_dictionaries(x):
         if "Linker[" not in all_to_check_keys[i]:
             domain = re.sub("\.|nano|[a-h]|\@|>|\+|\-|\_|\!|\*","", domain_to_print)
             if domain not in possible_domains:
-                print(domain)
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
     if interacting_fragments == False:
@@ -509,6 +502,9 @@ def Get_dictionaries(x):
 
     if  (fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) and interacting_fragments == True:
         IgG2 = True
+        if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
+            fragment1_checked,fragment3_checked = fragment3_checked,fragment1_checked
+            fragment2_checked,fragment4_checked = fragment4_checked,fragment2_checked
     else:
         IgG2 = False
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2)
@@ -610,7 +606,6 @@ def Check_interactions(chains_list):
     finished_multimers = []
     finished_multimers_numbers = []
     finished_multimers_indexes = []
-    print(multimers)
 
     def disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
         number_of_bonds = n+1
@@ -704,7 +699,6 @@ def Check_interactions(chains_list):
         names_list_light_h      = []
 
         for x in range(len(keyslist)):
-            print(len(keyslist),x)
             if "Linker" in keyslist[x]:
                 fragments.append(keyslist[previous_linker:x])
                 previous_linker = x+1
@@ -718,14 +712,11 @@ def Check_interactions(chains_list):
                 if "H[" not in str(fragments[x][i]) and "X[" not in str(fragments[x][i]):
                     current_fragment.append(fragments[x][i])
                 elif "X[" in fragments[x][i]:
-                    print("ADC APPENDED")
                     ADCs.append(fragments[x][i])
                 elif "C[" in fragments[x][i]:
                     CCs.append(fragments[x][i])
-                    print("CC APPENDED")
 
             fragments[x] = current_fragment
-            print(fragments[x])
 
             def fragment_cleanup(x):
                 if "a" in x:
@@ -922,6 +913,7 @@ def Check_interactions(chains_list):
                             coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_a.append(cleaned_up)
+        print("CHEMICAL CONJUGATES", CCs)
 
         return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,CCs)
 
@@ -975,9 +967,7 @@ def Check_interactions(chains_list):
                                     current_fragment = fragment3
                                 elif fragments[j] == fragment4:
                                     current_fragment = fragment4
-                                print(current_fragment)
                                 current_interactor = current_fragment.get(fragments_keyslist[j][f])[0][0]
-                                print(current_interactor,interactor)
                                 if interactor == current_interactor:
                                     check_VH_Fragment_interactor = True
                         if check_VH_Fragment_interactor == True:
@@ -1035,7 +1025,6 @@ def Check_interactions(chains_list):
             first_comp_keyslist = list(first_comp.keys())
             for i in range(len(first_comp_keyslist)):
                 current_interactor = first_comp.get(first_comp_keyslist[i])[0][0]
-                print("OOOARRRGGGG",interactor, current_interactor)
                 if interactor == current_interactor:
                     check_VHa_VLa_interactor = True
             if check_VHa_VLa_interactor == True:
@@ -1057,7 +1046,6 @@ def Check_interactions(chains_list):
 
 
         for n in range(len(chain)):
-            print(n, innie_or_outie_list)
             if "V" in keyslist[n]:
                 if chain == VHa_chain or chain == VHb_chain:
                     Light_chain_check = False
@@ -1131,10 +1119,8 @@ def Check_interactions(chains_list):
                     elif chain == VLb_chain:
                         in_or_out_light(n,chain,VHb_chain,Build_in,Build_out,Light_chain_check)
                     elif IgG2 == True and (chain == fragment1 or chain == fragment3):
-                        print("AND THERE YOU HAVE IT FOLKS")
                         innie_or_outie_list.append("outie")
                     else:
-                        print("WE DON'T GOT IT FOLKS")
                         innie_or_outie_list.append("innie")
 
 
@@ -1189,8 +1175,7 @@ def Check_interactions(chains_list):
     def renderchains(dictionary,startx,starty):
         width = lower_canvas.winfo_width()
         height = lower_canvas.winfo_height()
-        print(width)
-        print(height)
+
         chain                   = []
         chain_dict              = {}
         coordinates_list_heavy_a= []
@@ -1532,10 +1517,8 @@ def Check_interactions(chains_list):
                         elif righthanded == True:
                             startx = (finished_multimers[f][0]+(additions[0]/2))
                         starty =finished_multimers[f][1]
-                        print(startx,starty)
                         getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                     else:
-                        print("EXTRA checkpoint1")
                         getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H)
 
                 else:
@@ -2172,6 +2155,7 @@ def Check_interactions(chains_list):
                 if mod != "Leucine" and "X[" in keyslist[i]:
                     ADCs.append(getcoordinates[0])
                 elif mod != "Leucine" and "C[" in keyslist[i]:
+                    print("PREACH SISTAA", getcoordinates[0], keyslist[i])
                     Chem_con.append(getcoordinates[0])
                 if slant == True and righthanded == False:
                     Label_Locations = [getcoordinates[3][0]-20,getcoordinates[3][1]]
@@ -2674,7 +2658,8 @@ def Check_interactions(chains_list):
             VHa_H_coordinatesy = (height/2)+100
             VHb_H_coordinatesx = VHa_H_coordinatesx+100
             VHb_H_coordinatesy = (height/2)+100
-
+            print("FRAGMENT1", fragment1)
+            print("FRAGMENT3", fragment3)
             frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
             test_H_positionfrag1 = frag1_stat[26]
 
@@ -2684,43 +2669,56 @@ def Check_interactions(chains_list):
             frag1_differencetest_desiredx = test_H_positionx - VHa_H_coordinatesx
             frag1_differencetest_desiredy = test_H_positiony - VHa_H_coordinatesy
             coordinates_to_change = [frag1_stat[0],frag1_stat[1],frag1_stat[2],frag1_stat[3],frag1_stat[4],frag1_stat[5],frag1_stat[6],frag1_stat[7],frag1_stat[36],frag1_stat[37],frag1_stat[38],frag1_stat[39],frag1_stat[40],frag1_stat[41],frag1_stat[42],frag1_stat[43],frag1_stat[8],frag1_stat[26],frag1_stat[27],frag1_stat[24],frag1_stat[11], frag1_stat[10]]
+            print("CHEM CON", frag1_stat[52])
             conj_x1 = get_min_max_coordinates(frag1_stat[52][0])[0]
             conj_x2 = get_min_max_coordinates(frag1_stat[52][0])[1]
             conj_y1 = get_min_max_coordinates(frag1_stat[52][0])[2]
             conj_y2 = get_min_max_coordinates(frag1_stat[52][0])[3]
             conj_fixed = False
+            conj_bond = []
             for i in range(len(coordinates_to_change)):
                 for j in range(len(coordinates_to_change[i])):
                     for k in range(len(coordinates_to_change[i][j])):
-                        if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
-                            try:
-                                if conj_x1 <= coordinates_to_change[i][j][2] <= conj_x2 and conj_y1 <= coordinates_to_change[i][j][3] <= conj_y2 and conj_fixed == False:
-                                    print("LINK TO CONJUGATE")
-                                    coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
-                                    coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
-                                    coordinates_to_change[i][j][2]= frag1_stat[52][0][0] + frag1_differencetest_desiredx
-                                    coordinates_to_change[i][j][3]= frag1_stat[52][0][1] + frag1_differencetest_desiredy+20
-                                    conj_fixed = True
+                        if coordinates_to_change[i][j] != conj_bond:
+                            if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
+                                try:
+                                    if len(coordinates_to_change[i][j]) == 4 and coordinates_to_change[i][j][1] > conj_y2 and conj_x1 <= coordinates_to_change[i][j][2] <= conj_x2 and conj_y1 <= coordinates_to_change[i][j][3] <= conj_y2 and conj_fixed == False:
+                                        
+                                        if frag1_differencetest_desiredy <= 0 and frag1_differencetest_desiredx >= 0:
+                                            coordinates_to_change[i][j][0]+= frag1_differencetest_desiredx
+                                            coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
+                                        elif frag1_differencetest_desiredy >= 0 and frag1_differencetest_desiredx <= 0:
+                                            coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
+                                            coordinates_to_change[i][j][1]-= frag1_differencetest_desiredy
+                                        if "C[" in str(VHa_chain) and "C[" not in str(VHb_chain):
+                                            coordinates_to_change[i][j][2] = VHa_stats[52][0][0]
+                                            coordinates_to_change[i][j][3] = VHa_stats[52][0][1]+10
+                                        elif "C[" in str(VHb_chain) and "C[" not in str(VHa_chain):
+                                            print(VHb_stats[52])
+                                            coordinates_to_change[i][j][2] = VHb_stats[52][0][0]
+                                            coordinates_to_change[i][j][3] = VHb_stats[52][0][1]+10
+                                        conj_fixed = True
+                                        conj_bond = coordinates_to_change[i][j]
 
-#
-                                else:
-                                    if k %2 != 0:
+    #
+                                    else:
+                                        if k %2 != 0:
+                                            coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
+                                        elif k%2 ==0:
+                                            coordinates_to_change[i][j][k] -= frag1_differencetest_desiredx
+
+                                except IndexError:
+                                    if  k %2 != 0:
                                         coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
-                                    elif k%2 ==0:
+                                    elif k %2 == 0:
                                         coordinates_to_change[i][j][k] -= frag1_differencetest_desiredx
-
-                            except IndexError:
-                                if  k %2 != 0:
-                                    coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
-                                elif k %2 == 0:
-                                    coordinates_to_change[i][j][k] -= frag1_differencetest_desiredx
-                        else:
-                            for l in range(len(coordinates_to_change[i][j][k])):
-                                if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
-                                    if l %2 != 0:
-                                        coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredy
-                                    elif l%2 ==0:
-                                        coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredx
+                            else:
+                                for l in range(len(coordinates_to_change[i][j][k])):
+                                    if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
+                                        if l %2 != 0:
+                                            coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredy
+                                        elif l%2 ==0:
+                                            coordinates_to_change[i][j][k][l] -= frag1_differencetest_desiredx
             #All_positions_and_chains_list = list(All_positions_and_chains.keys())
             #print(All_positions_and_chains)
             for i in range(len(frag1_stat[52][0])):
@@ -2768,7 +2766,7 @@ def Check_interactions(chains_list):
                         #elif j % 2 != 0:
                     frag1_stat[10][i][0][1] += frag1_differencetest_desiredy
 
-
+            print(frag1_stat)
             #H_keyslist = list(H_disulphide_coordinates.keys())
             #for i in range(len(H_keyslist)):
             #    number = H_keyslist[i]
@@ -2874,10 +2872,12 @@ def Check_interactions(chains_list):
 
             for i in range(len(completed_disulphidebridges)):
                 if completed_disulphidebridges[i][1] > hingey1:
-                    completed_disulphidebridges[i][0] -= frag1_differencetest_desiredx
-                    completed_disulphidebridges[i][1] -= frag1_differencetest_desiredy
-                    completed_disulphidebridges[i][2] += frag3_differencetest_desiredx
-                    completed_disulphidebridges[i][3] += frag3_differencetest_desiredy
+                    print(completed_disulphidebridges[i][0],completed_disulphidebridges[i][1],completed_disulphidebridges[i][2],completed_disulphidebridges[i][3])
+                    completed_disulphidebridges[i][2] -= frag1_differencetest_desiredx
+                    completed_disulphidebridges[i][3] -= frag1_differencetest_desiredy
+                    completed_disulphidebridges[i][0] += frag3_differencetest_desiredx
+                    completed_disulphidebridges[i][1] += frag3_differencetest_desiredy
+                    print(completed_disulphidebridges[i][0],completed_disulphidebridges[i][1],completed_disulphidebridges[i][2],completed_disulphidebridges[i][3])
 
 
     keyslist_All_positions_and_chains = list(All_positions_and_chains.keys())
@@ -4144,7 +4144,6 @@ def sequence_pipeline(canvas):
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            print(i,j)
             if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "nano" not in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
@@ -4375,7 +4374,7 @@ def sequence_pipeline(canvas):
                                                     paired.append(int(number))
                                                     paired.append(int(paired_number))
 
-
+    print(strings)
 ##Find comments on domains and not on domains
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
@@ -4515,6 +4514,77 @@ def sequence_pipeline(canvas):
                         note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[LENGTH:"+note+"]-")
                         strings[i][j] = noting
+            elif "-C" in strings[i][j]:
+                domain_type = "C"
+                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
+                coordinates = domains_dict.get(full_chains[i][j])[0]
+                min_max = get_min_max_coordinates(coordinates)
+                d1x1 = min_max[0]-50
+                d1x2 = min_max[1]+50
+                d1y1 = min_max[2]
+                d1y2 = min_max[3]
+                for k in range(len(type_keyslist)):
+                    comment = type_dict.get(type_keyslist[k])[1]
+                    labelx = type_dict.get(type_keyslist[k])[0][0]
+                    labely = type_dict.get(type_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                        domain = strings[i][j].split("-")[1]
+                        note = type_dict.get(type_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
+                        noting = str("-"+domain+"[TYPE:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(note_keyslist)):
+                    comment =note_dict.get(note_keyslist[k])[1]
+                    labelx = note_dict.get(note_keyslist[k])[0][0]
+                    labely = note_dict.get(note_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                        domain = strings[i][j].split("-")[1]
+                        note = note_dict.get(note_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
+                        #domain = re.sub("\(","*(", domain)
+                        noting = str("-"+domain+"[NOTE:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(mod_keyslist)):
+                    comment =mod_dict.get(mod_keyslist[k])[1]
+                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
+                    labely = mod_dict.get(mod_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                        domain = strings[i][j].split("-")[1]
+                        note = mod_dict.get(mod_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
+                        #domain = re.sub("\(","*(", domain)
+                        noting = str("-"+domain+"[MOD:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(anti_keyslist)):
+                    comment =anti_dict.get(anti_keyslist[k])[1]
+                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
+                    labely = anti_dict.get(anti_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                        domain = strings[i][j].split("-")[1]
+                        note = anti_dict.get(anti_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
+                        noting = str("-"+domain+"[ANTI:"+note+"]-")
+                        strings[i][j] = noting
+                for k in range(len(length_keyslist)):
+                    comment =length_dict.get(length_keyslist[k])[1]
+                    labelx = length_dict.get(length_keyslist[k])[0][0]
+                    labely = length_dict.get(length_keyslist[k])[0][1]
+                    #print(labelx,labely)
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                        domain = strings[i][j].split("-")[1]
+                        note = length_dict.get(length_keyslist[k])[1]
+                        note = re.sub(domain_type, "",note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
+                        noting = str("-"+domain+"[LENGTH:"+note+"]-")
+                        strings[i][j] = noting
             elif "-L" in strings[i][j]:
                 domain_type = "Linker"
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
@@ -4585,6 +4655,8 @@ def sequence_pipeline(canvas):
                         noting = str("-L[LENGTH:"+note+"]-")
                         strings[i][j] = noting
 
+
+    print("STRINGS3", strings)
 ##conver lists to expression
     final_string = ""
     for i in range(len(strings)):
@@ -5524,12 +5596,10 @@ class MouseMover():
                 elif i%2!=0:
                     new_coordinates.append((coordinates[i]+diffy))
             canvas_polygons[self.item]=[new_coordinates, name]
-            print(canvas_polygons.get(self.item))
 
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
-                    print(temp_label.get(temp_label_key[0])[0])
                     label_name = temp_label.get(temp_label_key[0])[1]
                 #label_d1 = temp_label.get(temp_label_key[0])[0]
                 firstx  = new_coordinates[2]
@@ -5568,10 +5638,7 @@ class MouseMover():
                 elif i%2!=0:
                     new_coordinates.append((coordinates[i]+diffy))
             TYPE_labels[self.item]=[new_coordinates, name]
-            print(TYPE_labels.get(self.item))
-        print(canvas_polygons)
-        print(canvas_labels)
-        print(TYPE_labels)
+
         startcoordinates = []
         newcoordinates = []
     ####Delete selected item on canvas###
@@ -5916,8 +5983,7 @@ class MouseMover():
                         canvas_polygons[domain] = [new_coordinates, domain_name]
                         label = lower_canvas.create_text([labelx,labely], text = label_text, tags = "label")
                         canvas_labels[label] = [[labelx,labely], label_text]
-            print(new_coordinates, coordinates)
-            print(canvas_polygons)
+
 
         else:
             self.item = 0
@@ -5935,7 +6001,6 @@ class MouseMover():
             global domain_direction
             Domain_Primer[3] = "innie"
         All_positions_and_chains = {}
-        print(Domain_Primer)
         domaincoordinates = domainmaker(All_positions_and_chains,startx,starty,Domain_Primer[0],Domain_Primer[1],Domain_Primer[2],Domain_Primer[3],Domain_Primer[4],Domain_Primer[5],Domain_Primer[6],Domain_Primer[7])
         domain_name = re.sub("nano","",Domain_Primer[8])
         if "a" in str(domain_name):
@@ -6023,7 +6088,6 @@ class MouseMover():
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         self.startcoordinates = [xc, yc]
-        print(self.startcoordinates)
         return(self.startcoordinates)
     def drag_bond(self,event):
         lower_canvas.delete("draggable_line")
@@ -6733,12 +6797,10 @@ root = tk.Tk()
 
 HEIGHT = root.winfo_screenheight()
 WIDTH  = root.winfo_screenwidth()
-print(HEIGHT,WIDTH)
 def browseFiles():
     global textBox
     filename = filedialog.askopenfilename(initialdir = "/",title = "Open File",filetypes = (("Text files","*.txt"),("all files","*.*")))
     entry = Get_input(filename)
-    print(entry)
     textBox.delete("1.0","end")
     textBox.insert("1.0",str(entry))
     render_pipeline(lower_canvas)
@@ -6935,7 +6997,6 @@ def redo():
         to_redo = min(keys)
         domain_name = Polygon_to_redo.get(to_redo)[1]
         domain_coordinates = Polygon_to_redo.get(to_redo)[0]
-        print(domain_name)
         if to_redo in (Polygon_to_redo.keys()):
             if "-" not in domain_name:
                 if "a" in str(domain_name):
