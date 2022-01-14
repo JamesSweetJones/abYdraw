@@ -228,7 +228,11 @@ def Get_dictionaries(x):
     VLb_checked = {}
     ##check VH chains interact
     used = []
-    chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist,fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
+    if "a[" in str(VHa_keyslist+VLa_keyslist+VHb_keyslist+VLb_keyslist) and "a[" not in (fragment1_keyslist+fragment2_keyslist+fragment3_keyslist+fragment4_keyslist):
+        chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist,fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
+    else:
+        chains = [VHa_keyslist,VLa_keyslist,VHb_keyslist,VLb_keyslist,fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
+
     dicts = [VHa,VLa,VHb,VLb,fragment1,fragment2,fragment3,fragment4]
     if chain_count > 2:
         checked_heavy_chains = []
@@ -347,6 +351,7 @@ def Get_dictionaries(x):
                 found = True
         if found == False:
             unused.append(dicts[i])
+
     if chain_count >= 4:
         if VHa_checked == {} or VHb_checked == {} or VLa_checked == {} or VLb_checked == {}:
             error_message = "ERROR: There has been an error in pairing chains in your antibody"
@@ -376,6 +381,7 @@ def Get_dictionaries(x):
             fragment2_checked = {}
             fragment3_checked = {}
             fragment4_checked = {}
+            print("THE FUCKING FRAGMENTS", fragment1_keyslist, fragment2_keyslist,fragment3_keyslist,fragment4_keyslist)
 
             ##check VH chains interact
             chains = [fragment1_keyslist,fragment2_keyslist,fragment3_keyslist,fragment4_keyslist]
@@ -420,7 +426,7 @@ def Get_dictionaries(x):
                                 for a in range(len(chains)):
                                     if dicts[a] != dicts[i]:
                                         for b in range(len(chains[a])):
-                                            if "X" in chains[a][b]:# or "C[" in chains[a][b]):
+                                            if "X" in chains[a][b] or "C[" in str(chains[a][b]):
                                                 interactor = dicts[a].get(chains[a][b])[0][0]
                                                 if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
                                                     frag1_frag3_found = True
@@ -499,12 +505,20 @@ def Get_dictionaries(x):
         fragment2_checked = fragment2
         fragment3_checked = fragment3
         fragment4_checked = fragment4
-
+    print(VHa_checked)
+    print(VLa_checked)
+    print(VHb_checked)
+    print(VLb_checked)
+    print(fragment1_checked)
+    print(fragment2_checked)
+    print(fragment3_checked)
+    print(fragment4_checked)
     if  (fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) and interacting_fragments == True:
         IgG2 = True
         if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
             fragment1_checked,fragment3_checked = fragment3_checked,fragment1_checked
             fragment2_checked,fragment4_checked = fragment4_checked,fragment2_checked
+
     else:
         IgG2 = False
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2)
@@ -517,14 +531,14 @@ def Check_interactions(chains_list):
     VLa_chain       = chains_list[1]
     VHb_chain       = chains_list[2]
     VLb_chain       = chains_list[3]
-    print(chains_list[0])
-    print(chains_list[1])
-    print(chains_list[2])
-    print(chains_list[3])
-    print(chains_list[5])
-    print(chains_list[6])
-    print(chains_list[7])
-    print(chains_list[8])
+    #print("VHA",chains_list[0])
+    #print(chains_list[1])
+    #print("VHb",chains_list[2])
+    #print(chains_list[3])
+    #print("FRAG1",chains_list[5])
+    #print(chains_list[6])
+    #print("FRAG3",chains_list[7])
+    #print(chains_list[8])
     VHa_chain_master       = VHa_chain.copy()
     VLa_chain_master       = VLa_chain.copy()
     VHb_chain_master       = VHb_chain.copy()
@@ -2658,8 +2672,7 @@ def Check_interactions(chains_list):
             VHa_H_coordinatesy = (height/2)+100
             VHb_H_coordinatesx = VHa_H_coordinatesx+100
             VHb_H_coordinatesy = (height/2)+100
-            print("FRAGMENT1", fragment1)
-            print("FRAGMENT3", fragment3)
+
             frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
             test_H_positionfrag1 = frag1_stat[26]
 
@@ -2669,7 +2682,6 @@ def Check_interactions(chains_list):
             frag1_differencetest_desiredx = test_H_positionx - VHa_H_coordinatesx
             frag1_differencetest_desiredy = test_H_positiony - VHa_H_coordinatesy
             coordinates_to_change = [frag1_stat[0],frag1_stat[1],frag1_stat[2],frag1_stat[3],frag1_stat[4],frag1_stat[5],frag1_stat[6],frag1_stat[7],frag1_stat[36],frag1_stat[37],frag1_stat[38],frag1_stat[39],frag1_stat[40],frag1_stat[41],frag1_stat[42],frag1_stat[43],frag1_stat[8],frag1_stat[26],frag1_stat[27],frag1_stat[24],frag1_stat[11], frag1_stat[10]]
-            print("CHEM CON", frag1_stat[52])
             conj_x1 = get_min_max_coordinates(frag1_stat[52][0])[0]
             conj_x2 = get_min_max_coordinates(frag1_stat[52][0])[1]
             conj_y1 = get_min_max_coordinates(frag1_stat[52][0])[2]
@@ -2683,18 +2695,26 @@ def Check_interactions(chains_list):
                             if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
                                 try:
                                     if len(coordinates_to_change[i][j]) == 4 and coordinates_to_change[i][j][1] > conj_y2 and conj_x1 <= coordinates_to_change[i][j][2] <= conj_x2 and conj_y1 <= coordinates_to_change[i][j][3] <= conj_y2 and conj_fixed == False:
-                                        
+                                        print(frag1_differencetest_desiredx)
+                                        print(frag1_differencetest_desiredy)
                                         if frag1_differencetest_desiredy <= 0 and frag1_differencetest_desiredx >= 0:
+                                            print("POZ")
                                             coordinates_to_change[i][j][0]+= frag1_differencetest_desiredx
                                             coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
                                         elif frag1_differencetest_desiredy >= 0 and frag1_differencetest_desiredx <= 0:
+                                            print("NEG")
                                             coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
                                             coordinates_to_change[i][j][1]-= frag1_differencetest_desiredy
+                                        elif frag1_differencetest_desiredy <= 0 and frag1_differencetest_desiredx <= 0:
+                                            coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
+                                            coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
+                                        elif elif frag1_differencetest_desiredy >= 0 and frag1_differencetest_desiredx >= 0:
+                                            coordinates_to_change[i][j][0]+= frag1_differencetest_desiredx
+                                            coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
                                         if "C[" in str(VHa_chain) and "C[" not in str(VHb_chain):
                                             coordinates_to_change[i][j][2] = VHa_stats[52][0][0]
                                             coordinates_to_change[i][j][3] = VHa_stats[52][0][1]+10
                                         elif "C[" in str(VHb_chain) and "C[" not in str(VHa_chain):
-                                            print(VHb_stats[52])
                                             coordinates_to_change[i][j][2] = VHb_stats[52][0][0]
                                             coordinates_to_change[i][j][3] = VHb_stats[52][0][1]+10
                                         conj_fixed = True
@@ -4139,7 +4159,6 @@ def sequence_pipeline(canvas):
                     counter += 1
 
 
-    print(strings)
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
@@ -4374,7 +4393,6 @@ def sequence_pipeline(canvas):
                                                     paired.append(int(number))
                                                     paired.append(int(paired_number))
 
-    print(strings)
 ##Find comments on domains and not on domains
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
