@@ -2708,7 +2708,7 @@ def Check_interactions(chains_list):
                                         elif frag1_differencetest_desiredy <= 0 and frag1_differencetest_desiredx <= 0:
                                             coordinates_to_change[i][j][0]-= frag1_differencetest_desiredx
                                             coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
-                                        elif elif frag1_differencetest_desiredy >= 0 and frag1_differencetest_desiredx >= 0:
+                                        elif  frag1_differencetest_desiredy >= 0 and frag1_differencetest_desiredx >= 0:
                                             coordinates_to_change[i][j][0]+= frag1_differencetest_desiredx
                                             coordinates_to_change[i][j][1]+= frag1_differencetest_desiredy
                                         if "C[" in str(VHa_chain) and "C[" not in str(VHb_chain):
@@ -2786,7 +2786,7 @@ def Check_interactions(chains_list):
                         #elif j % 2 != 0:
                     frag1_stat[10][i][0][1] += frag1_differencetest_desiredy
 
-            print(frag1_stat)
+            #print(frag1_stat)
             #H_keyslist = list(H_disulphide_coordinates.keys())
             #for i in range(len(H_keyslist)):
             #    number = H_keyslist[i]
