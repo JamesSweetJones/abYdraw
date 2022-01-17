@@ -987,6 +987,7 @@ def Check_interactions(chains_list):
                         if check_VH_Fragment_interactor == True:
                             innie_or_outie_list.append("outie")
                         elif n > 0:
+                            print(keyslist[n])
                             if "Linker[" in keyslist[n-1] or "H[" in keyslist[n-1]:
                                 if chain.get(keyslist[n-2])[0][0] == (chain.get(keyslist[n])[0][1]):
                                     if innie_or_outie_list[-2] == "outie":
@@ -1021,7 +1022,10 @@ def Check_interactions(chains_list):
                                             else:
                                                 innie_or_outie_list.append("outie")
                                         except IndexError:
-                                            innie_or_outie_list.append("outie")
+                                            if "X" in keyslist[0] and VLa_chain == {} and VLb_chain == {} and "X" not in keyslist[i]:
+                                                innie_or_outie_list.append("innie")
+                                            else:
+                                                innie_or_outie_list.append("outie")
                                     elif previous_domain_interaction == True:
                                         if innie_or_outie_list[-2] == "outie":
                                             innie_or_outie_list.append("innie")
@@ -1134,15 +1138,23 @@ def Check_interactions(chains_list):
                         in_or_out_light(n,chain,VHb_chain,Build_in,Build_out,Light_chain_check)
                     elif IgG2 == True and (chain == fragment1 or chain == fragment3):
                         innie_or_outie_list.append("outie")
+                    elif IgG2 == False and (chain == fragment1 or chain == fragment2 or chain == fragment3 or chain == fragment4) and "Linker[" in str(keyslist[n-1]):
+                        if innie_or_outie_list[-2] == "outie":
+                            innie_or_outie_list.append("innie")
+                        elif innie_or_outie_list[-2] == "innie":
+                            innie_or_outie_list.append("outie")
                     else:
                         innie_or_outie_list.append("innie")
 
 
             elif "V" not in keyslist[n] and "H[" not in keyslist[n]:
+                print(keyslist[n], "WTF111")
                 innie_or_outie_list.append("constant")
             elif "V" not in keyslist[n] and "H[" in keyslist[n]:
+                print(keyslist[n], "WTF2222")
                 innie_or_outie_list.append("constant")
                 before_H = False
+        print(chain, innie_or_outie_list)
         return(innie_or_outie_list)
 
     def VH_VL_check(current_chain_pos,current_dictionary,Light_chain_check,Heavy_chain,Light_chain,have,lookingfor):
@@ -1302,7 +1314,7 @@ def Check_interactions(chains_list):
                         pass
                 if tangle_found == False :
                     if "X" in str(dictionary):
-                        if "LEUCINE" in str(dictionary):
+                        if "LEUCINE" in str(dictionary) or "X" in keyslist[-1] or "X" in keyslist[0]:
                             slant = True
                         else:
                             slant = False
@@ -1325,33 +1337,48 @@ def Check_interactions(chains_list):
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
             try:
+
                 if dictionary == VHb_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[0][1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0][0]):
+                    print("FUCKING BULLCRAP-3")
                     Build_out = True
                     Build_in = False
                 elif dictionary == VHa_chain and VHa_chain.get(keyslista[0])[0][0] == (VHb_chain.get(keyslistb[0])[1]) and VHa_chain.get(keyslista[0])[0][1] == (VHb_chain.get(keyslistb[0])[0]):
+                    print("FUCKING BULLCRAP-1")
                     Build_out = True
                     Build_in = False
                 else:
-                    print(dictionary)
+                    print("OK FUCKING DOKIE")
                     try:
+                        #if (dictionary == VHb_chain and "X" in keyslistb[0]) or (dictionary == VHa_chain and "X" in keyslista[0]):
+                        #    Build_in = True
+                        #    Build_out = False
                         if dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) and "H[" in keyslist[3]:
+                            print("FUCKING BULLCRAP")
                             Build_in = True
                             Build_out = False
                         elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[2])[0][1]) and dictionary.get(keyslist[4])[0][0] == (dictionary.get(keyslist[6])[0][1]):
+                            print("FUCKING BULLCRAP2")
                             Build_out = True
                             Build_in = False
                         elif dictionary.get(keyslist[0])[0][0] == (dictionary.get(keyslist[6])[0][1]) and dictionary.get(keyslist[2])[0][0] == (dictionary.get(keyslist[4])[0][1]):
+                            print("FUCKING BULLCRAP3")
                             Build_in = False
                             Build_out = True
                         else:
+                            print("FUCKING BULLCRAP4")
                             Build_in = True
                             Build_out = False
                     except IndexError:
+                        print("FUCKING BULLCRAP5")
                         Build_in = True
                         Build_out = False
             except IndexError:
-                Build_in = False
-                Build_out = True
+                if "X" in keyslistb[0] or  "X" in keyslista[0]:
+                    Build_in = True
+                    Build_out = False
+                else:
+                    Build_in = False
+                    Build_out = True
 
 
         elif chain_count==1 and  dictionary == VHa_chain:
@@ -1364,6 +1391,8 @@ def Check_interactions(chains_list):
             Build_out = True
             Build_in = False
         before_H = True
+
+        print(dictionary, "BUILD IN", Build_in, "BUILD OUT", Build_out)
 
         in_out_counter = 0
         righthanded = False
@@ -1440,7 +1469,7 @@ def Check_interactions(chains_list):
             Build_up=False
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
-
+            print("DOMAIN", keyslist[i])
 
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
@@ -1508,6 +1537,7 @@ def Check_interactions(chains_list):
 
             #print(keyslist[i], i, len(dictionary))
             print(keyslist[i])
+            print("BUILD IN", Build_in, "BUILD OUT", Build_out)
 
 
             if i == 0:
@@ -1780,6 +1810,11 @@ def Check_interactions(chains_list):
                     print("checkpoint10")
                     previous_chain = chain[i-2]
                     previous_domain = keyslist[i-2]
+                    print("PREVIOUS NUMBER", previous_number)
+                    print(dictionary.get(keyslist[i])[0])
+                    print(dictionary.get(previous_domain))
+                    print(dictionary.get(keyslist[0]))
+
 ##SdFV
                     if len(dictionary.get(keyslist[i])) == 1:
                         print("checkpoint11")
@@ -1803,6 +1838,7 @@ def Check_interactions(chains_list):
                         Build_out = True
 
 ##Self-Interacting chains
+
                     elif dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
                         print("checkpoint12")
                         to_join_number      = str(dictionary.get(keyslist[i])[1])
@@ -1867,7 +1903,7 @@ def Check_interactions(chains_list):
                                 elif righthanded == True:
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1]+100), righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         elif chain_count > 1:
-                            if chain_count == 2:
+                            if chain_count == 2 and keyslist[i-2] != keyslist[0]:
                                 slant = False
                             if righthanded == False and Build_in == True and Build_out == False:
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
@@ -1877,14 +1913,14 @@ def Check_interactions(chains_list):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
                             elif righthanded == True and Build_in == False and Build_out == True:
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+50),(previous_chain[7]+30),righthanded,slant,V,direction,X,mod,interaction,previous_H)
-                            if chain_count==2:
+                            if chain_count==2 and keyslist[i-2] != keyslist[0]:
                                 Build_out = True
                                 Build_in = False
                             else:
                                 Build_in = True
                                 Build_out = False
 ##Build up
-                    elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
+                    elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and "X" not in keyslist[0] and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
                         print("checkpoint15")
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H)
                         Build_up=True
@@ -2331,11 +2367,11 @@ def Check_interactions(chains_list):
                     Hx = Hx
                 Hy = Label_Locations[1]
                 Label_Locations = [[Hx,Hy]]
-                text_coordinates.append(Label_Locations)
+                #text_coordinates.append(Label_Locations)
                 text = dictionary.get(keyslist[i])[0]
-                Location_Text.append(str(text)+mod_label)
+                #Location_Text.append(str(text)+mod_label)
                 All_positions_and_chains[text] = [Label_Locations, righthanded, innie_or_outie, direction]
-                Domain_Text.append(str(Domain_name)+mod_label)
+                #Domain_Text.append(str(Domain_name)+mod_label)
 
                 if H_count == 1:
                     slant=False
@@ -2585,48 +2621,74 @@ def Check_interactions(chains_list):
     if IgG2 == False:
         if fragment1 != {}:
             fragment1_list = list(fragment1.keys())
-            fragment_inter = fragment1.get(fragment1_list[0])[0][1]
-            frag1_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag1_start[1]
-            if righthanded == True:
-                frag1_startx=frag1_start[0][0]+60
-                frag1_starty=frag1_start[0][1]
-            elif righthanded==False:
-                frag1_startx=frag1_start[0][0]-60
-                frag1_starty=frag1_start[0][1]
+            try:
+                fragment_inter = fragment1.get(fragment1_list[0])[0][1]
+                frag1_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                if frag1_start is not None:
+                    righthanded = frag1_start[1]
+                    if righthanded == True:
+                        frag1_startx=frag1_start[0][0]+60
+                        frag1_starty=frag1_start[0][1]
+                    elif righthanded==False:
+                        frag1_startx=frag1_start[0][0]-60
+                        frag1_starty=frag1_start[0][1]
+                else:
+                    frag1_startx, frag1_starty = VHa_startx-100,VHa_starty+200
+            except IndexError:
+                frag1_startx, frag1_starty = VHa_startx-100,VHa_starty+200
         if fragment2 != {}:
             fragment2_list = list(fragment2.keys())
-            fragment_inter = fragment2.get(fragment2_list[0])[0][1]
-            frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag2_start[1]
-            if righthanded == True:
-                frag2_startx=frag2_start[0][0]+60
-                frag2_starty=frag2_start[0][1]
-            elif righthanded==False:
-                frag2_startx=frag2_start[0][0]-60
-                frag2_starty=frag2_start[0][1]
+            try:
+                fragment_inter = fragment2.get(fragment2_list[0])[0][1]
+                frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                if frag2_start is not None:
+                    righthanded = frag2_start[1]
+                    if righthanded == True:
+                        frag2_startx=frag2_start[0][0]+60
+                        frag2_starty=frag2_start[0][1]
+                    elif righthanded==False:
+                        frag2_startx=frag2_start[0][0]-60
+                        frag2_starty=frag2_start[0][1]
+                else:
+                    frag2_startx, frag2_starty = VLa_startx-100,VLa_starty+350
+            except IndexError:
+                frag2_startx, frag2_starty = VLa_startx-100,VLa_starty+350
+
         if fragment3 != {}:
             fragment3_list = list(fragment3.keys())
-            fragment_inter = fragment3.get(fragment3_list[0])[0][1]
-            frag3_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag3_start[1]
-            if righthanded == True:
-                frag3_startx=frag3_start[0][0]+60
-                frag3_starty=frag3_start[0][1]
-            elif righthanded==False:
-                frag3_startx=frag3_start[0][0]-60
-                frag3_starty=frag3_start[0][1]
+            try:
+                fragment_inter = fragment3.get(fragment3_list[0])[0][1]
+                frag3_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                if frag3_start is not None:
+                    righthanded = frag3_start[1]
+                    if righthanded == True:
+                        frag3_startx=frag3_start[0][0]+60
+                        frag3_starty=frag3_start[0][1]
+                    elif righthanded==False:
+                        frag3_startx=frag3_start[0][0]-60
+                        frag3_starty=frag3_start[0][1]
+                else:
+                    frag3_startx, frag3_starty = VHb_startx+100,VHb_starty+200
+            except IndexError:
+                frag3_startx, frag3_starty = VHb_startx+100,VHb_starty+200
+
         if fragment4 != {}:
             fragment4_list = list(fragment4.keys())
-            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
-            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag4_start[1]
-            if righthanded == True:
-                frag4_startx=frag4_start[0][0]+60
-                frag4_starty=frag4_start[0][1]
-            elif righthanded==False:
-                frag4_startx=frag4_start[0][0]-60
-                frag4_starty=frag4_start[0][1]
+            try:
+                fragment_inter = fragment4.get(fragment4_list[0])[0][1]
+                frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                if frag4_start is not None:
+                    righthanded = frag4_start[1]
+                    if righthanded == True:
+                        frag4_startx=frag4_start[0][0]+60
+                        frag4_starty=frag4_start[0][1]
+                    elif righthanded==False:
+                        frag4_startx=frag4_start[0][0]-60
+                        frag4_starty=frag4_start[0][1]
+                else:
+                    frag4_startx, frag4_starty = VLb_startx+100,VLb_starty+150
+            except IndexError:
+                frag4_startx, frag4_starty = VLb_startx+100,VLb_starty+150
         frag1_stat= renderchains(fragment1,frag1_startx,frag1_starty)
         frag2_stat= renderchains(fragment2,frag2_startx,frag2_starty)
         frag3_stat= renderchains(fragment3,frag3_startx,frag3_starty)
@@ -4119,7 +4181,43 @@ def sequence_pipeline(canvas):
         #full_directions.append(directions)
         full_chains.append(full_chain)
         strings.append(string)
-
+##reorder chains by specificity
+    print(strings)
+#    specificities = ["a","b","c","d","e","f","g","h"]
+#    reordered_strings = []
+#    reordered_chains  = []
+#    lowest_spec = ""
+#    a_in_all = False
+#    a_count = 0
+#    for i in range(len(strings)):
+#        if "a" in strings[i]:
+#            a_count +=1
+#    if a_count == len(strings):
+#        a_in_all = True
+#    if a_in_all == False:
+#        for i in range(len(strings)):
+#            added = False
+#            for j in range(len(specificities)):
+#                if specificities[j] in str(strings[i]) and added == False:
+#                    added = True
+#                    if lowest_spec == "":
+#                        lowest_spec = j
+#                        reordered_strings.append(strings[i])
+#                        reordered_chains.append(full_chains[i])
+#                    else:
+#                        if j <= lowest_spec:
+#
+#                            reordered_chains.insert(0,full_chains[i])
+#                        else:
+#                            reordered_strings.append(strings[i])
+#                            reordered_chains.append(full_chains[i])
+#    else:
+#        reordered_strings = strings
+#        reordered_chains  = full_chains
+    #print("STRINGS",reordered_strings)
+    #print("CHAINS", reordered_chains)
+    #strings = reordered_strings
+    #full_chains = reordered_chains
 ##number chains
     counter = 1
     assigned_numbers = {}
@@ -4188,7 +4286,8 @@ def sequence_pipeline(canvas):
                         d1y1 = min_max[2]-5
                         d1y2 = min_max[3]+5
                     #print(number)
-                    #print(d1x1,d1x2,d1y1,d1y2)
+
+                    print(strings[i][j],d1x2,d1y1,d1y2)
                     #Search for overlapping matching domains
                     for f in range(len(domains_keyslist)):
                         if domains_keyslist[f] != index:
@@ -4213,9 +4312,9 @@ def sequence_pipeline(canvas):
                                                 testx1 = (domains_dict.get(index)[0][4])
                                                 testx2 = (domains_dict.get(index)[0][8])
                                                 if testx1 > testx2:
-                                                    d2x1 = min_max[0]-30
+                                                    d2x1 = min_max[0]+30
                                                 else:
-                                                    d2x2 = min_max[1]+30
+                                                    d2x2 = min_max[1]-30
                                             else:
                                                 d2x1 = min_max[0]-30
                                                 d2x2 = min_max[1]+30
@@ -6219,6 +6318,8 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
                     startx +=120
 
 
+    #if V == True and direction == "constant":
+    #    if righthanded == False:
 
 
     if V == False and  direction == "constant" and mod == "" and X == False:
@@ -7243,7 +7344,7 @@ antibodyformats = {
 "scDiabody-Fc":"VH.b(1:2) -L -VL.b(2:1) -L -VH.a(3:4) -L -VL.a(4:3) -H(5:12){2} -CH2(6:13) -CH3(7:14) | VH.b(8:9) -L -VL.b(9:8) -L -VH.a(10:11) -L -VL.a(11:10) -H(12:5){2} -CH2(13:6) -CH3(14:7)",
 "DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
 "Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
-"Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VL.b(13:14) -L -VH.b(14:13)",
+"Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VH.b(13:14) -L -VL.b(14:13)",
 "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
 "Triplebody":"VH.a(1:5)-CH1(2:6){1} -L- VL.b(3:4) -L -VH.b(4:3) | VL.a(5:1) -CL(6:2){1} -L - VL.c(7:8) -L -VH.c(8:7)",
 "scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VL.b(3:4){1}-L-VH.b(4:3){1}-L-VL.a(5:1)-CL(6:2){2}-L-VL.c(7:8){1}-L-VH.c(8:7){1}",
