@@ -1462,7 +1462,6 @@ def Check_interactions(chains_list):
             Build_up=False
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
-            print("DOMAIN", keyslist[i])
 
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
@@ -1477,7 +1476,6 @@ def Check_interactions(chains_list):
                     XY = (Notes_positions[-1][1])+20
                     Notes_positions.append([(width/3),XY])
 
-            #print(mod_label, mod)
 
             if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
@@ -1806,9 +1804,7 @@ def Check_interactions(chains_list):
                     print("checkpoint10")
                     previous_chain = chain[i-2]
                     previous_domain = keyslist[i-2]
-                    print(dictionary.get(keyslist[i])[0])
-                    print(dictionary.get(previous_domain))
-                    print(dictionary.get(keyslist[0]))
+
 
 ##SdFV
                     if len(dictionary.get(keyslist[i])) == 1:
@@ -4245,7 +4241,6 @@ def sequence_pipeline(canvas):
                         if coordinates == assigned_coordinates:
                             assigned_match = True
                             assigned_keyslist_check = assigned_keyslist[k]
-                            print(assigned_keyslist[k],coordinates, assigned_coordinates)
                     if assigned_match == True:
                         if "X" in strings[i][j]:
                             strings[i][j] = str("-X("+str(assigned_keyslist_check)+")-")
@@ -4293,9 +4288,6 @@ def sequence_pipeline(canvas):
                         d1x2 = min_max[1]+Pairing_sensitivity
                         d1y1 = min_max[2]-5
                         d1y2 = min_max[3]+5
-                    #print(number)
-
-                    print(strings[i][j],d1x2,d1y1,d1y2)
                     #Search for overlapping matching domains
                     for f in range(len(domains_keyslist)):
                         if domains_keyslist[f] != index:
@@ -4382,13 +4374,10 @@ def sequence_pipeline(canvas):
                                                     disulphide_count = 0
                                                     paired_X_domains.append(int(paired_number))
                                                     for y in range(len(disulphides_keyslist)):
-                                                            #print("Looking for those disulphides")
                                                         disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
                                                         disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
                                                         disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
                                                         disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
-                                                            #print("disulphx1",d1x1, disulphx1, d1x2 ,"disulphy1", d1y1, disulphy1 , d1y2,"disulphx2" , d2x1 , disulphx2 , d2x2 ,"disulphy2", d2y1, disulphy2 , d2y2)
-                                                            #print("disulphx2",d1x1, disulphx2, d1x2 ,"disulphy2", d1y1, disulphy2 , d1y2,"disulphx1" , d2x1 , disulphx1 , d2x2 ,"disulphy1", d2y1, disulphy1 , d2y2)
 
                                                         if ((d1x1 <= disulphx2 <= d1x2 and d1y1 <= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1 <= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1 <= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
                                                             disulphide_count += 1
@@ -4788,10 +4777,8 @@ def sequence_pipeline(canvas):
 
 def button_hover(e):
     button["bg"] = "white"
-    status_label.config(text="Get Input")
 def button_hover_leave(e):
     button["bg"] = "grey"
-    status_label.config(text="")
 def button_hover_polygon(label):
     status_label.config(text=label)
 def button_hover_polygon_leave(e):
@@ -7291,7 +7278,7 @@ CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18
 CustomLabelEntry = tk.Text(frame2, font=40)
 CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
 ##Status bar###
-status_label = tk.Label(root, text='test', bd=1)
+status_label = tk.Label(root, text='', bd=1)
 status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
 
 ##Big button
@@ -7383,7 +7370,8 @@ bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
 
 #Coloursettings = tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
 def open_settings():
-    top = tk.Toplevel()
+    global root
+    top = tk.Toplevel(root)
     top.title = "Settings"
     top.geometry('500x400')
     tabControl = ttk.Notebook(top)
@@ -7984,7 +7972,7 @@ root.tk.call('wm', 'iconphoto', root._w, img)
 tite = root.title('abYdraw')
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="Settings", command=open_settings())
+filemenu.add_command(label="Settings", command=open_settings)
 filemenu.add_command(label="Open", command=lambda: browseFiles())
 filemenu.add_command(label="Save", command=lambda: save_txt_file())
 filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
