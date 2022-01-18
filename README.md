@@ -59,8 +59,7 @@ Finally you may export a Template File from the expression in the entry box whic
 
 8. Settings
 
-
-Users may change colour-coding by opening the "File>Settings" menu which will pop up a new window with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. "Change colour" allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by "Revert colour" or "Revert all colours"
+Users may change aspects about the rendering and pairing of their schematic. By opening the "File>Settings" window, a menu with two tabs will appear. The first tab has settings regarding pairing sensitivity of drawn schematics, bond thickness, directional arrows, Hinge and Linker labels which can be set by using the appropriate sliders. For pairing sensitivity the scale is 0-80 pixels and bond width are between 1-5 pixels. Other binary settings are on sliders 0-1. To update the settings, users must press the update button and re-render their schematic to see their new schematic. The second tab is the  colour-coding  menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. "Change colour" allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by "Revert colour" or "Revert all colours".
 
 
 Software authors: James Sweet-Jones and Andrew Martin (Darwin Building, University College London, Gower Street, London)
