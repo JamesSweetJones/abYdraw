@@ -4,16 +4,17 @@ This is a programme designed to use our group's Antibody Markup Language (AbML) 
 
 ### Contents
 
-1.Installing and Executing
-2.Interface
-3.AbML
-4.Inputting AbML
-5.Obtaining AbML
-6.Formats Library
-7.Saving and exporting
-8.Settings
+1. Installing and Executing
+2. Interface
+3. AbML
+4. Inputting AbML
+5. Obtaining AbML
+6. Formats Library
+7. Saving and exporting
+8. Settings
 
 Reference:
+
 Software authors: James Sweet-Jones and Andrew Martin (Darwin Building, University College London, Gower Street, London)
 
 
@@ -48,7 +49,7 @@ This command will generate ./build ./dist folders. Your compiled app will be in 
 The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side. Starting with the left hand column, the first is the Domain palette **(A)** which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions **(B)**, thirdly the input box for AbML expressions **(C)** and a buttonpad that will render antibody schematics or output AbML to the textbox **(D)**. On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics **(E)** and underneath there are two buttons which are involved in exporting the schematic **(F)**.
 
 ### 3. AbML
-
+![AbML Guide Sheet](https://github.com/JamesSweetJones/abYdraw/blob/main/LanguageGuide.png)
 Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: `TYPE; NOTE; MOD; ANTI and LENGTH`. Full descriptions of AbML can be found on the language guide sheet included in the Repository.
 
 AbML expression for a standard IgG molecule would be:
