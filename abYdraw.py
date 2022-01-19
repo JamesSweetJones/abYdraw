@@ -2,8 +2,6 @@
 import re
 import sys
 import os
-from PIL import Image
-import PIL
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import colorchooser
@@ -3573,7 +3571,7 @@ def save_as_png(canvas):
         abs_path = os.path.abspath(file.name)
         eps = canvas.postscript(file = abs_path,colormode='color',height=1000)
         file.close()
-        
+
 ###########################################
 def get_min_max_coordinates(domain_coordinates):
     xs= []
@@ -4172,44 +4170,41 @@ def sequence_pipeline(canvas):
         #full_directions.append(directions)
         full_chains.append(full_chain)
         strings.append(string)
+
 ##reorder chains by specificity
-#    print(strings)
-#    specificities = ["a","b","c","d","e","f","g","h"]
-#    reordered_strings = []
-#    reordered_chains  = []
-#    lowest_spec = ""
-#    a_in_all = False
-#    a_count = 0
-#    for i in range(len(strings)):
-#        if "a" in strings[i]:
-#            a_count +=1
-#    if a_count == len(strings):
-#        a_in_all = True
-#    if a_in_all == False:
-#        for i in range(len(strings)):
-#            added = False
-#            for j in range(len(specificities)):
-#                if specificities[j] in str(strings[i]) and added == False:
-#                    added = True
-#                    if lowest_spec == "":
-#                        lowest_spec = j
-#                        reordered_strings.append(strings[i])
-#                        reordered_chains.append(full_chains[i])
-#                    else:
-#                        if j <= lowest_spec:
-#
-#                            reordered_chains.insert(0,full_chains[i])
-#                        else:
-#                            reordered_strings.append(strings[i])
-#                            reordered_chains.append(full_chains[i])
-#    else:
-#        reordered_strings = strings
-#        reordered_chains  = full_chains
-#print("STRINGS",reordered_strings)
-#print("CHAINS", reordered_chains)
-#    strings = reordered_strings
-#    full_chains = reordered_chains
-##number chains
+    specificities = ["a","b","c","d","e","f","g","h"]
+    categorised_chains = []
+    reordered_strings = []
+    reordered_chains = []
+    specificities_lists_strings = [[],[],[],[],[],[],[],[]]
+    specificities_lists_chains  = [[],[],[],[],[],[],[],[]]
+    first_appearances = [[],[],[],[],[],[],[],[]]
+    for i in range(len(strings)):
+        for j in range(len(specificities)):
+            if specificities[j] in str(strings[i]) and full_chains[i] not in categorised_chains:
+                specificities_lists_strings[j].append(strings[i])
+                specificities_lists_chains[j].append(full_chains[i])
+                categorised_chains.append(full_chains[i])
+                for k in range(len(strings[i])):
+                    if specificities[j] in str(strings[i][k]):
+                        first_appearances[j].append(k)
+                        break
+
+    for i in range(len(specificities_lists_strings)):
+        specificities_lists_strings[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_strings[i]))]
+        specificities_lists_chains[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_chains[i]))]
+    for i in range(len(specificities_lists_strings)):
+        for j in range(len(specificities_lists_strings[i])):
+
+            reordered_strings.append(specificities_lists_strings[i][j])
+            reordered_chains.append(specificities_lists_chains[i][j])
+
+    strings = reordered_strings
+    full_chains = reordered_chains
+
+
+
+#number chains
     counter = 1
     assigned_numbers = {}
     for i in range(len(strings)):
