@@ -28,11 +28,13 @@ However, it may also be compiled into an executable file using py2app and the se
 install a virtual environment 
 
 `pip install virtualenv`
+
 `virtualenv venv --system-site-packages`
 
 Then open a virtual environment and install py2app
 
 `source venv/bin/activate`
+
 `pip install -U py2app`
 
 Finally, run py2app with the setup.py file
