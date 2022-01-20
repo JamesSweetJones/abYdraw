@@ -2647,80 +2647,55 @@ def Check_interactions(chains_list):
 
     frag1_startx,frag1_starty,frag2_startx,frag2_starty,frag3_startx,frag3_starty,frag4_startx,frag4_starty = 0,0,0,0,0,0,0,0
     if IgG2 == False:
-        if fragment1 != {}:
-            fragment1_list = list(fragment1.keys())
-            try:
-                fragment_inter = fragment1.get(fragment1_list[0])[0][1]
-                frag1_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-                if frag1_start is not None:
-                    righthanded = frag1_start[1]
-                    if righthanded == True:
-                        frag1_startx=frag1_start[0][0]+60
-                        frag1_starty=frag1_start[0][1]
-                    elif righthanded==False:
-                        frag1_startx=frag1_start[0][0]-60
-                        frag1_starty=frag1_start[0][1]
-                else:
-                    frag1_startx, frag1_starty = VHa_startx-100,VHa_starty+200
-            except IndexError:
-                frag1_startx, frag1_starty = VHa_startx-100,VHa_starty+200
-        if fragment2 != {}:
-            fragment2_list = list(fragment2.keys())
-            try:
-                fragment_inter = fragment2.get(fragment2_list[0])[0][1]
-                frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-                if frag2_start is not None:
-                    righthanded = frag2_start[1]
-                    if righthanded == True:
-                        frag2_startx=frag2_start[0][0]+60
-                        frag2_starty=frag2_start[0][1]
-                    elif righthanded==False:
-                        frag2_startx=frag2_start[0][0]-60
-                        frag2_starty=frag2_start[0][1]
-                else:
-                    frag2_startx, frag2_starty = VLa_startx-100,VLa_starty+350
-            except IndexError:
-                frag2_startx, frag2_starty = VLa_startx-100,VLa_starty+350
+        def place_fragments(fragment, backup_startx,backup_starty):
+            All_positions_and_chains_keys = list(All_positions_and_chains.keys())
+            if fragment != {}:
+                fragment_list = list(fragment.keys())
+                interaction_found = False
+                connection_found = False
 
-        if fragment3 != {}:
-            fragment3_list = list(fragment3.keys())
-            try:
-                fragment_inter = fragment3.get(fragment3_list[0])[0][1]
-                frag3_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-                if frag3_start is not None:
-                    righthanded = frag3_start[1]
-                    if righthanded == True:
-                        frag3_startx=frag3_start[0][0]+60
-                        frag3_starty=frag3_start[0][1]
-                    elif righthanded==False:
-                        frag3_startx=frag3_start[0][0]-60
-                        frag3_starty=frag3_start[0][1]
-                else:
-                    frag3_startx, frag3_starty = VHb_startx+100,VHb_starty+200
-            except IndexError:
-                frag3_startx, frag3_starty = VHb_startx+100,VHb_starty+200
+                for i in range(len(fragment_list)):
+                    try:
+                        fragment_inter = fragment.get(fragment_list[i])[0][1]
+                        frag_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                        if frag_start is not None and interaction_found == False:
+                            interaction_found = True
+                            righthanded = frag_start[1]
+                            break
+                    except IndexError:
+                        inter = fragment.get(fragment_list[i])[0][0]
+                        for i in range(len(All_positions_and_chains_keys)):
+                            print(inter, All_positions_and_chains_keys[i])
+                            if All_positions_and_chains_keys[i] == inter:
+                                connection_found = True
 
-        if fragment4 != {}:
-            fragment4_list = list(fragment4.keys())
-            try:
-                fragment_inter = fragment4.get(fragment4_list[0])[0][1]
-                frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-                if frag4_start is not None:
-                    righthanded = frag4_start[1]
+                if interaction_found == True:
                     if righthanded == True:
-                        frag4_startx=frag4_start[0][0]+60
-                        frag4_starty=frag4_start[0][1]
+                        frag_startx=frag_start[0][0]+60
+                        frag_starty=frag_start[0][1]
                     elif righthanded==False:
-                        frag4_startx=frag4_start[0][0]-60
-                        frag4_starty=frag4_start[0][1]
-                else:
-                    frag4_startx, frag4_starty = VLb_startx+100,VLb_starty+150
-            except IndexError:
-                frag4_startx, frag4_starty = VLb_startx+100,VLb_starty+150
-        frag1_stat= renderchains(fragment1,frag1_startx,frag1_starty)
-        frag2_stat= renderchains(fragment2,frag2_startx,frag2_starty)
-        frag3_stat= renderchains(fragment3,frag3_startx,frag3_starty)
-        frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+                        frag_startx=frag_start[0][0]-60
+                        frag_starty=frag_start[0][1]
+
+                elif interaction_found == False and connection_found == True:
+                    frag_startx, frag_starty = backup_startx,backup_starty
+
+                elif interaction_found == False and connection_found == False:
+                    error_message = "ERROR:Your expression contains multiple antibodies that are not connected"
+                    raise_error(lower_canvas,error_message)
+
+                return(frag_startx, frag_starty)
+            else:
+                return(0,0)
+
+        frag1_xy = place_fragments(fragment1, VHa_startx-100,VHa_starty+200)
+        frag2_xy = place_fragments(fragment2, VLa_startx-100,VHa_starty+350)
+        frag3_xy = place_fragments(fragment3, VHb_startx-100,VHb_starty+200)
+        frag4_xy = place_fragments(fragment4, VLb_startx-100,VLb_starty+350)
+        frag1_stat= renderchains(fragment1,frag1_xy[0],frag1_xy[1])
+        frag2_stat= renderchains(fragment2,frag2_xy[0],frag2_xy[1])
+        frag3_stat= renderchains(fragment3,frag3_xy[0],frag3_xy[1])
+        frag4_stat= renderchains(fragment4,frag4_xy[0],frag4_xy[1])
     elif IgG2 == True:
         if (("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys()))) :
             frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200)
@@ -3066,7 +3041,7 @@ def Check_interactions(chains_list):
     Chem_con            = VHa_stats[52] + VLa_stats[52] + VHb_stats[52] + VLb_stats[52] + frag1_stat[52] + frag2_stat[52] + frag3_stat[52] + frag4_stat[52]
     if Yout_of_range == True:
         Ynew_start = Yhow_much-10
-        coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot]
+        coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot,Chem_con]
         for i in range(len(coordinates_to_change)):
             for j in range(len(coordinates_to_change[i])):
                 for k in range(len(coordinates_to_change[i][j])):
@@ -4172,37 +4147,49 @@ def sequence_pipeline(canvas):
         strings.append(string)
 
 ##reorder chains by specificity
-    specificities = ["a","b","c","d","e","f","g","h"]
-    categorised_chains = []
-    reordered_strings = []
-    reordered_chains = []
-    specificities_lists_strings = [[],[],[],[],[],[],[],[]]
-    specificities_lists_chains  = [[],[],[],[],[],[],[],[]]
-    first_appearances = [[],[],[],[],[],[],[],[]]
-    for i in range(len(strings)):
-        for j in range(len(specificities)):
-            if specificities[j] in str(strings[i]) and full_chains[i] not in categorised_chains:
-                specificities_lists_strings[j].append(strings[i])
-                specificities_lists_chains[j].append(full_chains[i])
-                categorised_chains.append(full_chains[i])
-                for k in range(len(strings[i])):
-                    if specificities[j] in str(strings[i][k]):
-                        first_appearances[j].append(k)
-                        break
+    #specificities = ["a","b","c","d","e","f","g","h"]
+    #categorised_chains = []
+    #reordered_strings = []
+    #reordered_chains = []
+    #not_specified_strings = []
+    #not_specified_chains  = []
+    #specificities_lists_strings = [[],[],[],[],[],[],[],[]]
+    #specificities_lists_chains  = [[],[],[],[],[],[],[],[]]
+    #first_appearances =           [[],[],[],[],[],[],[],[]]
+    #for i in range(len(strings)):
+    #    for j in range(len(specificities)):
+    #        if specificities[j] in str(strings[i]) and full_chains[i] not in categorised_chains:
+    #            specificities_lists_strings[j].append(strings[i])
+    #            specificities_lists_chains[j].append(full_chains[i])
+    #            categorised_chains.append(full_chains[i])
+    #            for k in range(len(strings[i])):
+    #                if specificities[j] in str(strings[i][k]):
+    #                    first_appearances[j].append(k)
+    #                    break
+    #    if full_chains[i] not in categorised_chains:
+    #        not_specified_strings.append(strings[i])
+    #        not_specified_chains.append(full_chains[i])
+    #        categorised_chains.append(full_chains[i])
 
-    for i in range(len(specificities_lists_strings)):
-        specificities_lists_strings[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_strings[i]))]
-        specificities_lists_chains[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_chains[i]))]
-    for i in range(len(specificities_lists_strings)):
-        for j in range(len(specificities_lists_strings[i])):
+    #for i in range(len(specificities_lists_strings)):
+    #    if all(x == first_appearances[i][0] for x in first_appearances[i]):
+    #        specificities_lists_strings[i] = specificities_lists_strings[i]
+    #        specificities_lists_chains[i] = specificities_lists_chains[i]
+    #    else:
+    #        specificities_lists_strings[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_strings[i]))]
+    #        specificities_lists_chains[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_chains[i]))]
 
-            reordered_strings.append(specificities_lists_strings[i][j])
-            reordered_chains.append(specificities_lists_chains[i][j])
+    #for i in range(len(specificities_lists_strings)):
+    #    for j in range(len(specificities_lists_strings[i])):
+    #        reordered_strings.append(specificities_lists_strings[i][j])
+    #        reordered_chains.append(specificities_lists_chains[i][j])
 
-    strings = reordered_strings
-    full_chains = reordered_chains
+    #for i in range(len(not_specified_strings)):
+    #    reordered_strings.append(not_specified_strings[i])
+    #    reordered_chains.append(not_specified_chains[i])
 
-
+    #strings = reordered_strings
+    #full_chains = reordered_chains
 
 #number chains
     counter = 1
@@ -4212,34 +4199,29 @@ def sequence_pipeline(canvas):
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-" and  str(strings[i][j]) != "-L-":
                 if "-H-" not in strings[i][j]:
-                    try:
-                        index = full_chains[i][j]
-                        coordinates = domains_dict.get(index)[0]
-
-                        assigned_match = False
-                        assigned_keyslist_check = ""
-                        for k in range(len(assigned_keyslist)):
-                            assigned_coordinates = assigned_numbers.get(assigned_keyslist[k])
-                            if coordinates == assigned_coordinates:
-                                assigned_match = True
-                                assigned_keyslist_check = assigned_keyslist[k]
-                        if assigned_match == True:
-                            if "X" in strings[i][j]:
-                                strings[i][j] = str("-X("+str(assigned_keyslist_check)+")-")
-                            elif strings[i][j] == "C":
-                                strings[i][j] = str("-C("+str(assigned_keyslist_check)+")-")
-                        elif assigned_match == False:
-                            if "-" not in strings[i][j]:
-                                strings[i][j] += str("("+str(counter)+")")
-                            elif "-X-" in strings[i][j]:
-                                strings[i][j] = str("-X("+str(counter)+")-")
-                            elif  strings[i][j] == "C":
-                                strings[i][j] = str("-C("+str(counter)+")-")
-                            assigned_numbers[counter] = coordinates
-                            counter += 1
-                    except IndexError:
-                        error_message = "Your drawing contains multiple antibodies that are not connected"
-                        raise_error(lower_canvas,error_message)
+                    index = full_chains[i][j]
+                    coordinates = domains_dict.get(index)[0]
+                    assigned_match = False
+                    assigned_keyslist_check = ""
+                    for k in range(len(assigned_keyslist)):
+                        assigned_coordinates = assigned_numbers.get(assigned_keyslist[k])
+                        if coordinates == assigned_coordinates:
+                            assigned_match = True
+                            assigned_keyslist_check = assigned_keyslist[k]
+                    if assigned_match == True:
+                        if "X" in strings[i][j]:
+                            strings[i][j] = str("-X("+str(assigned_keyslist_check)+")-")
+                        elif strings[i][j] == "C":
+                            strings[i][j] = str("-C("+str(assigned_keyslist_check)+")-")
+                    elif assigned_match == False:
+                        if "-" not in strings[i][j]:
+                            strings[i][j] += str("("+str(counter)+")")
+                        elif "-X-" in strings[i][j]:
+                            strings[i][j] = str("-X("+str(counter)+")-")
+                        elif  strings[i][j] == "C":
+                            strings[i][j] = str("-C("+str(counter)+")-")
+                        assigned_numbers[counter] = coordinates
+                        counter += 1
                 elif "-H-" in strings[i][j]:
                     strings[i][j] = str("-H("+str(counter)+")-")
                     counter += 1
@@ -4329,7 +4311,7 @@ def sequence_pipeline(canvas):
                                                             paired.append(int(paired_number))
                                     except IndexError:
                                         error_message = "Your drawing contains multiple antibodies that are not connected"
-                                        raise_error(lower_canvas,error_message)
+                                    #    raise_error(lower_canvas,error_message)
 
                 elif ("X" in str(strings[i][j]) or str(strings[i][j])) == "C" :
                     domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
@@ -4470,6 +4452,7 @@ def sequence_pipeline(canvas):
                                                         strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
                                                     paired.append(int(number))
                                                     paired.append(int(paired_number))
+
 
 ##Find comments on domains and not on domains
     for i in range(len(full_chains)):
@@ -6299,8 +6282,9 @@ class MouseMover():
                     heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
                 if "H" in domain_name:
                     domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
-                elif "L" in domain_name:
+                else:
                     domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+
 
                 if Label_lock == True:
                     domain_name = re.sub("\.|@|>","",domain_name)
