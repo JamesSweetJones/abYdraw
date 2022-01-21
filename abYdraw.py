@@ -5349,6 +5349,11 @@ def labels_button(canvas):
                 min_max = get_min_max_coordinates(canvas_polygons.get(polygons_keyslist[i])[0])
                 labelx = min_max[4]
                 labely = min_max[5]
+                if min_max[1]-min_max[0] == 70:
+                    if canvas_polygons.get(polygons_keyslist[i])[0][2] > canvas_polygons.get(polygons_keyslist[i])[0][0]:
+                        labelx-=5
+                    elif canvas_polygons.get(polygons_keyslist[i])[0][2] < canvas_polygons.get(polygons_keyslist[i])[0][0]:
+                        labelx+=5
                 label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label")
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
@@ -5685,6 +5690,11 @@ class MouseMover():
                 #labely2 = (new_coordinates[1]+new_coordinates[5])/2
                 labelx2 = (x1+x2)/2
                 labely2 = (y1+y2)/2
+                if x2-x1 == 70:
+                    if new_coordinates[2] > new_coordinates[0]:
+                        labelx2-=5
+                    elif new_coordinates[2] < new_coordinates[0]:
+                        labelx2+=5
                 label_name = temp_label.get(temp_label_key[0])[1]
                 label  = lower_canvas.create_text([labelx2,labely2], text = label_name, tags = "label")
                 canvas_labels[label] = [[labelx2, labely2], label_name]
@@ -5861,6 +5871,11 @@ class MouseMover():
                 for i in range(len(label_keyslist)):
                     labelx = canvas_labels.get(label_keyslist[i])[0][0]
                     labely = canvas_labels.get(label_keyslist[i])[0][1]
+                    if min_max[1]-min_max[0] == 70:
+                        if canvas_labels.get(label_keyslist[i])[0][2] > canvas_labels.get(label_keyslist[i])[0][0]:
+                            labelx-=5
+                        elif canvas_labels.get(label_keyslist[i])[0][2] < canvas_labels.get(label_keyslist[i])[0][0]:
+                            labelx+=5
                     if x1 <= labelx <=x2 and y1 <= labely <= y2:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5935,6 +5950,11 @@ class MouseMover():
             for i in range(len(label_keyslist)):
                 labelx = canvas_labels.get(label_keyslist[i])[0][0]
                 labely = canvas_labels.get(label_keyslist[i])[0][1]
+                if min_max[1]-min_max[0] == 70:
+                    if canvas_labels.get(label_keyslist[i])[0][2] > canvas_labels.get(label_keyslist[i])[0][0]:
+                        labelx-=5
+                    elif canvas_labels.get(label_keyslist[i])[0][2] < canvas_labels.get(label_keyslist[i])[0][0]:
+                        labelx+=5
                 if x1 <= labelx <=x2 and y1 <= labely <= y2:
                     del canvas_labels[label_keyslist[i]]
                     lower_canvas.delete(label_keyslist[i])
@@ -6043,6 +6063,7 @@ class MouseMover():
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
+
                     if x1< labelx <x2 and y1 < labely < y2:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -6290,8 +6311,14 @@ class MouseMover():
 
                 if Label_lock == True:
                     domain_name = re.sub("\.|@|>","",domain_name)
+                    min_max = get_min_max_coordinates(domain_coordinates)
                     labelx = get_min_max_coordinates(domain_coordinates)[4]
                     labely = get_min_max_coordinates(domain_coordinates)[5]
+                    if min_max[1]-min_max[0] == 70:
+                        if domain_coordinates[2] > domain_coordinates[0]:
+                            labelx-=5
+                        elif domain_coordinates[2] < domain_coordinates[0]:
+                            labelx+=5
                     label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
@@ -6924,9 +6951,9 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
     x12 = get_min_max_coordinates(coordinates)[4]
     y12 = get_min_max_coordinates(coordinates)[5]
     if slant == True and righthanded == False and (mod != "Leucine" or Show_Leucine_Zippers == False):
-        Labelbond   = [x12, y12]
+        Labelbond   = [firstx+20, y12]
     elif slant == True and righthanded == True and (mod != "Leucine" or Show_Leucine_Zippers == False):
-        Labelbond   = [x12, y12]
+        Labelbond   = [firstx-20, y12]
     elif mod== "Leucine" and righthanded == False and Show_Leucine_Zippers == True:
         Labelbond   = [firstx-30, (firsty+ninthy)/2]
     elif mod== "Leucine" and righthanded == True and Show_Leucine_Zippers == True:
@@ -6983,6 +7010,7 @@ def undo():
     global LENGTH_labels
     global deleted_polygons
     global Deletes_to_redo
+    global all_buttons
     label_keyslist = list(canvas_labels.keys())
     if deleted_polygons != {}:
         deleted_polygons_keys = list(deleted_polygons.keys())
@@ -7021,6 +7049,11 @@ def undo():
                 domain_name = re.sub("\.|@|>","",domain_name)
                 labelx = get_min_max_coordinates(domain_coordinates)[4]
                 labely = get_min_max_coordinates(domain_coordinates)[5]
+                if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70 :
+                    if domain_coordinates[2] > domain_coordinates[0]:
+                        labelx-=5
+                    elif domain_coordinates[2] < domain_coordinates[0]:
+                        labelx+=5
                 label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                 canvas_labels[label] = [[labelx,labely], domain_name]
         elif domain_name == "-" :####
@@ -7176,6 +7209,11 @@ def redo():
                     domain_name = re.sub("\.|@|>","",domain_name)
                     labelx = get_min_max_coordinates(domain_coordinates)[4]
                     labely = get_min_max_coordinates(domain_coordinates)[5]
+                    if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70:
+                        if domain_coordinates[2] > domain_coordinates[0]:
+                            labelx-=5
+                        elif domain_coordinates[2] < domain_coordinates[0]:
+                            labelx+=5
                     label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
