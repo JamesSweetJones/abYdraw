@@ -5595,7 +5595,6 @@ class MouseMover():
             self.startcoordinates = [xc, yc]
             lower_canvas.config(cursor = "fleur")
             return(startcoordinates)
-        print("NAME", str(canvas_polygons.get(self.item)[1]))
         if "-" not in str(canvas_polygons.get(self.item)[1]):
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             xs= []
@@ -5622,7 +5621,6 @@ class MouseMover():
                     labely = label_location[1]
                     labelx_theory = (x1+x2)/2
                     labely_theory = (y1+y2)/2
-                    print(labelx, labelx_theory, labely, labely_theory)
                     label_text_test = re.sub("\.|\+|\-|\>|\@|\_","",canvas_polygons.get(self.item)[1])
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
