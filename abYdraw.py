@@ -3464,7 +3464,6 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
             extra_mods = ""
     elif domain_type == "":
         domain_type = "a"
-
         a_button.config(fg="red")
         if Domain_Primer_Lock != domain_name:
             Domain_Primer_Lock = domain_name
@@ -4750,7 +4749,7 @@ def sequence_pipeline(canvas):
 def button_hover(e):
     button["bg"] = "white"
 def button_hover_leave(e):
-    button["bg"] = "grey"
+    button["bg"] = "#CFCFCF"
 def button_hover_polygon(label):
     status_label.config(text=label)
 def button_hover_polygon_leave(e):
@@ -5591,7 +5590,7 @@ class MouseMover():
             self.startcoordinates = [xc, yc]
             lower_canvas.config(cursor = "fleur")
             return(startcoordinates)
-
+        print("NAME", str(canvas_polygons.get(self.item)[1]))
         if "-" not in str(canvas_polygons.get(self.item)[1]):
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             xs= []
@@ -5616,8 +5615,11 @@ class MouseMover():
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
+                    labelx_theory = (x1+x2)/2
+                    labely_theory = (y1+y2)/2
+                    print(labelx, labelx_theory, labely, labely_theory)
                     label_text_test = re.sub("\.|\+|\-|\>|\@|\_","",canvas_polygons.get(self.item)[1])
-                    if x1<= labelx <=x2 and y1 <= labely <= y2 and label_text_test==label_text:
+                    if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
                         temp_label = {}
@@ -6919,17 +6921,18 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
         bottom_bond = [ninthx,ninthy]
     else:
         bottom_bond = [fourthx, fourthy-2]
-
+    x12 = get_min_max_coordinates(coordinates)[4]
+    y12 = get_min_max_coordinates(coordinates)[5]
     if slant == True and righthanded == False and (mod != "Leucine" or Show_Leucine_Zippers == False):
-        Labelbond   = [firstx+20, (firsty+thirdy)/2]
+        Labelbond   = [x12, y12]
     elif slant == True and righthanded == True and (mod != "Leucine" or Show_Leucine_Zippers == False):
-        Labelbond   = [firstx-20, (firsty+thirdy)/2]
+        Labelbond   = [x12, y12]
     elif mod== "Leucine" and righthanded == False and Show_Leucine_Zippers == True:
         Labelbond   = [firstx-30, (firsty+ninthy)/2]
     elif mod== "Leucine" and righthanded == True and Show_Leucine_Zippers == True:
         Labelbond   = [firstx+30, (firsty+ninthy)/2]
     else:
-        Labelbond   = [firstx, (firsty+thirdy)/2]
+        Labelbond   = [x12, y12]
     return(coordinates, bottom_bond,top_bond,Labelbond)
 
 
@@ -7222,7 +7225,7 @@ frame = tk.Frame(root, bg = '#80c1ff',bd=5)
 frame.place(relwidth=1,relheight=1)
 
 ###Input box
-textBox = tk.Text(frame, font=40)
+textBox = tk.Text(frame, font=20)
 textBox.place(relx=0.01,rely = 0.65, relwidth=0.4,relheight=0.15)
 ###Option box
 frame2 = tk.Frame(frame, bg = '#D3D3D3')
@@ -7242,107 +7245,107 @@ L_Labels = False
 Show_Leucine_Zippers = False
 Bond_Arrows=(0,0,0)
 ######################BUTTONS
-a_button= tk.Button(frame2,text="a",bg = "grey", command =lambda: domain_type_button("a"))
+a_button= tk.Button(frame2,text="a",bg = "#CFCFCF", command =lambda: domain_type_button("a"))
 a_button.place(relx = 0.61, rely = 0.21, relheight = 0.1, relwidth=0.05)
-b_button= tk.Button(frame2,text="b",bg = "grey", command =lambda: domain_type_button("b"))
+b_button= tk.Button(frame2,text="b",bg = "#CFCFCF", command =lambda: domain_type_button("b"))
 b_button.place(relx = 0.66, rely = 0.21, relheight = 0.1, relwidth=0.05)
-c_button= tk.Button(frame2,text="c",bg = "grey", command =lambda: domain_type_button("c"))
+c_button= tk.Button(frame2,text="c",bg = "#CFCFCF", command =lambda: domain_type_button("c"))
 c_button.place(relx = 0.71, rely = 0.21, relheight = 0.1, relwidth=0.05)
-d_button= tk.Button(frame2,text="d",bg = "grey", command =lambda: domain_type_button("d"))
+d_button= tk.Button(frame2,text="d",bg = "#CFCFCF", command =lambda: domain_type_button("d"))
 d_button.place(relx = 0.76, rely = 0.21, relheight = 0.1, relwidth=0.05)
-e_button= tk.Button(frame2,text="e",bg = "grey", command =lambda: domain_type_button("e"))
+e_button= tk.Button(frame2,text="e",bg = "#CFCFCF", command =lambda: domain_type_button("e"))
 e_button.place(relx = 0.61, rely = 0.31, relheight = 0.1, relwidth=0.05)
-f_button= tk.Button(frame2,text="f",bg = "grey", command =lambda: domain_type_button("f"))
+f_button= tk.Button(frame2,text="f",bg = "#CFCFCF", command =lambda: domain_type_button("f"))
 f_button.place(relx = 0.66, rely = 0.31, relheight = 0.1, relwidth=0.05)
-g_button= tk.Button(frame2,text="g",bg = "grey", command =lambda: domain_type_button("g"))
+g_button= tk.Button(frame2,text="g",bg = "#CFCFCF", command =lambda: domain_type_button("g"))
 g_button.place(relx = 0.71, rely = 0.31, relheight = 0.1, relwidth=0.05)
-h_button= tk.Button(frame2,text="h",bg = "grey", command =lambda: domain_type_button("h"))
+h_button= tk.Button(frame2,text="h",bg = "#CFCFCF", command =lambda: domain_type_button("h"))
 h_button.place(relx = 0.76, rely = 0.31, relheight = 0.1, relwidth=0.05)
-Mod_button = tk.Button(frame2,text="*",bg = "grey", command =lambda: extra_mod_button("*"))
+Mod_button = tk.Button(frame2,text="*",bg = "#CFCFCF", command =lambda: extra_mod_button("*"))
 Mod_button.place(relx = 0.61, rely = 0.41, relheight = 0.1, relwidth=0.05)
-Gly_button = tk.Button(frame2,text="!",bg = "grey", command =lambda: extra_mod_button("!"))
+Gly_button = tk.Button(frame2,text="!",bg = "#CFCFCF", command =lambda: extra_mod_button("!"))
 Gly_button.place(relx = 0.66, rely = 0.41, relheight = 0.1, relwidth=0.05)
-KIH_knob= tk.Button(frame2,text=">",bg = "grey", command =lambda: domain_mod_button(">"))
+KIH_knob= tk.Button(frame2,text=">",bg = "#CFCFCF", command =lambda: domain_mod_button(">"))
 KIH_knob.place(relx = 0.71, rely = 0.41, relheight = 0.1, relwidth=0.05)
-KIH_hole= tk.Button(frame2,text="@",bg = "grey", command =lambda: domain_mod_button("@"))
+KIH_hole= tk.Button(frame2,text="@",bg = "#CFCFCF", command =lambda: domain_mod_button("@"))
 KIH_hole.place(relx = 0.76, rely = 0.41, relheight = 0.1, relwidth=0.05)
-Positive_charge= tk.Button(frame2,text="+",bg = "grey", command =lambda: domain_charge_button("+"))
+Positive_charge= tk.Button(frame2,text="+",bg = "#CFCFCF", command =lambda: domain_charge_button("+"))
 Positive_charge.place(relx = 0.61, rely = 0.51, relheight = 0.1, relwidth=0.05)
-Negative_charge= tk.Button(frame2,text="-",bg = "grey", command =lambda: domain_charge_button("_"))
+Negative_charge= tk.Button(frame2,text="-",bg = "#CFCFCF", command =lambda: domain_charge_button("_"))
 Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
-LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="grey", command=lambda: SelectCommentTypeButton("LENGTH"))
+LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
 LengthLabelButton.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.1)
-NoteLabelButton = tk.Button(frame2,text="NOTE", bg="grey", command=lambda: SelectCommentTypeButton("NOTE"))
+NoteLabelButton = tk.Button(frame2,text="NOTE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("NOTE"))
 NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
-TypeLabelButton = tk.Button(frame2,text="TYPE", bg="grey", command=lambda: SelectCommentTypeButton("TYPE"))
+TypeLabelButton = tk.Button(frame2,text="TYPE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("TYPE"))
 TypeLabelButton.place(relx = 0.71,rely = 0.61, relheight = 0.1, relwidth= 0.1)
-AntiLabelButton = tk.Button(frame2,text="ANTI", bg="grey", command=lambda: SelectCommentTypeButton("ANTI"))
+AntiLabelButton = tk.Button(frame2,text="ANTI", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("ANTI"))
 AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-ModLabelButton = tk.Button(frame2,text="MOD", bg="grey", command=lambda: SelectCommentTypeButton("MOD"))
+ModLabelButton = tk.Button(frame2,text="MOD", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("MOD"))
 ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-nanobody_button = tk.Button(frame2,text="nanobody",bg = "grey", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
+nanobody_button = tk.Button(frame2,text="nanobody",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
 nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
 ###Insert bonds buttons ###
 ##Col1
-InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
+InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
 InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
+InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
 InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
+InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
 InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
+InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
 InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
 ##Col2
-InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
+InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
 InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
+InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
 InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
+InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
 InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertXDomainButton= tk.Button(frame2,text="X",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
+InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
 InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
-InsertCDomainButton= tk.Button(frame2,text="C",bg = "grey", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
+InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
 InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
 
 ###Drag and pull bonds###
 Bond_lock = ""
-InsertBondButton= tk.Button(frame2,text="Connect",bg = "grey", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
+InsertBondButton= tk.Button(frame2,text="Connect",bg = "#CFCFCF", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
 InsertBondButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertDBondButton= tk.Button(frame2,text="Disulphide",bg = "grey", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
+InsertDBondButton= tk.Button(frame2,text="Disulphide",bg = "#CFCFCF", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
 InsertDBondButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "grey", command=lambda: Hinge_bond_button(lower_canvas,"-H-","hinge"))
+InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "#CFCFCF", command=lambda: Hinge_bond_button(lower_canvas,"-H-","hinge"))
 InsertLHingeButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "grey", command=lambda: Linker_bond_button(lower_canvas,"-L-","linker"))
+InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "#CFCFCF", command=lambda: Linker_bond_button(lower_canvas,"-L-","linker"))
 InsertLinkerButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
 
 ###Delete/clear###
 Delete_lock = False
 Label_lock = True
 CustomLabelLock = ""
-InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="grey", command=lambda: delete_all_button(lower_canvas))
+InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="#CFCFCF", command=lambda: delete_all_button(lower_canvas))
 InsertDelAllButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
-InsertDelClickButton = tk.Button(frame2,text="Delete",bg="grey", command=lambda: delete_button(lower_canvas))
+InsertDelClickButton = tk.Button(frame2,text="Delete",bg="#CFCFCF", command=lambda: delete_button(lower_canvas))
 InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
-Labels_buttons = tk.Button(frame2,text="Labels", bg="grey", command=lambda: labels_button(lower_canvas))
+Labels_buttons = tk.Button(frame2,text="Labels", bg="#CFCFCF", command=lambda: labels_button(lower_canvas))
 Labels_buttons.place(relx = 0.81,rely = 0.41, relheight = 0.2, relwidth= 0.18)
-CustomLabelButton = tk.Button(frame2,text="Comment", bg="grey", command=lambda: CommentLabelButton_function(lower_canvas))
+CustomLabelButton = tk.Button(frame2,text="Comment", bg="#CFCFCF", command=lambda: CommentLabelButton_function(lower_canvas))
 CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
-CustomLabelEntry = tk.Text(frame2, font=40)
+CustomLabelEntry = tk.Text(frame2, font=20)
 CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
 ##Status bar###
 status_label = tk.Label(root, text='', bd=1)
 status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
 
 ##Big button
-button = tk.Button(frame, text = "Get Structure", bg = "grey", font=40, command=lambda: render_pipeline(lower_canvas))
+button = tk.Button(frame, text = "Get Structure", bg = "#CFCFCF", font=20, command=lambda: render_pipeline(lower_canvas))
 button.place(relx=0.05,rely=0.825,relheight=0.1, relwidth=0.15)
 button.bind("<Enter>", button_hover)
 button.bind("<Leave>", button_hover_leave)
-button = tk.Button(frame, text = "Get AbML", bg = "grey", font=40, command=lambda: sequence_pipeline(lower_canvas))
+button = tk.Button(frame, text = "Get AbML", bg = "#CFCFCF", font=20, command=lambda: sequence_pipeline(lower_canvas))
 button.place(relx=0.2,rely=0.825,relheight=0.1, relwidth=0.15)
 button.bind("<Enter>", button_hover)
 button.bind("<Leave>", button_hover_leave)
-button = tk.Button(frame, text = "Tidy", bg = "grey", font=40, command=lambda: sequence_render_pipeline(lower_canvas))
+button = tk.Button(frame, text = "Tidy", bg = "#CFCFCF", font=20, command=lambda: sequence_render_pipeline(lower_canvas))
 button.place(relx=0.05,rely=0.925,relheight=0.05, relwidth=0.3)
 button.bind("<Enter>", button_hover)
 button.bind("<Leave>", button_hover_leave)
@@ -7496,7 +7499,7 @@ def open_settings():
     Leucine_zipper_scalebar.set(0)
     Leucine_zipper_scalebar.place(relx=0.7, rely = 0.67,relheight = 0.2, relwidth = 0.2)
 
-    Update_settings_button= tk.Button(settings_frame, font=40, text = "Update", command =lambda: Update_settings())
+    Update_settings_button= tk.Button(settings_frame, font=20, text = "Update", command =lambda: Update_settings())
     Update_settings_button.place(relx=0.333, rely = 0.90,relheight = 0.07, relwidth = 0.333)
 
 
@@ -7948,13 +7951,13 @@ def open_settings():
     colour_checker = tk.Frame(changerframe, pady = 5, bd = 5,highlightbackground="black", highlightthickness=1)
     colour_checker.place(relx=0.2, rely = 0.2,relheight = 0.2, relwidth = 0.6)
 
-    changecolourbutton = tk.Button(changerframe, font=40, text = "Change colour", command =lambda: browse_colour())
+    changecolourbutton = tk.Button(changerframe, font=20, text = "Change colour", command =lambda: browse_colour())
     changecolourbutton.place(relx=0.25, rely = 0.5,relheight = 0.1, relwidth = 0.5)
 
-    revertcolorbutton = tk.Button(changerframe, font=40, text = "Revert colour", command =lambda: revertcolor())
+    revertcolorbutton = tk.Button(changerframe, font=20, text = "Revert colour", command =lambda: revertcolor())
     revertcolorbutton.place(relx=0.25, rely = 0.7,relheight = 0.1, relwidth = 0.5)
 
-    revertallcoloursbutton= tk.Button(changerframe, font=40, text = "Revert all colours", command =lambda: revertallcolours())
+    revertallcoloursbutton= tk.Button(changerframe, font=20, text = "Revert all colours", command =lambda: revertallcolours())
     revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.1, relwidth = 0.5)
 
 #Coloursettings.place(relx=0.21, rely = 0.425,relheight = 0.2, relwidth = 0.19)
@@ -8022,7 +8025,7 @@ def open_manual():
     "To update the settings,users must press the update button and re-render their schematic to see their new schematic. The second tab is the colour-coding menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. 'Change colour' allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by 'Revert colour' or 'Revert all colours'",
     " ",
     ]
-    manual_textbox = tk.Text(manual_frame,wrap="word", font=40)
+    manual_textbox = tk.Text(manual_frame,wrap="word", font=20)
     manual_textbox.place(relx=0, rely = 0, relheight = 1, relwidth = 1)
     for i in range(len(Manual)):
         manual_textbox.insert("end",str(Manual[i]+"\n"))
@@ -8068,6 +8071,7 @@ lower_canvas.bind("<Button-1>", mm.select)
 lower_canvas.bind("<B1-Motion>", mm.drag)
 lower_canvas.bind("<ButtonRelease-1>", mm.release)
 lower_canvas.bind("<Button-2>", mm.change_orientation)
+lower_canvas.bind("<Button-3>", mm.change_orientation)
 startcoordinates = mm.select
 newcoordinates = mm.drag
 
@@ -8081,9 +8085,9 @@ all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons 
 
 export_frame = tk.Frame(root, bg='#FF0000')
 export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
-template_file_button = tk.Button(export_frame, text = "Export template file", bg = "grey", font=40, command=lambda: Get_Template_File(lower_canvas))
+template_file_button = tk.Button(export_frame, text = "Export template file", bg = "#CFCFCF", font=20, command=lambda: Get_Template_File(lower_canvas))
 template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
-Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "grey", font=40, command=lambda: save_as_png(lower_canvas))
+Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "#CFCFCF", font=20, command=lambda: save_as_png(lower_canvas))
 Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
 #img = str("AbYdraw_icon.png")
 #root.iconphoto(False, tk.PhotoImage(file=img))
