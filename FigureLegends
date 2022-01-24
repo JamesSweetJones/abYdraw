@@ -1,6 +1,0 @@
-Figure 1: AbML Guidesheet Explaining the Properties of the Language. All possible domain types, modifications, linkers and comment types as well as how to notate pairings and dislphide bonds are given in colour-coded fashion to the example antibody domain highlighted in red. Antibody schematic was rendered with abYdraw and numbers represent the numbering of each domain given in AbML and labelled on the schematic.
-
-Figure 2: AbML descriptor strings of commonly-used 4-chain bispecific antibodies. Schematics of antibodies were rendered in abYdraw.
-
-Figure 3: AbML descriptor strings of commonly-used 2-chain and 1-chain bispecific antibodies. Schematics of antibodies were rendered in abYdraw.
-
