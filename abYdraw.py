@@ -7,6 +7,7 @@ from tkinter import filedialog
 from tkinter import colorchooser
 import tkinter.ttk as ttk
 import time
+import argparse
 
 
 
@@ -208,10 +209,7 @@ def Get_dictionaries(x):
 
 
 
-    #print(VHa)
-    #print(VLa)
-    #print(VHb)
-    #print(VLb)
+
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -528,21 +526,13 @@ def Get_dictionaries(x):
     return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2)
 
 ######################################
-def Check_interactions(chains_list):
+def Check_interactions(chains_list,canvas):
 #########Set Variables################
 
     VHa_chain       = chains_list[0]
     VLa_chain       = chains_list[1]
     VHb_chain       = chains_list[2]
     VLb_chain       = chains_list[3]
-    #print("VHA",chains_list[0])
-    #print(chains_list[1])
-    #print("VHb",chains_list[2])
-    #print(chains_list[3])
-    #print("FRAG1",chains_list[5])
-    #print(chains_list[6])
-    #print("FRAG3",chains_list[7])
-    #print(chains_list[8])
     VHa_chain_master       = VHa_chain.copy()
     VLa_chain_master       = VLa_chain.copy()
     VHb_chain_master       = VHb_chain.copy()
@@ -990,7 +980,6 @@ def Check_interactions(chains_list):
                         if check_VH_Fragment_interactor == True:
                             innie_or_outie_list.append("outie")
                         elif n > 0:
-                            print(keyslist[n])
                             if "Linker[" in keyslist[n-1] or "H[" in keyslist[n-1]:
                                 if chain.get(keyslist[n-2])[0][0] == (chain.get(keyslist[n])[0][1]):
                                     if innie_or_outie_list[-2] == "outie":
@@ -1198,10 +1187,14 @@ def Check_interactions(chains_list):
             pass
 
 
-    def renderchains(dictionary,startx,starty):
-        width = lower_canvas.winfo_width()
-        height = lower_canvas.winfo_height()
-
+    def renderchains(dictionary,startx,starty,canvas):
+        global CLI
+        global lower_canvas
+        width = canvas.winfo_width()
+        height = canvas.winfo_height()
+        if width == 1 and height == 1 and CLI == True:
+            width = 1000
+            height = 900
         chain                   = []
         chain_dict              = {}
         coordinates_list_heavy_a= []
@@ -1525,7 +1518,8 @@ def Check_interactions(chains_list):
 
 
             #print(keyslist[i], i, len(dictionary))
-            print(keyslist[i])
+            if CLI == False:
+                print(keyslist[i])
 
 
 
@@ -1555,7 +1549,8 @@ def Check_interactions(chains_list):
                         getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                 else:
-                    print("checkpoint1")
+                    if CLI == False:
+                        print("checkpoint1")
                     getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
             elif i > 0:
@@ -1568,7 +1563,8 @@ def Check_interactions(chains_list):
                 if "H[" not in keyslist[i-1] and "Linker[" not in keyslist[i-1]:# and "X" not in keyslist[i-1]:
                     previous_number = (dictionary.get(previous_domain)[0])+1
                 elif "X[" in keyslist[i-1] and "Linker[" not in keyslist[i]:
-                    print("checkpointX")
+                    if CLI == False:
+                        print("checkpointX")
                     previous_number = (dictionary.get(keyslist[i])[0])
                     dictionary[keyslist[i-1]] = [previous_number,0]
                     previous_domain = (keyslist[i])
@@ -1604,7 +1600,8 @@ def Check_interactions(chains_list):
                     H_coordinatey = bottom_bond
 
                     if i+1 ==len(dictionary):
-                        print("checkpoint2")
+                        if CLI == False:
+                            print("checkpoint2")
                         mod = "H"
                         if dictionary == VHa_chain and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
                             Extra_bond=True
@@ -1620,7 +1617,8 @@ def Check_interactions(chains_list):
 
 
                         elif dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-1])[1]+2) or dictionary == VHb_chain:
-                            print("checkpoint3")
+                            if CLI == False:
+                                print("checkpoint3")
 
 
                             if righthanded == True and slant==True:
@@ -1647,7 +1645,8 @@ def Check_interactions(chains_list):
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+80),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                 elif "H[" in keyslist[i-1]  and ("X" in keyslist[i] or "C[" in keyslist[i]):
-                    print("checkpoint4")
+                    if CLI == False:
+                        print("checkpoint4")
                     if righthanded == False:
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     elif righthanded == True:
@@ -1656,7 +1655,8 @@ def Check_interactions(chains_list):
 
 
                 elif ("X[" in keyslist[i] or "C[" in keyslist[i]) and "H[" not in keyslist[i-1]:
-                    print("checkpoint5")
+                    if CLI == False:
+                        print("checkpoint5")
                     if "Linker[" in keyslist[i-1]:
                         previous_chain = chain[i-2]
                     if "C" in keyslist[i-1] and "C[" not in keyslist[i-1]:
@@ -1717,7 +1717,8 @@ def Check_interactions(chains_list):
 
 
                 elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
-                    print("checkpoint6")
+                    if CLI == False:
+                        print("checkpoint6")
                     previous_H = True
                     slant=False
                     if chain_count <=2:
@@ -1746,10 +1747,12 @@ def Check_interactions(chains_list):
                     Build_out = True
 
                 elif "Linker[" not in keyslist[i-1] and "X" and len(dictionary.get(keyslist[i-1])) ==1:
-                    print("checkpoint7")
+                    if CLI == False:
+                        print("checkpoint7")
                     if "Linker[" in keyslist[i]:
                         pass
-                        print("checkpoint7.5")
+                        if CLI == False:
+                            print("checkpoint7.5")
                     elif slant == True and righthanded == True:
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     elif slant == True and righthanded == False:
@@ -1760,7 +1763,8 @@ def Check_interactions(chains_list):
                     Build_out = True
 
                 elif chain_count == 2 and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
-                    print("checkpoint8")
+                    if CLI == False:
+                        print("checkpoint8")
                     if chain_count == 2:
                         if dictionary == VHa_chain:
                             Build_up=True
@@ -1785,7 +1789,9 @@ def Check_interactions(chains_list):
 
 
                 elif "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
-                    print("checkpoint9")
+
+                    if CLI == False:
+                        print("checkpoint9")
                     if slant == True and righthanded == True:
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     elif slant == True and righthanded == False:
@@ -1799,14 +1805,16 @@ def Check_interactions(chains_list):
 
 ##Linker
                 elif "Linker[" in keyslist[i-1]:
-                    print("checkpoint10")
+                    if CLI == False:
+                        print("checkpoint10")
                     previous_chain = chain[i-2]
                     previous_domain = keyslist[i-2]
 
 
 ##SdFV
                     if len(dictionary.get(keyslist[i])) == 1:
-                        print("checkpoint11")
+                        if CLI == False:
+                            print("checkpoint11")
                         if slant == True and righthanded == True:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif slant == True and righthanded == False:
@@ -1816,7 +1824,8 @@ def Check_interactions(chains_list):
                         Build_in  = False
                         Build_out = True
                     elif len(dictionary.get(keyslist[i-2])) ==1 and "X" not in keyslist[i-2]:
-                        print("checkpoint11")
+                        if CLI == False:
+                            print("checkpoint11")
                         if slant == True and righthanded == True:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif slant == True and righthanded == False:
@@ -1829,7 +1838,8 @@ def Check_interactions(chains_list):
 ##Self-Interacting chains
 
                     elif dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
-                        print("checkpoint12")
+                        if CLI == False:
+                            print("checkpoint12")
                         to_join_number      = str(dictionary.get(keyslist[i])[1])
                         to_join_coordinates = find_the_fragment(to_join_number,All_positions_and_chains)
                         to_joinx            = to_join_coordinates[0][0]
@@ -1840,7 +1850,8 @@ def Check_interactions(chains_list):
                         get = (All_positions_and_chains.get(all_list[-1]))
                         yprev = get[0][1]
                         if dictionary.get(keyslist[i-2])[0] != dictionary.get(keyslist[i])[1] and to_joiny < yprev:
-                            print("checkpoint13")
+                            if CLI == False:
+                                print("checkpoint13")
                             Build_up=True
                             Build_down=False
                         if chain_count == 1 and to_joinx <= (width/2) and dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-2])[0]) and len(dictionary) >=8:
@@ -1867,11 +1878,13 @@ def Check_interactions(chains_list):
 
 
                         if Build_in == True:
-                            print("checkpoint13.1")
+                            if CLI == False:
+                                print("checkpoint13.1")
                             Build_out =True
                             Build_in = False
                         elif Build_out==True:
-                            print("checkpoint13.2")
+                            if CLI == False:
+                                print("checkpoint13.2")
                             Build_in = True
                             Build_out = False
                         #if change_side == True:
@@ -1881,7 +1894,8 @@ def Check_interactions(chains_list):
 
 ##ADCs
                     elif ("X" in keyslist[i-2] or "C[" in keyslist[i-2]) :
-                        print("checkpoint14")
+                        if CLI == False:
+                            print("checkpoint14")
                         if chain_count ==1:
                             if Build_in == True:
                                 if righthanded == False:
@@ -1912,13 +1926,15 @@ def Check_interactions(chains_list):
                                 Build_out = False
 ##Build up
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and "X" not in keyslist[0] and dictionary.get(keyslist[i])[0] == (dictionary.get(keyslist[0])[1]):
-                        print("checkpoint15")
+                        if CLI == False:
+                            print("checkpoint15")
                         Build_up=True
                         Build_down=False
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     elif chain_count == 2 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+1 == dictionary.get(keyslist[i-2])[1]:
-                        print("checkpoint16")
+                        if CLI == False:
+                            print("checkpoint16")
                         if dictionary == VHa_chain:
                             Build_up=True
                             Build_down=False
@@ -1956,7 +1972,8 @@ def Check_interactions(chains_list):
 ##Build across
 
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] == (dictionary.get(previous_domain)[1]):
-                        print("checkpoint17")
+                        if CLI == False:
+                            print("checkpoint17")
                         if Build_in == True:
                             if righthanded == False:
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+60),(previous_chain[1]), righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -1970,7 +1987,8 @@ def Check_interactions(chains_list):
 
 ##Build down
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
-                        print("checkpoint18")
+                        if CLI == False:
+                            print("checkpoint18")
                         if "V" in keyslist[i]:
                             in_out_counter +=1
                         if slant == True and righthanded == True:
@@ -2041,7 +2059,8 @@ def Check_interactions(chains_list):
             else:
                 chain.append(getcoordinates[0])
             if i > 0 and Build_down==True and ("H[" not in keyslist[i] and not "Linker[" in keyslist[i]):
-                print("checkpoint19")
+                if CLI == False:
+                    print("checkpoint19")
                 top_bond = getcoordinates[2]
                 if "H[" in keyslist[i-1]:
                     hinges.append(bottom_bond + top_bond)
@@ -2081,7 +2100,8 @@ def Check_interactions(chains_list):
                 #if mod=="Leucine":
                 #    bonds.append(getcoordinates[0])
             elif i > 0 and Build_up==True:
-                print("checkpoint20")
+                if CLI == False:
+                    print("checkpoint20")
                 top_bond = getcoordinates[2]
                 arc_topx  = top_bond[0]
                 arcbottomx= bottom_bond[0]
@@ -2219,7 +2239,8 @@ def Check_interactions(chains_list):
 
 ##Get labels and positions
             if "H[" not in keyslist[i] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and "C[" not in keyslist[i]:
-                print("checkpoint27")
+                if CLI == False:
+                    print("checkpoint27")
                 Label_Locations = getcoordinates[3]
                 text_coordinates.append([Label_Locations])
                 text = dictionary.get(keyslist[i])[0]
@@ -2436,16 +2457,20 @@ def Check_interactions(chains_list):
         except IndexError:
             pass
     ##Get canvas sizes
-    width = lower_canvas.winfo_width()
-    height = lower_canvas.winfo_height()
-
+    global CLI
+    width = canvas.winfo_width()
+    height = canvas.winfo_height()
+    if width == 1 and height == 1 and CLI == True:
+        width = 1000
+        height = 900
+    print(width,height)
     if chain_count == 1:
         VHa_startx, VHa_starty = (width/2),(height/2)-200
         VHb_startx, VHb_starty = 0,0
         VLa_startx, VLa_starty = 0,0
         VLb_startx, VLb_starty = 0,0
-        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
-        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
+        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty, canvas)
+        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty, canvas)
 
     elif  chain_count >= 3 or (chain_count == 2  and tangle_found == False and ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain)) or ("C[" in str(VHa_chain) and "C[" in str(VHb_chain))):
         VHa_1_test = VHa_chain.copy()
@@ -2480,6 +2505,7 @@ def Check_interactions(chains_list):
                         if "X[" in keyslistb[i] or "C[" in keyslistb[i]:
                             Xb = int(VHb_chain.get(keyslistb[i])[0][0])
                             if Xa == Xb:
+                                print("YAH THAT BE IT")
                                 VHa_H_coordinatesx = (width/2)
                                 VHa_H_coordinatesy = (height/2)-50
                                 VHb_H_coordinatesx = (width/2)
@@ -2498,7 +2524,7 @@ def Check_interactions(chains_list):
 
         teststartx = 0
         teststarty = 0
-        testHpositionVHa = renderchains(VHa_1_test,teststartx,teststarty)[25]
+        testHpositionVHa = renderchains(VHa_1_test,teststartx,teststarty, canvas)[25]
         test_H_positionx = testHpositionVHa[0]
         test_H_positiony = testHpositionVHa[1]
         differencetest_desiredx = VHa_H_coordinatesx - test_H_positionx
@@ -2508,12 +2534,17 @@ def Check_interactions(chains_list):
 
 ##VHb_chain
 
-        teststartx = 800
+        teststartx = width
         teststarty = 0
-        testHpositionVHb = renderchains(VHb_1_test,teststartx,teststarty)[25]
+        testHpositionVHb = renderchains(VHb_1_test,teststartx,teststarty, canvas)[25]
         test_H_positionx = testHpositionVHb[0]
         test_H_positiony = testHpositionVHb[1]
-        differencetest_desiredx = test_H_positionx - VHb_H_coordinatesx
+        differencetest_desiredx1 = test_H_positionx - VHb_H_coordinatesx
+        differencetest_desiredx2 =  VHb_H_coordinatesx - test_H_positionx
+        if differencetest_desiredx1 > differencetest_desiredx2:
+            differencetest_desiredx = differencetest_desiredx1
+        elif differencetest_desiredx1 < differencetest_desiredx2:
+            differencetest_desiredx = differencetest_desiredx2
         differencetest_desiredy = VHb_H_coordinatesy - test_H_positiony
         VHb_startx = teststartx - differencetest_desiredx
         VHb_starty = teststarty + differencetest_desiredy
@@ -2538,11 +2569,12 @@ def Check_interactions(chains_list):
 
 ###Render Heavy chains
         if VHb_startx > width and IgG2 == True:
-            VHb_startx -= 515
+            #VHb_startx -= 515
+            VHb_startx = (width/5)*3.3
         elif VHb_startx > width and IgG2 == False:
             VHb_startx -= 600
-        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
-        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
+        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty, canvas)
+        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty, canvas)
 
 
 ###Get start positions of light chains and render
@@ -2552,7 +2584,7 @@ def Check_interactions(chains_list):
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
         VHb_startx, VHb_starty = (width/2)+100,(height/2)-200
-        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty)
+        VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty, canvas)
         VHa_list = list(VHa_chain.keys())
         VHa_startx, VHa_starty= (width/2)-150,(height/2)-200
         try:
@@ -2574,7 +2606,7 @@ def Check_interactions(chains_list):
                 if VHa_chain.get(VHa_list[1])[0][0] == VHb_chain.get(keyslistb[1])[1]:
                     VHa_startx, VHa_starty= (width/2)-50,(height/2)-200
 
-        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty)
+        VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty, canvas)
 
 
 
@@ -2598,7 +2630,7 @@ def Check_interactions(chains_list):
                         VLa_refy = VLa_reference_pos[1]
                         teststartx = 0
                         teststarty = 0
-                        testHpositionVLa = renderchains(VLa_1_test,teststartx,teststarty)[25]
+                        testHpositionVLa = renderchains(VLa_1_test,teststartx,teststarty, canvas)[25]
                         test_H_positionx = testHpositionVLa[0]
                         test_H_positiony = testHpositionVLa[1]
                         differencetest_desiredx = VLa_refx - test_H_positionx
@@ -2627,7 +2659,7 @@ def Check_interactions(chains_list):
                         VLb_refy = VLb_reference_pos[1]
                         teststartx = 800
                         teststarty = 0
-                        testHpositionVLb = renderchains(VLb_1_test,teststartx,teststarty)[25]
+                        testHpositionVLb = renderchains(VLb_1_test,teststartx,teststarty, canvas)[25]
                         test_H_positionx = testHpositionVLb[0]
                         test_H_positiony = testHpositionVLb[1]
                         differencetest_desiredx = VLb_refx - test_H_positionx
@@ -2638,8 +2670,8 @@ def Check_interactions(chains_list):
     else:
         VLb_startx,VLb_starty = 0,0
 
-    VLa_stats = renderchains(VLa_chain,VLa_startx, VLa_starty)
-    VLb_stats = renderchains(VLb_chain,VLb_startx, VLb_starty)
+    VLa_stats = renderchains(VLa_chain,VLa_startx, VLa_starty, canvas)
+    VLb_stats = renderchains(VLb_chain,VLb_startx, VLb_starty, canvas)
 
 
 ##Two-chained Abs
@@ -2692,13 +2724,13 @@ def Check_interactions(chains_list):
         frag2_xy = place_fragments(fragment2, VLa_startx-100,VHa_starty+350)
         frag3_xy = place_fragments(fragment3, VHb_startx-100,VHb_starty+200)
         frag4_xy = place_fragments(fragment4, VLb_startx-100,VLb_starty+350)
-        frag1_stat= renderchains(fragment1,frag1_xy[0],frag1_xy[1])
-        frag2_stat= renderchains(fragment2,frag2_xy[0],frag2_xy[1])
-        frag3_stat= renderchains(fragment3,frag3_xy[0],frag3_xy[1])
-        frag4_stat= renderchains(fragment4,frag4_xy[0],frag4_xy[1])
+        frag1_stat= renderchains(fragment1,frag1_xy[0],frag1_xy[1], canvas)
+        frag2_stat= renderchains(fragment2,frag2_xy[0],frag2_xy[1], canvas)
+        frag3_stat= renderchains(fragment3,frag3_xy[0],frag3_xy[1], canvas)
+        frag4_stat= renderchains(fragment4,frag4_xy[0],frag4_xy[1], canvas)
     elif IgG2 == True:
         if (("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys()))) :
-            frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200)
+            frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200, canvas)
             test_H_positionVHa = frag1_stat[25]
             test_H_positionx = testHpositionVHa[0]
             test_H_positiony = testHpositionVHa[1]
@@ -2716,9 +2748,9 @@ def Check_interactions(chains_list):
             elif righthanded==False:
                 frag2_startx=frag2_start[0][0]-60
                 frag2_starty=frag2_start[0][1]
-            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
+            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty, canvas)
 
-            frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200)
+            frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200, canvas)
             fragment4_list = list(fragment4.keys())
             fragment_inter = fragment4.get(fragment4_list[0])[0][1]
             frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
@@ -2729,7 +2761,7 @@ def Check_interactions(chains_list):
             elif righthanded==False:
                 frag4_startx=frag4_start[0][0]-60
                 frag4_starty=frag4_start[0][1]
-            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty, canvas)
 
         else:
 
@@ -2738,7 +2770,7 @@ def Check_interactions(chains_list):
             VHb_H_coordinatesx = VHa_H_coordinatesx+100
             VHb_H_coordinatesy = (height/2)+100
 
-            frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200)
+            frag1_stat= renderchains(fragment1,VHa_startx+325,VHa_starty+200, canvas)
             test_H_positionfrag1 = frag1_stat[26]
 
 
@@ -2874,9 +2906,9 @@ def Check_interactions(chains_list):
             elif righthanded==False:
                 frag2_startx=frag2_start[0][0]-60
                 frag2_starty=frag2_start[0][1]
-            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty)
+            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty, canvas)
 
-            frag3_stat= renderchains(fragment3,VHb_startx+325,VHb_starty+200)
+            frag3_stat= renderchains(fragment3,VHb_startx+325,VHb_starty+200, canvas)
             test_H_positionfrag3 = frag3_stat[26]
 
 
@@ -2888,7 +2920,6 @@ def Check_interactions(chains_list):
             for i in range(len(coordinates_to_change)):
                 for j in range(len(coordinates_to_change[i])):
                     for k in range(len(coordinates_to_change[i][j])):
-                        print(coordinates_to_change[i][j][k])
                         if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
 
                             if  k %2 != 0:
@@ -2947,7 +2978,7 @@ def Check_interactions(chains_list):
             elif righthanded==False:
                 frag4_startx=frag4_start[0][0]-60
                 frag4_starty=frag4_start[0][1]
-            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty)
+            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty, canvas)
             hingey1 = frag3_stat[26][0][1]
 
 
@@ -2974,16 +3005,16 @@ def Check_interactions(chains_list):
     for i in range(len(keyslist_All_positions_and_chains)):
         for j in range(len(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0])):
             if isinstance(All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j], float) == True:
-                if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] > 800:
+                if All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j] < 0 :
                     Xout_of_range = True
-                    if Xhow_much < All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
+                    if Xhow_much > All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]:
                         Xhow_much = All_positions_and_chains.get(keyslist_All_positions_and_chains[i])[0][j]
 
     if Yout_of_range == True:
         Ynew_start = Yhow_much+5
-    #if Xout_of_range == True:
-    #    Xnew_start = Xhow_much-1000
-    #print("X out og range", Xnew_start)
+    if Xout_of_range == True:
+        Xnew_start = Xhow_much
+    #print("X out of range", Xnew_start)
 
 
 
@@ -3053,12 +3084,26 @@ def Check_interactions(chains_list):
                             if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
                                 if l %2 != 0:
                                     coordinates_to_change[i][j][k][l] -= Ynew_start
+    #if Xout_of_range == True:
+    #    Xnew_start = Xhow_much
+    #    coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot,Chem_con]
+    #    for i in range(len(coordinates_to_change)):
+    #        for j in range(len(coordinates_to_change[i])):
+    #            for k in range(len(coordinates_to_change[i][j])):
+    #                if isinstance(coordinates_to_change[i][j][k], int) == True or isinstance(coordinates_to_change[i][j][k], float) == True:
+    #                    if  k %2 == 0:
+    #                        coordinates_to_change[i][j][k] -= Xnew_start
+    #                else:
+    #                    for l in range(len(coordinates_to_change[i][j][k])):
+    #                        if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
+    #                            if l %2 == 0:
+    #                                coordinates_to_change[i][j][k][l] -= Xnew_start
     #    print(Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
     return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con)
 
 def render(chains_list,canvas,text_to_image):
     if text_to_image == True:
-        lower_canvas.delete("all")
+        canvas.delete("all")
         global all_buttons
         global specificity_colours
         for i in range(len(all_buttons)):
@@ -3134,107 +3179,107 @@ def render(chains_list,canvas,text_to_image):
     #disulphide_bridge
         if disulphide_bridges != []:
             for i in range(len(disulphide_bridges)):
-                domain = lower_canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = Bond_thickness,tags="disulphide", arrow=tk.BOTH, arrowshape=Arrow_dimensions)
+                domain = canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = Bond_thickness,tags="disulphide", arrow=tk.BOTH, arrowshape=Arrow_dimensions)
                 canvas_polygons[domain] = [disulphide_bridges[i], "-disulphide-"]
 
     #Bonds
         for i in range(len(Bonds)):
-            domain = lower_canvas.create_line(Bonds[i], fill=bond_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
+            domain = canvas.create_line(Bonds[i], fill=bond_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             canvas_polygons[domain] = [Bonds[i], "-"]
         if arcs_left!=[]:
             for i in range(len(arcs_left)):
                 if arcs_left[i][1] == False:
-                    domain = lower_canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
+                    domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
                     canvas_polygons[domain] = [arcs_left[i][0], "-"]
                 elif arcs_left[i][1] == True:
-                    domain = lower_canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
+                    domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
                     canvas_polygons[domain] = [arcs_left[i][0], "-L-"]
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
                 if arcs_right[i][1] == False:
-                    domain = lower_canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, fill=bond_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
+                    domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, fill=bond_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
                     canvas_polygons[domain] = [arcs_right[i][0], "-"]
                 elif arcs_right[i][1] == True:
-                    domain = lower_canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
+                    domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
                     canvas_polygons[domain] = [arcs_right[i][0], "-L-"]
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
                 if arcs_left_slant[i][1] == False:
-                    domain = lower_canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, fill = bond_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
+                    domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, fill = bond_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-"]
                 elif arcs_left_slant[i][1] == True:
-                    domain = lower_canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
+                    domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-"]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
                 if arcs_right_slant[i][1] == False:
-                    domain = lower_canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, fill = bond_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
+                    domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, fill = bond_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-"]
                 elif  arcs_right_slant[i][1] == True:
-                    domain = lower_canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
+                    domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-"]
         for i in range(len(Linkers)):
-            domain = lower_canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
+            domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             canvas_polygons[domain] = [Linkers[i], "-L-"]
         for i in range(len(Hinges)):
-            domain = lower_canvas.create_line(Hinges[i], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
+            domain = canvas.create_line(Hinges[i], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
             canvas_polygons[domain] = [Hinges[i], "-H-"]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i]]
         for i in range(len(Light_Domains_a)):
-            domain = lower_canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i]]
     #B domains
         for i in range(len(Heavy_Domains_b)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i]]
         for i in range(len(Light_Domains_b)):
-            domain = lower_canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i]]
     #C domains
         for i in range(len(Heavy_Domains_c)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i]]
         for i in range(len(Light_Domains_c)):
-            domain = lower_canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i]]
     #D domains
         for i in range(len(Heavy_Domains_d)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i]]
         for i in range(len(Light_Domains_d)):
-            domain = lower_canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i]]
     #E domains
         for i in range(len(Heavy_Domains_e)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i]]
         for i in range(len(Light_Domains_e)):
-            domain = lower_canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i]]
     #F domains
         for i in range(len(Heavy_Domains_f)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i]]
         for i in range(len(Light_Domains_f)):
-            domain = lower_canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i]]
     #G domains
         for i in range(len(Heavy_Domains_g)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i]]
         for i in range(len(Light_Domains_g)):
-            domain = lower_canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i]]
     #H domains
         for i in range(len(Heavy_Domains_h)):
-            domain = lower_canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i]]
         for i in range(len(Light_Domains_h)):
-            domain = lower_canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
             canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
     #ADCs
         if ADCs != []:
@@ -3246,7 +3291,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_ADCs.append(ADCs[i])
                     non_redundant_ADCs_sorted.append(j)
             for i in range(len(non_redundant_ADCs)):
-                domain = lower_canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
+                domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
                 canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
@@ -3258,7 +3303,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_CCs.append(CCs[i])
                     non_redundant_CCs_sorted.append(j)
             for i in range(len(non_redundant_CCs)):
-                domain = lower_canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=2,tags="domain")
+                domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=2,tags="domain")
                 canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
 
     #Labels
@@ -3268,7 +3313,7 @@ def render(chains_list,canvas,text_to_image):
                 y = Label_positions[i][0][1]
                 Domain_Text[i] = re.sub("\_","-", Domain_Text[i])
                 Domain_Text[i] = re.sub("nano|nno","",Domain_Text[i])
-                label  = lower_canvas.create_text(x,y, text=Domain_Text[i],tags = "label")
+                label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label")
                 canvas_labels[label] = [[x,y], Domain_Text[i]]
 
 
@@ -3277,19 +3322,19 @@ def render(chains_list,canvas,text_to_image):
             setlist = list(notes_set)
             for i in range(len(setlist)):
                 if "NOTE:" in setlist[i]:
-                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels")
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels")
                     NOTE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "TYPE:" in setlist[i]:
-                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels")
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels")
                     TYPE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "ANTI:" in setlist[i]:
-                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels")
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels")
                     ANTI_labels[note] = [Note_positions[i],setlist[i]]
                 elif "MOD:" in setlist[i]:
-                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels")
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels")
                     MOD_labels[note] = [Note_positions[i],setlist[i]]
                 elif "LENGTH:" in setlist[i]:
-                    note = lower_canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels")
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels")
                     LENGTH_labels[note] = [Note_positions[i],setlist[i]]
 
 
@@ -3327,7 +3372,7 @@ def sequence_render_pipeline(canvas):
     status_label.config(text="")
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
-    coordinates  = Check_interactions(split_chains)
+    coordinates  = Check_interactions(split_chains, lower_canvas)
     render(coordinates, lower_canvas,True)
 
 
@@ -3362,7 +3407,7 @@ def render_pipeline(canvas):
     status_label.config(text="")
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
-    coordinates  = Check_interactions(split_chains)
+    coordinates  = Check_interactions(split_chains, lower_canvas)
     render(coordinates, lower_canvas,True)
 
 ############################################
@@ -5491,13 +5536,20 @@ def CommentLabelButton_function(canvas):
         lower_canvas.config(cursor = "arrow")
 
 def raise_error(canvas,message):
-    width = lower_canvas.winfo_width()
-    height = lower_canvas.winfo_height()
-    clear_message = "click to remove error message"
-    lower_canvas.delete("all")
-    lower_canvas.create_text((width/2),(height/3), text = message, fill = "red")
-    lower_canvas.create_text((width/2),(height/3)*2, text = clear_message)
-    lower_canvas.bind("<Button-1>", mm.clear_error_message)
+    global CLI
+    if CLI == False:
+        width = lower_canvas.winfo_width()
+        height = lower_canvas.winfo_height()
+        if width == 1 and height == 1:
+            width = 1000
+            height = 900
+        clear_message = "click to remove error message"
+        lower_canvas.delete("all")
+        lower_canvas.create_text((width/2),(height/3), text = message, fill = "red")
+        lower_canvas.create_text((width/2),(height/3)*2, text = clear_message)
+        lower_canvas.bind("<Button-1>", mm.clear_error_message)
+    elif CLI == True:
+        print(message)
     raise IndexError
 
 def items_selected(e):
@@ -5525,7 +5577,7 @@ def items_selected(e):
     entry = antibodyformats.get(formats_keyslist[index])
     textBox.insert("1.0",str(entry))
     split_chains = Get_dictionaries(entry)
-    coordinates  = Check_interactions(split_chains)
+    coordinates  = Check_interactions(split_chains, lower_canvas)
     render(coordinates,lower_canvas,True)
 
 class MouseMover():
@@ -6272,7 +6324,6 @@ class MouseMover():
         global ANTI_labels
         global LENGTH_labels
         global specificity_colours
-        print("CLEAR THE ERROR MESSAGE")
         lower_canvas.delete("all")
         polygons_keyslist = list(canvas_polygons.keys())
         for i in range(len(polygons_keyslist)):
@@ -6946,8 +6997,12 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
         bottom_bond = [ninthx,ninthy]
     else:
         bottom_bond = [fourthx, fourthy-2]
-    x12 = get_min_max_coordinates(coordinates)[4]
-    y12 = get_min_max_coordinates(coordinates)[5]
+    try:
+        x12 = get_min_max_coordinates(coordinates)[4]
+        y12 = get_min_max_coordinates(coordinates)[5]
+    except ValueError:
+        x12 = (firstx)
+        y12 = (firsty+thirdy)/2
     if slant == True and righthanded == False and (mod != "Leucine" or Show_Leucine_Zippers == False):
         Labelbond   = [firstx+20, y12]
     elif slant == True and righthanded == True and (mod != "Leucine" or Show_Leucine_Zippers == False):
@@ -6965,216 +7020,57 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
 ###############Main programme#######################
 
 root = tk.Tk()
+if len(sys.argv) < 2:
+    CLI = False
+    HEIGHT = root.winfo_screenheight()
+    WIDTH  = root.winfo_screenwidth()
+    def browseFiles():
+        global textBox
+        filename = filedialog.askopenfilename(initialdir = "/",title = "Open File",filetypes = (("Text files","*.txt"),("all files","*.*")))
+        entry = Get_input(filename)
+        textBox.delete("1.0","end")
+        textBox.insert("1.0",str(entry))
+        render_pipeline(lower_canvas)
 
-HEIGHT = root.winfo_screenheight()
-WIDTH  = root.winfo_screenwidth()
-def browseFiles():
-    global textBox
-    filename = filedialog.askopenfilename(initialdir = "/",title = "Open File",filetypes = (("Text files","*.txt"),("all files","*.*")))
-    entry = Get_input(filename)
-    textBox.delete("1.0","end")
-    textBox.insert("1.0",str(entry))
-    render_pipeline(lower_canvas)
+    def save_txt_file():
+        to_save = textBox.get("1.0","end")
+        f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+        if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+            return
+        f.write(to_save)
+        f.close()
 
-def save_txt_file():
-    to_save = textBox.get("1.0","end")
-    f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
-    if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
-        return
-    f.write(to_save)
-    f.close()
+    def quit():
+        root.destroy()
 
-def quit():
-    root.destroy()
-
-def donothing():
-   filewin = Toplevel(root)
-   button = Button(filewin, text="Do nothing button")
-   button.pack()
-def undo():
-    global NOTE_to_redo
-    global TYPE_to_redo
-    global LENGTH_to_redo
-    global MOD_to_redo
-    global ANTI_to_redo
-    global Polygon_to_redo
-    global canvas_polygons
-    global canvas_labels
-    global temp_label
-    global TYPE_labels
-    global NOTE_labels
-    global MOD_labels
-    global ANTI_labels
-    global LENGTH_labels
-    global deleted_polygons
-    global Deletes_to_redo
-    global all_buttons
-    label_keyslist = list(canvas_labels.keys())
-    if deleted_polygons != {}:
-        deleted_polygons_keys = list(deleted_polygons.keys())
-        to_replace = max(deleted_polygons_keys)
-        domain_coordinates = deleted_polygons.get(to_replace)[0]
-        domain_name = deleted_polygons.get(to_replace)[1]
-        if "-" not in domain_name:
-            if "a" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
-            elif "b" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
-            elif "c" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
-            elif "d" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
-            elif "e" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
-            elif "f" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
-            elif "g" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
-            elif "h" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
-            elif "X" in str(domain_name):
-                heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
-            elif str(domain_name) == "C":
-                heavy_colour, light_colour = specificity_colours[19],specificity_colours[19]
-            else:
-                heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
-            if "H" in domain_name:
-                domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
-            elif "L" in domain_name:
-                domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
-            canvas_polygons[domain] = [domain_coordinates, domain_name]
-            if Label_lock == True:
-                domain_name = re.sub("\.|@|>","",domain_name)
-                labelx = get_min_max_coordinates(domain_coordinates)[4]
-                labely = get_min_max_coordinates(domain_coordinates)[5]
-                if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70 :
-                    if domain_coordinates[2] > domain_coordinates[0]:
-                        labelx-=5
-                    elif domain_coordinates[2] < domain_coordinates[0]:
-                        labelx+=5
-                label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
-                canvas_labels[label] = [[labelx,labely], domain_name]
-        elif domain_name == "-" :####
-            domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
-            canvas_polygons[domain] = [domain_coordinates, domain_name]
-        elif domain_name == "-H-" :####
-            domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
-            canvas_polygons[domain] = [domain_coordinates, domain_name]
-        elif domain_name == "-L-" :####
-            domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
-            canvas_polygons[domain] = [domain_coordinates, domain_name]
-        elif domain_name == "-disulphide-":####
-            domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
-            canvas_polygons[domain] = [domain_coordinates, domain_name]
-        deleted_polygons = {}
-        Deletes_to_redo[to_replace] = [domain_coordinates, domain_name]
-    else:
-        keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())+list(MOD_labels.keys())+list(ANTI_labels.keys())+list(LENGTH_labels.keys())
-        to_delete = max(keys)
-        if to_delete in (canvas_polygons.keys()):
-            lower_canvas.delete(to_delete)
-            Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
-            domain_coordinates = canvas_polygons.get(to_delete)[0]
-            min_max = get_min_max_coordinates(domain_coordinates)
-            x1 = min_max[0]
-            x2 = min_max[1]
-            y1 = min_max[2]
-            y2 = min_max[3]
-            del canvas_polygons[to_delete]
-            for i in range(len(label_keyslist)):
-                labelx = canvas_labels.get(label_keyslist[i])[0][0]
-                labely = canvas_labels.get(label_keyslist[i])[0][1]
-                if x1 <= labelx <= x2 and y1 <= labely <= y2:
-                    lower_canvas.delete(label_keyslist[i])
-                    del canvas_labels[label_keyslist[i]]
-        elif to_delete in list(TYPE_labels.keys()):
-            lower_canvas.delete(to_delete)
-            TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
-            del TYPE_labels[to_delete]
-        elif to_delete in list(NOTE_labels.keys()):
-            lower_canvas.delete(to_delete)
-            NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
-            del NOTE_labels[to_delete]
-        elif to_delete in list(MOD_labels.keys()):
-            lower_canvas.delete(to_delete)
-            MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
-            del MOD_labels[to_delete]
-        elif to_delete in list(ANTI_labels.keys()):
-            lower_canvas.delete(to_delete)
-            ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
-            del ANTI_labels[to_delete]
-        elif to_delete in list(LENGTH_labels.keys()):
-            lower_canvas.delete(to_delete)
-            LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
-            del LENGTH_labels[to_delete]
-
-def redo():
-    global Polygon_to_redo
-    global NOTE_to_redo
-    global TYPE_to_redo
-    global LENGTH_to_redo
-    global MOD_to_redo
-    global ANTI_to_redo
-    global canvas_polygons
-    global canvas_labels
-    global temp_label
-    global TYPE_labels
-    global NOTE_labels
-    global MOD_labels
-    global ANTI_labels
-    global LENGTH_labels
-    global specificity_colours
-    global Deletes_to_redo
-    global deleted_polygons
-    if Deletes_to_redo != {}:
-        keys = list(Deletes_to_redo.keys())
-        to_delete = max(keys)
-        domain_coordinates = Deletes_to_redo.get(to_delete)[0]
-        domain_name = Deletes_to_redo.get(to_delete)[1]
-        if "-" not in domain_name:
-            lower_canvas.delete(to_delete)
-            Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
-            domain_coordinates = canvas_polygons.get(to_delete)[0]
-            min_max = get_min_max_coordinates(domain_coordinates)
-            x1 = min_max[0]
-            x2 = min_max[1]
-            y1 = min_max[2]
-            y2 = min_max[3]
-            del canvas_polygons[to_delete]
-            for i in range(len(label_keyslist)):
-                labelx = canvas_labels.get(label_keyslist[i])[0][0]
-                labely = canvas_labels.get(label_keyslist[i])[0][1]
-                if x1 <= labelx <= x2 and y1 <= labely <= y2:
-                    lower_canvas.delete(label_keyslist[i])
-                    del canvas_labels[label_keyslist[i]]
-        elif to_delete in list(TYPE_labels.keys()):
-            lower_canvas.delete(to_delete)
-            TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
-            del TYPE_labels[to_delete]
-        elif to_delete in list(NOTE_labels.keys()):
-            lower_canvas.delete(to_delete)
-            NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
-            del NOTE_labels[to_delete]
-        elif to_delete in list(MOD_labels.keys()):
-            lower_canvas.delete(to_delete)
-            MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
-            del MOD_labels[to_delete]
-        elif to_delete in list(ANTI_labels.keys()):
-            lower_canvas.delete(to_delete)
-            ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
-            del ANTI_labels[to_delete]
-        elif to_delete in list(LENGTH_labels.keys()):
-            lower_canvas.delete(to_delete)
-            LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
-            del LENGTH_labels[to_delete]
-        Deletes_to_redo= {}
-        deleted_polygons={}
-    else:
-        keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
-        to_redo = min(keys)
-        domain_name = Polygon_to_redo.get(to_redo)[1]
-        domain_coordinates = Polygon_to_redo.get(to_redo)[0]
-        if to_redo in (Polygon_to_redo.keys()):
+    def donothing():
+       filewin = Toplevel(root)
+       button = Button(filewin, text="Do nothing button")
+       button.pack()
+    def undo():
+        global NOTE_to_redo
+        global TYPE_to_redo
+        global LENGTH_to_redo
+        global MOD_to_redo
+        global ANTI_to_redo
+        global Polygon_to_redo
+        global canvas_polygons
+        global canvas_labels
+        global temp_label
+        global TYPE_labels
+        global NOTE_labels
+        global MOD_labels
+        global ANTI_labels
+        global LENGTH_labels
+        global deleted_polygons
+        global Deletes_to_redo
+        global all_buttons
+        label_keyslist = list(canvas_labels.keys())
+        if deleted_polygons != {}:
+            deleted_polygons_keys = list(deleted_polygons.keys())
+            to_replace = max(deleted_polygons_keys)
+            domain_coordinates = deleted_polygons.get(to_replace)[0]
+            domain_name = deleted_polygons.get(to_replace)[1]
             if "-" not in domain_name:
                 if "a" in str(domain_name):
                     heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
@@ -7207,7 +7103,7 @@ def redo():
                     domain_name = re.sub("\.|@|>","",domain_name)
                     labelx = get_min_max_coordinates(domain_coordinates)[4]
                     labely = get_min_max_coordinates(domain_coordinates)[5]
-                    if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70:
+                    if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70 :
                         if domain_coordinates[2] > domain_coordinates[0]:
                             labelx-=5
                         elif domain_coordinates[2] < domain_coordinates[0]:
@@ -7226,550 +7122,814 @@ def redo():
             elif domain_name == "-disulphide-":####
                 domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
-            del Polygon_to_redo[to_redo]
-        elif to_redo in list(TYPE_labels.keys()):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
-            TYPE_labels[label] = [domain_coordinates, domain_name]
-            del TYPE_to_redo[to_redo]
-        elif to_redo in list(NOTE_labels.keys()):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
-            NOTE_labels[label] = [domain_coordinates, domain_name]
-            del NOTE_to_redo[to_redo]
-        elif to_redo in list(MOD_labels.keys()):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
-            MOD_labels[label] = [domain_coordinates, domain_name]
-            del MOD_to_redo[to_redo]
-        elif to_redo in list(ANTI_labels.keys()):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
-            ANTI_labels[label] = [domain_coordinates, domain_name]
-            del ANTI_to_redo[to_redo]
-        elif to_redo in list(LENGTH_labels.keys()):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
-            LENGTH_labels[label] = [domain_coordinates, domain_name]
-            del LENGTH_to_redo[to_redo]
-
-
-
-
-
-
-
-canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH, bg='#E7E0E6')
-canvas.pack()
-
-frame = tk.Frame(root, bg = '#80c1ff',bd=5)
-frame.place(relwidth=1,relheight=1)
-
-###Input box
-textBox = tk.Text(frame, font=20)
-textBox.place(relx=0.01,rely = 0.65, relwidth=0.4,relheight=0.15)
-###Option box
-frame2 = tk.Frame(frame, bg = '#D3D3D3')
-frame2.place(relx=0.01, rely = 0.05,relheight = 0.35, relwidth = 0.4)
-##SEQUENCE PIPELINE VARIABLES
-Domain_Primer = []
-Domain_Primer_Lock = ""
-domain_type = ""
-domain_mod  = ""
-extra_mods  = ""
-domain_charge=""
-Pairing_sensitivity = 30
-Bond_thickness = 2
-domain_direction = "constant"
-H_Labels = False
-L_Labels = False
-Show_Leucine_Zippers = False
-Bond_Arrows=(0,0,0)
-######################BUTTONS
-a_button= tk.Button(frame2,text="a",bg = "#CFCFCF", command =lambda: domain_type_button("a"))
-a_button.place(relx = 0.61, rely = 0.21, relheight = 0.1, relwidth=0.05)
-b_button= tk.Button(frame2,text="b",bg = "#CFCFCF", command =lambda: domain_type_button("b"))
-b_button.place(relx = 0.66, rely = 0.21, relheight = 0.1, relwidth=0.05)
-c_button= tk.Button(frame2,text="c",bg = "#CFCFCF", command =lambda: domain_type_button("c"))
-c_button.place(relx = 0.71, rely = 0.21, relheight = 0.1, relwidth=0.05)
-d_button= tk.Button(frame2,text="d",bg = "#CFCFCF", command =lambda: domain_type_button("d"))
-d_button.place(relx = 0.76, rely = 0.21, relheight = 0.1, relwidth=0.05)
-e_button= tk.Button(frame2,text="e",bg = "#CFCFCF", command =lambda: domain_type_button("e"))
-e_button.place(relx = 0.61, rely = 0.31, relheight = 0.1, relwidth=0.05)
-f_button= tk.Button(frame2,text="f",bg = "#CFCFCF", command =lambda: domain_type_button("f"))
-f_button.place(relx = 0.66, rely = 0.31, relheight = 0.1, relwidth=0.05)
-g_button= tk.Button(frame2,text="g",bg = "#CFCFCF", command =lambda: domain_type_button("g"))
-g_button.place(relx = 0.71, rely = 0.31, relheight = 0.1, relwidth=0.05)
-h_button= tk.Button(frame2,text="h",bg = "#CFCFCF", command =lambda: domain_type_button("h"))
-h_button.place(relx = 0.76, rely = 0.31, relheight = 0.1, relwidth=0.05)
-Mod_button = tk.Button(frame2,text="*",bg = "#CFCFCF", command =lambda: extra_mod_button("*"))
-Mod_button.place(relx = 0.61, rely = 0.41, relheight = 0.1, relwidth=0.05)
-Gly_button = tk.Button(frame2,text="!",bg = "#CFCFCF", command =lambda: extra_mod_button("!"))
-Gly_button.place(relx = 0.66, rely = 0.41, relheight = 0.1, relwidth=0.05)
-KIH_knob= tk.Button(frame2,text=">",bg = "#CFCFCF", command =lambda: domain_mod_button(">"))
-KIH_knob.place(relx = 0.71, rely = 0.41, relheight = 0.1, relwidth=0.05)
-KIH_hole= tk.Button(frame2,text="@",bg = "#CFCFCF", command =lambda: domain_mod_button("@"))
-KIH_hole.place(relx = 0.76, rely = 0.41, relheight = 0.1, relwidth=0.05)
-Positive_charge= tk.Button(frame2,text="+",bg = "#CFCFCF", command =lambda: domain_charge_button("+"))
-Positive_charge.place(relx = 0.61, rely = 0.51, relheight = 0.1, relwidth=0.05)
-Negative_charge= tk.Button(frame2,text="-",bg = "#CFCFCF", command =lambda: domain_charge_button("_"))
-Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
-LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
-LengthLabelButton.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.1)
-NoteLabelButton = tk.Button(frame2,text="NOTE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("NOTE"))
-NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
-TypeLabelButton = tk.Button(frame2,text="TYPE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("TYPE"))
-TypeLabelButton.place(relx = 0.71,rely = 0.61, relheight = 0.1, relwidth= 0.1)
-AntiLabelButton = tk.Button(frame2,text="ANTI", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("ANTI"))
-AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-ModLabelButton = tk.Button(frame2,text="MOD", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("MOD"))
-ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-nanobody_button = tk.Button(frame2,text="nanobody",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
-nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
-###Insert bonds buttons ###
-##Col1
-InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
-InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
-InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
-InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
-InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
-##Col2
-InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
-InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
-InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
-InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
-InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
-InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
-InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
-
-###Drag and pull bonds###
-Bond_lock = ""
-InsertBondButton= tk.Button(frame2,text="Connect",bg = "#CFCFCF", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
-InsertBondButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
-InsertDBondButton= tk.Button(frame2,text="Disulphide",bg = "#CFCFCF", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
-InsertDBondButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
-InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "#CFCFCF", command=lambda: Hinge_bond_button(lower_canvas,"-H-","hinge"))
-InsertLHingeButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
-InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "#CFCFCF", command=lambda: Linker_bond_button(lower_canvas,"-L-","linker"))
-InsertLinkerButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
-
-###Delete/clear###
-Delete_lock = False
-Label_lock = True
-CustomLabelLock = ""
-InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="#CFCFCF", command=lambda: delete_all_button(lower_canvas))
-InsertDelAllButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
-InsertDelClickButton = tk.Button(frame2,text="Delete",bg="#CFCFCF", command=lambda: delete_button(lower_canvas))
-InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
-Labels_buttons = tk.Button(frame2,text="Labels", bg="#CFCFCF", command=lambda: labels_button(lower_canvas))
-Labels_buttons.place(relx = 0.81,rely = 0.41, relheight = 0.2, relwidth= 0.18)
-CustomLabelButton = tk.Button(frame2,text="Comment", bg="#CFCFCF", command=lambda: CommentLabelButton_function(lower_canvas))
-CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
-CustomLabelEntry = tk.Text(frame2, font=20)
-CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
-##Status bar###
-status_label = tk.Label(root, text='', bd=1)
-status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
-
-##Big button
-button = tk.Button(frame, text = "Get Structure", bg = "#CFCFCF", font=20, command=lambda: render_pipeline(lower_canvas))
-button.place(relx=0.05,rely=0.825,relheight=0.1, relwidth=0.15)
-button.bind("<Enter>", button_hover)
-button.bind("<Leave>", button_hover_leave)
-button = tk.Button(frame, text = "Get AbML", bg = "#CFCFCF", font=20, command=lambda: sequence_pipeline(lower_canvas))
-button.place(relx=0.2,rely=0.825,relheight=0.1, relwidth=0.15)
-button.bind("<Enter>", button_hover)
-button.bind("<Leave>", button_hover_leave)
-button = tk.Button(frame, text = "Tidy", bg = "#CFCFCF", font=20, command=lambda: sequence_render_pipeline(lower_canvas))
-button.place(relx=0.05,rely=0.925,relheight=0.05, relwidth=0.3)
-button.bind("<Enter>", button_hover)
-button.bind("<Leave>", button_hover_leave)
-
-
-###Library
-#frame1 = tk.Frame(frame, bg = '#D3D3D3')
-#frame1.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
-Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
-antibodyformats = {
-"IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
-"Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
-"Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.b(13:8)-CL(14:9){1}",
-"Orthagonal Fab":"VH+.a(1:6)-CH1>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3@(5:12)|VL_.a(6:1)-CL@(7:2){1}|VH.b(8:13)-CH1>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5)|VL.b(13:8)-CL@(14:9){1}",
-"IgG-H-scFV":"VH.a(1:8)-CH1(2:9){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L-VH.b(6:7)-L-VL.b(7:6)|VL.a(8:1)-CL(9:2){1}|VH.a(10:17)-CH1(11:18){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L-VH.b(15:16)-L-VL.b(16:15)|VL.a(17:10)-CL(18:11){1}",
-"IgG-L-scFV":"VH.a(1:6) -CH1(2:7){1} -H(3:12){2} -CH2(4:13) -CH3(5:14) |VL.a(6:1) -CL(7:2){1} -L -VH.b(8:9) -L -VL.b(9:8) |VH.a(10:15) -CH1(11:16){1} -H(12:3){2} -CH2(13:4) -CH3(14:5) | VL.a(15:10) -CL(16:11){1} -L -VH.b(17:18) -L -VL.b(18:17)",
-"scFV-H-scFV": "VL.a(1:2)-L-VH.a(2:1)-H(3:8){2}-VH.b(4:5)-L-VL.b(5:4)|VL.c(6:7)-L-VH.c(7:6)-H(8:3){2}-VH.d(9:10)-L-VL.d(10:9)",
-"F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
-"scFV":"VH.a(1:2)-L-VL.a(2:1)",
-"scFV4":"VL.a(4:5)-L-VH.a(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VH.a(1:2)-L-VL.a(2:1)-CL(3:6){1} | VL.b(13:14)-L-VH.b(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VH.b(10:11)-L-VL.b(11:10)-CL(12:15){1}",
-"sdFV4":"VH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VH.a(6)  -CL(7:2){1} | VH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VH.b(13) -CL(14:9){1}",
-"Nanobody":"VH.a(1)",
-"BiTE":"VH.a(1:2) -L -VL.a(2:1) -L -VH.b(3:4) -L -VL.b(4:3)",
-"HSAbody":"VL.a(1:2)-L-VH.a(2:1)-L-X(3)[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(4:5)-L-VL.b(5:4)",
-"Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
-"Diabody":"VH.a(1:3) -L -VH.b(2:4) | VL.a(3:1) -L -VL.b(4:2)",
-"Miniantibody":"VH.a(1:2)-L-VL.a(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4:8)[TYPE:LEUCINE] | VH.b(5:6)-L-VL.b(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8:4)[TYPE:LEUCINE]",
-"scDiabody":"VH.a(1:4) -L -VL.a(2:3) -L -VH.b(3:2) -L -VL.b(4:1)",
-"scDiabody-CH3":"VL.a(1:4){1} -L -VL.a(2:3) -L -VH.a(3:2) -L -VH.a(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.b(8:11){1}-L-VL.b(9:10)-L-VH.b(10:9)-L-VH.b(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
-"scDiabody-Fc":"VH.b(1:2) -L -VL.b(2:1) -L -VH.a(3:4) -L -VL.a(4:3) -H(5:12){2} -CH2(6:13) -CH3(7:14) | VH.b(8:9) -L -VL.b(9:8) -L -VH.a(10:11) -L -VL.a(11:10) -H(12:5){2} -CH2(13:6) -CH3(14:7)",
-"DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
-"Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
-"Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VH.b(13:14) -L -VL.b(14:13)",
-"Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
-"Triplebody":"VH.a(1:5)-CH1(2:6){1} -L- VL.b(3:4) -L -VH.b(4:3) | VL.a(5:1) -CL(6:2){1} -L - VL.c(7:8) -L -VH.c(8:7)",
-"scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VL.b(3:4){1}-L-VH.b(4:3){1}-L-VL.a(5:1)-CL(6:2){2}-L-VL.c(7:8){1}-L-VH.c(8:7){1}",
-"TriBiMinibody":"VH.a(1:2) -L -VL.a(2:1) -H(3:9){2} -CH3@(4:10){2} -L -VH.b(5:6) -L - VL.b(6:5) | VH.c(7:8) -L -VL.c(8:7) -H(9:3){2}-CH3>(10:4)",
-"LUZ-Y":"VL.a(1:3)-CL(2:4){1}-L -VH.a(3:1)-CH1(4:2){1}-H(5:13){2}-CH2(6:14) -CH3(7:15) -X(8:16)[TYPE: LEUCINE] | VL.b(9:11)-CL(10:12){1} -L -VH.b(11:9) -CH1(12:10){1}-H(13:5){2}-CH2(14:6)-CH3(15:7)-X(16:8)[TYPE: LEUCINE]",
-"Dock and Lock":"VH.a(1:4)-CH1(2:5){1}-L-X(3)[TYPE:FUSION]|VL.a(4:1)-CL(5:2){1}|VH.b(6:8)-CH1(7:9){1}-L-X(3)|VL.b(8:6)-CL(9:7){1}|VH.c(10:12)-CH1(11:13){1}-L-X(3)|VL.c(12:10)-CL(13:11){1}|VH.d(14:16)-CH1(15:17){1}-L-X(3)|VL.d(16:14)-CL(17:15){1}",
-"scFV-IgG-scFV-scFV": "VL.b(1:2)-L-VH.b(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL.b(14:15)-L-VH.b(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
-"scFV-scFV-Fc":"VH.a(1:2)-L-VL.a(2:1)-L-VH.b(3:4)-L-VL.b(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
-"Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
-"IgG-IgG":"VH.a(1:12)-CH1(2:13){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VL.a(12:1)-CL(13:2){1}|VH.a(6:14)-CH1(7:15){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VL.a(14:6)-CL(15:7){1}|VH.b(16:26)-CH1(17:27){1}-H(18:23){2}-CH2(19:24)-CH3(20:25)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VH.b(21:28)-CH1(22:29){1}-H(23:18){2}-CH2(24:19)-CH3(25:20)|VL.b(26:16)-CL(27:17){1}|VL.b(28:21)-CL(29:22){1}"
-}
-
-formats_keyslist= list(antibodyformats.keys())
-for i in range(len(formats_keyslist)):
-    Library.insert("end",formats_keyslist[i])
-    if i %2==0:
-        Library.itemconfig(i, bg='#D3D3D3')
-
-
-Library.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
-Library.bind('<<ListboxSelect>>', items_selected)
-
-
-#Library.place(frame1, relheight=0.05, relwidth=0.3)
-####Colours
-a_heavy_colour, a_light_colour = '#007ECB', '#73CAFF'
-b_heavy_colour, b_light_colour = '#FF43EE', '#F9D3F5'
-c_heavy_colour, c_light_colour = '#0BD05A', '#B9FAD3'
-d_heavy_colour, d_light_colour = '#D9DE4A', '#E2F562'
-e_heavy_colour, e_light_colour = '#FF0000', '#FF8585'
-f_heavy_colour, f_light_colour = '#FE6D03', '#FFC296'
-g_heavy_colour, g_light_colour = '#5C54FF', '#AFABFF'
-h_heavy_colour, h_light_colour = '#0FFBFF', '#CCFEFF'
-generic_heavy_colour, generic_light_colour = '#8E8E8E','#C6C4C4'
-disulphide_colour = "red"
-bond_colour = "black"
-hinge_colour = "dark green"
-linker_colour = "purple"
-X_colour = "#68C1C1"
-C_colour = "#ABA600"
-
-specificity_colours = [a_heavy_colour, a_light_colour,b_heavy_colour, b_light_colour,c_heavy_colour, c_light_colour,d_heavy_colour, d_light_colour,e_heavy_colour, e_light_colour,f_heavy_colour, f_light_colour,g_heavy_colour, g_light_colour,h_heavy_colour, h_light_colour,generic_heavy_colour,generic_light_colour,X_colour,C_colour]
-bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
-
-#Coloursettings = tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
-def open_settings():
-    global root
-    top = tk.Toplevel(root)
-    top.title = "Settings"
-    top.geometry('500x400')
-    tabControl = ttk.Notebook(top)
-
-    tab1 = ttk.Frame(tabControl)
-    tab2 = ttk.Frame(tabControl)
-
-    tabControl.add(tab1, text ='Pairing Sensitivity')
-    tabControl.add(tab2, text ='Colour Changer')
-    tabControl.pack(expand = 1, fill ="both")
-##Frame 1
-
-    def Update_settings():
-        global Pairing_sensitivity
-        Pairing_sensitivity = sensitivity_scalebar.get()
-        global Bond_thickness
-        Bond_thickness = bond_thickness_scalebar.get()
-        global H_Labels
-        if H_label_scalebar.get() == 1:
-            H_Labels = True
+            deleted_polygons = {}
+            Deletes_to_redo[to_replace] = [domain_coordinates, domain_name]
         else:
-            H_Labels = False
-        global L_Labels
-        if L_label_scalebar.get() == 1:
-            L_Labels = True
-        else:
-            L_Labels = False
-        global Show_Leucine_Zippers
-        if Leucine_zipper_scalebar.get() == 1:
-            Show_Leucine_Zippers = True
-        else:
-            Show_Leucine_Zippers = False
-        global Bond_Arrows
-        if Bond_arrows_scalebar.get() == 1:
-            Bond_Arrows = (8,10,3)
-        else:
-            Bond_Arrows = (0,0,0)
+            keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())+list(MOD_labels.keys())+list(ANTI_labels.keys())+list(LENGTH_labels.keys())
+            to_delete = max(keys)
+            if to_delete in (canvas_polygons.keys()):
+                lower_canvas.delete(to_delete)
+                Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
+                domain_coordinates = canvas_polygons.get(to_delete)[0]
+                min_max = get_min_max_coordinates(domain_coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
+                del canvas_polygons[to_delete]
+                for i in range(len(label_keyslist)):
+                    labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                    labely = canvas_labels.get(label_keyslist[i])[0][1]
+                    if x1 <= labelx <= x2 and y1 <= labely <= y2:
+                        lower_canvas.delete(label_keyslist[i])
+                        del canvas_labels[label_keyslist[i]]
+            elif to_delete in list(TYPE_labels.keys()):
+                lower_canvas.delete(to_delete)
+                TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
+                del TYPE_labels[to_delete]
+            elif to_delete in list(NOTE_labels.keys()):
+                lower_canvas.delete(to_delete)
+                NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
+                del NOTE_labels[to_delete]
+            elif to_delete in list(MOD_labels.keys()):
+                lower_canvas.delete(to_delete)
+                MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
+                del MOD_labels[to_delete]
+            elif to_delete in list(ANTI_labels.keys()):
+                lower_canvas.delete(to_delete)
+                ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
+                del ANTI_labels[to_delete]
+            elif to_delete in list(LENGTH_labels.keys()):
+                lower_canvas.delete(to_delete)
+                LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
+                del LENGTH_labels[to_delete]
 
-
-    settings_frame = tk.Frame(tab1, bg = "#D3D3D3")
-    settings_frame.place(relx=0.05, rely = 0.05,relheight = 0.9, relwidth = 0.9)
-
-    ttk.Label(settings_frame,text ="Pairing Sensitivity (pixels)").place(relx=0.1, rely = 0.02)
-    sensitivity_scalebar = tk.Scale(settings_frame, from_=0, to=100, orient="horizontal")
-    sensitivity_scalebar.set(30)
-    sensitivity_scalebar.place(relx=0.1, rely = 0.10,relheight = 0.2, relwidth = 0.8)
-
-    ttk.Label(settings_frame,text ="Bond Thickness (pixels)").place(relx=0.1, rely = 0.30)
-    bond_thickness_scalebar = tk.Scale(settings_frame, from_=0, to=5, orient="horizontal")
-    bond_thickness_scalebar.set(2)
-    bond_thickness_scalebar.place(relx=0.1, rely = 0.37,relheight = 0.2, relwidth = 0.8)
-
-    ttk.Label(settings_frame,text ="Bond Arrows").place(relx=0.1, rely = 0.6)
-    Bond_arrows_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-    Bond_arrows_scalebar.set(0)
-    Bond_arrows_scalebar.place(relx=0.1, rely = 0.67,relheight = 0.2, relwidth = 0.2)
-
-    ttk.Label(settings_frame,text ="H Labels").place(relx=0.3, rely = 0.6)
-    H_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-    H_label_scalebar.set(0)
-    H_label_scalebar.place(relx=0.3, rely = 0.67,relheight = 0.2, relwidth = 0.2)
-
-    ttk.Label(settings_frame,text ="L Labels").place(relx=0.5, rely = 0.6)
-    L_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-    L_label_scalebar.set(0)
-    L_label_scalebar.place(relx=0.5, rely = 0.67,relheight = 0.2, relwidth = 0.2)
-
-    ttk.Label(settings_frame,text ="Leucine Zippers").place(relx=0.7, rely = 0.6)
-    Leucine_zipper_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-    Leucine_zipper_scalebar.set(0)
-    Leucine_zipper_scalebar.place(relx=0.7, rely = 0.67,relheight = 0.2, relwidth = 0.2)
-
-    Update_settings_button= tk.Button(settings_frame, font=20, text = "Update", command =lambda: Update_settings())
-    Update_settings_button.place(relx=0.333, rely = 0.90,relheight = 0.07, relwidth = 0.333)
-
-
-    #ttk.Label(settings_frame,text="Hinge Labels").place(relx=0.1,rely = 0.7)
-
-##Frame 2
-    ttk.Label(tab2,text ="Domains").place(relx= 0.1, rely = 0.1)
-    ttk.Label(tab2,text = "Colour changer")
-    global specificity_colours
-    global bond_colours
-    selected_domain = ""
-    selected_colour = ""
-    colourindex = 0
-    def recolorise(string1,string2,new_colour):
+    def redo():
+        global Polygon_to_redo
+        global NOTE_to_redo
+        global TYPE_to_redo
+        global LENGTH_to_redo
+        global MOD_to_redo
+        global ANTI_to_redo
         global canvas_polygons
-        polygons_keyslist = list(canvas_polygons.keys())
-        for i in range(len(polygons_keyslist)):
-            if string1 in canvas_polygons.get(polygons_keyslist[i])[1] and string2 in canvas_polygons.get(polygons_keyslist[i])[1]:
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-    def browse_colour():
-        global selected_colour
-        global colourindex
-        global selected_domain
-        global canvas_polygons
-        new_colour = colorchooser.askcolor()[1]
-        selected_colour = new_colour
-        colours[coloursettings_keyslist[colourindex]] = new_colour
-        polygons_keyslist = list(canvas_polygons.keys())
+        global canvas_labels
+        global temp_label
+        global TYPE_labels
+        global NOTE_labels
+        global MOD_labels
+        global ANTI_labels
+        global LENGTH_labels
+        global specificity_colours
+        global Deletes_to_redo
+        global deleted_polygons
+        if Deletes_to_redo != {}:
+            keys = list(Deletes_to_redo.keys())
+            to_delete = max(keys)
+            domain_coordinates = Deletes_to_redo.get(to_delete)[0]
+            domain_name = Deletes_to_redo.get(to_delete)[1]
+            if "-" not in domain_name:
+                lower_canvas.delete(to_delete)
+                Polygon_to_redo[to_delete] = canvas_polygons.get(to_delete)
+                domain_coordinates = canvas_polygons.get(to_delete)[0]
+                min_max = get_min_max_coordinates(domain_coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
+                del canvas_polygons[to_delete]
+                for i in range(len(label_keyslist)):
+                    labelx = canvas_labels.get(label_keyslist[i])[0][0]
+                    labely = canvas_labels.get(label_keyslist[i])[0][1]
+                    if x1 <= labelx <= x2 and y1 <= labely <= y2:
+                        lower_canvas.delete(label_keyslist[i])
+                        del canvas_labels[label_keyslist[i]]
+            elif to_delete in list(TYPE_labels.keys()):
+                lower_canvas.delete(to_delete)
+                TYPE_to_redo[to_delete] = TYPE_labels.get(to_delete)
+                del TYPE_labels[to_delete]
+            elif to_delete in list(NOTE_labels.keys()):
+                lower_canvas.delete(to_delete)
+                NOTE_to_redo[to_delete] = NOTE_labels.get(to_delete)
+                del NOTE_labels[to_delete]
+            elif to_delete in list(MOD_labels.keys()):
+                lower_canvas.delete(to_delete)
+                MOD_to_redo[to_delete] = MOD_labels.get(to_delete)
+                del MOD_labels[to_delete]
+            elif to_delete in list(ANTI_labels.keys()):
+                lower_canvas.delete(to_delete)
+                ANTI_to_redo[to_delete] = ANTI_labels.get(to_delete)
+                del ANTI_labels[to_delete]
+            elif to_delete in list(LENGTH_labels.keys()):
+                lower_canvas.delete(to_delete)
+                LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
+                del LENGTH_labels[to_delete]
+            Deletes_to_redo= {}
+            deleted_polygons={}
+        else:
+            keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
+            to_redo = min(keys)
+            domain_name = Polygon_to_redo.get(to_redo)[1]
+            domain_coordinates = Polygon_to_redo.get(to_redo)[0]
+            if to_redo in (Polygon_to_redo.keys()):
+                if "-" not in domain_name:
+                    if "a" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+                    elif "b" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+                    elif "c" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+                    elif "d" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+                    elif "e" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+                    elif "f" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+                    elif "g" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+                    elif "h" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+                    elif "X" in str(domain_name):
+                        heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
+                    elif str(domain_name) == "C":
+                        heavy_colour, light_colour = specificity_colours[19],specificity_colours[19]
+                    else:
+                        heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
+                    if "H" in domain_name:
+                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                    elif "L" in domain_name:
+                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    if Label_lock == True:
+                        domain_name = re.sub("\.|@|>","",domain_name)
+                        labelx = get_min_max_coordinates(domain_coordinates)[4]
+                        labely = get_min_max_coordinates(domain_coordinates)[5]
+                        if get_min_max_coordinates(domain_coordinates)[1]-get_min_max_coordinates(domain_coordinates)[0] == 70:
+                            if domain_coordinates[2] > domain_coordinates[0]:
+                                labelx-=5
+                            elif domain_coordinates[2] < domain_coordinates[0]:
+                                labelx+=5
+                        label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
+                        canvas_labels[label] = [[labelx,labely], domain_name]
+                elif domain_name == "-" :####
+                    domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
+                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                elif domain_name == "-H-" :####
+                    domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                elif domain_name == "-L-" :####
+                    domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                elif domain_name == "-disulphide-":####
+                    domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                del Polygon_to_redo[to_redo]
+            elif to_redo in list(TYPE_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
+                TYPE_labels[label] = [domain_coordinates, domain_name]
+                del TYPE_to_redo[to_redo]
+            elif to_redo in list(NOTE_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
+                NOTE_labels[label] = [domain_coordinates, domain_name]
+                del NOTE_to_redo[to_redo]
+            elif to_redo in list(MOD_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
+                MOD_labels[label] = [domain_coordinates, domain_name]
+                del MOD_to_redo[to_redo]
+            elif to_redo in list(ANTI_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
+                ANTI_labels[label] = [domain_coordinates, domain_name]
+                del ANTI_to_redo[to_redo]
+            elif to_redo in list(LENGTH_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
+                LENGTH_labels[label] = [domain_coordinates, domain_name]
+                del LENGTH_to_redo[to_redo]
 
-        if   selected_domain == "VHa":
-            specificity_colours[0] = new_colour
-            recolorise("VH","a",new_colour)
-        elif selected_domain == "VLa":
-            specificity_colours[1] = new_colour
-            recolorise("VL","a",new_colour)
-        elif selected_domain == "VHb":
-            specificity_colours[2] = new_colour
-            recolorise("VH","b",new_colour)
-        elif selected_domain == "VLb":
-            specificity_colours[3] = new_colour
-            recolorise("VL","b",new_colour)
-        elif selected_domain == "VHc":
-            specificity_colours[4] = new_colour
-            recolorise("VH","c",new_colour)
-        elif selected_domain == "VLc":
-            specificity_colours[5] = new_colour
-            recolorise("VL","c",new_colour)
-        elif selected_domain == "VHd":
-            specificity_colours[6] = new_colour
-            recolorise("VH","d",new_colour)
-        elif selected_domain == "VLd":
-            specificity_colours[7] = new_colour
-            recolorise("VL","d",new_colour)
-        elif selected_domain == "VHe":
-            specificity_colours[8] = new_colour
-            recolorise("VH","e",new_colour)
-        elif selected_domain == "VLe":
-            specificity_colours[9] = new_colour
-            recolorise("VL","e",new_colour)
-        elif selected_domain == "VHf":
-            specificity_colours[10] = new_colour
-            recolorise("VH","f",new_colour)
-        elif selected_domain == "VLf":
-            specificity_colours[11] = new_colour
-            recolorise("VL","f",new_colour)
-        elif selected_domain == "VHg":
-            specificity_colours[12] = new_colour
-            recolorise("VH","g",new_colour)
-        elif selected_domain == "VLg":
-            specificity_colours[13] = new_colour
-            recolorise("VL","g",new_colour)
-        elif selected_domain == "VHh":
-            specificity_colours[14] = new_colour
-            recolorise("VH","h",new_colour)
-        elif selected_domain == "VLh":
-            specificity_colours[15] = new_colour
-            recolorise("VL","h",new_colour)
-        elif selected_domain == "X":
-            specificity_colours[18] = new_colour
-        elif selected_domain == "C":
-            specificity_colours[19] = new_colour
+
+
+
+
+
+
+    canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH, bg='#E7E0E6')
+    canvas.pack()
+
+    frame = tk.Frame(root, bg = '#80c1ff',bd=5)
+    frame.place(relwidth=1,relheight=1)
+
+    ###Input box
+    textBox = tk.Text(frame, font=20)
+    textBox.place(relx=0.01,rely = 0.65, relwidth=0.4,relheight=0.15)
+    ###Option box
+    frame2 = tk.Frame(frame, bg = '#D3D3D3')
+    frame2.place(relx=0.01, rely = 0.05,relheight = 0.35, relwidth = 0.4)
+    ##SEQUENCE PIPELINE VARIABLES
+    Domain_Primer = []
+    Domain_Primer_Lock = ""
+    domain_type = ""
+    domain_mod  = ""
+    extra_mods  = ""
+    domain_charge=""
+    Pairing_sensitivity = 30
+    Bond_thickness = 2
+    domain_direction = "constant"
+    H_Labels = False
+    L_Labels = False
+    Show_Leucine_Zippers = False
+    Bond_Arrows=(0,0,0)
+    ######################BUTTONS
+    a_button= tk.Button(frame2,text="a",bg = "#CFCFCF", command =lambda: domain_type_button("a"))
+    a_button.place(relx = 0.61, rely = 0.21, relheight = 0.1, relwidth=0.05)
+    b_button= tk.Button(frame2,text="b",bg = "#CFCFCF", command =lambda: domain_type_button("b"))
+    b_button.place(relx = 0.66, rely = 0.21, relheight = 0.1, relwidth=0.05)
+    c_button= tk.Button(frame2,text="c",bg = "#CFCFCF", command =lambda: domain_type_button("c"))
+    c_button.place(relx = 0.71, rely = 0.21, relheight = 0.1, relwidth=0.05)
+    d_button= tk.Button(frame2,text="d",bg = "#CFCFCF", command =lambda: domain_type_button("d"))
+    d_button.place(relx = 0.76, rely = 0.21, relheight = 0.1, relwidth=0.05)
+    e_button= tk.Button(frame2,text="e",bg = "#CFCFCF", command =lambda: domain_type_button("e"))
+    e_button.place(relx = 0.61, rely = 0.31, relheight = 0.1, relwidth=0.05)
+    f_button= tk.Button(frame2,text="f",bg = "#CFCFCF", command =lambda: domain_type_button("f"))
+    f_button.place(relx = 0.66, rely = 0.31, relheight = 0.1, relwidth=0.05)
+    g_button= tk.Button(frame2,text="g",bg = "#CFCFCF", command =lambda: domain_type_button("g"))
+    g_button.place(relx = 0.71, rely = 0.31, relheight = 0.1, relwidth=0.05)
+    h_button= tk.Button(frame2,text="h",bg = "#CFCFCF", command =lambda: domain_type_button("h"))
+    h_button.place(relx = 0.76, rely = 0.31, relheight = 0.1, relwidth=0.05)
+    Mod_button = tk.Button(frame2,text="*",bg = "#CFCFCF", command =lambda: extra_mod_button("*"))
+    Mod_button.place(relx = 0.61, rely = 0.41, relheight = 0.1, relwidth=0.05)
+    Gly_button = tk.Button(frame2,text="!",bg = "#CFCFCF", command =lambda: extra_mod_button("!"))
+    Gly_button.place(relx = 0.66, rely = 0.41, relheight = 0.1, relwidth=0.05)
+    KIH_knob= tk.Button(frame2,text=">",bg = "#CFCFCF", command =lambda: domain_mod_button(">"))
+    KIH_knob.place(relx = 0.71, rely = 0.41, relheight = 0.1, relwidth=0.05)
+    KIH_hole= tk.Button(frame2,text="@",bg = "#CFCFCF", command =lambda: domain_mod_button("@"))
+    KIH_hole.place(relx = 0.76, rely = 0.41, relheight = 0.1, relwidth=0.05)
+    Positive_charge= tk.Button(frame2,text="+",bg = "#CFCFCF", command =lambda: domain_charge_button("+"))
+    Positive_charge.place(relx = 0.61, rely = 0.51, relheight = 0.1, relwidth=0.05)
+    Negative_charge= tk.Button(frame2,text="-",bg = "#CFCFCF", command =lambda: domain_charge_button("_"))
+    Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
+    LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
+    LengthLabelButton.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.1)
+    NoteLabelButton = tk.Button(frame2,text="NOTE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("NOTE"))
+    NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
+    TypeLabelButton = tk.Button(frame2,text="TYPE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("TYPE"))
+    TypeLabelButton.place(relx = 0.71,rely = 0.61, relheight = 0.1, relwidth= 0.1)
+    AntiLabelButton = tk.Button(frame2,text="ANTI", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("ANTI"))
+    AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
+    ModLabelButton = tk.Button(frame2,text="MOD", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("MOD"))
+    ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
+    nanobody_button = tk.Button(frame2,text="nanobody",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
+    nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    ###Insert bonds buttons ###
+    ##Col1
+    InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
+    InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
+    InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
+    InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
+    InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
+    InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
+    InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
+    ##Col2
+    InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
+    InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
+    InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
+    InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
+    InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
+    InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
+    InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
+    InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
+    InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
+
+    ###Drag and pull bonds###
+    Bond_lock = ""
+    InsertBondButton= tk.Button(frame2,text="Connect",bg = "#CFCFCF", command=lambda: bond_drag_button(lower_canvas,"-","bond"))
+    InsertBondButton.place(relx = 0.01, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    InsertDBondButton= tk.Button(frame2,text="Disulphide",bg = "#CFCFCF", command=lambda: disulphide_bond_button(lower_canvas,"-","disulphide"))
+    InsertDBondButton.place(relx = 0.01, rely = 0.21, relheight = 0.2, relwidth=0.2)
+    InsertLHingeButton= tk.Button(frame2,text="Hinge",bg = "#CFCFCF", command=lambda: Hinge_bond_button(lower_canvas,"-H-","hinge"))
+    InsertLHingeButton.place(relx = 0.01, rely = 0.41, relheight = 0.2, relwidth=0.2)
+    InsertLinkerButton= tk.Button(frame2,text="Linker",bg = "#CFCFCF", command=lambda: Linker_bond_button(lower_canvas,"-L-","linker"))
+    InsertLinkerButton.place(relx = 0.01, rely = 0.61, relheight = 0.2, relwidth=0.2)
+
+    ###Delete/clear###
+    Delete_lock = False
+    Label_lock = True
+    CustomLabelLock = ""
+    InsertDelAllButton = tk.Button(frame2,text="Clear All",bg="#CFCFCF", command=lambda: delete_all_button(lower_canvas))
+    InsertDelAllButton.place(relx = 0.81,rely = 0.01, relheight = 0.2, relwidth= 0.18)
+    InsertDelClickButton = tk.Button(frame2,text="Delete",bg="#CFCFCF", command=lambda: delete_button(lower_canvas))
+    InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
+    Labels_buttons = tk.Button(frame2,text="Labels", bg="#CFCFCF", command=lambda: labels_button(lower_canvas))
+    Labels_buttons.place(relx = 0.81,rely = 0.41, relheight = 0.2, relwidth= 0.18)
+    CustomLabelButton = tk.Button(frame2,text="Comment", bg="#CFCFCF", command=lambda: CommentLabelButton_function(lower_canvas))
+    CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
+    CustomLabelEntry = tk.Text(frame2, font=20)
+    CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
+    ##Status bar###
+    status_label = tk.Label(root, text='', bd=1)
+    status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
+
+    ##Big button
+    button = tk.Button(frame, text = "Get Structure", bg = "#CFCFCF", font=20, command=lambda: render_pipeline(lower_canvas))
+    button.place(relx=0.05,rely=0.825,relheight=0.1, relwidth=0.15)
+    button.bind("<Enter>", button_hover)
+    button.bind("<Leave>", button_hover_leave)
+    button = tk.Button(frame, text = "Get AbML", bg = "#CFCFCF", font=20, command=lambda: sequence_pipeline(lower_canvas))
+    button.place(relx=0.2,rely=0.825,relheight=0.1, relwidth=0.15)
+    button.bind("<Enter>", button_hover)
+    button.bind("<Leave>", button_hover_leave)
+    button = tk.Button(frame, text = "Tidy", bg = "#CFCFCF", font=20, command=lambda: sequence_render_pipeline(lower_canvas))
+    button.place(relx=0.05,rely=0.925,relheight=0.05, relwidth=0.3)
+    button.bind("<Enter>", button_hover)
+    button.bind("<Leave>", button_hover_leave)
+
+
+    ###Library
+    #frame1 = tk.Frame(frame, bg = '#D3D3D3')
+    #frame1.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
+    Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
+    antibodyformats = {
+    "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
+    "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
+    "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.b(13:8)-CL(14:9){1}",
+    "Orthagonal Fab":"VH+.a(1:6)-CH1>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3@(5:12)|VL_.a(6:1)-CL@(7:2){1}|VH.b(8:13)-CH1>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5)|VL.b(13:8)-CL@(14:9){1}",
+    "IgG-H-scFV":"VH.a(1:8)-CH1(2:9){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L-VH.b(6:7)-L-VL.b(7:6)|VL.a(8:1)-CL(9:2){1}|VH.a(10:17)-CH1(11:18){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L-VH.b(15:16)-L-VL.b(16:15)|VL.a(17:10)-CL(18:11){1}",
+    "IgG-L-scFV":"VH.a(1:6) -CH1(2:7){1} -H(3:12){2} -CH2(4:13) -CH3(5:14) |VL.a(6:1) -CL(7:2){1} -L -VH.b(8:9) -L -VL.b(9:8) |VH.a(10:15) -CH1(11:16){1} -H(12:3){2} -CH2(13:4) -CH3(14:5) | VL.a(15:10) -CL(16:11){1} -L -VH.b(17:18) -L -VL.b(18:17)",
+    "scFV-H-scFV": "VL.a(1:2)-L-VH.a(2:1)-H(3:8){2}-VH.b(4:5)-L-VL.b(5:4)|VL.c(6:7)-L-VH.c(7:6)-H(8:3){2}-VH.d(9:10)-L-VL.d(10:9)",
+    "F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
+    "scFV":"VH.a(1:2)-L-VL.a(2:1)",
+    "scFV4":"VL.a(4:5)-L-VH.a(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VH.a(1:2)-L-VL.a(2:1)-CL(3:6){1} | VL.b(13:14)-L-VH.b(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VH.b(10:11)-L-VL.b(11:10)-CL(12:15){1}",
+    "sdFV4":"VH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VH.a(6)  -CL(7:2){1} | VH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VH.b(13) -CL(14:9){1}",
+    "Nanobody":"VH.a(1)",
+    "BiTE":"VH.a(1:2) -L -VL.a(2:1) -L -VH.b(3:4) -L -VL.b(4:3)",
+    "HSAbody":"VL.a(1:2)-L-VH.a(2:1)-L-X(3)[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(4:5)-L-VL.b(5:4)",
+    "Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
+    "Diabody":"VH.a(1:3) -L -VH.b(2:4) | VL.a(3:1) -L -VL.b(4:2)",
+    "Miniantibody":"VH.a(1:2)-L-VL.a(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4:8)[TYPE:LEUCINE] | VH.b(5:6)-L-VL.b(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8:4)[TYPE:LEUCINE]",
+    "scDiabody":"VH.a(1:4) -L -VL.a(2:3) -L -VH.b(3:2) -L -VL.b(4:1)",
+    "scDiabody-CH3":"VL.a(1:4){1} -L -VL.a(2:3) -L -VH.a(3:2) -L -VH.a(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.b(8:11){1}-L-VL.b(9:10)-L-VH.b(10:9)-L-VH.b(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
+    "scDiabody-Fc":"VH.b(1:2) -L -VL.b(2:1) -L -VH.a(3:4) -L -VL.a(4:3) -H(5:12){2} -CH2(6:13) -CH3(7:14) | VH.b(8:9) -L -VL.b(9:8) -L -VH.a(10:11) -L -VL.a(11:10) -H(12:5){2} -CH2(13:6) -CH3(14:7)",
+    "DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
+    "Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
+    "Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VH.b(13:14) -L -VL.b(14:13)",
+    "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
+    "Triplebody":"VH.a(1:5)-CH1(2:6){1} -L- VL.b(3:4) -L -VH.b(4:3) | VL.a(5:1) -CL(6:2){1} -L - VL.c(7:8) -L -VH.c(8:7)",
+    "scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VL.b(3:4){1}-L-VH.b(4:3){1}-L-VL.a(5:1)-CL(6:2){2}-L-VL.c(7:8){1}-L-VH.c(8:7){1}",
+    "TriBiMinibody":"VH.a(1:2) -L -VL.a(2:1) -H(3:9){2} -CH3@(4:10){2} -L -VH.b(5:6) -L - VL.b(6:5) | VH.c(7:8) -L -VL.c(8:7) -H(9:3){2}-CH3>(10:4)",
+    "LUZ-Y":"VL.a(1:3)-CL(2:4){1}-L -VH.a(3:1)-CH1(4:2){1}-H(5:13){2}-CH2(6:14) -CH3(7:15) -X(8:16)[TYPE: LEUCINE] | VL.b(9:11)-CL(10:12){1} -L -VH.b(11:9) -CH1(12:10){1}-H(13:5){2}-CH2(14:6)-CH3(15:7)-X(16:8)[TYPE: LEUCINE]",
+    "Dock and Lock":"VH.a(1:4)-CH1(2:5){1}-L-X(3)[TYPE:FUSION]|VL.a(4:1)-CL(5:2){1}|VH.b(6:8)-CH1(7:9){1}-L-X(3)|VL.b(8:6)-CL(9:7){1}|VH.c(10:12)-CH1(11:13){1}-L-X(3)|VL.c(12:10)-CL(13:11){1}|VH.d(14:16)-CH1(15:17){1}-L-X(3)|VL.d(16:14)-CL(17:15){1}",
+    "scFV-IgG-scFV-scFV": "VL.b(1:2)-L-VH.b(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL.b(14:15)-L-VH.b(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
+    "scFV-scFV-Fc":"VH.a(1:2)-L-VL.a(2:1)-L-VH.b(3:4)-L-VL.b(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
+    "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
+    "IgG-IgG":"VH.a(1:12)-CH1(2:13){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VL.a(12:1)-CL(13:2){1}|VH.a(6:14)-CH1(7:15){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VL.a(14:6)-CL(15:7){1}|VH.b(16:26)-CH1(17:27){1}-H(18:23){2}-CH2(19:24)-CH3(20:25)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VH.b(21:28)-CH1(22:29){1}-H(23:18){2}-CH2(24:19)-CH3(25:20)|VL.b(26:16)-CL(27:17){1}|VL.b(28:21)-CL(29:22){1}"
+    }
+
+    formats_keyslist= list(antibodyformats.keys())
+    for i in range(len(formats_keyslist)):
+        Library.insert("end",formats_keyslist[i])
+        if i %2==0:
+            Library.itemconfig(i, bg='#D3D3D3')
+
+
+    Library.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
+    Library.bind('<<ListboxSelect>>', items_selected)
+
+
+    #Library.place(frame1, relheight=0.05, relwidth=0.3)
+    ####Colours
+    a_heavy_colour, a_light_colour = '#007ECB', '#73CAFF'
+    b_heavy_colour, b_light_colour = '#FF43EE', '#F9D3F5'
+    c_heavy_colour, c_light_colour = '#0BD05A', '#B9FAD3'
+    d_heavy_colour, d_light_colour = '#D9DE4A', '#E2F562'
+    e_heavy_colour, e_light_colour = '#FF0000', '#FF8585'
+    f_heavy_colour, f_light_colour = '#FE6D03', '#FFC296'
+    g_heavy_colour, g_light_colour = '#5C54FF', '#AFABFF'
+    h_heavy_colour, h_light_colour = '#0FFBFF', '#CCFEFF'
+    generic_heavy_colour, generic_light_colour = '#8E8E8E','#C6C4C4'
+    disulphide_colour = "red"
+    bond_colour = "black"
+    hinge_colour = "dark green"
+    linker_colour = "purple"
+    X_colour = "#68C1C1"
+    C_colour = "#ABA600"
+
+    specificity_colours = [a_heavy_colour, a_light_colour,b_heavy_colour, b_light_colour,c_heavy_colour, c_light_colour,d_heavy_colour, d_light_colour,e_heavy_colour, e_light_colour,f_heavy_colour, f_light_colour,g_heavy_colour, g_light_colour,h_heavy_colour, h_light_colour,generic_heavy_colour,generic_light_colour,X_colour,C_colour]
+    bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
+
+    #Coloursettings = tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
+    def open_settings():
+        global root
+        top = tk.Toplevel(root)
+        top.title = "Settings"
+        top.geometry('500x400')
+        tabControl = ttk.Notebook(top)
+
+        tab1 = ttk.Frame(tabControl)
+        tab2 = ttk.Frame(tabControl)
+
+        tabControl.add(tab1, text ='Pairing Sensitivity')
+        tabControl.add(tab2, text ='Colour Changer')
+        tabControl.pack(expand = 1, fill ="both")
+    ##Frame 1
+
+        def Update_settings():
+            global Pairing_sensitivity
+            Pairing_sensitivity = sensitivity_scalebar.get()
+            global Bond_thickness
+            Bond_thickness = bond_thickness_scalebar.get()
+            global H_Labels
+            if H_label_scalebar.get() == 1:
+                H_Labels = True
+            else:
+                H_Labels = False
+            global L_Labels
+            if L_label_scalebar.get() == 1:
+                L_Labels = True
+            else:
+                L_Labels = False
+            global Show_Leucine_Zippers
+            if Leucine_zipper_scalebar.get() == 1:
+                Show_Leucine_Zippers = True
+            else:
+                Show_Leucine_Zippers = False
+            global Bond_Arrows
+            if Bond_arrows_scalebar.get() == 1:
+                Bond_Arrows = (8,10,3)
+            else:
+                Bond_Arrows = (0,0,0)
+
+
+        settings_frame = tk.Frame(tab1, bg = "#D3D3D3")
+        settings_frame.place(relx=0.05, rely = 0.05,relheight = 0.9, relwidth = 0.9)
+
+        ttk.Label(settings_frame,text ="Pairing Sensitivity (pixels)").place(relx=0.1, rely = 0.02)
+        sensitivity_scalebar = tk.Scale(settings_frame, from_=0, to=100, orient="horizontal")
+        sensitivity_scalebar.set(30)
+        sensitivity_scalebar.place(relx=0.1, rely = 0.10,relheight = 0.2, relwidth = 0.8)
+
+        ttk.Label(settings_frame,text ="Bond Thickness (pixels)").place(relx=0.1, rely = 0.30)
+        bond_thickness_scalebar = tk.Scale(settings_frame, from_=0, to=5, orient="horizontal")
+        bond_thickness_scalebar.set(2)
+        bond_thickness_scalebar.place(relx=0.1, rely = 0.37,relheight = 0.2, relwidth = 0.8)
+
+        ttk.Label(settings_frame,text ="Bond Arrows").place(relx=0.1, rely = 0.6)
+        Bond_arrows_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
+        Bond_arrows_scalebar.set(0)
+        Bond_arrows_scalebar.place(relx=0.1, rely = 0.67,relheight = 0.2, relwidth = 0.2)
+
+        ttk.Label(settings_frame,text ="H Labels").place(relx=0.3, rely = 0.6)
+        H_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
+        H_label_scalebar.set(0)
+        H_label_scalebar.place(relx=0.3, rely = 0.67,relheight = 0.2, relwidth = 0.2)
+
+        ttk.Label(settings_frame,text ="L Labels").place(relx=0.5, rely = 0.6)
+        L_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
+        L_label_scalebar.set(0)
+        L_label_scalebar.place(relx=0.5, rely = 0.67,relheight = 0.2, relwidth = 0.2)
+
+        ttk.Label(settings_frame,text ="Leucine Zippers").place(relx=0.7, rely = 0.6)
+        Leucine_zipper_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
+        Leucine_zipper_scalebar.set(0)
+        Leucine_zipper_scalebar.place(relx=0.7, rely = 0.67,relheight = 0.2, relwidth = 0.2)
+
+        Update_settings_button= tk.Button(settings_frame, font=20, text = "Update", command =lambda: Update_settings())
+        Update_settings_button.place(relx=0.333, rely = 0.90,relheight = 0.07, relwidth = 0.333)
+
+
+        #ttk.Label(settings_frame,text="Hinge Labels").place(relx=0.1,rely = 0.7)
+
+    ##Frame 2
+        ttk.Label(tab2,text ="Domains").place(relx= 0.1, rely = 0.1)
+        ttk.Label(tab2,text = "Colour changer")
+        global specificity_colours
+        global bond_colours
+        selected_domain = ""
+        selected_colour = ""
+        colourindex = 0
+        def recolorise(string1,string2,new_colour):
+            global canvas_polygons
+            polygons_keyslist = list(canvas_polygons.keys())
+            for i in range(len(polygons_keyslist)):
+                if string1 in canvas_polygons.get(polygons_keyslist[i])[1] and string2 in canvas_polygons.get(polygons_keyslist[i])[1]:
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+        def browse_colour():
+            global selected_colour
+            global colourindex
+            global selected_domain
+            global canvas_polygons
+            new_colour = colorchooser.askcolor()[1]
+            selected_colour = new_colour
+            colours[coloursettings_keyslist[colourindex]] = new_colour
+            polygons_keyslist = list(canvas_polygons.keys())
+
+            if   selected_domain == "VHa":
+                specificity_colours[0] = new_colour
+                recolorise("VH","a",new_colour)
+            elif selected_domain == "VLa":
+                specificity_colours[1] = new_colour
+                recolorise("VL","a",new_colour)
+            elif selected_domain == "VHb":
+                specificity_colours[2] = new_colour
+                recolorise("VH","b",new_colour)
+            elif selected_domain == "VLb":
+                specificity_colours[3] = new_colour
+                recolorise("VL","b",new_colour)
+            elif selected_domain == "VHc":
+                specificity_colours[4] = new_colour
+                recolorise("VH","c",new_colour)
+            elif selected_domain == "VLc":
+                specificity_colours[5] = new_colour
+                recolorise("VL","c",new_colour)
+            elif selected_domain == "VHd":
+                specificity_colours[6] = new_colour
+                recolorise("VH","d",new_colour)
+            elif selected_domain == "VLd":
+                specificity_colours[7] = new_colour
+                recolorise("VL","d",new_colour)
+            elif selected_domain == "VHe":
+                specificity_colours[8] = new_colour
+                recolorise("VH","e",new_colour)
+            elif selected_domain == "VLe":
+                specificity_colours[9] = new_colour
+                recolorise("VL","e",new_colour)
+            elif selected_domain == "VHf":
+                specificity_colours[10] = new_colour
+                recolorise("VH","f",new_colour)
+            elif selected_domain == "VLf":
+                specificity_colours[11] = new_colour
+                recolorise("VL","f",new_colour)
+            elif selected_domain == "VHg":
+                specificity_colours[12] = new_colour
+                recolorise("VH","g",new_colour)
+            elif selected_domain == "VLg":
+                specificity_colours[13] = new_colour
+                recolorise("VL","g",new_colour)
+            elif selected_domain == "VHh":
+                specificity_colours[14] = new_colour
+                recolorise("VH","h",new_colour)
+            elif selected_domain == "VLh":
+                specificity_colours[15] = new_colour
+                recolorise("VL","h",new_colour)
+            elif selected_domain == "X":
+                specificity_colours[18] = new_colour
+            elif selected_domain == "C":
+                specificity_colours[19] = new_colour
+                for i in range(len(polygons_keyslist)):
+                    if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+            elif selected_domain == "-":
+                bond_colours[1] = new_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+            elif selected_domain == "-L-":
+                bond_colours[3] = new_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+            elif selected_domain == "-H-":
+                bond_colours[2] = new_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+            elif selected_domain == "Disulphide":
+                bond_colours[0] = new_colour
+                disulphides_list = lower_canvas.find_withtag("disulphide")
+                disulphides_dict = {}
+                for i in range(len(disulphides_list)):
+                    for j in range(len(polygons_keyslist)):
+                        if disulphides_list[i] == polygons_keyslist[j]:
+                            disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+                disulphides_keyslist = list(disulphides_dict.keys())
+                for i in range(len(disulphides_keyslist)):
+                    lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
+            colour_checker.config(bg=new_colour)
+
+        def revertcolor():
+            global specificity_colours
+            global bond_colours
+            global selected_domain
+            global canvas_polygons
+            polygons_keyslist = list(canvas_polygons.keys())
+            if   selected_domain == "VHa":
+                specificity_colours[0] = a_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = a_heavy_colour
+                recolorise("VH","a",a_heavy_colour)
+                colour_checker.config(bg=a_heavy_colour)
+            elif selected_domain == "VLa":
+                specificity_colours[1] = a_light_colour
+                colours[coloursettings_keyslist[colourindex]] = a_light_colour
+                recolorise("VL","a",a_light_colour)
+                colour_checker.config(bg=a_light_colour)
+            elif selected_domain == "VHb":
+                specificity_colours[2] = b_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = b_heavy_colour
+                recolorise("VH","b",b_heavy_colour)
+                colour_checker.config(bg=b_heavy_colour)
+            elif selected_domain == "VLb":
+                specificity_colours[3] = b_light_colour
+                colours[coloursettings_keyslist[colourindex]] = b_light_colour
+                recolorise("VL","b",b_light_colour)
+                colour_checker.config(bg=b_light_colour)
+            elif selected_domain == "VHc":
+                specificity_colours[4] = c_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = c_heavy_colour
+                recolorise("VH","c",c_heavy_colour)
+                colour_checker.config(bg=c_heavy_colour)
+            elif selected_domain == "VLc":
+                specificity_colours[5] = c_light_colour
+                colours[coloursettings_keyslist[colourindex]] = c_light_colour
+                recolorise("VL","c",c_light_colour)
+                colour_checker.config(bg=c_light_colour)
+            elif selected_domain == "VHd":
+                specificity_colours[6] = d_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = d_heavy_colour
+                recolorise("VH","d",d_heavy_colour)
+                colour_checker.config(bg=d_heavy_colour)
+            elif selected_domain == "VLd":
+                specificity_colours[7] = d_light_colour
+                colours[coloursettings_keyslist[colourindex]] = d_light_colour
+                recolorise("VL","d",d_light_colour)
+                colour_checker.config(bg=d_light_colour)
+            elif selected_domain == "VHe":
+                specificity_colours[8] = e_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = e_heavy_colour
+                recolorise("VH","e",e_heavy_colour)
+                colour_checker.config(bg=e_heavy_colour)
+            elif selected_domain == "VLe":
+                specificity_colours[9] = e_light_colour
+                colours[coloursettings_keyslist[colourindex]] = e_light_colour
+                recolorise("VL","e",e_light_colour)
+                colour_checker.config(bg=e_light_colour)
+            elif selected_domain == "VHf":
+                specificity_colours[10] = f_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = f_heavy_colour
+                recolorise("VH","f",f_heavy_colour)
+                colour_checker.config(bg=f_heavy_colour)
+            elif selected_domain == "VLf":
+                specificity_colours[11] = f_light_colour
+                colours[coloursettings_keyslist[colourindex]] = f_light_colour
+                recolorise("VL","f",f_light_colour)
+                colour_checker.config(bg=f_light_colour)
+            elif selected_domain == "VHg":
+                specificity_colours[12] = g_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = g_heavy_colour
+                recolorise("VH","g",g_heavy_colour)
+                colour_checker.config(bg=g_heavy_colour)
+            elif selected_domain == "VLg":
+                specificity_colours[13] = g_light_colour
+                colours[coloursettings_keyslist[colourindex]] = g_light_colour
+                recolorise("VL","g",g_light_colour)
+                colour_checker.config(bg=g_light_colour)
+            elif selected_domain == "VHh":
+                specificity_colours[14] = h_heavy_colour
+                colours[coloursettings_keyslist[colourindex]] = h_heavy_colour
+                recolorise("VH","h",h_heavy_colour)
+                colour_checker.config(bg=h_heavy_colour)
+            elif selected_domain == "VLh":
+                specificity_colours[15] = h_light_colour
+                colours[coloursettings_keyslist[colourindex]] = h_light_colour
+                recolorise("VL","h",h_light_colour)
+                colour_checker.config(bg=h_light_colour)
+            elif selected_domain == "X":
+                specificity_colours[18] = X_colour
+                for i in range(len(polygons_keyslist)):
+                    if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = X_colour)
+                colours[coloursettings_keyslist[colourindex]] = X_colour
+                colour_checker.config(bg=X_colour)
+            elif selected_domain == "C":
+                specificity_colours[19] = C_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "C":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = C_colour)
+                colours[coloursettings_keyslist[colourindex]] = C_colour
+                colour_checker.config(bg=C_colour)
+            elif selected_domain == "-":
+                bond_colours[1] = bond_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = bond_colour)
+                colours[coloursettings_keyslist[colourindex]] = bond_colour
+                colour_checker.config(bg=bond_colour)
+            elif selected_domain == "-L-":
+                bond_colours[3] = linker_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = linker_colour)
+                colours[coloursettings_keyslist[colourindex]] = linker_colour
+                colour_checker.config(bg=linker_colour)
+            elif selected_domain == "-H-":
+                bond_colours[2] = hinge_colour
+                for i in range(len(polygons_keyslist)):
+                    if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
+                        lower_canvas.itemconfig(polygons_keyslist[i], fill = hinge_colour)
+                colours[coloursettings_keyslist[colourindex]] = hinge_colour
+                colour_checker.config(bg=hinge_colour)
+            elif selected_domain == "Disulphide":
+                bond_colours[0] = disulphide_colour
+                disulphides_list = lower_canvas.find_withtag("disulphide")
+                disulphides_dict = {}
+                for i in range(len(disulphides_list)):
+                    for j in range(len(polygons_keyslist)):
+                        if disulphides_list[i] == polygons_keyslist[j]:
+                            disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
+                disulphides_keyslist = list(disulphides_dict.keys())
+                for i in range(len(disulphides_keyslist)):
+                    lower_canvas.itemconfig(disulphides_keyslist[i], fill = disulphide_colour)
+                colours[coloursettings_keyslist[colourindex]] = disulphide_colour
+                colour_checker.config(bg=disulphide_colour)
+
+
+
+
+        def revertallcolours():
+            global specificity_colours
+            global bond_colours
+            global selected_domain
+            global selected_colour
+            specificity_colours[0] = a_heavy_colour
+            specificity_colours[1] = a_light_colour
+            specificity_colours[2] = b_heavy_colour
+            specificity_colours[3] = b_light_colour
+            specificity_colours[4] = c_heavy_colour
+            specificity_colours[5] = c_light_colour
+            specificity_colours[6] = d_heavy_colour
+            specificity_colours[7] = d_light_colour
+            specificity_colours[8] = e_heavy_colour
+            specificity_colours[9] = e_light_colour
+            specificity_colours[10] = f_heavy_colour
+            specificity_colours[11] = f_light_colour
+            specificity_colours[12] = g_heavy_colour
+            specificity_colours[13] = g_light_colour
+            specificity_colours[14] = h_heavy_colour
+            specificity_colours[15] = h_light_colour
+            specificity_colours[18] = X_colour
+            specificity_colours[19] = C_colour
+            bond_colours[1] = bond_colour
+            bond_colours[3] = linker_colour
+            bond_colours[2] = hinge_colour
+            bond_colours[0] = disulphide_colour
+            recolorise("VH","a",a_heavy_colour)
+            recolorise("VH","b",b_heavy_colour)
+            recolorise("VH","c",c_heavy_colour)
+            recolorise("VH","d",d_heavy_colour)
+            recolorise("VH","e",e_heavy_colour)
+            recolorise("VH","f",f_heavy_colour)
+            recolorise("VH","g",g_heavy_colour)
+            recolorise("VH","h",h_heavy_colour)
+            recolorise("VL","a",a_light_colour)
+            recolorise("VL","b",b_light_colour)
+            recolorise("VL","c",c_light_colour)
+            recolorise("VL","d",d_light_colour)
+            recolorise("VL","e",e_light_colour)
+            recolorise("VL","f",f_light_colour)
+            recolorise("VL","g",g_light_colour)
+            recolorise("VL","h",h_light_colour)
+            colours["VHa"] = a_heavy_colour
+            colours["VHb"] = b_heavy_colour
+            colours["VHc"] = c_heavy_colour
+            colours["VHd"] = d_heavy_colour
+            colours["VHe"] = e_heavy_colour
+            colours["VHf"] = f_heavy_colour
+            colours["VHg"] = g_heavy_colour
+            colours["VHh"] = h_heavy_colour
+            colours["VLa"] = a_light_colour
+            colours["VLb"] = b_light_colour
+            colours["VLc"] = c_light_colour
+            colours["VLd"] = d_light_colour
+            colours["VLe"] = e_light_colour
+            colours["VLf"] = f_light_colour
+            colours["VLg"] = g_light_colour
+            colours["VLh"] = h_light_colour
+            colours["X"]   = X_colour
+            colours["C"]   = C_colour
+            colours["-"]   = bond_colour
+            colours["-L-"] = linker_colour
+            colours["-H-"] = hinge_colour
+            colours["Disulphide"] = disulphide_colour
             for i in range(len(polygons_keyslist)):
                 if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
                     lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        elif selected_domain == "-":
+            bond_colours[1] = bond_colour
+            bond_colours[1] = new_colour
+            for i in range(len(polygons_keyslist)):
+                if canvas_polygons.get(polygons_keyslist[i])[1] == "C":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
+            bond_colours[1] = bond_colour
             bond_colours[1] = new_colour
             for i in range(len(polygons_keyslist)):
                 if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
                     lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        elif selected_domain == "-L-":
-            bond_colours[3] = new_colour
-            for i in range(len(polygons_keyslist)):
-                if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        elif selected_domain == "-H-":
-            bond_colours[2] = new_colour
-            for i in range(len(polygons_keyslist)):
-                if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        elif selected_domain == "Disulphide":
-            bond_colours[0] = new_colour
-            disulphides_list = lower_canvas.find_withtag("disulphide")
-            disulphides_dict = {}
-            for i in range(len(disulphides_list)):
-                for j in range(len(polygons_keyslist)):
-                    if disulphides_list[i] == polygons_keyslist[j]:
-                        disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-            disulphides_keyslist = list(disulphides_dict.keys())
-            for i in range(len(disulphides_keyslist)):
-                lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
-        colour_checker.config(bg=new_colour)
-
-    def revertcolor():
-        global specificity_colours
-        global bond_colours
-        global selected_domain
-        global canvas_polygons
-        polygons_keyslist = list(canvas_polygons.keys())
-        if   selected_domain == "VHa":
-            specificity_colours[0] = a_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = a_heavy_colour
-            recolorise("VH","a",a_heavy_colour)
-            colour_checker.config(bg=a_heavy_colour)
-        elif selected_domain == "VLa":
-            specificity_colours[1] = a_light_colour
-            colours[coloursettings_keyslist[colourindex]] = a_light_colour
-            recolorise("VL","a",a_light_colour)
-            colour_checker.config(bg=a_light_colour)
-        elif selected_domain == "VHb":
-            specificity_colours[2] = b_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = b_heavy_colour
-            recolorise("VH","b",b_heavy_colour)
-            colour_checker.config(bg=b_heavy_colour)
-        elif selected_domain == "VLb":
-            specificity_colours[3] = b_light_colour
-            colours[coloursettings_keyslist[colourindex]] = b_light_colour
-            recolorise("VL","b",b_light_colour)
-            colour_checker.config(bg=b_light_colour)
-        elif selected_domain == "VHc":
-            specificity_colours[4] = c_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = c_heavy_colour
-            recolorise("VH","c",c_heavy_colour)
-            colour_checker.config(bg=c_heavy_colour)
-        elif selected_domain == "VLc":
-            specificity_colours[5] = c_light_colour
-            colours[coloursettings_keyslist[colourindex]] = c_light_colour
-            recolorise("VL","c",c_light_colour)
-            colour_checker.config(bg=c_light_colour)
-        elif selected_domain == "VHd":
-            specificity_colours[6] = d_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = d_heavy_colour
-            recolorise("VH","d",d_heavy_colour)
-            colour_checker.config(bg=d_heavy_colour)
-        elif selected_domain == "VLd":
-            specificity_colours[7] = d_light_colour
-            colours[coloursettings_keyslist[colourindex]] = d_light_colour
-            recolorise("VL","d",d_light_colour)
-            colour_checker.config(bg=d_light_colour)
-        elif selected_domain == "VHe":
-            specificity_colours[8] = e_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = e_heavy_colour
-            recolorise("VH","e",e_heavy_colour)
-            colour_checker.config(bg=e_heavy_colour)
-        elif selected_domain == "VLe":
-            specificity_colours[9] = e_light_colour
-            colours[coloursettings_keyslist[colourindex]] = e_light_colour
-            recolorise("VL","e",e_light_colour)
-            colour_checker.config(bg=e_light_colour)
-        elif selected_domain == "VHf":
-            specificity_colours[10] = f_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = f_heavy_colour
-            recolorise("VH","f",f_heavy_colour)
-            colour_checker.config(bg=f_heavy_colour)
-        elif selected_domain == "VLf":
-            specificity_colours[11] = f_light_colour
-            colours[coloursettings_keyslist[colourindex]] = f_light_colour
-            recolorise("VL","f",f_light_colour)
-            colour_checker.config(bg=f_light_colour)
-        elif selected_domain == "VHg":
-            specificity_colours[12] = g_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = g_heavy_colour
-            recolorise("VH","g",g_heavy_colour)
-            colour_checker.config(bg=g_heavy_colour)
-        elif selected_domain == "VLg":
-            specificity_colours[13] = g_light_colour
-            colours[coloursettings_keyslist[colourindex]] = g_light_colour
-            recolorise("VL","g",g_light_colour)
-            colour_checker.config(bg=g_light_colour)
-        elif selected_domain == "VHh":
-            specificity_colours[14] = h_heavy_colour
-            colours[coloursettings_keyslist[colourindex]] = h_heavy_colour
-            recolorise("VH","h",h_heavy_colour)
-            colour_checker.config(bg=h_heavy_colour)
-        elif selected_domain == "VLh":
-            specificity_colours[15] = h_light_colour
-            colours[coloursettings_keyslist[colourindex]] = h_light_colour
-            recolorise("VL","h",h_light_colour)
-            colour_checker.config(bg=h_light_colour)
-        elif selected_domain == "X":
-            specificity_colours[18] = X_colour
-            for i in range(len(polygons_keyslist)):
-                if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = X_colour)
-            colours[coloursettings_keyslist[colourindex]] = X_colour
-            colour_checker.config(bg=X_colour)
-        elif selected_domain == "C":
-            specificity_colours[19] = C_colour
-            for i in range(len(polygons_keyslist)):
-                if canvas_polygons.get(polygons_keyslist[i])[1] == "C":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = C_colour)
-            colours[coloursettings_keyslist[colourindex]] = C_colour
-            colour_checker.config(bg=C_colour)
-        elif selected_domain == "-":
-            bond_colours[1] = bond_colour
-            for i in range(len(polygons_keyslist)):
-                if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = bond_colour)
-            colours[coloursettings_keyslist[colourindex]] = bond_colour
-            colour_checker.config(bg=bond_colour)
-        elif selected_domain == "-L-":
             bond_colours[3] = linker_colour
+            bond_colours[1] = new_colour
             for i in range(len(polygons_keyslist)):
                 if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = linker_colour)
-            colours[coloursettings_keyslist[colourindex]] = linker_colour
-            colour_checker.config(bg=linker_colour)
-        elif selected_domain == "-H-":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
             bond_colours[2] = hinge_colour
+            bond_colours[1] = new_colour
             for i in range(len(polygons_keyslist)):
                 if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
-                    lower_canvas.itemconfig(polygons_keyslist[i], fill = hinge_colour)
-            colours[coloursettings_keyslist[colourindex]] = hinge_colour
-            colour_checker.config(bg=hinge_colour)
-        elif selected_domain == "Disulphide":
+                    lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
             bond_colours[0] = disulphide_colour
             disulphides_list = lower_canvas.find_withtag("disulphide")
             disulphides_dict = {}
@@ -7779,381 +7939,420 @@ def open_settings():
                         disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
             disulphides_keyslist = list(disulphides_dict.keys())
             for i in range(len(disulphides_keyslist)):
-                lower_canvas.itemconfig(disulphides_keyslist[i], fill = disulphide_colour)
-            colours[coloursettings_keyslist[colourindex]] = disulphide_colour
-            colour_checker.config(bg=disulphide_colour)
+                lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
+            if   selected_domain == "VHa":
+                colour_checker.config(bg=a_heavy_colour)
+            elif selected_domain == "VLa":
+                colour_checker.config(bg=a_light_colour)
+            elif selected_domain == "VHb":
+                colour_checker.config(bg=b_heavy_colour)
+            elif selected_domain == "VLb":
+                colour_checker.config(bg=b_light_colour)
+            elif selected_domain == "VHc":
+                colour_checker.config(bg=c_heavy_colour)
+            elif selected_domain == "VLc":
+                colour_checker.config(bg=c_light_colour)
+            elif selected_domain == "VHd":
+                colour_checker.config(bg=d_heavy_colour)
+            elif selected_domain == "VLd":
+                colour_checker.config(bg=d_light_colour)
+            elif selected_domain == "VHe":
+                colour_checker.config(bg=e_heavy_colour)
+            elif selected_domain == "VLe":
+                colour_checker.config(bg=e_light_colour)
+            elif selected_domain == "VHf":
+                colour_checker.config(bg=f_heavy_colour)
+            elif selected_domain == "VLf":
+                colour_checker.config(bg=f_light_colour)
+            elif selected_domain == "VHg":
+                colour_checker.config(bg=g_heavy_colour)
+            elif selected_domain == "VLg":
+                colour_checker.config(bg=g_light_colour)
+            elif selected_domain == "VHh":
+                colour_checker.config(bg=h_heavy_colour)
+            elif selected_domain == "VLh":
+                colour_checker.config(bg=h_light_colour)
+            elif selected_domain == "X":
+                colour_checker.config(bg=X_colour)
+            elif selected_domain == "C":
+                colour_checker.config(bg=C_colour)
+            elif selected_domain == "-":
+                colour_checker.config(bg=bond_colour)
+            elif selected_domain == "-L-":
+                colour_checker.config(bg=linker_colour)
+            elif selected_domain == "-H-":
+                colour_checker.config(bg=hinge_colour)
+            elif selected_domain == "Disulphide":
+                colour_checker.config(bg=disulphide_colour)
 
-
-
-
-    def revertallcolours():
-        global specificity_colours
-        global bond_colours
-        global selected_domain
-        global selected_colour
-        specificity_colours[0] = a_heavy_colour
-        specificity_colours[1] = a_light_colour
-        specificity_colours[2] = b_heavy_colour
-        specificity_colours[3] = b_light_colour
-        specificity_colours[4] = c_heavy_colour
-        specificity_colours[5] = c_light_colour
-        specificity_colours[6] = d_heavy_colour
-        specificity_colours[7] = d_light_colour
-        specificity_colours[8] = e_heavy_colour
-        specificity_colours[9] = e_light_colour
-        specificity_colours[10] = f_heavy_colour
-        specificity_colours[11] = f_light_colour
-        specificity_colours[12] = g_heavy_colour
-        specificity_colours[13] = g_light_colour
-        specificity_colours[14] = h_heavy_colour
-        specificity_colours[15] = h_light_colour
-        specificity_colours[18] = X_colour
-        specificity_colours[19] = C_colour
-        bond_colours[1] = bond_colour
-        bond_colours[3] = linker_colour
-        bond_colours[2] = hinge_colour
-        bond_colours[0] = disulphide_colour
-        recolorise("VH","a",a_heavy_colour)
-        recolorise("VH","b",b_heavy_colour)
-        recolorise("VH","c",c_heavy_colour)
-        recolorise("VH","d",d_heavy_colour)
-        recolorise("VH","e",e_heavy_colour)
-        recolorise("VH","f",f_heavy_colour)
-        recolorise("VH","g",g_heavy_colour)
-        recolorise("VH","h",h_heavy_colour)
-        recolorise("VL","a",a_light_colour)
-        recolorise("VL","b",b_light_colour)
-        recolorise("VL","c",c_light_colour)
-        recolorise("VL","d",d_light_colour)
-        recolorise("VL","e",e_light_colour)
-        recolorise("VL","f",f_light_colour)
-        recolorise("VL","g",g_light_colour)
-        recolorise("VL","h",h_light_colour)
-        colours["VHa"] = a_heavy_colour
-        colours["VHb"] = b_heavy_colour
-        colours["VHc"] = c_heavy_colour
-        colours["VHd"] = d_heavy_colour
-        colours["VHe"] = e_heavy_colour
-        colours["VHf"] = f_heavy_colour
-        colours["VHg"] = g_heavy_colour
-        colours["VHh"] = h_heavy_colour
-        colours["VLa"] = a_light_colour
-        colours["VLb"] = b_light_colour
-        colours["VLc"] = c_light_colour
-        colours["VLd"] = d_light_colour
-        colours["VLe"] = e_light_colour
-        colours["VLf"] = f_light_colour
-        colours["VLg"] = g_light_colour
-        colours["VLh"] = h_light_colour
-        colours["X"]   = X_colour
-        colours["C"]   = C_colour
-        colours["-"]   = bond_colour
-        colours["-L-"] = linker_colour
-        colours["-H-"] = hinge_colour
-        colours["Disulphide"] = disulphide_colour
-        for i in range(len(polygons_keyslist)):
-            if "X" in canvas_polygons.get(polygons_keyslist[i])[1]:
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        bond_colours[1] = bond_colour
-        bond_colours[1] = new_colour
-        for i in range(len(polygons_keyslist)):
-            if canvas_polygons.get(polygons_keyslist[i])[1] == "C":
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        bond_colours[1] = bond_colour
-        bond_colours[1] = new_colour
-        for i in range(len(polygons_keyslist)):
-            if canvas_polygons.get(polygons_keyslist[i])[1] == "-":
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        bond_colours[3] = linker_colour
-        bond_colours[1] = new_colour
-        for i in range(len(polygons_keyslist)):
-            if canvas_polygons.get(polygons_keyslist[i])[1] == "-L-":
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        bond_colours[2] = hinge_colour
-        bond_colours[1] = new_colour
-        for i in range(len(polygons_keyslist)):
-            if canvas_polygons.get(polygons_keyslist[i])[1] == "-H-":
-                lower_canvas.itemconfig(polygons_keyslist[i], fill = new_colour)
-        bond_colours[0] = disulphide_colour
-        disulphides_list = lower_canvas.find_withtag("disulphide")
-        disulphides_dict = {}
-        for i in range(len(disulphides_list)):
-            for j in range(len(polygons_keyslist)):
-                if disulphides_list[i] == polygons_keyslist[j]:
-                    disulphides_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-        disulphides_keyslist = list(disulphides_dict.keys())
-        for i in range(len(disulphides_keyslist)):
-            lower_canvas.itemconfig(disulphides_keyslist[i], fill = new_colour)
-        if   selected_domain == "VHa":
-            colour_checker.config(bg=a_heavy_colour)
-        elif selected_domain == "VLa":
-            colour_checker.config(bg=a_light_colour)
-        elif selected_domain == "VHb":
-            colour_checker.config(bg=b_heavy_colour)
-        elif selected_domain == "VLb":
-            colour_checker.config(bg=b_light_colour)
-        elif selected_domain == "VHc":
-            colour_checker.config(bg=c_heavy_colour)
-        elif selected_domain == "VLc":
-            colour_checker.config(bg=c_light_colour)
-        elif selected_domain == "VHd":
-            colour_checker.config(bg=d_heavy_colour)
-        elif selected_domain == "VLd":
-            colour_checker.config(bg=d_light_colour)
-        elif selected_domain == "VHe":
-            colour_checker.config(bg=e_heavy_colour)
-        elif selected_domain == "VLe":
-            colour_checker.config(bg=e_light_colour)
-        elif selected_domain == "VHf":
-            colour_checker.config(bg=f_heavy_colour)
-        elif selected_domain == "VLf":
-            colour_checker.config(bg=f_light_colour)
-        elif selected_domain == "VHg":
-            colour_checker.config(bg=g_heavy_colour)
-        elif selected_domain == "VLg":
-            colour_checker.config(bg=g_light_colour)
-        elif selected_domain == "VHh":
-            colour_checker.config(bg=h_heavy_colour)
-        elif selected_domain == "VLh":
-            colour_checker.config(bg=h_light_colour)
-        elif selected_domain == "X":
-            colour_checker.config(bg=X_colour)
-        elif selected_domain == "C":
-            colour_checker.config(bg=C_colour)
-        elif selected_domain == "-":
-            colour_checker.config(bg=bond_colour)
-        elif selected_domain == "-L-":
-            colour_checker.config(bg=linker_colour)
-        elif selected_domain == "-H-":
-            colour_checker.config(bg=hinge_colour)
-        elif selected_domain == "Disulphide":
-            colour_checker.config(bg=disulphide_colour)
-
-    def colourchange_select(e):
-        global specificity_colours
-        global bond_colours
-        global selected_colour
-        global selected_domain
-        global colourindex
-        i=ColoursettingsLibrary.curselection()
-        colourindex = i[0]
-        current_colour = colours.get(coloursettings_keyslist[colourindex])
-        colour_checker.config(bg=current_colour)
-        selected_colour = current_colour
-        selected_domain = str(coloursettings_keyslist[colourindex])
+        def colourchange_select(e):
+            global specificity_colours
+            global bond_colours
+            global selected_colour
+            global selected_domain
+            global colourindex
+            i=ColoursettingsLibrary.curselection()
+            colourindex = i[0]
+            current_colour = colours.get(coloursettings_keyslist[colourindex])
+            colour_checker.config(bg=current_colour)
+            selected_colour = current_colour
+            selected_domain = str(coloursettings_keyslist[colourindex])
 
 
 
 
 
-    ColoursettingsLibrary= tk.Listbox(tab2, selectbackground='#D3D3D3', height=20)
-    colours = {
-    "VHa": specificity_colours[0],
-    "VLa":specificity_colours[1]  ,
-    "VHb":specificity_colours[2] ,
-    "VLb": specificity_colours[3],
-    "VHc": specificity_colours[4],
-    "VLc":specificity_colours[5]  ,
-    "VHd":specificity_colours[6] ,
-    "VLd": specificity_colours[7],
-    "VHe": specificity_colours[8],
-    "VLe":specificity_colours[9]  ,
-    "VHf":specificity_colours[10] ,
-    "VLf": specificity_colours[11],
-    "VHg": specificity_colours[12],
-    "VLg":specificity_colours[13]  ,
-    "VHh":specificity_colours[14] ,
-    "VLh": specificity_colours[15],
-    "X"  : specificity_colours[18],
-    "C"  : specificity_colours[19],
-    "-"  : bond_colours[1],
-    "-L-": bond_colours[3],
-    "-H-": bond_colours[2],
-    "Disulphide": bond_colours[0]
-    }
+        ColoursettingsLibrary= tk.Listbox(tab2, selectbackground='#D3D3D3', height=20)
+        colours = {
+        "VHa": specificity_colours[0],
+        "VLa":specificity_colours[1]  ,
+        "VHb":specificity_colours[2] ,
+        "VLb": specificity_colours[3],
+        "VHc": specificity_colours[4],
+        "VLc":specificity_colours[5]  ,
+        "VHd":specificity_colours[6] ,
+        "VLd": specificity_colours[7],
+        "VHe": specificity_colours[8],
+        "VLe":specificity_colours[9]  ,
+        "VHf":specificity_colours[10] ,
+        "VLf": specificity_colours[11],
+        "VHg": specificity_colours[12],
+        "VLg":specificity_colours[13]  ,
+        "VHh":specificity_colours[14] ,
+        "VLh": specificity_colours[15],
+        "X"  : specificity_colours[18],
+        "C"  : specificity_colours[19],
+        "-"  : bond_colours[1],
+        "-L-": bond_colours[3],
+        "-H-": bond_colours[2],
+        "Disulphide": bond_colours[0]
+        }
 
-    coloursettings_keyslist= list(colours.keys())
-    for i in range(len(coloursettings_keyslist)):
-        ColoursettingsLibrary.insert("end",coloursettings_keyslist[i])
-        if i %2==0:
-            ColoursettingsLibrary.itemconfig(i, bg='#D3D3D3')
+        coloursettings_keyslist= list(colours.keys())
+        for i in range(len(coloursettings_keyslist)):
+            ColoursettingsLibrary.insert("end",coloursettings_keyslist[i])
+            if i %2==0:
+                ColoursettingsLibrary.itemconfig(i, bg='#D3D3D3')
 
-    ColoursettingsLibrary.bind('<<ListboxSelect>>', colourchange_select)
-    ColoursettingsLibrary.place(relx=0.1, rely = 0.1,relheight = 0.8, relwidth = 0.3)
+        ColoursettingsLibrary.bind('<<ListboxSelect>>', colourchange_select)
+        ColoursettingsLibrary.place(relx=0.1, rely = 0.1,relheight = 0.8, relwidth = 0.3)
 
-    changerframe = tk.Frame(tab2, bg = "#D3D3D3")
-    changerframe.place(relx=0.4, rely = 0.1,relheight = 0.8, relwidth = 0.49)
+        changerframe = tk.Frame(tab2, bg = "#D3D3D3")
+        changerframe.place(relx=0.4, rely = 0.1,relheight = 0.8, relwidth = 0.49)
 
-    colour_checker = tk.Frame(changerframe, pady = 5, bd = 5,highlightbackground="black", highlightthickness=1)
-    colour_checker.place(relx=0.2, rely = 0.2,relheight = 0.2, relwidth = 0.6)
+        colour_checker = tk.Frame(changerframe, pady = 5, bd = 5,highlightbackground="black", highlightthickness=1)
+        colour_checker.place(relx=0.2, rely = 0.2,relheight = 0.2, relwidth = 0.6)
 
-    changecolourbutton = tk.Button(changerframe, font=20, text = "Change colour", command =lambda: browse_colour())
-    changecolourbutton.place(relx=0.25, rely = 0.5,relheight = 0.1, relwidth = 0.5)
+        changecolourbutton = tk.Button(changerframe, font=20, text = "Change colour", command =lambda: browse_colour())
+        changecolourbutton.place(relx=0.25, rely = 0.5,relheight = 0.1, relwidth = 0.5)
 
-    revertcolorbutton = tk.Button(changerframe, font=20, text = "Revert colour", command =lambda: revertcolor())
-    revertcolorbutton.place(relx=0.25, rely = 0.7,relheight = 0.1, relwidth = 0.5)
+        revertcolorbutton = tk.Button(changerframe, font=20, text = "Revert colour", command =lambda: revertcolor())
+        revertcolorbutton.place(relx=0.25, rely = 0.7,relheight = 0.1, relwidth = 0.5)
 
-    revertallcoloursbutton= tk.Button(changerframe, font=20, text = "Revert all colours", command =lambda: revertallcolours())
-    revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.1, relwidth = 0.5)
+        revertallcoloursbutton= tk.Button(changerframe, font=20, text = "Revert all colours", command =lambda: revertallcolours())
+        revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.1, relwidth = 0.5)
 
-#Coloursettings.place(relx=0.21, rely = 0.425,relheight = 0.2, relwidth = 0.19)
-def open_manual():
-    global root
-    top2 = tk.Toplevel(root)
-    top2.title = "README.txt"
-    top2.geometry('500x400')
-    manual_frame = tk.Frame(top2, bg = "#D3D3D3")
-    manual_frame.place(relx=0, rely = 0,relheight = 1, relwidth = 1)
-    Manual =[
-    "abYdraw",
-    " ",
-    " ",
-    "This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and using standard packages TKinter to build the graphical interface in order to make it as accessible as possible.",
-    " ",
-    "Contents",
-    "1. Installing and Executing",
-    "2. Interface",
-    "3. AbML",
-    "4. Inputting AbML",
-    "5. Obtaining AbML",
-    "6. Formats Library",
-    "7. Saving and exporting",
-    "8. Settings",
-    " ",
-    "1. Installing and Executing",
-    "abYdraw may be downloaded and run as an executable Python script. Therefore it requires at least Python 3.8 to run and can be executed as such:",
-    "",
-    "python3 abYdraw.py"
-    " ",
-    "2. Interface",
-    "The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side.",
-    "Starting with the left hand column, the first is the Domain palette which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions, thirdly the input box for AbML expressions and a buttonpad that will render antibody schematics or output AbML to the textbox.",
-    "On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics and underneath there are two buttons which are involved in exporting the schematic.",
-    " ",
-    "3. AbML",
-    "Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the",
-    "number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: TYPE; NOTE; MOD; ANTI and LENGTH. Full descriptions of AbML can be found on the language guide sheet included in the Repository.",
-    " ",
-    "4. Inputting AbML",
-    "AbML descriptor strings my be inputted in the entry box or opened in the 'File>Open' menu and then by clicking 'Get Structure', a schematic of that antibody will render in the canvas. Schematics are drawn in colour-coded fashion depending on any specificities given in the descriptor chain. Domains are connected by different kinds of linkers which are also colour-coded depending on their type. Any comments given in the descriptor string are also displayed beside the schematic. Labels on",
-    "the schematic may be toggled on and off using the Labels key on the Domain Palette.",
-    " ",
-    "5. Obtaining AbML",
-    "To draw an antibody, you must insert domains onto the canvas and arrange them so the programme recognises it as an antibody. Your tools for adding domains to the canvas are in the Domain Palette which contains all of the domain types, modifications, specificities and comment types as described in the AbML guidesheet as well as some options. Selecting a button on the palette will cause it to flash red to indicate it has been switched on. Only one domain or connector type may be switched",
-    "on at a time, but you may choose any combination of modifications and specificities to accompany your selection. Specificity types are only applicable to VH or VL domains but when drawing other domains, a default 'a' value is set. Once selected you will notice the cursor will change from arrow to '+' sign. This means you can left-click to insert your chosen domain type onto the canvas at the location you have clicked. If no domain types are selected but a modification or specificity",
-    "are, then by clicking on a domain on the canvas, you may replace its current specificity and modification to those you have selected.",
-    "Domains may be connected with the connector options in the first column of the palette. When a connector type is selected it will become highlighted in red and the user must click and drag the bond from its starting position to its end, making sure each end is inside the boundaries two domains it links. Bonds are unidirectional and start from N-terminus to C-terminus.",
-    "Comments may be added by selecting a comment type, which will highlight the button just pressed and the 'Comment' button and then inputting the comment into the entry box beneath the palette. Comments may then be drawn on the domains they are applicable to. To disable further commenting, ensure the comment type and 'Comment' buttons are no longer highlighted.",
-    "If no domain types or modifications are selected then domains, linkers and comments may be rearranged by clicking and dragging them. You must ensure that interacting domains are positioned close together at roughly the same level and that VH and VL domains face each other to complete their antigen binding domains. Their orientations can be changed by right-clicking the relevant domains. Furthermore features may be deleted by selecting the 'Delete' button on the palette and",
-    "then selecting what to delete. To remove all features, click 'Clear All' and the canvas will be made blank.",
-    "Once domains and connectors are arranged, click the 'Get AbML' button to generate the AbML descriptor string for this sequence. Once this has been generated it will appear in the input box. You may then click 'Get structure' again to re-render the schematic with abYdraw. Alternatively, the 'Tidy' button performs both steps of this operation. Once rendered, an image may be altered by adding or removing domains. By clicking 'Get Sequence' or 'Tidy', you will obtain a new expression",
-    "for rendering.",
-    " ",
-    "6. AbML Formats Library",
-    "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and AbML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
-    " ",
-    "7. Exporting and Saving",
-    "Exporting the canvas image as .eps file can be done by 'Export EPS' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
-    "Finally you may export a Template File from the expression in the entry box which is a format of notating important BsAb residues. The programme cannot locate these residues but it can identify the features that are in the BsAb that users may want to include in the Template Files.",
-    " ",
-    "8. Settings",
-    "Users may change aspects about the rendering and pairing of their schematic. By opening the 'File>Settings' window, a menu with two tabs will appear. The first tab has settings regarding pairing sensitivity of drawn schematics, bond thickness, directional arrows, Hinge and Linker labels which can be set by using the appropriate sliders. For pairing sensitivity the scale is 0-80 pixels and bond width are between 1-5 pixels. Other binary settings are on sliders 0-1.",
-    "To update the settings,users must press the update button and re-render their schematic to see their new schematic. The second tab is the colour-coding menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. 'Change colour' allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by 'Revert colour' or 'Revert all colours'",
-    " ",
-    ]
-    manual_textbox = tk.Text(manual_frame,wrap="word", font=20)
-    manual_textbox.place(relx=0, rely = 0, relheight = 1, relwidth = 1)
-    for i in range(len(Manual)):
-        manual_textbox.insert("end",str(Manual[i]+"\n"))
-###Results canvas
+    #Coloursettings.place(relx=0.21, rely = 0.425,relheight = 0.2, relwidth = 0.19)
+    def open_manual():
+        global root
+        top2 = tk.Toplevel(root)
+        top2.title = "README.txt"
+        top2.geometry('500x400')
+        manual_frame = tk.Frame(top2, bg = "#D3D3D3")
+        manual_frame.place(relx=0, rely = 0,relheight = 1, relwidth = 1)
+        Manual =[
+        "abYdraw",
+        " ",
+        " ",
+        "This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and using standard packages TKinter to build the graphical interface in order to make it as accessible as possible.",
+        " ",
+        "Contents",
+        "1. Installing and Executing",
+        "2. Interface",
+        "3. AbML",
+        "4. Inputting AbML",
+        "5. Obtaining AbML",
+        "6. Formats Library",
+        "7. Saving and exporting",
+        "8. Settings",
+        " ",
+        "1. Installing and Executing",
+        "abYdraw may be downloaded and run as an executable Python script. Therefore it requires at least Python 3.8 to run and can be executed as such:",
+        "",
+        "python3 abYdraw.py"
+        " ",
+        "2. Interface",
+        "The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side.",
+        "Starting with the left hand column, the first is the Domain palette which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions, thirdly the input box for AbML expressions and a buttonpad that will render antibody schematics or output AbML to the textbox.",
+        "On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics and underneath there are two buttons which are involved in exporting the schematic.",
+        " ",
+        "3. AbML",
+        "Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the",
+        "number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: TYPE; NOTE; MOD; ANTI and LENGTH. Full descriptions of AbML can be found on the language guide sheet included in the Repository.",
+        " ",
+        "4. Inputting AbML",
+        "AbML descriptor strings my be inputted in the entry box or opened in the 'File>Open' menu and then by clicking 'Get Structure', a schematic of that antibody will render in the canvas. Schematics are drawn in colour-coded fashion depending on any specificities given in the descriptor chain. Domains are connected by different kinds of linkers which are also colour-coded depending on their type. Any comments given in the descriptor string are also displayed beside the schematic. Labels on",
+        "the schematic may be toggled on and off using the Labels key on the Domain Palette.",
+        " ",
+        "5. Obtaining AbML",
+        "To draw an antibody, you must insert domains onto the canvas and arrange them so the programme recognises it as an antibody. Your tools for adding domains to the canvas are in the Domain Palette which contains all of the domain types, modifications, specificities and comment types as described in the AbML guidesheet as well as some options. Selecting a button on the palette will cause it to flash red to indicate it has been switched on. Only one domain or connector type may be switched",
+        "on at a time, but you may choose any combination of modifications and specificities to accompany your selection. Specificity types are only applicable to VH or VL domains but when drawing other domains, a default 'a' value is set. Once selected you will notice the cursor will change from arrow to '+' sign. This means you can left-click to insert your chosen domain type onto the canvas at the location you have clicked. If no domain types are selected but a modification or specificity",
+        "are, then by clicking on a domain on the canvas, you may replace its current specificity and modification to those you have selected.",
+        "Domains may be connected with the connector options in the first column of the palette. When a connector type is selected it will become highlighted in red and the user must click and drag the bond from its starting position to its end, making sure each end is inside the boundaries two domains it links. Bonds are unidirectional and start from N-terminus to C-terminus.",
+        "Comments may be added by selecting a comment type, which will highlight the button just pressed and the 'Comment' button and then inputting the comment into the entry box beneath the palette. Comments may then be drawn on the domains they are applicable to. To disable further commenting, ensure the comment type and 'Comment' buttons are no longer highlighted.",
+        "If no domain types or modifications are selected then domains, linkers and comments may be rearranged by clicking and dragging them. You must ensure that interacting domains are positioned close together at roughly the same level and that VH and VL domains face each other to complete their antigen binding domains. Their orientations can be changed by right-clicking the relevant domains. Furthermore features may be deleted by selecting the 'Delete' button on the palette and",
+        "then selecting what to delete. To remove all features, click 'Clear All' and the canvas will be made blank.",
+        "Once domains and connectors are arranged, click the 'Get AbML' button to generate the AbML descriptor string for this sequence. Once this has been generated it will appear in the input box. You may then click 'Get structure' again to re-render the schematic with abYdraw. Alternatively, the 'Tidy' button performs both steps of this operation. Once rendered, an image may be altered by adding or removing domains. By clicking 'Get Sequence' or 'Tidy', you will obtain a new expression",
+        "for rendering.",
+        " ",
+        "6. AbML Formats Library",
+        "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and AbML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
+        " ",
+        "7. Exporting and Saving",
+        "Exporting the canvas image as .eps file can be done by 'Export EPS' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
+        "Finally you may export a Template File from the expression in the entry box which is a format of notating important BsAb residues. The programme cannot locate these residues but it can identify the features that are in the BsAb that users may want to include in the Template Files.",
+        " ",
+        "8. Settings",
+        "Users may change aspects about the rendering and pairing of their schematic. By opening the 'File>Settings' window, a menu with two tabs will appear. The first tab has settings regarding pairing sensitivity of drawn schematics, bond thickness, directional arrows, Hinge and Linker labels which can be set by using the appropriate sliders. For pairing sensitivity the scale is 0-80 pixels and bond width are between 1-5 pixels. Other binary settings are on sliders 0-1.",
+        "To update the settings,users must press the update button and re-render their schematic to see their new schematic. The second tab is the colour-coding menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. 'Change colour' allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by 'Revert colour' or 'Revert all colours'",
+        " ",
+        ]
+        manual_textbox = tk.Text(manual_frame,wrap="word", font=20)
+        manual_textbox.place(relx=0, rely = 0, relheight = 1, relwidth = 1)
+        for i in range(len(Manual)):
+            manual_textbox.insert("end",str(Manual[i]+"\n"))
+    ###Results canvas
 
-lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
-lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
-lower_frame2 = tk.Frame(lower_frame, width =  700+200, height = 700+300, bg = '#80c1ff', bd=5)
-#lower_frame2.place(relwidth=1,relheight=1)
-lower_frame2.pack(expand=True,fill="both")
-lower_canvas = tk.Canvas(lower_frame2,width=700+200,height=700+300, scrollregion=(0,0,700+200,700+300))
-yscrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
-yscrollbar.config(command=lower_canvas.yview)
-yscrollbar.pack(side="right",fill="y")
-xscrollbar = tk.Scrollbar(lower_frame2, orient="horizontal")
-xscrollbar.config(command=lower_canvas.xview)
-xscrollbar.pack(side="bottom",fill="x")
-lower_canvas.config(yscrollcommand=yscrollbar.set)
-lower_canvas.config(xscrollcommand=xscrollbar.set)
-#lower_canvas.place(relheight=1,relwidth=1)
-lower_canvas.pack(expand=True,fill="both")
-
-
-mm = MouseMover()
-canvas_polygons = {}
-canvas_labels   = {}
-temp_label      = {}
-TYPE_labels     = {}
-NOTE_labels     = {}
-ANTI_labels     = {}
-MOD_labels      = {}
-LENGTH_labels   = {}
-deleted_polygons= {}
-TYPE_to_redo    = {}
-NOTE_to_redo    = {}
-ANTI_to_redo    = {}
-MOD_to_redo     = {}
-LENGTH_to_redo  = {}
-Polygon_to_redo = {}
-Deletes_to_redo = {}
-# Bind mouse events to methods (could also be in the constructor)
-lower_canvas.bind("<Button-1>", mm.select)
-lower_canvas.bind("<B1-Motion>", mm.drag)
-lower_canvas.bind("<ButtonRelease-1>", mm.release)
-lower_canvas.bind("<Button-2>", mm.change_orientation)
-lower_canvas.bind("<Button-3>", mm.change_orientation)
-startcoordinates = mm.select
-newcoordinates = mm.drag
-
-domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button]
-bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
-specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
-mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button]
-comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton]
-delete_buttons = [InsertDelAllButton, InsertDelClickButton]
-all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons + comments_buttons + delete_buttons
-
-export_frame = tk.Frame(root, bg='#FF0000')
-export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
-template_file_button = tk.Button(export_frame, text = "Export template file", bg = "#CFCFCF", font=20, command=lambda: Get_Template_File(lower_canvas))
-template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
-Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "#CFCFCF", font=20, command=lambda: save_as_png(lower_canvas))
-Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
-#img = str("AbYdraw_icon.png")
-#root.iconphoto(False, tk.PhotoImage(file=img))
+    lower_frame = tk.Frame(root, bg = '#80c1ff', bd=5)
+    lower_frame.place(relx=0.45, rely=0.015, relwidth=0.55,relheight=0.93)
+    lower_frame2 = tk.Frame(lower_frame, width =  700+200, height = 700+300, bg = '#80c1ff', bd=5)
+    #lower_frame2.place(relwidth=1,relheight=1)
+    lower_frame2.pack(expand=True,fill="both")
+    lower_canvas = tk.Canvas(lower_frame2,width=700+200,height=700+300, scrollregion=(0,0,700+200,700+300))
+    yscrollbar = tk.Scrollbar(lower_frame2, orient="vertical")
+    yscrollbar.config(command=lower_canvas.yview)
+    yscrollbar.pack(side="right",fill="y")
+    xscrollbar = tk.Scrollbar(lower_frame2, orient="horizontal")
+    xscrollbar.config(command=lower_canvas.xview)
+    xscrollbar.pack(side="bottom",fill="x")
+    lower_canvas.config(yscrollcommand=yscrollbar.set)
+    lower_canvas.config(xscrollcommand=xscrollbar.set)
+    #lower_canvas.place(relheight=1,relwidth=1)
+    lower_canvas.pack(expand=True,fill="both")
 
 
+    mm = MouseMover()
+    canvas_polygons = {}
+    canvas_labels   = {}
+    temp_label      = {}
+    TYPE_labels     = {}
+    NOTE_labels     = {}
+    ANTI_labels     = {}
+    MOD_labels      = {}
+    LENGTH_labels   = {}
+    deleted_polygons= {}
+    TYPE_to_redo    = {}
+    NOTE_to_redo    = {}
+    ANTI_to_redo    = {}
+    MOD_to_redo     = {}
+    LENGTH_to_redo  = {}
+    Polygon_to_redo = {}
+    Deletes_to_redo = {}
+    # Bind mouse events to methods (could also be in the constructor)
+    lower_canvas.bind("<Button-1>", mm.select)
+    lower_canvas.bind("<B1-Motion>", mm.drag)
+    lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    lower_canvas.bind("<Button-2>", mm.change_orientation)
+    lower_canvas.bind("<Button-3>", mm.change_orientation)
+    startcoordinates = mm.select
+    newcoordinates = mm.drag
 
-tite = root.title('abYdraw')
-menubar = tk.Menu(root)
-filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="Settings", command=open_settings)
-filemenu.add_command(label="Open", command=lambda: browseFiles())
-filemenu.add_command(label="Save", command=lambda: save_txt_file())
-filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
-filemenu.add_command(label="Export EPS", command=lambda: save_as_png(lower_canvas))
+    domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button]
+    bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
+    specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
+    mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button]
+    comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton]
+    delete_buttons = [InsertDelAllButton, InsertDelClickButton]
+    all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons + comments_buttons + delete_buttons
 
-filemenu.add_separator()
-
-filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(label="File", menu=filemenu)
-
-editmenu = tk.Menu(menubar, tearoff=0)
-editmenu.add_command(label="Undo", command=lambda: undo())
-editmenu.add_command(label="Redo", command=lambda: redo())
-menubar.add_cascade(label="Edit", menu=editmenu)
-
-helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Manual", command=open_manual)
-menubar.add_cascade(label="Help", menu=helpmenu)
-
-root.config(menu=menubar)
+    export_frame = tk.Frame(root, bg='#FF0000')
+    export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
+    template_file_button = tk.Button(export_frame, text = "Export template file", bg = "#CFCFCF", font=20, command=lambda: Get_Template_File(lower_canvas))
+    template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
+    Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "#CFCFCF", font=20, command=lambda: save_as_png(lower_canvas))
+    Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
+    #img = str("AbYdraw_icon.png")
+    #root.iconphoto(False, tk.PhotoImage(file=img))
 
 
-root.mainloop()
+
+    tite = root.title('abYdraw')
+    menubar = tk.Menu(root)
+    filemenu = tk.Menu(menubar, tearoff=0)
+    filemenu.add_command(label="Settings", command=open_settings)
+    filemenu.add_command(label="Open", command=lambda: browseFiles())
+    filemenu.add_command(label="Save", command=lambda: save_txt_file())
+    filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
+    filemenu.add_command(label="Export EPS", command=lambda: save_as_png(lower_canvas))
+
+    filemenu.add_separator()
+
+    filemenu.add_command(label="Exit", command=root.quit)
+    menubar.add_cascade(label="File", menu=filemenu)
+
+    editmenu = tk.Menu(menubar, tearoff=0)
+    editmenu.add_command(label="Undo", command=lambda: undo())
+    editmenu.add_command(label="Redo", command=lambda: redo())
+    menubar.add_cascade(label="Edit", menu=editmenu)
+
+    helpmenu = tk.Menu(menubar, tearoff=0)
+    helpmenu.add_command(label="Manual", command=open_manual)
+    menubar.add_cascade(label="Help", menu=helpmenu)
+
+    root.config(menu=menubar)
+
+
+    ##Choose between GUI and CLI
+
+    root.mainloop()
+else:
+    # Create the parser
+    my_parser = argparse.ArgumentParser(prog="abYdraw",
+                                        usage='python %(prog)s [options]',
+                                        description='Draws antibody formats')
+
+    my_parser.add_argument('--f','--file', type=str,help='the path to file')
+    my_parser.add_argument('--i','--input', type=str,help='the path to list')
+    my_parser.add_argument('--o','--output', type=str,help='the path to list')
+    my_parser.add_argument('--s','--show',nargs='?', type=int,help='Show window')
+    my_parser.add_argument('--l','--labels',nargs='?', type=int,help='Toggle labels ')
+    my_parser.add_argument('--h','--hinge', nargs='?',type=int,help='Toggle hinge labels ')
+    my_parser.add_argument('--k','--linker', nargs='?', type=int,help='Toggle linker labels ')
+    my_parser.add_argument('--a','--arrows', nargs='?',type=int,help='Toggle bond direction arrows ')
+    my_parser.add_argument('--t','--thickness', type=int,help='Set bond thickness range=(1-5)')
+
+    my_parser.print_help()
+    args = my_parser.parse_args()
+
+    input_path = args.f
+    input_string = args.i
+    if input_string is not None and input_path is None:
+        entry = input_string
+    if input_path is not None and input_string is None:
+        entry = Get_input(input_path)
+    elif input_string is not None and input_path is not None:
+        entry = input_string
+    elif input_string is None and input_path is None:
+        print('No input was given. Exiting programme')
+        sys.exit()
+    output_name = args.o
+    if output_name is None:
+        output_name = "AbYdraw_export"
+
+    Label_lock = args.l
+    if Label_lock is None or Label_lock != 0:
+        Label_lock = 1
+    elif Label_lock == 0:
+        Label_lock = 0
+
+    H_Labels = args.h
+    if H_Labels is None or H_Labels != 0:
+        H_Labels = 0
+    elif H_Labels == 0:
+        H_Labels = 1
+
+    L_Labels = args.k
+    if L_Labels is None or L_Labels != 0:
+        L_Labels = 0
+    elif L_Labels == 0:
+        L_Labels = 1
+
+
+    Bond_Arrows = args.a
+    if Bond_Arrows is None:
+        Bond_Arrows = (0,0,0)
+    elif Bond_Arrows is not None:
+        Bond_Arrows = (8,10,3)
+
+    Bond_thickness = args.t
+    if Bond_thickness == None:
+        Bond_thickness = 2
+    show = args.s
+    if show is None:
+        show =0
+    elif show is not None:
+        show = 1
+    CLI = True
+    all_buttons = []
+    a_heavy_colour, a_light_colour = '#007ECB', '#73CAFF'
+    b_heavy_colour, b_light_colour = '#FF43EE', '#F9D3F5'
+    c_heavy_colour, c_light_colour = '#0BD05A', '#B9FAD3'
+    d_heavy_colour, d_light_colour = '#D9DE4A', '#E2F562'
+    e_heavy_colour, e_light_colour = '#FF0000', '#FF8585'
+    f_heavy_colour, f_light_colour = '#FE6D03', '#FFC296'
+    g_heavy_colour, g_light_colour = '#5C54FF', '#AFABFF'
+    h_heavy_colour, h_light_colour = '#0FFBFF', '#CCFEFF'
+    generic_heavy_colour, generic_light_colour = '#8E8E8E','#C6C4C4'
+    disulphide_colour = "red"
+    bond_colour = "black"
+    hinge_colour = "dark green"
+    linker_colour = "purple"
+    X_colour = "#68C1C1"
+    C_colour = "#ABA600"
+    canvas_polygons = {}
+    canvas_labels   = {}
+    temp_label      = {}
+    TYPE_labels     = {}
+    NOTE_labels     = {}
+    ANTI_labels     = {}
+    MOD_labels      = {}
+    LENGTH_labels   = {}
+
+    specificity_colours = [a_heavy_colour, a_light_colour,b_heavy_colour, b_light_colour,c_heavy_colour, c_light_colour,d_heavy_colour, d_light_colour,e_heavy_colour, e_light_colour,f_heavy_colour, f_light_colour,g_heavy_colour, g_light_colour,h_heavy_colour, h_light_colour,generic_heavy_colour,generic_light_colour,X_colour,C_colour]
+    bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
+
+
+    def CLI_save_png(output,canvas):
+        fileName = str(output)
+        eps = canvas.postscript(file=(fileName+"file_name.eps"), colormode='color', height= 1000, width = 900)
+        #eps.close()
+
+    def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show):
+        ###Window###
+
+        HEIGHT =  900
+        WIDTH  = 1000
+        root.geometry=("900x1000")
+        lower_frame = tk.Frame(root, width =  700+200, height = 700+300, bg = '#80c1ff', bd=5)
+        lower_frame.pack(expand=True,fill="both")
+        lower_canvas = tk.Canvas(lower_frame,width=700+200,height=700+300, scrollregion=(0,0,700+200,700+300))
+        yscrollbar = tk.Scrollbar(lower_frame, orient="vertical")
+        yscrollbar.config(command=lower_canvas.yview)
+        yscrollbar.pack(side="right",fill="y")
+        xscrollbar = tk.Scrollbar(lower_frame, orient="horizontal")
+        xscrollbar.config(command=lower_canvas.xview)
+        xscrollbar.pack(side="bottom",fill="x")
+        lower_canvas.config(yscrollcommand=yscrollbar.set)
+        lower_canvas.config(xscrollcommand=xscrollbar.set)
+        lower_canvas.pack(expand=True,fill="both")
+
+        ###Options###
+
+
+
+
+        Bond_thickness = Bond_thickness
+
+
+
+
+        text_to_image = True
+        split_chains = Get_dictionaries(entry)
+        coordinates  = Check_interactions(split_chains, lower_canvas)
+        rendering = render(coordinates, lower_canvas,True)
+        CLI_save_png(output_name,lower_canvas)
+
+        if show == 1:
+            root.mainloop()
+
+    CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show)
