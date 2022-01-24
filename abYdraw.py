@@ -2463,7 +2463,6 @@ def Check_interactions(chains_list,canvas):
     if width == 1 and height == 1 and CLI == True:
         width = 1000
         height = 900
-    print(width,height)
     if chain_count == 1:
         VHa_startx, VHa_starty = (width/2),(height/2)-200
         VHb_startx, VHb_starty = 0,0
@@ -2505,7 +2504,6 @@ def Check_interactions(chains_list,canvas):
                         if "X[" in keyslistb[i] or "C[" in keyslistb[i]:
                             Xb = int(VHb_chain.get(keyslistb[i])[0][0])
                             if Xa == Xb:
-                                print("YAH THAT BE IT")
                                 VHa_H_coordinatesx = (width/2)
                                 VHa_H_coordinatesy = (height/2)-50
                                 VHb_H_coordinatesx = (width/2)
@@ -8314,7 +8312,7 @@ else:
 
     def CLI_save_png(output,canvas):
         fileName = str(output)
-        eps = canvas.postscript(file=(fileName+"file_name.eps"), colormode='color', height= 1000, width = 900)
+        eps = canvas.postscript(file=(fileName+".eps"), colormode='color', height= 1000, width = 900)
         #eps.close()
 
     def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show):
