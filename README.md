@@ -29,7 +29,7 @@ AbML expression for a standard IgG molecule would be:
 
 ### 2. Installing and Executing
 
-#####Command Line Interface
+##### Command Line Interface
 
 abYdraw has a Command Line based interfaced which may be accessed by executing the script with suitable arguements.
 
@@ -53,13 +53,13 @@ optional arguments:
 
 either -f or -i arguements are required to run the script and other options may be toggled between 0 (off) and 1 (on).
 
-#####Graphical Interface
+##### Graphical Interface
 
 abYdraw may be downloaded and the GUI may be opened by executing the Python script without arguements.
 
 `python <path/to/file>/abYdraw.py`
 
-#####Compiling abYdraw
+##### Compiling abYdraw
 
 However, it may also be compiled into an executable file using py2app and the setup.py file provided. which may then be moved into the user's operating system's applications folder for convenient startup.
 install a virtual environment 
