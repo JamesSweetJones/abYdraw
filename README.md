@@ -38,18 +38,18 @@ usage:
 
 optional arguments:
  
-  -f / --file      the path to plaintext file with AbML expression
-  -i / --input     string of AbML input
-  -o / --output    string of image output name      (default "abYdraw_export")
-  -s / --show      Show image window            0-1 (default 0)
-  -i / --image     Save image file              0-1 (default 1)
-  -t / --template  Save template file           0-1 (default 0)
-  -l / --labels    Toggle domain labels         0-1 (default 1)
-  -j / --hinge     Toggle hinge labels          0-1 (default 0)
-  -k / --linker    Toggle linker labels         0-1 (default 0)
-  -a / --arrows    Toggle bond direction arrows 0-1 (default 0)
-  -b / --thickness Set bond thickness           1-5 (default 2)
-  -h / --help      Show this help message and exit
+-  -f / --file      the path to plaintext file with AbML expression
+-  -i / --input     string of AbML input
+-  -o / --output    string of image output name      (default "abYdraw_export")
+-  -s / --show      Show image window            0-1 (default 0)
+-  -i / --image     Save image file              0-1 (default 1)
+-  -t / --template  Save template file           0-1 (default 0)
+-  -l / --labels    Toggle domain labels         0-1 (default 1)
+-  -j / --hinge     Toggle hinge labels          0-1 (default 0)
+-  -k / --linker    Toggle linker labels         0-1 (default 0)
+-  -a / --arrows    Toggle bond direction arrows 0-1 (default 0)
+-  -b / --thickness Set bond thickness           1-5 (default 2)
+-  -h / --help      Show this help message and exit
 
 either -f or -i arguements are required to run the script and other options may be toggled between 0 (off) and 1 (on).
 
