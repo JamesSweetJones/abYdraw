@@ -1,12 +1,12 @@
 # abYdraw
 
-This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and using standard packages TKinter to build the graphical interface in order to make it as accessible as possible.
+This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and with both command-line and graphical interfaces built by using standard packages TKinter to in order to make it as accessible as possible.
 
 ### Contents
 
-1. Installing and Executing
-2. Interface
-3. AbML
+1. AbML
+2. Installing and Executing
+3. Interface
 4. Inputting AbML
 5. Obtaining AbML
 6. Formats Library
@@ -18,11 +18,48 @@ Reference:
 Software authors: James Sweet-Jones and Andrew Martin (Darwin Building, University College London, Gower Street, London)
 
 
-### 1. Installing and Executing
+### 1. AbML
 
-abYdraw may be downloaded and ran as an executable Python script.
+![AbML Guide Sheet](https://github.com/JamesSweetJones/abYdraw/blob/main/LanguageGuide.png)
+Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: `TYPE; NOTE; MOD; ANTI and LENGTH`. Full descriptions of AbML can be found on the language guide sheet included in the Repository.
+
+AbML expression for a standard IgG molecule would be:
+`VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}`
+
+
+### 2. Installing and Executing
+
+#####Command Line Interface
+
+abYdraw has a Command Line based interfaced which may be accessed by executing the script with suitable arguements.
+
+usage:
+`python abYdraw [options]`
+
+optional arguments:
+ 
+  -f / --file      the path to plaintext file with AbML expression
+  -i / --input     string of AbML input
+  -o / --output    string of image output name      (default "abYdraw_export")
+  -s / --show      Show image window            0-1 (default 0)
+  -i / --image     Save image file              0-1 (default 1)
+  -t / --template  Save template file           0-1 (default 0)
+  -l / --labels    Toggle domain labels         0-1 (default 1)
+  -j / --hinge     Toggle hinge labels          0-1 (default 0)
+  -k / --linker    Toggle linker labels         0-1 (default 0)
+  -a / --arrows    Toggle bond direction arrows 0-1 (default 0)
+  -b / --thickness Set bond thickness           1-5 (default 2)
+  -h / --help      Show this help message and exit
+
+either -f or -i arguements are required to run the script and other options may be toggled between 0 (off) and 1 (on).
+
+#####Graphical Interface
+
+abYdraw may be downloaded and the GUI may be opened by executing the Python script without arguements.
 
 `python <path/to/file>/abYdraw.py`
+
+#####Compiling abYdraw
 
 However, it may also be compiled into an executable file using py2app and the setup.py file provided. which may then be moved into the user's operating system's applications folder for convenient startup.
 install a virtual environment 
@@ -44,19 +81,11 @@ Finally, run py2app with the setup.py file
 This command will generate ./build ./dist folders. Your compiled app will be in the ./dist folder.
 
 
-### 2. Interface
+### 3. Graphical Interface
 
 ![abYdraw Interface](https://github.com/JamesSweetJones/abYdraw/blob/main/Interface.png)
 
 The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side. Starting with the left hand column, the first is the Domain palette **(A)** which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions **(B)**, thirdly the input box for AbML expressions **(C)** and a buttonpad that will render antibody schematics or output AbML to the textbox **(D)**. On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics **(E)** and underneath there are two buttons which are involved in exporting the schematic **(F)**.
-
-### 3. AbML
-![AbML Guide Sheet](https://github.com/JamesSweetJones/abYdraw/blob/main/LanguageGuide.png)
-Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: `TYPE; NOTE; MOD; ANTI and LENGTH`. Full descriptions of AbML can be found on the language guide sheet included in the Repository.
-
-AbML expression for a standard IgG molecule would be:
-`VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}`
-
 
 ### 4. Inputting AbML
 
