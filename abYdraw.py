@@ -8,6 +8,7 @@ from tkinter import colorchooser
 import tkinter.ttk as ttk
 import time
 import argparse
+from PIL import Image
 
 
 
@@ -1007,10 +1008,14 @@ def Check_interactions(chains_list,canvas):
                                                             interactor_in_or_out = innie_or_outie_list[i]
                                                     if interactor_in_or_out == "innie":
                                                         innie_or_outie_list.append("innie")
-                                                    elif interactor_in_or_out == "outie":
+                                                    elif interactor_in_or_out == "outie" and n+1!=len(keyslist):
+                                                        innie_or_outie_list.append("outie")
+                                                    elif interactor_in_or_out == "outie" and n+1==len(keyslist):
                                                         innie_or_outie_list.append("innie")
+                                                        print("OH DEAR THAT LOOKS BAD")
                                                 else:
                                                     innie_or_outie_list.append("innie")
+                                                    print("1")
                                             else:
                                                 innie_or_outie_list.append("outie")
                                         except IndexError:
@@ -1021,6 +1026,7 @@ def Check_interactions(chains_list,canvas):
                                     elif previous_domain_interaction == True:
                                         if innie_or_outie_list[-2] == "outie":
                                             innie_or_outie_list.append("innie")
+                                            print("OOPS MY DAISY")
                                         elif innie_or_outie_list[-2] == "innie":
                                             innie_or_outie_list.append("outie")
                                     elif innie_or_outie_list[-2] == "outie":
@@ -1426,7 +1432,7 @@ def Check_interactions(chains_list,canvas):
         else:
             equal_chain_lengths = True
         innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded, IgG2)
-        #print(innie_or_outie_list)
+        print(innie_or_outie_list)
 
         for i in range(len(dictionary)):
             keyslist = list(dictionary.keys())
@@ -1825,7 +1831,7 @@ def Check_interactions(chains_list,canvas):
                         Build_out = True
                     elif len(dictionary.get(keyslist[i-2])) ==1 and "X" not in keyslist[i-2]:
                         if CLI == False:
-                            print("checkpoint11")
+                            print("checkpoint11.5")
                         if slant == True and righthanded == True:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif slant == True and righthanded == False:
@@ -1936,6 +1942,7 @@ def Check_interactions(chains_list,canvas):
                         if CLI == False:
                             print("checkpoint16")
                         if dictionary == VHa_chain:
+                            print("VHA_CHAIN")
                             Build_up=True
                             Build_down=False
                             if slant==True and righthanded == False:
@@ -1946,17 +1953,21 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         elif dictionary == VHb_chain:
+                            print("VHB_chain", slant)
                             try:
                                 if "Linker[" in keyslist[i+1]:
 
                                     if slant==True and righthanded == True:
                                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                        Build_up=True
+                                        Build_down=False
                                     elif  slant==True and righthanded == True:
                                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                        Build_up=True
+                                        Build_down=False
                                     elif slant==False:
-                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                                    Build_up=True
-                                    Build_down=False
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
                                 else:
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             except IndexError:
@@ -2102,6 +2113,10 @@ def Check_interactions(chains_list,canvas):
             elif i > 0 and Build_up==True:
                 if CLI == False:
                     print("checkpoint20")
+                changed_righthand = False
+                if chain_count == 1 and righthanded == True:
+                    righthanded = False
+                    changed_righthand = True
                 top_bond = getcoordinates[2]
                 arc_topx  = top_bond[0]
                 arcbottomx= bottom_bond[0]
@@ -2187,7 +2202,8 @@ def Check_interactions(chains_list,canvas):
 
 
 
-
+                if changed_righthand == True:
+                    righthanded = True
 
 
 
@@ -3225,59 +3241,59 @@ def render(chains_list,canvas,text_to_image):
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
-            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i]]
         for i in range(len(Light_Domains_a)):
-            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i]]
     #B domains
         for i in range(len(Heavy_Domains_b)):
-            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i]]
         for i in range(len(Light_Domains_b)):
-            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i]]
     #C domains
         for i in range(len(Heavy_Domains_c)):
-            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i]]
         for i in range(len(Light_Domains_c)):
-            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i]]
     #D domains
         for i in range(len(Heavy_Domains_d)):
-            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i]]
         for i in range(len(Light_Domains_d)):
-            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i]]
     #E domains
         for i in range(len(Heavy_Domains_e)):
-            domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i]]
         for i in range(len(Light_Domains_e)):
-            domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i]]
     #F domains
         for i in range(len(Heavy_Domains_f)):
-            domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i]]
         for i in range(len(Light_Domains_f)):
-            domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i]]
     #G domains
         for i in range(len(Heavy_Domains_g)):
-            domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i]]
         for i in range(len(Light_Domains_g)):
-            domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i]]
     #H domains
         for i in range(len(Heavy_Domains_h)):
-            domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=2,tags="domain")
+            domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=1,tags="domain")
             canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i]]
         for i in range(len(Light_Domains_h)):
-            domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=2,tags="domain")
+            domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=1,tags="domain")
             canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
     #ADCs
         if ADCs != []:
@@ -3289,7 +3305,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_ADCs.append(ADCs[i])
                     non_redundant_ADCs_sorted.append(j)
             for i in range(len(non_redundant_ADCs)):
-                domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=2,tags="domain")
+                domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=1,tags="domain")
                 canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
@@ -3301,7 +3317,7 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_CCs.append(CCs[i])
                     non_redundant_CCs_sorted.append(j)
             for i in range(len(non_redundant_CCs)):
-                domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=2,tags="domain")
+                domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=1,tags="domain")
                 canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
 
     #Labels
@@ -3583,11 +3599,14 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
 ############################################
 def save_as_png(canvas):
     fileName = "AbYdraw_export"
-    file = filedialog.asksaveasfile(mode='w', defaultextension=".eps", filetypes=(("EPS file", "*.eps"),("All Files", "*.*") ))
+    file = filedialog.asksaveasfile(mode='w', filetypes=(("EPS file", "*.eps"),("PNG file", "*.png"),("All Files", "*.*") ))
     if file:
         abs_path = os.path.abspath(file.name)
         eps = canvas.postscript(file = abs_path,colormode='color',height=1000)
         file.close()
+        img = Image.open(str(abs_path))
+        rgb_img = img.convert('RGB')
+        rgb_img.save("Image.png")
 
 ###########################################
 def get_min_max_coordinates(domain_coordinates):
@@ -3613,14 +3632,18 @@ def Get_Template_File(canvas):
     global Bond_lock
     global Delete_lock
     global textBox
+    global entry
     Delete_lock = False
     Bond_lock = ""
-    lower_canvas.bind("<Button-1>", mm.select)
-    lower_canvas.bind("<B1-Motion>", mm.drag)
-    lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    lower_canvas.config(cursor = "arrow")
-    status_label.config(text="")
-    entry=textBox.get("1.0","end-1c")
+    if CLI == False:
+        canvas.bind("<Button-1>", mm.select)
+        canvas.bind("<B1-Motion>", mm.drag)
+        canvas.bind("<ButtonRelease-1>", mm.release)
+        canvas.config(cursor = "arrow")
+        status_label.config(text="")
+        entry=textBox.get("1.0","end-1c")
+    elif CLI == True:
+        entry = entry
     Template_File = []
     Sequences = []
     chains_list = Get_dictionaries(entry)
@@ -3759,14 +3782,19 @@ def Get_Template_File(canvas):
         Template_File.append("")
 
     def save_txt_file(Template_File):
-        to_save = ""
-        for i in Template_File:
-            to_save += (str(i)+"\n")
-        f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
-        if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
-            return
-        f.write(to_save)
-        f.close()
+        if CLI == False:
+            to_save = ""
+            for i in Template_File:
+                to_save += (str(i)+"\n")
+            f = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
+            if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+                return
+            f.write(to_save)
+            f.close()
+        elif CLI == True:
+            output = open(output_name+".txt", "w+")
+            for i in Template_File:
+                output.write(str(i)+"\n")
 
 
 
@@ -3905,9 +3933,12 @@ def Get_Template_File(canvas):
 
     for i in Sequences:
         Template_File.append(i)
-    String = textBox.get("1.0","end")
-    Template_File.append(str("AbML String: "+String))
-
+    if CLI == False:
+        String = textBox.get("1.0","end")
+        Template_File.append(str("AbML String: "+String))
+    elif CLI== True:
+        String = entry
+        Template_File.append(str("AbML String: "+String))
     save_txt_file(Template_File)
 
 
@@ -6095,13 +6126,13 @@ class MouseMover():
             else:
                 heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
             if "VH" in domain_name or "CH" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
             elif "VL" in domain_name or "CL" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
             elif "X" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=X_colour, width=2, tags="domain")
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=X_colour, width=1, tags="domain")
             elif "C" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=C_colour, width=2, tags="domain")
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=C_colour, width=1, tags="domain")
 
 
             if Label_lock == True:
@@ -6162,9 +6193,9 @@ class MouseMover():
         else:
             heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
         if Domain_Primer[10] == True:
-            domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=2, tags="domain")
+            domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=1, tags="domain")
         elif Domain_Primer[9] == True:
-            domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=light_colour, width=2, tags="domain")
+            domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=light_colour, width=1, tags="domain")
         canvas_polygons[domain] = [domaincoordinates[0], domain_name]
         if Label_lock == True:
             domain_name = re.sub("\.|@|>","",domain_name)
@@ -6234,7 +6265,7 @@ class MouseMover():
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=2,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill='#000000', width=Bond_thickness,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
         self.newcoordinates = [x2,y2]
         return(newcoordinates)
     def release_bond(self,event):
@@ -6243,7 +6274,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[1], width=2, tags=("bonds","connector"), arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[1], width=Bond_thickness, tags=("bonds","connector"), arrow=tk.LAST , arrowshape=Bond_Arrows)
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates   = []
@@ -6253,7 +6284,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-H-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=2, tags=("bonds","hinge"), arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=Bond_thickness, tags=("bonds","hinge"), arrow=tk.LAST , arrowshape=Bond_Arrows)
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordiantes   = []
@@ -6263,7 +6294,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-L-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=2, tags=("bonds","linker"), arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=Bond_thickness, tags=("bonds","linker"), arrow=tk.LAST , arrowshape=Bond_Arrows)
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates =[]
@@ -6276,7 +6307,7 @@ class MouseMover():
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=2,tags = "draggable_line", arrow=tk.BOTH, arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=Bond_thickness,tags = "draggable_line", arrow=tk.BOTH, arrowshape=Bond_Arrows)
         self.newcoordinates = [x2,y2]
     def drag_Hinge_bond(self,event):
         global Bond_Arrows
@@ -6287,7 +6318,7 @@ class MouseMover():
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=2,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=Bond_thickness,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
         self.newcoordinates = [x2,y2]
     def drag_Linker_bond(self,event):
         global Bond_Arrows
@@ -6298,7 +6329,7 @@ class MouseMover():
         y1 = self.startcoordinates[1]
         x2 = xc
         y2 = yc
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=2,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=Bond_thickness,tags = "draggable_line", arrow=tk.LAST , arrowshape=Bond_Arrows)
         self.newcoordinates = [x2,y2]
 
     def release_Disulphide_bond(self,event):
@@ -6307,7 +6338,7 @@ class MouseMover():
         x1,x2 = self.startcoordinates[0], self.newcoordinates[0]
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-disulphide-"
-        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=2, tags="disulphide", arrow=tk.BOTH, arrowshape=Bond_Arrows)
+        domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=Bond_thickness, tags="disulphide", arrow=tk.BOTH, arrowshape=Bond_Arrows)
         canvas_polygons[domain] = [[x1,y1,x2,y2],name]
         self.startcoordinates = []
         self.newcoordinates =[]
@@ -6351,9 +6382,9 @@ class MouseMover():
                 else:
                     heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
                 if "H" in domain_name:
-                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
                 else:
-                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
 
 
                 if Label_lock == True:
@@ -6369,13 +6400,13 @@ class MouseMover():
                     label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
             elif domain_name == "-H-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
             elif domain_name == "-L-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
             elif domain_name == "-disulphide-":####
-                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
         for i in range(len(list(TYPE_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
         for i in range(len(list(NOTE_labels.keys()))):
@@ -7093,9 +7124,9 @@ if len(sys.argv) < 2:
                 else:
                     heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
                 if "H" in domain_name:
-                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
                 elif "L" in domain_name:
-                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                    domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
                 if Label_lock == True:
                     domain_name = re.sub("\.|@|>","",domain_name)
@@ -7109,16 +7140,16 @@ if len(sys.argv) < 2:
                     label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
             elif domain_name == "-H-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
             elif domain_name == "-L-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
             elif domain_name == "-disulphide-":####
-                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
                 canvas_polygons[domain] = [domain_coordinates, domain_name]
             deleted_polygons = {}
             Deletes_to_redo[to_replace] = [domain_coordinates, domain_name]
@@ -7253,9 +7284,9 @@ if len(sys.argv) < 2:
                     else:
                         heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
                     if "H" in domain_name:
-                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=2, tags="domain")
+                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
                     elif "L" in domain_name:
-                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=2, tags="domain")
+                        domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
                     canvas_polygons[domain] = [domain_coordinates, domain_name]
                     if Label_lock == True:
                         domain_name = re.sub("\.|@|>","",domain_name)
@@ -7269,16 +7300,16 @@ if len(sys.argv) < 2:
                         label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
                         canvas_labels[label] = [[labelx,labely], domain_name]
                 elif domain_name == "-" :####
-                    domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=2, tags="bonds")
+                    domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
                     canvas_polygons[domain] = [domain_coordinates, domain_name]
                 elif domain_name == "-H-" :####
-                    domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=2, tags="bonds")
+                    domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
                     canvas_polygons[domain] = [domain_coordinates, domain_name]
                 elif domain_name == "-L-" :####
-                    domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=2, tags="bonds")
+                    domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
                     canvas_polygons[domain] = [domain_coordinates, domain_name]
                 elif domain_name == "-disulphide-":####
-                    domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=2, tags=("disulphide","bonds"))
+                    domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
                     canvas_polygons[domain] = [domain_coordinates, domain_name]
                 del Polygon_to_redo[to_redo]
             elif to_redo in list(TYPE_labels.keys()):
@@ -8219,21 +8250,23 @@ else:
                                         usage='python %(prog)s [options]',
                                         description='Draws antibody formats')
 
-    my_parser.add_argument('--f','--file', type=str,help='the path to file')
-    my_parser.add_argument('--i','--input', type=str,help='the path to list')
-    my_parser.add_argument('--o','--output', type=str,help='the path to list')
-    my_parser.add_argument('--s','--show',nargs='?', type=int,help='Show window')
-    my_parser.add_argument('--l','--labels',nargs='?', type=int,help='Toggle labels ')
-    my_parser.add_argument('--h','--hinge', nargs='?',type=int,help='Toggle hinge labels ')
-    my_parser.add_argument('--k','--linker', nargs='?', type=int,help='Toggle linker labels ')
-    my_parser.add_argument('--a','--arrows', nargs='?',type=int,help='Toggle bond direction arrows ')
-    my_parser.add_argument('--t','--thickness', type=int,help='Set bond thickness range=(1-5)')
+    my_parser.add_argument('-f','--file', type=str,help='the path to plaintext file with AbML expression')
+    my_parser.add_argument('-i','--input', type=str,help='string of AbML input')
+    my_parser.add_argument('-o','--output', type=str,help='string of image output name (default "abYdraw_export")')
+    my_parser.add_argument('-s','--show',nargs='?', type=int,help='Show image window 0-1 (default 0)')
+    my_parser.add_argument('-p','--image',nargs='?', type=int,help='Save image file 0-1 (default 1)')
+    my_parser.add_argument('-t','--template',nargs='?', type=int,help='Save template file 0-1 (default 0)')
+    my_parser.add_argument('-l','--labels',nargs='?', type=int,help='Toggle domain labels 0-1 (default 1)')
+    my_parser.add_argument('-j','--hinge', nargs='?',type=int,help='Toggle hinge labels 0-1 (default 0)')
+    my_parser.add_argument('-k','--linker', nargs='?', type=int,help='Toggle linker labels 0-1 (default 0)')
+    my_parser.add_argument('-a','--arrows', nargs='?',type=int,help='Toggle bond direction arrows 0-1 (default 0)')
+    my_parser.add_argument('-b','--thickness', type=int,help='Set bond thickness 1-5 (default 2)')
 
     my_parser.print_help()
     args = my_parser.parse_args()
-
-    input_path = args.f
-    input_string = args.i
+    print(args)
+    input_path = args.file
+    input_string = args.input
     if input_string is not None and input_path is None:
         entry = input_string
     if input_path is not None and input_string is None:
@@ -8243,43 +8276,57 @@ else:
     elif input_string is None and input_path is None:
         print('No input was given. Exiting programme')
         sys.exit()
-    output_name = args.o
+    output_name = args.output
     if output_name is None:
         output_name = "AbYdraw_export"
 
-    Label_lock = args.l
+    Label_lock = args.labels
     if Label_lock is None or Label_lock != 0:
         Label_lock = 1
     elif Label_lock == 0:
         Label_lock = 0
 
-    H_Labels = args.h
+    H_Labels = args.hinge
     if H_Labels is None or H_Labels != 0:
         H_Labels = 0
     elif H_Labels == 0:
         H_Labels = 1
 
-    L_Labels = args.k
+    L_Labels = args.linker
     if L_Labels is None or L_Labels != 0:
         L_Labels = 0
     elif L_Labels == 0:
         L_Labels = 1
 
 
-    Bond_Arrows = args.a
+    Bond_Arrows = args.arrows
     if Bond_Arrows is None:
         Bond_Arrows = (0,0,0)
     elif Bond_Arrows is not None:
         Bond_Arrows = (8,10,3)
 
-    Bond_thickness = args.t
+    Bond_thickness = args.thickness
     if Bond_thickness == None:
         Bond_thickness = 2
-    show = args.s
+
+    show = args.show
     if show is None:
         show =0
     elif show is not None:
         show = 1
+
+    template = args.template
+    if template is None:
+        template = 0
+    elif template is not None:
+        template = 1
+
+    save = args.image
+    if save is None or save != 0:
+        save = 1
+    elif save is not None:
+        save = 0
+
     CLI = True
     all_buttons = []
     a_heavy_colour, a_light_colour = '#007ECB', '#73CAFF'
@@ -8315,7 +8362,7 @@ else:
         eps = canvas.postscript(file=(fileName+".eps"), colormode='color', height= 1000, width = 900)
         #eps.close()
 
-    def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show):
+    def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save):
         ###Window###
 
         HEIGHT =  900
@@ -8333,24 +8380,16 @@ else:
         lower_canvas.config(yscrollcommand=yscrollbar.set)
         lower_canvas.config(xscrollcommand=xscrollbar.set)
         lower_canvas.pack(expand=True,fill="both")
-
-        ###Options###
-
-
-
-
         Bond_thickness = Bond_thickness
-
-
-
-
         text_to_image = True
         split_chains = Get_dictionaries(entry)
         coordinates  = Check_interactions(split_chains, lower_canvas)
         rendering = render(coordinates, lower_canvas,True)
-        CLI_save_png(output_name,lower_canvas)
-
+        if save == 1:
+            CLI_save_png(output_name,lower_canvas)
+        if template == 1:
+            Get_Template_File(lower_canvas)
         if show == 1:
             root.mainloop()
 
-    CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show)
+    CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save)
