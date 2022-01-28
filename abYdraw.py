@@ -9,6 +9,7 @@ import tkinter.ttk as ttk
 import time
 import argparse
 from PIL import Image
+from PIL import ImageGrab
 
 
 
@@ -3631,9 +3632,17 @@ def save_as_png(canvas):
         abs_path = os.path.abspath(file.name)
         eps = canvas.postscript(file = abs_path,colormode='color',height=1000)
         file.close()
+        print(abs_path)
         img = Image.open(str(abs_path))
-        rgb_img = img.convert('RGB')
-        rgb_img.save("Image.png")
+        img.load(scale=10)
+        if img.mode in ('P', '1'):
+            img = img.convert("RGB")
+        TARGET_BOUNDS = (1024, 1024)
+        ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
+        new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+        img = img.resize(new_size, Image.ANTIALIAS)
+        img.save(abs_path+".png", "png")
+
 
 ###########################################
 def get_min_max_coordinates(domain_coordinates):
@@ -8388,7 +8397,16 @@ else:
     def CLI_save_png(output,canvas):
         fileName = str(output)
         eps = canvas.postscript(file=(fileName+".eps"), colormode='color', height= 1000, width = 900)
-        #eps.close()
+        print(abs_path)
+        img = Image.open(str(abs_path))
+        img.load(scale=10)
+        if img.mode in ('P', '1'):
+            img = img.convert("RGB")
+        TARGET_BOUNDS = (1024, 1024)
+        ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
+        new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+        img = img.resize(new_size, Image.ANTIALIAS)
+        img.save(abs_path+".png", "png")
 
     def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save):
         ###Window###
