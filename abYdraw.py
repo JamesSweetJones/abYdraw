@@ -615,6 +615,7 @@ def Check_interactions(chains_list,canvas):
     finished_multimers = []
     finished_multimers_numbers = []
     finished_multimers_indexes = []
+    print("MULTIMERS", multimers)
 
     def disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
         number_of_bonds = n+1
@@ -983,11 +984,13 @@ def Check_interactions(chains_list,canvas):
                         elif n > 0:
                             if "Linker[" in keyslist[n-1] or "H[" in keyslist[n-1]:
                                 if chain.get(keyslist[n-2])[0][0] == (chain.get(keyslist[n])[0][1]):
+                                    print("OH DEAR JAMIE")
                                     if innie_or_outie_list[-2] == "outie":
                                         innie_or_outie_list.append("innie")
                                     elif innie_or_outie_list[-2] == "innie":
                                         innie_or_outie_list.append("outie")
                                 elif  chain.get(keyslist[n-2])[0][0] != (chain.get(keyslist[n])[0][1]):
+
                                     previous_domain_interaction = False
                                     previous_interactor = ""
                                     if "X" not in str(keyslist[n-2]):
@@ -1012,21 +1015,25 @@ def Check_interactions(chains_list,canvas):
                                                         innie_or_outie_list.append("outie")
                                                     elif interactor_in_or_out == "outie" and n+1==len(keyslist):
                                                         innie_or_outie_list.append("innie")
-                                                        print("OH DEAR THAT LOOKS BAD")
+
                                                 else:
                                                     innie_or_outie_list.append("innie")
-                                                    print("1")
                                             else:
                                                 innie_or_outie_list.append("outie")
                                         except IndexError:
-                                            if "X" in keyslist[0] and VLa_chain == {} and VLb_chain == {} and "X" not in keyslist[i]:
+                                            if "X" in keyslist[0] and VLa_chain == {} and VLb_chain == {} and "X" not in keyslist[n]:
                                                 innie_or_outie_list.append("innie")
                                             else:
-                                                innie_or_outie_list.append("outie")
+                                                if innie_or_outie_list[-2] == "outie":
+                                                    innie_or_outie_list.append("outie")
+                                                elif innie_or_outie_list[-2] == "innie":
+                                                    innie_or_outie_list.append("innie")
+                                                else:
+                                                    innie_or_outie_list.append("outie")
+
                                     elif previous_domain_interaction == True:
                                         if innie_or_outie_list[-2] == "outie":
                                             innie_or_outie_list.append("innie")
-                                            print("OOPS MY DAISY")
                                         elif innie_or_outie_list[-2] == "innie":
                                             innie_or_outie_list.append("outie")
                                     elif innie_or_outie_list[-2] == "outie":
@@ -1432,7 +1439,6 @@ def Check_interactions(chains_list,canvas):
         else:
             equal_chain_lengths = True
         innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded, IgG2)
-        print(innie_or_outie_list)
 
         for i in range(len(dictionary)):
             keyslist = list(dictionary.keys())
@@ -1660,7 +1666,7 @@ def Check_interactions(chains_list,canvas):
 
 
 
-                elif ("X[" in keyslist[i] or "C[" in keyslist[i]) and "H[" not in keyslist[i-1]:
+                elif ("X[" in keyslist[i] or "C[" in keyslist[i]) and "H[" not in keyslist[i-1] and len(dictionary.get(keyslist[i])) == 1:
                     if CLI == False:
                         print("checkpoint5")
                     if "Linker[" in keyslist[i-1]:
@@ -1860,11 +1866,13 @@ def Check_interactions(chains_list,canvas):
                                 print("checkpoint13")
                             Build_up=True
                             Build_down=False
-                        if chain_count == 1 and to_joinx <= (width/2) and dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-2])[0]) and len(dictionary) >=8:
+                        if chain_count == 1 and  dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-2])[0]) and len(dictionary) >=8 :#and "X" not in keyslist[i] :#and to_join_direction == ("innie" or "outie"):
+                            print("checkpoint12.6")
                             righthanded = True
                             Build_in = False
                             Build_out = True
-                        elif chain_count == 1 and to_joinx >= (width/2)  and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-2])[0]):
+                        elif chain_count == 1  and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-2])[0]):
+                            print("checkpoint12.7")
                             Build_in = False
                             Build_out = True
                         if to_join_righthanded == False and to_join_direction == 'outie':
@@ -1942,7 +1950,6 @@ def Check_interactions(chains_list,canvas):
                         if CLI == False:
                             print("checkpoint16")
                         if dictionary == VHa_chain:
-                            print("VHA_CHAIN")
                             Build_up=True
                             Build_down=False
                             if slant==True and righthanded == False:
@@ -1953,7 +1960,6 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         elif dictionary == VHb_chain:
-                            print("VHB_chain", slant)
                             try:
                                 if "Linker[" in keyslist[i+1]:
 
@@ -2002,12 +2008,34 @@ def Check_interactions(chains_list,canvas):
                             print("checkpoint18")
                         if "V" in keyslist[i]:
                             in_out_counter +=1
+
+                        def check_for_clashes(startx, starty):
+                            clash = False
+                            All_positions_and_chains_list = list(All_positions_and_chains.keys())
+                            for i in range(len(All_positions_and_chains_list)):
+                                coordinates = All_positions_and_chains.get(All_positions_and_chains_list[i])[0]
+                                if len(coordinates) > 2:
+                                    x1 = get_min_max_coordinates(coordinates)[0]
+                                    x2 = get_min_max_coordinates(coordinates)[1]
+                                    y1 = get_min_max_coordinates(coordinates)[2]
+                                    y2 = get_min_max_coordinates(coordinates)[3]
+                                    if startx == coordinates[0] and starty == y1:
+                                        clash = True
+                            if clash == True:
+                                return(True,startx,starty+95 )
+                            elif clash == False:
+                                return(False,startx,starty )
+
+                        clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
+                        if clash[0] == True:
+                            Build_up = True
+                            Build_down=False
                         if slant == True and righthanded == True:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif slant == True and righthanded == False:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         else:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 ##H disulphides
             if "H[" in keyslist[i] or "H*[" in keyslist[i]  and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
@@ -2711,7 +2739,6 @@ def Check_interactions(chains_list,canvas):
                     except IndexError:
                         inter = fragment.get(fragment_list[i])[0][0]
                         for i in range(len(All_positions_and_chains_keys)):
-                            print(inter, All_positions_and_chains_keys[i])
                             if All_positions_and_chains_keys[i] == inter:
                                 connection_found = True
 
@@ -6445,6 +6472,7 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
                     startx -=120
                 elif righthanded == True and direction == "innie":
                     startx +=120
+
 
 
     #if V == True and direction == "constant":
