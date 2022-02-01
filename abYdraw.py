@@ -246,7 +246,7 @@ def Get_dictionaries(x):
                         if dicts[a] != dicts[i]:
                             for b in range(len(chains[a])):
                                 interactor = dicts[a].get(chains[a][b])[0][0]
-
+                                print("LOOKING!", interactor, current_interactor)
                                 if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
@@ -356,9 +356,43 @@ def Get_dictionaries(x):
                 found = True
         if found == False:
             unused.append(dicts[i])
+##Check claw
+    Claw = False
+    faux_claw = False
+    Claw_number = 0
+    if chain_count > 1:
+        for i in range(len(chains)):
+            if chains[i] != []:
 
-    if chain_count >= 4:
+                if  "X"  in chains[i][-1] or "C[" in chains[i][-1] and ("LEUCINE") not in str(dicts[i].get(chains[i][-1])[2]) and ("leucine") not in str(dicts[i].get(chains[i][-1])[2]):
+                    Current_Claw_number = dicts[i].get(chains[i][-1])[0][0]
+                    if Claw_number == 0:
+                        Claw_number = Current_Claw_number
+
+                    elif Claw_number != 0:
+                        if Current_Claw_number == Claw_number:
+                            Claw = True
+                            faux_claw = True
+                        if Current_Claw_number != Claw_number:
+                            Claw = False
+                elif  "X" not in chains[i][-1] or "C[" not in chains[i][-1]:
+                    Claw = False
+    #if faux_claw == True:
+    #    interacting_fragments = True
+    if Claw == True:
+        VHa_checked = VHa
+        VLa_checked = VLa
+        VHb_checked = VHb
+        VLb_checked = VLb
+        fragment1_checked = fragment1
+        fragment2_checked = fragment2
+        fragment3_checked = fragment3
+        fragment4_checked = fragment4
+        interacting_fragments = True
+
+    if chain_count >= 4 and Claw == False:
         if VHa_checked == {} or VHb_checked == {} or VLa_checked == {} or VLb_checked == {}:
+            print(VHa_checked, VHb_checked , VLa_checked ,VLb_checked)
             error_message = "ERROR: There has been an error in pairing chains in your antibody"
             raise_error(lower_canvas, error_message)
         if fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}: #Check for second IgG
@@ -403,7 +437,6 @@ def Get_dictionaries(x):
                                 if dicts[a] != dicts[i]:
                                     for b in range(len(chains[a])):
                                         interactor = dicts[a].get(chains[a][b])[0][0]
-
                                         if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and frag1_frag3_found == False:
                                             frag1_frag3_found = True
                                             interacting_fragments = True
@@ -480,6 +513,22 @@ def Get_dictionaries(x):
 
                         except IndexError:
                             continue
+        elif fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {} and "X" in fragment1_keyslist[-1] and "X" not in fragment2_keyslist[-1]:
+            frag1_frag2_found = False
+            for i in range(len(fragment1_keyslist)):
+                try:
+                    current_interactor = fragment1.get(fragment1_keyslist[i])[0][1]
+                    for j in range(len(fragment2_keyslist)):
+                        interactor = fragment2.get(fragment2_keyslist[i])[0][0]
+                        if current_interactor == interactor:
+                            interacting_fragments = True
+                            fragment1_checked = fragment1
+                            fragment2_checked = fragment2
+                            fragment3_checked = {}
+                            fragment4_checked = {}
+                except IndexError:
+                    continue
+        #elif fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {} and "X" in fragment1_keyslist[-1] and "X" in fragment2_keyslist[-1]:
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
     for i in range(len(all_to_check_keys)):
@@ -504,6 +553,7 @@ def Get_dictionaries(x):
             if domain not in possible_domains:
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
+    print("INTERACTIng Fragments", interacting_fragments)
     if interacting_fragments == False:
         fragment1_checked = fragment1
         fragment2_checked = fragment2
@@ -517,15 +567,16 @@ def Get_dictionaries(x):
     print(fragment2_checked)
     print(fragment3_checked)
     print(fragment4_checked)
-    if  (fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) and interacting_fragments == True:
+    if  ((fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) or (fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {}) or Claw == True or faux_claw == True) and interacting_fragments == True:
         IgG2 = True
         if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
             fragment1_checked,fragment3_checked = fragment3_checked,fragment1_checked
             fragment2_checked,fragment4_checked = fragment4_checked,fragment2_checked
+        print("IGG2 FOUND!")
 
     else:
         IgG2 = False
-    return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2)
+    return(VHa_checked,VLa_checked,VHb_checked,VLb_checked,chain_count,fragment1_checked,fragment2_checked,fragment3_checked,fragment4_checked,IgG2, Claw)
 
 ######################################
 def Check_interactions(chains_list,canvas):
@@ -545,6 +596,7 @@ def Check_interactions(chains_list,canvas):
     fragment3       = chains_list[7]
     fragment4       = chains_list[8]
     IgG2            = chains_list[9]
+    Claw            = chains_list[10]
     All_positions_and_chains    ={}
     extra_disulphide_bridges    ={}
     H_disulphide_coordinates    ={}
@@ -929,7 +981,7 @@ def Check_interactions(chains_list,canvas):
 
 
 
-    def innie_or_outie(chain,VHa_chain,VHb_chain,VLa_chain,VLb_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4, righthanded, IgG2):
+    def innie_or_outie(chain,VHa_chain,VHb_chain,VLa_chain,VLb_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4, righthanded, IgG2, Claw):
         #global IgG2
         innie_or_outie_list = []
         before_H = True
@@ -1077,9 +1129,15 @@ def Check_interactions(chains_list,canvas):
                 elif chain == VLa_chain or chain == VLb_chain:
                     Light_chain_check = True
                     default = "innie"
-                elif IgG2 == True and (chain == fragment1 or chain == fragment3):
+                elif IgG2 == True and (chain == fragment1 or chain == fragment3) and Claw == False:
                     Light_chain_check = False
                     default = "outie"
+                elif IgG2 == True and Claw == True:
+                    print("OOOH YES PLEASE")
+                    Light_chain_check = True
+                    Build_in = False
+                    Build_out= True
+                    default = "innie"
                 else:
                     Light_chain_check = True
                     default = "innie"
@@ -1116,7 +1174,6 @@ def Check_interactions(chains_list,canvas):
                                             innie_or_outie_list.append(default)
 
                                 except IndexError:
-
                                     innie_or_outie_list.append("innie")
 
                         elif "Linker[" not in keyslist[n+1]:
@@ -1126,6 +1183,7 @@ def Check_interactions(chains_list,canvas):
                                 if Light_chain_check == False:
                                     innie_or_outie_list.append("innie")
                             else:
+
                                 innie_or_outie_list.append(default)
                     except IndexError:
                         if len(chain.get(keyslist[n])[0]) == 1:
@@ -1142,8 +1200,15 @@ def Check_interactions(chains_list,canvas):
                         in_or_out(n,chain, VLb_chain,VHa_chain,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4,Light_chain_check)
                     elif chain == VLb_chain:
                         in_or_out_light(n,chain,VHb_chain,Build_in,Build_out,Light_chain_check)
+                    elif Claw == True:
+                        in_or_out_light(n,chain,VHa_chain,Build_in,Build_out,Light_chain_check)
                     elif IgG2 == True and (chain == fragment1 or chain == fragment3):
                         innie_or_outie_list.append("outie")
+                    #elif IgG2 == True and (chain == fragment2 or chain == fragment3):
+                    #    if innie_or_outie_list[-2] == "outie":
+                    #        innie_or_outie_list.append("innie")
+                    #    elif innie_or_outie_list[-2] == "innie":
+                    #        innie_or_outie_list.append("outie")
                     elif IgG2 == False and (chain == fragment1 or chain == fragment2 or chain == fragment3 or chain == fragment4) and "Linker[" in str(keyslist[n-1]):
                         if innie_or_outie_list[-2] == "outie":
                             innie_or_outie_list.append("innie")
@@ -1431,6 +1496,13 @@ def Check_interactions(chains_list,canvas):
                     Light_chain_check == False
                 elif dictionary == fragment4:
                     Light_chain_check == True
+        if Claw == True:
+            slant = False
+            if dictionary == fragment1 or dictionary == fragment3:
+                righthanded = False
+            elif dictionary == fragment2 or dictionary == fragment4:
+                righthanded = True
+
 
         if dictionary == VHa_chain or dictionary == VHb_chain:
             if (len(VHa_chain) == len(VHb_chain)):
@@ -1439,7 +1511,7 @@ def Check_interactions(chains_list,canvas):
                 equal_chain_lengths = False
         else:
             equal_chain_lengths = True
-        innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded, IgG2)
+        innie_or_outie_list = innie_or_outie(dictionary, VHa_chain_master,VHb_chain_master,VLa_chain_master,VLb_chain_master,Build_in,Build_out, fragment1,fragment2,fragment3,fragment4,righthanded, IgG2, Claw)
 
         for i in range(len(dictionary)):
             keyslist = list(dictionary.keys())
@@ -2516,7 +2588,7 @@ def Check_interactions(chains_list,canvas):
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty, canvas)
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty, canvas)
 
-    elif  chain_count >= 3 or (chain_count == 2  and tangle_found == False and ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain)) or ("C[" in str(VHa_chain) and "C[" in str(VHb_chain))):
+    elif chain_count >= 3 or (chain_count == 2  and tangle_found == False and ("H[" in str(VHa_chain) and "H[" in str(VHb_chain)) or ("X[" in str(VHa_chain) and "X[" in str(VHb_chain)) or ("C[" in str(VHa_chain) and "C[" in str(VHb_chain))):
         VHa_1_test = VHa_chain.copy()
         VLa_1_test = VLa_chain.copy()
         VHb_1_test = VHb_chain.copy()
@@ -2548,7 +2620,7 @@ def Check_interactions(chains_list,canvas):
                     for i in range(len(keyslistb)):
                         if "X[" in keyslistb[i] or "C[" in keyslistb[i]:
                             Xb = int(VHb_chain.get(keyslistb[i])[0][0])
-                            if Xa == Xb:
+                            if Xa == Xb or Claw == True:
                                 VHa_H_coordinatesx = (width/2)
                                 VHa_H_coordinatesy = (height/2)-50
                                 VHb_H_coordinatesx = (width/2)
@@ -2621,7 +2693,7 @@ def Check_interactions(chains_list,canvas):
 
 
 ###Get start positions of light chains and render
-    elif chain_count == 2 :
+    elif chain_count == 2 and Claw == False:
 
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
@@ -2681,6 +2753,8 @@ def Check_interactions(chains_list,canvas):
                         VLa_startx = teststartx + differencetest_desiredx
                         VLa_starty = teststarty + differencetest_desiredy
                         break
+        if interactor_count == 0 and Claw == True:
+            VLa_startx, VLa_starty = VHa_startx,VHa_starty+100
     else:
         VLa_startx, VLa_starty = 0,0
 
@@ -2710,6 +2784,9 @@ def Check_interactions(chains_list,canvas):
                         VLb_startx = teststartx + differencetest_desiredx
                         VLb_starty = teststarty + differencetest_desiredy
                         break
+        if interactor_count == 0 and Claw == True:
+            VLb_startx,VLb_starty = VHb_startx,VHb_starty+100
+
     else:
         VLb_startx,VLb_starty = 0,0
 
@@ -2771,7 +2848,14 @@ def Check_interactions(chains_list,canvas):
         frag3_stat= renderchains(fragment3,frag3_xy[0],frag3_xy[1], canvas)
         frag4_stat= renderchains(fragment4,frag4_xy[0],frag4_xy[1], canvas)
     elif IgG2 == True:
-        if (("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys()))) :
+        if Claw == True:
+            frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200, canvas)
+            frag2_stat= renderchains(fragment2,VHb_startx-0,VHb_starty+200, canvas)
+            frag3_stat= renderchains(fragment3,VHa_startx-0,VHa_starty+300, canvas)
+            frag4_stat= renderchains(fragment4,VHb_startx-0,VHb_starty+300, canvas)
+
+        elif ((("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys())))) or fragment3 == {} and fragment4 == {} :
+            print("OH MY WORDDDDDDDDDD!!!!")
             frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200, canvas)
             test_H_positionVHa = frag1_stat[25]
             test_H_positionx = testHpositionVHa[0]
@@ -2783,29 +2867,35 @@ def Check_interactions(chains_list,canvas):
             fragment2_list = list(fragment2.keys())
             fragment_inter = fragment2.get(fragment2_list[0])[0][1]
             frag2_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag2_start[1]
-            if righthanded == True:
-                frag2_startx=frag2_start[0][0]+60
-                frag2_starty=frag2_start[0][1]
-            elif righthanded==False:
-                frag2_startx=frag2_start[0][0]-60
-                frag2_starty=frag2_start[0][1]
-            frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty, canvas)
+            try:
+                righthanded = frag2_start[1]
+                if righthanded == True:
+                    frag2_startx=frag2_start[0][0]+60
+                    frag2_starty=frag2_start[0][1]
+                elif righthanded==False:
+                    frag2_startx=frag2_start[0][0]-60
+                    frag2_starty=frag2_start[0][1]
+                frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty, canvas)
+            except TypeError:
+                frag2_stat = renderchains(fragment2,frag2_startx,frag2_starty, canvas)
+            if fragment3 != {} and fragment4 != {}:
+                frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200, canvas)
+                fragment4_list = list(fragment4.keys())
+                fragment_inter = fragment4.get(fragment4_list[0])[0][1]
+                frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
+                righthanded = frag4_start[1]
+                if righthanded == True:
+                    frag4_startx=frag4_start[0][0]+60
+                    frag4_starty=frag4_start[0][1]
+                elif righthanded==False:
+                    frag4_startx=frag4_start[0][0]-60
+                    frag4_starty=frag4_start[0][1]
+                frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty, canvas)
+            else:
+                frag3_stat = renderchains(fragment3,0,0, canvas)
+                frag4_stat= renderchains(fragment4,0,0, canvas)
 
-            frag3_stat= renderchains(fragment3,VHb_startx+0,VHb_starty+200, canvas)
-            fragment4_list = list(fragment4.keys())
-            fragment_inter = fragment4.get(fragment4_list[0])[0][1]
-            frag4_start = find_the_fragment(fragment_inter,All_positions_and_chains)
-            righthanded = frag4_start[1]
-            if righthanded == True:
-                frag4_startx=frag4_start[0][0]+60
-                frag4_starty=frag4_start[0][1]
-            elif righthanded==False:
-                frag4_startx=frag4_start[0][0]-60
-                frag4_starty=frag4_start[0][1]
-            frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty, canvas)
-
-        else:
+        elif fragment1 != {} and fragment2 !={} and fragment3 !={} and fragment4 !={}:
 
             VHa_H_coordinatesx = ((width/6)*4)-10
             VHa_H_coordinatesy = (height/2)+100
