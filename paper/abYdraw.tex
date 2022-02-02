@@ -20,17 +20,18 @@ London, WC1E 6BT, UK}
 \maketitle
 
 \begin{abstract}
-Bispecific antibodies (BsAbs) are an up-and-coming class of biologic
+Multi-specific antibodies (MsAbs) are an up-and-coming class of biologic
 drugs that differ from monoclonal antibodies through their ability to
 bind to more than one type of antigen. As techniques to generate such
-molecules have diversified, so have their formats and need for
+molecules have diversified, so have their formats and the need for
 standard notation. Previous efforts for developing a notation language
-for macromolecule drugs have been insufficient for describing
-BsAbs. Here, we present Antibody Markup Language (AbML), a new
+for macromolecule drugs have been insufficient or too complex for describing
+MsAbs. Here, we present Antibody Markup Language (AbML), a new
 notation language specifically for antibody formats which overcomes
-the limitations of existing languages and can notate a great diversity
-of current BsAb formats. To assist users in this language we also
-developed a tool, abYdraw, that may draw antibody schematics from AbML
+the limitations of existing languages and can annotate all
+current BsAb formats as well as all currently conceivable future formats.
+To assist users in this language we have also
+developed a tool, abYdraw, that can draw antibody schematics from AbML
 descriptor strings or generate a descriptor string from a drawn
 antibody schematic. AbML has potential to become a standardised
 notation for describing new BsAb formats entering clinical trials.
@@ -38,26 +39,35 @@ notation for describing new BsAb formats entering clinical trials.
 
 \section{Introduction}
 
-Immunoglobulins (IgG), or antibodies, have become useful molecular
-tools in biology and medicine due to their natural ability to bind a
+Immunoglobulins, otherwise known as antibodies, have become useful molecular
+tools in biology and medicine owing to their natural ability to bind a
 specific antigen. When clonally expanded, monoclonal antibodies (mAbs)
-have applications spanning molecular diagnostic assays, to medical
-imaging and of course, as drug therapeutics \cite{ma:2021}.
-Bispecific Antibodies (BsAbs) are specially engineered proteins
+have clinical applications spanning molecular diagnostic assays, to medical
+imaging as well as therapeutics \cite{ma:2021}.
+Multi-specific Antibodies (MsAbs) are engineered proteins
 that differ from naturally occurring mAbs in their ability to bind to
-more than one type of antigen. Depending on the number of different
-antigens the molecule in question reacts with, antibodies can be
-considered trispecific or tetraspecific, but these will all be called
-BsAbs in this report. This makes them a versatile class of molecules
+more than one type of antigen. Generally this is achieved through multiple
+different antigen combining sites and the popularity of these formats
+has now been recognized by the WHO International Nonproprietary Names
+(INN) which now gives the suffix stem `-mig' to such proteins
+(\url{https://cdn.who.int/media/docs/default-source/international-nonproprietary-names-(inn)/new_mab_-nomenclature-_2021.pdf}).
+An exception to the use of multiple combining sites is bimekizumab
+which is a conventional IgG, but binds to both IL-17A and IL-17F
+through a single type of combining site.
+\cite{https://doi.org/10.3389/fimmu.2020.01894}
+While the majority of MsAbs are bispecific (binding to two epitopes though
+different combining sites), 
+trispecific and tetraspecific antibodies have also been developed.
+This makes them a versatile class of molecules
 which has become a keen focus of therapeutics in clinical trials
-because their bispecificity allows proximally gathering two molecules,
-two cells, or one of either to initiate a reaction or neutralise an
-infectious agent \cite{fan:2015}. Logically this has given them
-great interest in the field of immunomodulatory cancer treatments
-\cite{labrijn:2019}, which there are currently two FDA-approved
-BsAb drugs: blinatumomab and catumaxomab
-\cite{wilke:2017,seimetz:2011} with another, emicizumab, approved for
-Factor~VIII deficiency haemophilia \cite{schmitt:2021}. 
+because multi-specificity allows two molecules (as is the case with emicizumab)
+or two cells (as is the case with blinatumomab and catumaxomab)
+to be brought into close proximity \cite{fan:2015}.
+There is a particular interest in immunomodulatory cancer treatments
+\cite{labrijn:2019}, in which the two currently FDA-approved
+drugs mentioned above (blinatumomab and catumaxomab) are used
+\cite{wilke:2017,seimetz:2011}. The only other approved MsAb (also mentioned
+above) is emicizumab for Factor~VIII deficiency haemophilia \cite{schmitt:2021}. 
 
 The engineering of these molecules has evolved over time since their
 inception in the 1970s. At first, the quadroma was to fuse two
@@ -69,7 +79,7 @@ techniques offer poor yield due to the disfavoured formation of the
 desired heterodimers and so efforts for more scalable synthesis have
 led to new techniques of BsAb generation \cite{spiess:2015}. 
 
-DNA recombination has allowed greater flexibility in designing  BsAbs
+DNA recombination has allowed greater flexibility in designing  MsAbs
 with IgG-like formats, which can be done by appending additional Fv
 fragments at the N- or C- terminus of IgG light or heavy chains
 \cite{brinkmann:2017}. This may generate a BsAb fragments 
@@ -85,7 +95,7 @@ give single chained Fv (scFv) fragments or camelid single domain Fv
 fragments (nanobodies), which may be sequentially added by engineered
 linkers to allow for more specificities along one protein chain
 \cite{legall:1999}. Protein engineering allows for generation of 
-smaller fragment based BsAbs including 2-chained diabodies or a single
+smaller fragment based MsAbs including 2-chained diabodies or a single
 chained sequence of scFvs. These Non-IgG-like molecules are
 advantageous because they are easier to produce,  and have lower
 immunogenicity risk, but these molecules are limited by short
@@ -100,46 +110,46 @@ fragments as seen in the ``Dock and Lock'' format,
 antibody-drug-conjugates (ADCs) and fusion proteins have become
 popular as methods of delivering small molecule drugs to an intended
 target \cite{sau:2017}. Finally, the potential of chemical ligation
-has demonstrated production of BsAbs by appending two IgG molecules to
+has demonstrated production of MsAbs by appending two IgG molecules to
 give IgG-IgG molecules \cite{szijj:2021}.  
 
 Improvements in synthesis now leading to be more successful drugs and
-because of the increased diversity of BsAbs available, they require
+because of the increased diversity of MsAbs available, they require
 standardised formats for description and annotation when they are
 submitted for clinical trials. HELM notation is a useful tool for
 noting biologics which tend to be complex, large macromolecules,
 including antibodies and an editor was also developed to assist in
 generating expressions that display the molecule described
 \cite{zhang:2012}. Whilst this is suitable for standard IgG molecules,
-it has shortcomings when it is used for BsAbs. The greatest point
-which makes HELM unsuitable for BsAbs is that it does not allow for
+it has shortcomings when it is used for MsAbs. The greatest point
+which makes HELM unsuitable for MsAbs is that it does not allow for
 notation of Fv fragment specificities or to add comments or notes
 about the type of extra domains that can be added to an IgG
 molecule. Furthermore, the HELM editor does not have specific
 expressions for antibody-based drugs as it requires amino acid
 sequences to draw a schematic of a molecule, which is not suitable
-when describing fragmented BsAbs. Due to the gaining popularity of
-BsAbs and the unsuitability of current macromolecule notation, it
+when describing fragmented MsAbs. Due to the gaining popularity of
+MsAbs and the unsuitability of current macromolecule notation, it
 presents a case to develop a new notation language that adequately
-describes the ever-increasing diversity of BsAbs.
+describes the ever-increasing diversity of MsAbs.
 
 In this paper, we present a new BsAb notation language, Antibody
 Markup Language (AbML), which we demonstrate can be used to describe a
-variety of current BsAbs formats. Furthermore we apply our language in
+variety of current MsAbs formats. Furthermore we apply our language in
 a graphical programme, abYdraw, which uses AbML to render schematics
-of BsAbs, as well as produces expressions from drawn antibody
+of MsAbs, as well as produces expressions from drawn antibody
 schematics.  
 
 \section{Methods}
 
 \subsection{Devising a descriptor language}
-We used literature describing the formats of over 60 BsAbs to develop
+We used literature describing the formats of over 60 MsAbs to develop
 our description language \cite{spiess:2015}. An effective notation
 language must be simply structured but can carry as much information
 as needed. Using the documentation of the HELM descriptor language
 \cite{zhang:2012}, it was decided that our language would be
 structured similarly, but correct for instances where HELM is not
-appropriate for BsAbs. We adopt similar domain type characters in AbML
+appropriate for MsAbs. We adopt similar domain type characters in AbML
 but remove the need to specify a constant heavy (CH) domain and
 comment it as to which CH type it is. Similarly we decided to use \verb|"-"|
 characters to indicate connections between domains but we also include
@@ -289,7 +299,7 @@ comments given in the expression are printed with the domain symbol of
 the domain which it applies to the antibody. If multiple comments are
 given for a domain, they are printed on the same line. 
 
-Users may draw BsAbs from scratch or begin with a template design of
+Users may draw MsAbs from scratch or begin with a template design of
 common BsAb formats that may be manipulated by the user. To Draw
 domains, a user must select a specificity and any mods for that domain
 and then place it on the canvas. Both specificities and modifications
@@ -329,14 +339,14 @@ applied to numerous antibody formats described by Spiess \etal
 \section{Discussion}
 
 By addressing the pitfalls of currently available notation languages,
-we have developed AbML which can be applied to existing BsAbs. Our
+we have developed AbML which can be applied to existing MsAbs. Our
 language was based on the established HELM notation for macromolecule
 biologics but simplified and adapted to specifically describe antibody
 formats. The simplicity of AbML over HELM allows greater accessibility
 as well as allowing the potential to insert additional modifications
 symbols and domain types that will futureproof the language to cope
 with the inevitably expanding formats of recombinant and chemically
-conjugated BsAbs. This will not always be necessary as \verb|"X"| and \verb|"C"|
+conjugated MsAbs. This will not always be necessary as \verb|"X"| and \verb|"C"|
 domains can be described as a multitude of possible fusion proteins,
 drug conjugates and chemical bonds using the comments system, and so
 the language should not require constant updating. Despite this
