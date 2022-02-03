@@ -9,7 +9,6 @@ import tkinter.ttk as ttk
 import time
 import argparse
 from PIL import Image
-from PIL import ImageGrab
 
 
 
@@ -3717,21 +3716,26 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
 ############################################
 def save_as_png(canvas):
     fileName = "AbYdraw_export"
-    file = filedialog.asksaveasfile(mode='w', filetypes=(("EPS file", "*.eps"),("PNG file", "*.png"),("All Files", "*.*") ))
+    file = filedialog.asksaveasfile(mode='w', filetypes=(("EPS file", "*.eps"),("PNG file", "*.png"),("JPEG file", "*.jpeg"),("All Files", "*.*") ))
     if file:
         abs_path = os.path.abspath(file.name)
         eps = canvas.postscript(file = abs_path,colormode='color',height=1000)
         file.close()
         print(abs_path)
-        img = Image.open(str(abs_path))
-        img.load(scale=10)
-        if img.mode in ('P', '1'):
-            img = img.convert("RGB")
-        TARGET_BOUNDS = (1024, 1024)
-        ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
-        new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
-        img = img.resize(new_size, Image.ANTIALIAS)
-        img.save(abs_path+".png", "png")
+        if "eps" not in abs_path:
+            img = Image.open(str(abs_path))
+            img.load(scale=10)
+            if img.mode in ('P', '1'):
+                img = img.convert("RGB")
+            TARGET_BOUNDS = (1024, 1024)
+            ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
+            new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+            img = img.resize(new_size, Image.ANTIALIAS)
+            if "png" in abs_path:
+                img.save(abs_path, "png")
+            elif "jpeg" in abs_path:
+                img.save(abs_path,"jpeg")
+
 
 
 ###########################################
