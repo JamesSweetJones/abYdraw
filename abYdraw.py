@@ -531,7 +531,7 @@ def Get_dictionaries(x):
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
     for i in range(len(all_to_check_keys)):
-        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C"]
+        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
         if "V" in str(all_to_check_keys[i]):
             if bool(re.search("[a-h]",all_to_check_keys[i])) == False:
@@ -3595,7 +3595,7 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
                     Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
                 else:
                     Domain_Primer[8] += extra_mods
-            if  "nano" in domain_name:
+            if  "VHH" in domain_name:
                 nanobody_button.config(fg="red")
             elif "VH" in domain_name:
                 InsertVHDomainButton.config(fg="red")
@@ -3669,7 +3669,7 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
                     Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
                 else:
                     Domain_Primer[8] += extra_mods
-            if  "nano" in domain_name:
+            if  "VHH" in domain_name:
                 nanobody_button.config(fg="red")
             elif "VH" in domain_name:
                 InsertVHDomainButton.config(fg="red")
@@ -4431,7 +4431,7 @@ def sequence_pipeline(canvas):
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "nano" not in str(strings[i][j]):
+            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "VHH" not in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
@@ -7547,7 +7547,7 @@ if len(sys.argv) < 2:
     AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
     ModLabelButton = tk.Button(frame2,text="MOD", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("MOD"))
     ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-    nanobody_button = tk.Button(frame2,text="nanobody",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("nanoVH"+domain_mod+"."+domain_type),False,True))
+    nanobody_button = tk.Button(frame2,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
     nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
     ###Insert bonds buttons ###
     ##Col1
@@ -7630,8 +7630,8 @@ if len(sys.argv) < 2:
     "F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
     "scFV":"VH.a(1:2)-L-VL.a(2:1)",
     "scFV4":"VL.a(4:5)-L-VH.a(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VH.a(1:2)-L-VL.a(2:1)-CL(3:6){1} | VL.b(13:14)-L-VH.b(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VH.b(10:11)-L-VL.b(11:10)-CL(12:15){1}",
-    "sdFV4":"VH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VH.a(6)  -CL(7:2){1} | VH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VH.b(13) -CL(14:9){1}",
-    "Nanobody":"VH.a(1)",
+    "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VHH.b(13) -CL(14:9){1}",
+    "Nanobody":"VHH.a(1)",
     "BiTE":"VH.a(1:2) -L -VL.a(2:1) -L -VH.b(3:4) -L -VL.b(4:3)",
     "HSAbody":"VL.a(1:2)-L-VH.a(2:1)-L-X(3)[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(4:5)-L-VL.b(5:4)",
     "Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
