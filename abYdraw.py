@@ -571,7 +571,6 @@ def Get_dictionaries(x):
         if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
             fragment1_checked,fragment3_checked = fragment3_checked,fragment1_checked
             fragment2_checked,fragment4_checked = fragment4_checked,fragment2_checked
-        print("IGG2 FOUND!")
 
     else:
         IgG2 = False
@@ -1036,7 +1035,6 @@ def Check_interactions(chains_list,canvas):
                         elif n > 0:
                             if "Linker[" in keyslist[n-1] or "H[" in keyslist[n-1]:
                                 if chain.get(keyslist[n-2])[0][0] == (chain.get(keyslist[n])[0][1]):
-                                    print("OH DEAR JAMIE")
                                     if innie_or_outie_list[-2] == "outie":
                                         innie_or_outie_list.append("innie")
                                     elif innie_or_outie_list[-2] == "innie":
@@ -1132,7 +1130,6 @@ def Check_interactions(chains_list,canvas):
                     Light_chain_check = False
                     default = "outie"
                 elif IgG2 == True and Claw == True:
-                    print("OOOH YES PLEASE")
                     Light_chain_check = True
                     Build_in = False
                     Build_out= True
@@ -5832,7 +5829,10 @@ class MouseMover():
                     labely = label_location[1]
                     labelx_theory = (x1+x2)/2
                     labely_theory = (y1+y2)/2
-                    label_text_test = re.sub("\.|\+|\-|\>|\@|\_","",canvas_polygons.get(self.item)[1])
+                    label_text_test = re.sub("\.|\>|\@","",canvas_polygons.get(self.item)[1])
+                    label_text_test = re.sub("\_","-",label_text_test)
+                    print(label_text, label_text_test)
+                    print(labelx_theory,labelx)
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5877,6 +5877,18 @@ class MouseMover():
                     new_coordinates.append((coordinates[i]+diffy))
             canvas_polygons[self.item]=[new_coordinates, name]
 
+            if self.newcoordinates != self.startcoordinates[0]:
+                min_max = get_min_max_coordinates(coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
+                for i in range(len(canvas_keyslist)):
+                    if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
+                        domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
+                        if x1< domain_coordinates[2] <x2 and y1 < domain_coordinates[3]  < y2 or  x1< domain_coordinates[0] <x2 and y1 < domain_coordinates[1]  < y2:
+                            lower_canvas.delete(canvas_keyslist[i])
+                            del canvas_polygons[canvas_keyslist[i]]
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
@@ -8385,6 +8397,7 @@ else:
     my_parser.add_argument('-i','--input', type=str,help='string of AbML input')
     my_parser.add_argument('-o','--output', type=str,help='string of image output name (default "abYdraw_export")')
     my_parser.add_argument('-s','--show',nargs='?', type=int,help='Show image window 0-1 (default 0)')
+    my_parser.add_argument('-e','--format',type=str ,help='specify image format eps, png, jepg (default eps)')
     my_parser.add_argument('-p','--image',nargs='?', type=int,help='Save image file 0-1 (default 1)')
     my_parser.add_argument('-t','--template',nargs='?', type=int,help='Save template file 0-1 (default 0)')
     my_parser.add_argument('-l','--labels',nargs='?', type=int,help='Toggle domain labels 0-1 (default 1)')
@@ -8457,6 +8470,9 @@ else:
         save = 1
     elif save is not None:
         save = 0
+    format = args.format
+    if format is None:
+        format = "eps"
 
     CLI = True
     all_buttons = []
@@ -8488,21 +8504,26 @@ else:
     bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
 
 
-    def CLI_save_png(output,canvas):
+    def CLI_save_png(format, output,canvas):
         fileName = str(output)
-        eps = canvas.postscript(file=(fileName+".eps"), colormode='color', height= 1000, width = 900)
-        print(abs_path)
-        img = Image.open(str(abs_path))
-        img.load(scale=10)
-        if img.mode in ('P', '1'):
-            img = img.convert("RGB")
-        TARGET_BOUNDS = (1024, 1024)
-        ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
-        new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
-        img = img.resize(new_size, Image.ANTIALIAS)
-        img.save(abs_path+".png", "png")
+        eps = canvas.postscript(file=(fileName+"."+format), colormode='color', height= 1000, width = 900)
+        print(str(fileName+"."+format))
+        abs_path = str(fileName+"."+format)
+        if "eps" not in format:
+            img = Image.open(str(abs_path))
+            img.load(scale=10)
+            if img.mode in ('P', '1'):
+                img = img.convert("RGB")
+            TARGET_BOUNDS = (1024, 1024)
+            ratio = min(TARGET_BOUNDS[0] / img.size[0], TARGET_BOUNDS[1] / img.size[1])
+            new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+            img = img.resize(new_size, Image.ANTIALIAS)
+            if "png" in format:
+                img.save(abs_path, "png")
+            elif "jpeg" in format:
+                img.save(abs_path, "png")
 
-    def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save):
+    def CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save, format):
         ###Window###
 
         HEIGHT =  900
@@ -8525,11 +8546,14 @@ else:
         split_chains = Get_dictionaries(entry)
         coordinates  = Check_interactions(split_chains, lower_canvas)
         rendering = render(coordinates, lower_canvas,True)
+        if format != "png" and format != "jpeg" and format !="eps":
+            message = "Please specify a correct format"
+            raise_error(message,lower_canvas)
         if save == 1:
-            CLI_save_png(output_name,lower_canvas)
+            CLI_save_png(format, output_name,lower_canvas)
         if template == 1:
             Get_Template_File(lower_canvas)
         if show == 1:
             root.mainloop()
 
-    CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save)
+    CLI_function(input_string,output_name,Label_lock, H_Labels, L_Labels, Bond_Arrows, Bond_thickness, show, template, save, format)
