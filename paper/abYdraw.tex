@@ -193,9 +193,9 @@ The requirements for AbML were as follows:
   indicated.
 \item Three types of connection between domains needed to be allowed:
   normal peptide connections between domains, natural (or engineered)
-  hinge regions and artifical (engineered) peptide linkers.
+  hinge regions and artificial (engineered) peptide linkers.
 \item AbML needed to support additional optional comments including
-  general notes, types of additional domains, modificatoins and region
+  general notes, types of additional domains, modifications and region
   lengths.
 \end{itemize}
   
@@ -240,7 +240,7 @@ package) for the interface.
 \psfig{width=\columnwidth,file=Figure1.eps}
 \caption{\label{fig:1} AbML Guidesheet Explaining the Properties of
 the Language. All possible domain types, modifications, connectors and
-comment types as well as how to notate pairings and dislphide bonds
+comment types as well as how to notate pairings and disulphide bonds
 are given in colour-coded fashion to the example antibody domain
 highlighted in red. Antibody schematic was rendered with abYdraw and
 numbers represent the numbering of each domain given in AbML and
@@ -248,7 +248,7 @@ labelled on the schematic. \andrew{What does the dagger mean next
   to Disulphide Bonds and Comments? As I remember there are some
   TYPEs with special meaning - e.g.\ leucine zipper. I don't think
   we currently have anything to indicate specific ADC sites (many
-  ADCs are just conhjugated via any available lysines, but that is
+  ADCs are just conjugated via any available lysines, but that is
   changing. Should `Engineered Linker' come under Domains? (Since
   Hinge does?). The hinge colour doesn't match what it says in the
   text. I suggest a section title of `Connectors' rather than
@@ -261,7 +261,7 @@ labelled on the schematic. \andrew{What does the dagger mean next
 AbML is based on describing antibody domains, arranged in a string and
 separated by connectors, representing a chain from an antibody
 from N-terminus to C-terminus. The aim is to provide as simple a format
-as possible while converying all necessary information.
+as possible while conveying all necessary information.
 
 Each domain is separated by a
 \verb|`-'| character and is numbered sequentially in
@@ -291,7 +291,7 @@ standard immunoglobulin and will usually be described by associated comments;
 \verb|`C'| domains are chemical conjugation moieties, while \verb|`H'|
 and \verb|`L'| refer to hinge regions and artificial linkers respectively.
 
-For the Fv fragment, (i.e.\ \VH\ and \VL\ domains, the specifity is
+For the Fv fragment, (i.e.\ \VH\ and \VL\ domains, the specificity is
 indicated by appending a \verb|`.'| followed by a letter corresponding
 to the specificity (e.g.\ \verb|VH.a|)  \andrew{abYdraw requires this
   is always specified. For single specificity antibodies, it would be
@@ -398,7 +398,7 @@ binding site. Knobs-into-holes adaptations are displayed by constant
 domains with either a cut-out or an extension to their side which
 slots together to demonstrate how these domains are paired.
 \andrew{We could change the unpaired \VH\ to be called VHH instead ---
-  that is used quite often for camelid single \VH\ antibodies.}
+  that is used quite often for Camelid single \VH\ antibodies.}
 
 Users may draw MsAbs from scratch or begin with a template design of
 common MsAb formats that may be manipulated by the user. To draw
@@ -457,7 +457,7 @@ newer antibodies annotated by the INN.
 
 The simplicity of AbML over HELM allows greater accessibility
 as well as allowing the potential to extend the language in future by inserting additional modification
-symbols and domain types that will futureproof the language to cope
+symbols and domain types that will future-proof the language to cope
 with the inevitably expanding formats of recombinant and chemically
 conjugated MsAbs. In general the \verb|`X'| and \verb|`C'|
 domains can be used to describe a multitude of possible fusion proteins,
@@ -473,7 +473,7 @@ the program from the command line.
 
 abYdraw includes a library of commonly used MsAb formats complete with their AbML
 strings and diagrams that can be used as starting points for
-researchers to deaw and described newly designed drugs.
+researchers to draw and describe newly designed drugs.
 
 Currently, abYdraw has some minor limitations and is anticipated that
 these may need to be addressed in future. It only supports eight
@@ -482,7 +482,7 @@ conceivable constructs for the foreseeable future.  abYdraw also
 limits domain pairings to those normally seen. i.e.\ \VHVL,
 \CH{1}/\CL, \CH{2}/\CH{2}, \CH{3}/\CH{3}, \CH{4}/\CH{4}\ and
 hinge-hinge. In addition interactions may be specified between `extra'
-(non-antibody) domains and chemical conjugation moities.  \andrew{Can
+(non-antibody) domains and chemical conjugation moieties.  \andrew{Can
   it do L--L, X--C, X--L, C--L? Can it do X and/or C with any of the
   antibody domains (e.g.\ with a disulphide)}
 
