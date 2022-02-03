@@ -42,6 +42,7 @@ optional arguments:
 -  -i / --input     string of AbML input
 -  -o / --output    string of image output name      (default "abYdraw_export")
 -  -s / --show      Show image window            0-1 (default 0)
+-  -e / --format    Specify image format         "eps", "png", "jepg" (default eps)
 -  -i / --image     Save image file              0-1 (default 1)
 -  -t / --template  Save template file           0-1 (default 0)
 -  -l / --labels    Toggle domain labels         0-1 (default 1)
