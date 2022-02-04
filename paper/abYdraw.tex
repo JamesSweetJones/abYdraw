@@ -225,6 +225,8 @@ an scFv). Hinges and engineered linkers \andrew{Is this true for
   linkers in abYdraw?} differ from natural connectors in that they can
 be considered as connector-based `domains' that can interact with one
 another and be joined via disulphide bonds.
+\andrew{03.02.22 Email: L cannot interact with other domains. I
+  assume they cannot interact with other domains either}
 
 \subsection{Development of abYdraw}
 abYdraw was initially developed to render AbML strings as images, but
@@ -306,7 +308,7 @@ exceptions apply when two different heavy chains share a common light
 chain.
 In this case one heavy chain would be \verb|VH.a| and the other would
 be \verb|VH.b|, while the light chain would be \verb|VL.ab|).
-\andrew{Have I understood this correctly?}.
+%% 03.02.22 Confirmed correct
 
 
 Each domain is given a unique identifying number in parentheses (e.g.\
@@ -360,8 +362,7 @@ input expressions in AbML to obtain a schematic of their designed
 antibody by clicking the \verb|`Get Structure'| button. However, the user is
 also able to draw antibodies by arranging standard antibody domains
 and connecting them with connectors to obtain the appropriate expression
-for their design by using the \verb|`Get Sequence'|
-\andrew{I suggest changing to `Get AbML'} button. Once the AbML
+for their design by using the \verb|`Get AbML'| button. Once the AbML
 is obtained for the drawing, using \verb|`Get Structure'| will re-render the
 schematic automatically. Both functions can be run in sequence using the
 \verb|`Tidy'| button. The programme will also print out comments made in the
@@ -485,6 +486,7 @@ hinge-hinge. In addition interactions may be specified between `extra'
 (non-antibody) domains and chemical conjugation moieties.  \andrew{Can
   it do L--L, X--C, X--L, C--L? Can it do X and/or C with any of the
   antibody domains (e.g.\ with a disulphide)}
+\andrew{Email 03.02.22: Nor does an X/C domain interact with an antibody domain to form disulphides.}
 
 Further developments to promote its use include adding a command-line
 interface that would allow it to be used for automatically rendering
