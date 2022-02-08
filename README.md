@@ -20,7 +20,7 @@ Software authors: James Sweet-Jones and Andrew Martin (Darwin Building, Universi
 
 ### 1. AbML
 
-![AbML Guide Sheet](https://github.com/JamesSweetJones/abYdraw/blob/main/LanguageGuide.png)
+![AbML Guide Sheet](https://github.com/JamesSweetJones/abYdraw/blob/main/Picture 1_Revised.pdf)
 Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: `TYPE; NOTE; MOD; ANTI and LENGTH`. TYPE and MOD are limited to reserved keywords in block capitals while other comments are not restricted and written in lower case. Full descriptions of AbML can be found on the language guide sheet included in the Repository.
 
 AbML expression for a standard IgG molecule would be:
