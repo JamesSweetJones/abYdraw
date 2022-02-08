@@ -6401,12 +6401,17 @@ class MouseMover():
 
     def place_type_label(self,event):
         global TYPE_labels
+        global Type_options
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "TYPE_labels")
             TYPE_labels[label] = [[xc,yc], entry]
+        else:
+            if Type_list_header.get() != "TYPE":
+                label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels")
+                MOD_labels[label] = [[xc,yc], entry]
     def place_note_label(self,event):
         global NOTE_labels
         widget = lower_canvas
@@ -6415,14 +6420,21 @@ class MouseMover():
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels")
             NOTE_labels[label] = [[xc,yc], entry]
+
     def place_mod_label(self,event):
         global MOD_labels
+        global Mod_options
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "MOD_labels")
             MOD_labels[label] = [[xc,yc], entry]
+        else:
+            if mod_list_header.get() != "MOD":
+                label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels")
+                MOD_labels[label] = [[xc,yc], entry]
+
     def place_anti_label(self,event):
         global ANTI_labels
         widget = lower_canvas
@@ -7641,10 +7653,23 @@ if len(sys.argv) < 2:
     InsertDelClickButton.place(relx = 0.81,rely = 0.21, relheight = 0.2, relwidth= 0.18)
     Labels_buttons = tk.Button(frame2,text="Labels", bg="#CFCFCF", command=lambda: labels_button(lower_canvas))
     Labels_buttons.place(relx = 0.81,rely = 0.41, relheight = 0.2, relwidth= 0.18)
+    Type_options = ["TYPE","TYPE:ZIPPER", "TYPE:FUSION", "TYPE:OTHER"]
+    Type_list_header = tk.StringVar(frame2)
+    Type_list_header.set(Type_options[0])
+    Type_menu = tk.OptionMenu(frame2, Type_list_header, *Type_options)
+    Type_menu.place(relx=0.01,rely = 0.83, relwidth=0.33,relheight=0.15)
+    Mod_options = ["MOD", "MOD:ENHANCEFCRN","MOD:ENHANCEADCC",    "MOD:STRANDEXCHANGE","MOD:DISULPHIDE",    "MOD:DISULFIDE",    "MOD:PI",    "MOD:CONJUGATION",   "MOD:HEXAMER",    "MOD:NOFCGR",    "MOD:NOPROTEINA","MOD:NOOX",    "MOD:NOADCC",    "MOD:NOCDC",    "MOD:NOADCP",    "MOD:NOADCCCDC",    "MOD:NOGLYCOS","MOD:NOADE",    "MOD:NOAGG",    "MOD:NOPROT",    "MOD:REMCYS",    "MOD:STABILIZATION",    "MOD:AFFINITY",    "MOD:OTHER"]
+    mod_list_header = tk.StringVar(frame2)
+    mod_list_header.set(Mod_options[0])
+    Mod_menu = tk.OptionMenu(frame2, mod_list_header, *Mod_options)
+    Mod_menu.place(relx=0.34,rely = 0.83, relwidth=0.33,relheight=0.15)
+
+
+
     CustomLabelButton = tk.Button(frame2,text="Comment", bg="#CFCFCF", command=lambda: CommentLabelButton_function(lower_canvas))
     CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
     CustomLabelEntry = tk.Text(frame2, font=20)
-    CustomLabelEntry.place(relx=0.01,rely = 0.83, relwidth=0.98,relheight=0.15)
+    CustomLabelEntry.place(relx=0.67,rely = 0.83, relwidth=0.31,relheight=0.15)
     ##Status bar###
     status_label = tk.Label(root, text='', bd=1)
     status_label.place(rely = 0.98, relheight = 0.02, relwidth = 1)
@@ -7682,27 +7707,27 @@ if len(sys.argv) < 2:
     "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
     "BiTE":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
-    "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[NOTE:FUSION,human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
-    "Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
+    "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[TYPE:FUSION, NOTE: human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
+    "Cov-X-body":"X(1)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
     "Diabody":"VH.a(1:4)-L(2)-VH.b(3:6)|VL.a(4:1)-L(5)-VL.b(6:3)",
-    "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD: engineered disulphide bond]-X(5:10)[TYPE:LEUCINE]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD: engineered disulphide bond]-X(10:5)[TYPE:LEUCINE]",
+    "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD:DISULPHIDE]-X(5:10)[TYPE:ZIPPER]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD:DISULPHIDE]-X(10:5)[TYPE:ZIPPER]",
     "scDiabody":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
     "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
     "scDiabody-Fc":"VH.b(1:3)-L(2)-VL.b(3:1)-L(4)-VH.a(5:7)-L(6)-VL.a(7:5)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VH.b(11:13)-L(12)-VL.b(13:11)-L(14)-VH.a(15:17)-L(16)-VL.a(17:15)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
-    "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD: engineered disulphide bond]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD: engineered disulphide bond]",
+    "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:DISULPHIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:DISULPHIDE]",
     "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
     "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
     "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
     "Triplebody":"VH.a(1:7)-CH1(2:8){1}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)|VL.a(7:1)-CL(8:2){1}-L(9)-VL.c(10:12)-L(11)-VH.c(12:10)",
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
     "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3>(14:5)",
-    "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE: LEUCINE]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE: LEUCINE]",
+    "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:9)-CL(2:10){1}|VL.a(3:26)-CL(4:27){1}|VL.b(5:7)-L(6)-VH.b(7:5)-L(8)-VH.a(9:1)-CH1(10:2){1}-H(11:28){2}-CH2(12:29)-CH3(13:30)-L(14)-VH.b(15:17)-L(16)-VL.b(17:15)-L(18)-VH.c(19:21)-L(20)-VL.c(21:19)|VL.b(22:24)-L(23)-VH.b(24:22)-L(25)-VH.a(26:3)-CH1(27:4){1}-H(28:11){2}-CH2(29:12)-CH3(30:13)-L(31)-VH.b(32:34)-L(33)-VL.b(34:32)-L(35)-VH.c(36:38)-L(37)-VL.c(38:36)",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
     'scFV-X-Fc-Body':"VL.a(1:3)-L(2)-VH.a(3:1)-X(4:10){1}[TYPE:FUSION]-CH2(5:11)-CH3(6:12)|VL.b(7:9)-L(8)-VH.b(9:7)-X(10:4){1}[TYPE:FUSION]-CH2(11:5)-CH3(12:6)",
-    "IgG-IgG":"VH.a(1:13)-CH1(2:14){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:15)-CH1(7:16){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L(11)-C(12)[MOD: orthophenylenedimaleimide fusion]|VL.a(13:1)-CL(14:2){1}|VL.a(15:6)-CL(16:7){1}|VH.b(17:28)-CH1(18:29){1}-H(19:25){2}-CH2(20:26)-CH3(21:27)-L(22)-C(12)[MOD: orthophenylenedimaleimide fusion]|VH.b(23:30)-CH1(24:31){1}-H(25:19){2}-CH2(26:20)-CH3(27:21)|VL.b(28:17)-CL(29:18){1}|VL.b(30:23)-CL(31:24){1}"
+    "IgG-IgG":"VH.a(1:13)-CH1(2:14){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:15)-CH1(7:16){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L(11)-C(12)[TYPE:OPDM]|VL.a(13:1)-CL(14:2){1}|VL.a(15:6)-CL(16:7){1}|VH.b(17:28)-CH1(18:29){1}-H(19:25){2}-CH2(20:26)-CH3(21:27)-L(22)-C(12)[TYPE:OPDM]|VH.b(23:30)-CH1(24:31){1}-H(25:19){2}-CH2(26:20)-CH3(27:21)|VL.b(28:17)-CL(29:18){1}|VL.b(30:23)-CL(31:24){1}"
     }
 
     formats_keyslist= list(antibodyformats.keys())
