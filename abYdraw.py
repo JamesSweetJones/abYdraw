@@ -25,7 +25,11 @@ def Get_dictionaries(x):
     """
     takes in IgG in SMILES format and identifies variables for dynamically rendering image
     """
-
+    ###check_for_specificities
+    if "V" in str(x) and bool(re.search("\.[a-h]", str(x))) == False:
+        x = re.sub("VHH","VHH.a",str(x))
+        x = re.sub("VH","VH.a",str(x))
+        x = re.sub("VL","VL.a",str(x))
     ###Split chains into dictionaries
     brackets = []
     non_brackets = []
@@ -163,17 +167,15 @@ def Get_dictionaries(x):
             locationstr =  str(re.sub("\[|\'|\]","", str(locationstr)))
             locationstr =  str(re.sub(":",",", str(locationstr)))
             locationstr = list(locationstr.split(","))
-            if domain != "Linker":
-                if len(locationstr) == 0:
-                    error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
-                    raise_error(lower_canvas, error_message)
-                for i in range(len(locationstr)):
-                    if i == 0:
-                        location_counting.append(int(locationstr[i]))
-                    location.append(int(locationstr[i]))
+            if len(locationstr) == 0:
+                error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
+                raise_error(lower_canvas, error_message)
+            for i in range(len(locationstr)):
+                if i == 0:
+                    location_counting.append(int(locationstr[i]))
+                location.append(int(locationstr[i]))
 
-            else:
-                location = ['']
+
 
 
 
@@ -245,7 +247,6 @@ def Get_dictionaries(x):
                         if dicts[a] != dicts[i]:
                             for b in range(len(chains[a])):
                                 interactor = dicts[a].get(chains[a][b])[0][0]
-                                print("LOOKING!", interactor, current_interactor)
                                 if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
@@ -552,7 +553,6 @@ def Get_dictionaries(x):
             if domain not in possible_domains:
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
-    print("INTERACTIng Fragments", interacting_fragments)
     if interacting_fragments == False:
         fragment1_checked = fragment1
         fragment2_checked = fragment2
@@ -1684,7 +1684,7 @@ def Check_interactions(chains_list,canvas):
                         if CLI == False:
                             print("checkpoint2")
                         mod = "H"
-                        if dictionary == VHa_chain and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
+                        if dictionary == VHa_chain and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+3) and chain_count == 2:
                             Extra_bond=True
                             Build_up=True
                             Build_down=False
@@ -1697,7 +1697,7 @@ def Check_interactions(chains_list,canvas):
 
 
 
-                        elif dictionary.get(keyslist[i])[1] != (dictionary.get(keyslist[i-1])[1]+2) or dictionary == VHb_chain:
+                        else:# or dictionary == VHb_chain:
                             if CLI == False:
                                 print("checkpoint3")
 
@@ -1804,8 +1804,14 @@ def Check_interactions(chains_list,canvas):
                     slant=False
                     if chain_count <=2:
                         if dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
-                            if dictionary.get(keyslist[0])[0] != (dictionary.get(keyslist[2])[1]) :
-                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            try:
+                                if dictionary.get(keyslist[0])[0] != (dictionary.get(keyslist[2])[1]) :
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            except IndexError:
+                                if righthanded == True :
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         else:
                             if righthanded == True :
@@ -1843,7 +1849,7 @@ def Check_interactions(chains_list,canvas):
                     Build_in  = False
                     Build_out = True
 
-                elif chain_count == 2 and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+2):
+                elif chain_count == 2 and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and "X" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+3):
                     if CLI == False:
                         print("checkpoint8")
                     if chain_count == 2:
@@ -1890,6 +1896,7 @@ def Check_interactions(chains_list,canvas):
                         print("checkpoint10")
                     previous_chain = chain[i-2]
                     previous_domain = keyslist[i-2]
+                    previous_number = previous_number+1
 
 
 ##SdFV
@@ -2015,7 +2022,7 @@ def Check_interactions(chains_list,canvas):
                         Build_down=False
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
-                    elif chain_count == 2 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+1 == dictionary.get(keyslist[i-2])[1]:
+                    elif chain_count == 2 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+2 == dictionary.get(keyslist[i-2])[1]:
                         if CLI == False:
                             print("checkpoint16")
                         if dictionary == VHa_chain:
@@ -2107,7 +2114,7 @@ def Check_interactions(chains_list,canvas):
                             getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 ##H disulphides
-            if "H[" in keyslist[i] or "H*[" in keyslist[i]  and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
+            if "H[" in keyslist[i] or "H*[" in keyslist[i] or "Linker[" in keyslist[i] and len(dictionary.get(keyslist[i])) >1 and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
                 if H_disulphide_bridge_count > 0 and Build_up == False:
                     bottomx=bottom_bond[0]
                     bottomy=bottom_bond[1]
@@ -2129,28 +2136,45 @@ def Check_interactions(chains_list,canvas):
                             topx = bottomx
                         topy = bottomy+40
                     location   = dictionary.get(keyslist[i])[0]
-                    interactor = dictionary.get(keyslist[i])[1]
-                    H_bond_coordinates = disulphide_maker(H_disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
-                    H_disulphide_coordinates[interactor]=H_bond_coordinates
-                    H_disulphidebridge_keyslist = list(H_disulphide_coordinates.keys())
-                    for j in range(len(H_disulphide_coordinates)):
-                        if int(H_disulphidebridge_keyslist[j]) == int(location):
-                            for x in range(len(H_disulphide_coordinates.get(interactor))):
-                                coordinate1 = H_disulphide_coordinates.get(interactor)[x][0]
-                                coordinate2 = H_disulphide_coordinates.get(interactor)[x][1]
-                                coordinate3 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][0]
-                                coordinate4 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][1]
-                                coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
-                                completed_disulphidebridges.append(coordinates)
-                    if H_disulphide_bridge_count > 10:
-                        if noted_Hbonds==False:
-                            Notes.append((H_disulphide_bridge_count, "hinge disulphide bonds"))
-                            noted_Hbonds==True
-                            if len(Notes_positions) == 0:
-                                Notes_positions.append([(width/3),(height-100)])
-                            elif len(Notes_positions) > 0:
-                                XY = (Notes_positions[-1][1])+20
-                                Notes_positions.append([(width/3),XY])
+                    if "H" in keyslist[i]:
+                        interactor = dictionary.get(keyslist[i])[1]
+                        H_bond_coordinates = disulphide_maker(H_disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                        H_disulphide_coordinates[interactor]=H_bond_coordinates
+                        H_disulphidebridge_keyslist = list(H_disulphide_coordinates.keys())
+                        for j in range(len(H_disulphide_coordinates)):
+                            if int(H_disulphidebridge_keyslist[j]) == int(location):
+                                for x in range(len(H_disulphide_coordinates.get(interactor))):
+                                    coordinate1 = H_disulphide_coordinates.get(interactor)[x][0]
+                                    coordinate2 = H_disulphide_coordinates.get(interactor)[x][1]
+                                    coordinate3 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][0]
+                                    coordinate4 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][1]
+                                    coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
+                                    completed_disulphidebridges.append(coordinates)
+                        if H_disulphide_bridge_count > 10:
+                            if noted_Hbonds==False:
+                                Notes.append((H_disulphide_bridge_count, "hinge disulphide bonds"))
+                                noted_Hbonds==True
+                                if len(Notes_positions) == 0:
+                                    Notes_positions.append([(width/3),(height-100)])
+                                elif len(Notes_positions) > 0:
+                                    XY = (Notes_positions[-1][1])+20
+                                    Notes_positions.append([(width/3),XY])
+                    elif "Linker[" in keyslist[i]:
+                        bottomy = bottomy+15
+                        location   = dictionary.get(keyslist[i])[0]
+                        interactor = dictionary.get(keyslist[i])[1]
+                        H_bond_coordinates = extra_disulphide_maker(disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                        extra_disulphide_bridges[interactor]=H_bond_coordinates
+                        extra_disulphidebridge_keyslist = list(extra_disulphide_bridges.keys())
+                        for j in range(len(extra_disulphide_bridges)):
+                            if int(extra_disulphidebridge_keyslist[j]) == int(location):
+                                for x in range(len(extra_disulphide_bridges.get(interactor))):
+                                    coordinate1 = extra_disulphide_bridges.get(interactor)[x][0]
+                                    coordinate2 = extra_disulphide_bridges.get(interactor)[x][1]
+                                    coordinate3 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][0]
+                                    coordinate4 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][1]
+                                    coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
+                                    completed_disulphidebridges.append(coordinates)
 
 
 
@@ -2463,8 +2487,10 @@ def Check_interactions(chains_list,canvas):
                     topy = getcoordinates[2][1]+40
                     location   = dictionary.get(keyslist[i])[0]
                     interactor = dictionary.get(keyslist[i])[1]
-                    H_bond_coordinates = extra_disulphide_maker(disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
-                    extra_disulphide_bridges[interactor]=H_bond_coordinates
+
+                    if "Linker[" not in keyslist[i]:
+                        H_bond_coordinates = extra_disulphide_maker(disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                        extra_disulphide_bridges[interactor]=H_bond_coordinates
                     extra_disulphidebridge_keyslist = list(extra_disulphide_bridges.keys())
                     for j in range(len(extra_disulphide_bridges)):
                         if int(extra_disulphidebridge_keyslist[j]) == int(location):
@@ -2622,9 +2648,9 @@ def Check_interactions(chains_list,canvas):
                                 VHb_H_coordinatesx = (width/2)
                                 VHb_H_coordinatesy = (height/2)-50
                             elif Xa != Xb:
-                                VHa_H_coordinatesx = (width/2)-50
+                                VHa_H_coordinatesx = (width/2)-30
                                 VHa_H_coordinatesy = (height/2)-50
-                                VHb_H_coordinatesx = (width/2)+50
+                                VHb_H_coordinatesx = (width/2)+30
                                 VHb_H_coordinatesy = (height/2)-50
 
         elif chain_count == 4 and "H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test) and "X[" not in str(VHa_1_test) and "X[" not in str(VHb_1_test) and "C[" not in str(VHa_1_test) and "C[" not in str(VHb_1_test):
@@ -2632,7 +2658,6 @@ def Check_interactions(chains_list,canvas):
             VHa_H_coordinatesy = (height/2)
             VHb_H_coordinatesx = (width/2)+32
             VHb_H_coordinatesy = (height/2)
-
         teststartx = 0
         teststarty = 0
         testHpositionVHa = renderchains(VHa_1_test,teststartx,teststarty, canvas)[25]
@@ -2851,7 +2876,6 @@ def Check_interactions(chains_list,canvas):
             frag4_stat= renderchains(fragment4,VHb_startx-0,VHb_starty+300, canvas)
 
         elif ((("X" in str(list(fragment1.keys())) and "X" in str(list(fragment3.keys()))) or ("C[" in str(list(fragment1.keys())) and "C[" in str(list(fragment3.keys())))) and ("CH2" not in str(list(fragment1.keys())) and "CH2" not in str(list(fragment3.keys())))) or fragment3 == {} and fragment4 == {} :
-            print("OH MY WORDDDDDDDDDD!!!!")
             frag1_stat= renderchains(fragment1,VHa_startx-0,VHa_starty+200, canvas)
             test_H_positionVHa = frag1_stat[25]
             test_H_positionx = testHpositionVHa[0]
@@ -2941,7 +2965,6 @@ def Check_interactions(chains_list,canvas):
                                         conj_fixed = True
                                         conj_bond = coordinates_to_change[i][j]
 
-    #
                                     else:
                                         if k %2 != 0:
                                             coordinates_to_change[i][j][k] -= frag1_differencetest_desiredy
@@ -4153,45 +4176,6 @@ def sequence_pipeline(canvas):
             if hinges_list[i] == polygons_keyslist[j]:
                 hinges_dict[j] = canvas_polygons.get(polygons_keyslist[j])
 
-    def arc_checker(key):
-        bondx1 = bonds_dict.get(key)[0][0]
-        bondy1 = bonds_dict.get(key)[0][1]
-        bondx2 = bonds_dict.get(key)[0][2]
-        bondy2 = bonds_dict.get(key)[0][3]
-
-        if bondx2-bondx1 == 100: #arcs_left
-            bondx1 = bondx1+50
-            bondx2 = bondx2-50
-            bondy1 = bondy1+20
-        elif bondx1-bondx2 == 100:
-            bondx1 = bondx1-50
-            bondx2 = bondx2+50
-            bondy1 = bondy1+20
-        elif bondx2>bondx1:
-            bondx2 = bondx2-50
-            bondx1,bondx2 = bondx2,bondx1
-        elif bondx1>bondx2:
-            bondx2 = bondx2+50
-            bondx1,bondx2 = bondx2,bondx1
-
-        upside_down = False
-        if bondy1<bondy2:
-            for x in range(len(domains_keyslist)):
-                min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[i])[0])
-                domainx1 = min_max[0]
-                domainx2 = min_max[1]
-                domainy1 = min_max[2]
-                domainy2 = min_max[3]
-                domainy = min_max[5]
-                if  (domainx1<= bondx1 <= domainx2) and (domainy<=bondy1<domainy2):
-                    upside_down = True
-        if upside_down == False:
-            bondy1,bondy2=bondy2,bondy1
-
-
-        bondy2= bondy2+5
-
-        return(bondx1,bondy1,bondx2,bondy2)
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
     print("Disulphides", disulphides_dict)
@@ -4227,8 +4211,8 @@ def sequence_pipeline(canvas):
             bondy2 = bonds_dict.get(bonds_keyslist[j])[0][3]
             if arcs_keyslist != []:
                 if bonds_keyslist[j] in arcs_keyslist:
-                    bondx2 = arc_checker(bonds_keyslist[j])[2]
-                    bondy2 = arc_checker(bonds_keyslist[j])[3]
+                    bondx2 = arc_checker(bonds_keyslist[j],bonds_dict, domains_dict)[2]
+                    bondy2 = arc_checker(bonds_keyslist[j],bonds_dict, domains_dict)[3]
             if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
                 start_found = False
 
@@ -4265,8 +4249,8 @@ def sequence_pipeline(canvas):
                     bondy1 = bonds_dict.get(bonds_keyslist[j])[0][1]
                     if arcs_keyslist != []:
                         if bonds_keyslist[j] in arcs_keyslist:
-                            bondx1 = arc_checker(bonds_keyslist[j])[0]
-                            bondy1 = arc_checker(bonds_keyslist[j])[1]
+                            bondx1 = arc_checker(bonds_keyslist[j],bonds_dict, domains_dict)[0]
+                            bondy1 = arc_checker(bonds_keyslist[j],bonds_dict, domains_dict)[1]
                     if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
                         connection_found = True
                         full_chain.append(bonds_keyslist[j])
@@ -4284,8 +4268,8 @@ def sequence_pipeline(canvas):
                 bondy2 = bonds_dict.get(full_chain[-1])[0][3]
                 if arcs_keyslist != []:
                     if full_chain[-1] in arcs_keyslist:
-                        bondx2 = arc_checker(full_chain[-1])[2]
-                        bondy2 = arc_checker(full_chain[-1])[3]
+                        bondx2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[2]
+                        bondy2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[3]
 
 
                 for j in range(len(domains_dict)):
@@ -4309,8 +4293,8 @@ def sequence_pipeline(canvas):
                             bondy1 = bonds_dict.get(bonds_keyslist[n])[0][1]
                             if arcs_keyslist != []:
                                 if bonds_keyslist[n] in arcs_keyslist:
-                                    bondx1 = arc_checker(bonds_keyslist[n])[0]
-                                    bondy1 = arc_checker(bonds_keyslist[n])[1]
+                                    bondx1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[0]
+                                    bondy1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[1]
                             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
                                 connection_found = True
                                 full_chain.append(bonds_keyslist[n])
@@ -4328,8 +4312,8 @@ def sequence_pipeline(canvas):
                             bondy2 = bonds_dict.get(full_chain[-1])[0][3]
                             if arcs_keyslist != []:
                                 if full_chain[-1] in arcs_keyslist:
-                                    bondx2 = arc_checker(full_chain[-1])[2]
-                                    bondy2 = arc_checker(full_chain[-1])[3]
+                                    bondx2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[2]
+                                    bondy2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[3]
                             hingex1 = hinges_dict.get(hinges_keyslist[j])[0][0]
                             hingey1 = hinges_dict.get(hinges_keyslist[j])[0][1]
 
@@ -4397,8 +4381,8 @@ def sequence_pipeline(canvas):
     for i in range(len(strings)):
         for j in range(len(strings[i])):
             assigned_keyslist = list(assigned_numbers.keys())
-            if str(strings[i][j]) != "-" and  str(strings[i][j]) != "-L-":
-                if "-H-" not in strings[i][j]:
+            if str(strings[i][j]) != "-":
+                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
                     assigned_match = False
@@ -4424,6 +4408,9 @@ def sequence_pipeline(canvas):
                         counter += 1
                 elif "-H-" in strings[i][j]:
                     strings[i][j] = str("-H("+str(counter)+")-")
+                    counter += 1
+                elif "-L-" in strings[i][j]:
+                    strings[i][j] = str("-L("+str(counter)+")-")
                     counter += 1
 
 
@@ -4453,8 +4440,8 @@ def sequence_pipeline(canvas):
                     else:
                         d1x1 = min_max[0]-Pairing_sensitivity
                         d1x2 = min_max[1]+Pairing_sensitivity
-                        d1y1 = min_max[2]-5
-                        d1y2 = min_max[3]+5
+                        d1y1 = min_max[2]
+                        d1y2 = min_max[3]
                     #Search for overlapping matching domains
                     for f in range(len(domains_keyslist)):
                         if domains_keyslist[f] != index:
@@ -4486,8 +4473,8 @@ def sequence_pipeline(canvas):
                                                 else:
                                                     d2x1 = min_max[0]-Pairing_sensitivity
                                                     d2x2 = min_max[1]+Pairing_sensitivity
-                                                    d2y1 = min_max[2]-5
-                                                    d2y2 = min_max[3]+5
+                                                    d2y1 = min_max[2]
+                                                    d2y2 = min_max[3]
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
@@ -4636,7 +4623,6 @@ def sequence_pipeline(canvas):
                                                 if d1x1 <= g[0] <= d1x2 and d1y1 <= g[1] <= d1y2:
                                                     disulphide_count = 0
                                                     for y in range(len(disulphides_keyslist)):
-                                                        #print("Looking for those disulphides")
                                                         disulphx1 = disulphides_dict.get(disulphides_keyslist[y])[0][0]
                                                         disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
                                                         disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
@@ -5146,6 +5132,47 @@ def domain_type_button(letter):
             lower_canvas.bind("<B1-Motion>", mm.drag)
             lower_canvas.bind("<ButtonRelease-1>", mm.release)
             lower_canvas.config(cursor = "arrow")
+def arc_checker(key,bonds_dict, domains_dict):
+    domains_keyslist = list(domains_dict.keys())
+    bondx1 = bonds_dict.get(key)[0][0]
+    bondy1 = bonds_dict.get(key)[0][1]
+    bondx2 = bonds_dict.get(key)[0][2]
+    bondy2 = bonds_dict.get(key)[0][3]
+
+    if bondx2-bondx1 == 100: #arcs_left
+        bondx1 = bondx1+50
+        bondx2 = bondx2-50
+        bondy1 = bondy1+20
+    elif bondx1-bondx2 == 100:
+        bondx1 = bondx1-50
+        bondx2 = bondx2+50
+        bondy1 = bondy1+20
+    elif bondx2>bondx1:
+        bondx2 = bondx2-50
+        bondx1,bondx2 = bondx2,bondx1
+    elif bondx1>bondx2:
+        bondx2 = bondx2+50
+        bondx1,bondx2 = bondx2,bondx1
+
+    upside_down = False
+    if bondy1<bondy2:
+        for x in range(len(domains_keyslist)):
+
+            min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[x])[0])
+            domainx1 = min_max[0]
+            domainx2 = min_max[1]
+            domainy1 = min_max[2]
+            domainy2 = min_max[3]
+            domainy = min_max[5]
+            if  (domainx1<= bondx1 <= domainx2) and (domainy<=bondy1<domainy2):
+                upside_down = True
+    if upside_down == False:
+        bondy1,bondy2=bondy2,bondy1
+
+
+    bondy2= bondy2+5
+
+    return(bondx1,bondy1,bondx2,bondy2)
 
 def extra_mod_button(letter):
     global extra_mods
@@ -5831,8 +5858,6 @@ class MouseMover():
                     labely_theory = (y1+y2)/2
                     label_text_test = re.sub("\.|\>|\@","",canvas_polygons.get(self.item)[1])
                     label_text_test = re.sub("\_","-",label_text_test)
-                    print(label_text, label_text_test)
-                    print(labelx_theory,labelx)
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5878,15 +5903,39 @@ class MouseMover():
             canvas_polygons[self.item]=[new_coordinates, name]
 
             if self.newcoordinates != self.startcoordinates[0]:
+                arcs_list = lower_canvas.find_withtag("arcs")
                 min_max = get_min_max_coordinates(coordinates)
                 x1 = min_max[0]
                 x2 = min_max[1]
                 y1 = min_max[2]
                 y2 = min_max[3]
+
                 for i in range(len(canvas_keyslist)):
                     if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
                         domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
-                        if x1< domain_coordinates[2] <x2 and y1 < domain_coordinates[3]  < y2 or  x1< domain_coordinates[0] <x2 and y1 < domain_coordinates[1]  < y2:
+                        bondx1 = domain_coordinates[0]
+                        bondy1 = domain_coordinates[1]
+                        bondx2 = domain_coordinates[2]
+                        bondy2 = domain_coordinates[3]
+                        if canvas_keyslist[i] in arcs_list:
+                            domains_list = lower_canvas.find_withtag("domain")
+                            domains_dict = {}
+                            for x in range(len(domains_list)):
+                                for y in range(len(canvas_keyslist)):
+                                    if domains_list[x] == canvas_keyslist[y]:
+                                        domains_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+                            bonds_list = lower_canvas.find_withtag("bonds")
+                            bonds_dict = {}
+                            for x in range(len(bonds_list)):
+                                for y in range(len(canvas_keyslist)):
+                                    if bonds_list[x] == canvas_keyslist[y]:
+                                        bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+                            print(domains_dict, bonds_dict)
+                            bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
+                            bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
+                            bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
+                            bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
+                        if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
                             lower_canvas.delete(canvas_keyslist[i])
                             del canvas_polygons[canvas_keyslist[i]]
             if Label_lock == True:
@@ -7158,9 +7207,9 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
             fifthy         =    fourthy-38
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy]
 
-    if slant == True or mod == "Leucine" or previous_H == True :
+    if (slant == True or mod == "Leucine" or previous_H == True) and X == False:
         top_bond    = [firstx,firsty+2]
-    elif Build_up == True:
+    elif Build_up == True or X == True:
         top_bond    = [firstx,firsty+20]
     else:
         top_bond    = [firstx,firsty+2]
@@ -7624,35 +7673,36 @@ if len(sys.argv) < 2:
     "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
     "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.b(13:8)-CL(14:9){1}",
     "Orthagonal Fab":"VH+.a(1:6)-CH1>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3@(5:12)|VL_.a(6:1)-CL@(7:2){1}|VH.b(8:13)-CH1>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5)|VL.b(13:8)-CL@(14:9){1}",
-    "IgG-H-scFV":"VH.a(1:8)-CH1(2:9){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L-VH.b(6:7)-L-VL.b(7:6)|VL.a(8:1)-CL(9:2){1}|VH.a(10:17)-CH1(11:18){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L-VH.b(15:16)-L-VL.b(16:15)|VL.a(17:10)-CL(18:11){1}",
-    "IgG-L-scFV":"VH.a(1:6) -CH1(2:7){1} -H(3:12){2} -CH2(4:13) -CH3(5:14) |VL.a(6:1) -CL(7:2){1} -L -VH.b(8:9) -L -VL.b(9:8) |VH.a(10:15) -CH1(11:16){1} -H(12:3){2} -CH2(13:4) -CH3(14:5) | VL.a(15:10) -CL(16:11){1} -L -VH.b(17:18) -L -VL.b(18:17)",
-    "scFV-H-scFV": "VL.a(1:2)-L-VH.a(2:1)-H(3:8){2}-VH.b(4:5)-L-VL.b(5:4)|VL.c(6:7)-L-VH.c(7:6)-H(8:3){2}-VH.d(9:10)-L-VL.d(10:9)",
+    "IgG-H-scFV":"VH.a(1:19)-CH1(2:20){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.a(10:21)-CH1(11:22){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L(15)-VH.b(16:18)-L(17)-VL.b(18:16)|VL.a(19:1)-CL(20:2){1}|VL.a(21:10)-CL(22:11){1}",
+    "IgG-L-scFV":"VH.a(1:11)-CH1(2:12){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:17)-CH1(7:18){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)|VL.a(11:1)-CL(12:2){1}-L(13)-VH.b(14:16)-L(15)-VL.b(16:14)|VL.a(17:6)-CL(18:7){1}-L(19)-VH.b(20:22)-L(21)-VL.b(22:20)",
+    "scFV-H-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-H(4:11){2}-VH.b(5:7)-L(6)-VL.b(7:5)|VL.c(8:10)-L(9)-VH.c(10:8)-H(11:4){2}-VH.d(12:14)-L(13)-VL.d(14:12)",
     "F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
-    "scFV":"VH.a(1:2)-L-VL.a(2:1)",
-    "scFV4":"VL.a(4:5)-L-VH.a(5:4)-CH1(6:3){1}-H(7:16){2}-CH2(8:17)-CH3(9:18)|  VH.a(1:2)-L-VL.a(2:1)-CL(3:6){1} | VL.b(13:14)-L-VH.b(14:13)-CH1(15:12){1}-H(16:7){2}-CH2(17:8)-CH3(18:9) | VH.b(10:11)-L-VL.b(11:10)-CL(12:15){1}",
+    "scFV":"VH.a(1:3)-L(2)-VL.a(3:1)",
+    "scFV4":"VH.a(1:3)-L(2)-VL.a(3:1)-CL(4:8){1}|VL.a(5:7)-L(6)-VH.a(7:5)-CH1(8:4){1}-H(9:20){2}-CH2(10:21)-CH3(11:22)|VH.b(12:14)-L(13)-VL.b(14:12)-CL(15:19){1}|VL.b(16:18)-L(17)-VH.b(18:16)-CH1(19:15){1}-H(20:9){2}-CH2(21:10)-CH3(22:11)",
     "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
-    "BiTE":"VH.a(1:2) -L -VL.a(2:1) -L -VH.b(3:4) -L -VL.b(4:3)",
-    "HSAbody":"VL.a(1:2)-L-VH.a(2:1)-L-X(3)[TYPE:FUSION][NOTE:human serum albumin]-L-VH.b(4:5)-L-VL.b(5:4)",
+    "BiTE":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
+    "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[NOTE:FUSION,human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
     "Cov-X-body":"X(1)[TYPE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
-    "Diabody":"VH.a(1:3) -L -VH.b(2:4) | VL.a(3:1) -L -VL.b(4:2)",
-    "Miniantibody":"VH.a(1:2)-L-VL.a(2:1)-H*(3:7){1}[MOD: engineered disulphide bond]-X(4:8)[TYPE:LEUCINE] | VH.b(5:6)-L-VL.b(6:5)-H*(7:3){1}[MOD: engineered disulphide bond]-X(8:4)[TYPE:LEUCINE]",
-    "scDiabody":"VH.a(1:4) -L -VL.a(2:3) -L -VH.b(3:2) -L -VL.b(4:1)",
-    "scDiabody-CH3":"VL.a(1:4){1} -L -VL.a(2:3) -L -VH.a(3:2) -L -VH.a(4:1){1}-H(5:12){2}-CH2(6:13)-CH3(7:14)| VL.b(8:11){1}-L-VL.b(9:10)-L-VH.b(10:9)-L-VH.b(11:8){1}-H(12:5){2}-CH2(13:6)-CH3(14:7)",
-    "scDiabody-Fc":"VH.b(1:2) -L -VL.b(2:1) -L -VH.a(3:4) -L -VL.a(4:3) -H(5:12){2} -CH2(6:13) -CH3(7:14) | VH.b(8:9) -L -VL.b(9:8) -L -VH.a(10:11) -L -VL.a(11:10) -H(12:5){2} -CH2(13:6) -CH3(14:7)",
-    "DART":"VL.a(1:5) -L -VH.b(2:4) -H*(3:6){3}[MOD: engineered disulphide bond] | VL.b(4:2) -L -VH.a(5:1) -H*(6:3){3}[MOD: engineered disulphide bond]",
-    "Tandem A and B": "VH.a(1:5) -L -VL.b(2:6) -L -VH.b(3:7) -L -VL.a(4:8) | VL.a(5:1) -L -VH.b(6:2) -L -VL.b(7:3) -L -VH.a(8:4)",
-    "Intrabody":"VL.a(1:2) -L -VH.a(2:1)-H(3:10){2}- CH1(4:11) - CH2(5:12) -L - VH.b(6:7) -L -VL.b(7:6)| VL.a(8:9) -L -VH.a(9:8) -H(10:3){2} -CH1(11:4) - CH2(12:5) -L -VH.b(13:14) -L -VL.b(14:13)",
+    "Diabody":"VH.a(1:4)-L(2)-VH.b(3:6)|VL.a(4:1)-L(5)-VL.b(6:3)",
+    "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD: engineered disulphide bond]-X(5:10)[TYPE:LEUCINE]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD: engineered disulphide bond]-X(10:5)[TYPE:LEUCINE]",
+    "scDiabody":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
+    "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
+    "scDiabody-Fc":"VH.b(1:3)-L(2)-VL.b(3:1)-L(4)-VH.a(5:7)-L(6)-VL.a(7:5)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VH.b(11:13)-L(12)-VL.b(13:11)-L(14)-VH.a(15:17)-L(16)-VL.a(17:15)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
+    "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD: engineered disulphide bond]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD: engineered disulphide bond]",
+    "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
+    "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
     "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
-    "Triplebody":"VH.a(1:5)-CH1(2:6){1} -L- VL.b(3:4) -L -VH.b(4:3) | VL.a(5:1) -CL(6:2){1} -L - VL.c(7:8) -L -VH.c(8:7)",
-    "scTriplebody":"VH.a(1:5)-CH1(2:6){2}-L-VL.b(3:4){1}-L-VH.b(4:3){1}-L-VL.a(5:1)-CL(6:2){2}-L-VL.c(7:8){1}-L-VH.c(8:7){1}",
-    "TriBiMinibody":"VH.a(1:2) -L -VL.a(2:1) -H(3:9){2} -CH3@(4:10){2} -L -VH.b(5:6) -L - VL.b(6:5) | VH.c(7:8) -L -VL.c(8:7) -H(9:3){2}-CH3>(10:4)",
-    "LUZ-Y":"VL.a(1:3)-CL(2:4){1}-L -VH.a(3:1)-CH1(4:2){1}-H(5:13){2}-CH2(6:14) -CH3(7:15) -X(8:16)[TYPE: LEUCINE] | VL.b(9:11)-CL(10:12){1} -L -VH.b(11:9) -CH1(12:10){1}-H(13:5){2}-CH2(14:6)-CH3(15:7)-X(16:8)[TYPE: LEUCINE]",
-    "Dock and Lock":"VH.a(1:4)-CH1(2:5){1}-L-X(3)[TYPE:FUSION]|VL.a(4:1)-CL(5:2){1}|VH.b(6:8)-CH1(7:9){1}-L-X(3)|VL.b(8:6)-CL(9:7){1}|VH.c(10:12)-CH1(11:13){1}-L-X(3)|VL.c(12:10)-CL(13:11){1}|VH.d(14:16)-CH1(15:17){1}-L-X(3)|VL.d(16:14)-CL(17:15){1}",
-    "scFV-IgG-scFV-scFV": "VL.b(1:2)-L-VH.b(2:1)-L-VH.a(3:12)-CH1(4:13){1}-H(5:18){2}-CH2(6:19)-CH3(7:20)-L-VH.b(8:9)-L-VL.b(9:8)-L-VH.c(10:11)-L-VL.c(11:10)|VL.a(12:3)-CL(13:4){1}|VL.b(14:15)-L-VH.b(15:14)-L-VH.a(16:25)-CH1(17:26){1}-H(18:5){2}-CH2(19:6)-CH3(20:7)-L-VH.b(21:22)-L-VL.b(22:21)-L-VH.c(23:24)-L-VL.c(24:23)|VL.a(25:16)-CL(26:17){1}",
-    "scFV-scFV-Fc":"VH.a(1:2)-L-VL.a(2:1)-L-VH.b(3:4)-L-VL.b(4:3)-CH2(5:7)-CH3(6:8)-L-CH2(7:5)-CH3(8:6)",
+    "Triplebody":"VH.a(1:7)-CH1(2:8){1}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)|VL.a(7:1)-CL(8:2){1}-L(9)-VL.c(10:12)-L(11)-VH.c(12:10)",
+    "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
+    "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3>(14:5)",
+    "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE: LEUCINE]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE: LEUCINE]",
+    "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)|VL.d(20:17)-CL(21:18){1}",
+    "scFV-IgG-scFV-scFV": "VL.a(1:9)-CL(2:10){1}|VL.a(3:26)-CL(4:27){1}|VL.b(5:7)-L(6)-VH.b(7:5)-L(8)-VH.a(9:1)-CH1(10:2){1}-H(11:28){2}-CH2(12:29)-CH3(13:30)-L(14)-VH.b(15:17)-L(16)-VL.b(17:15)-L(18)-VH.c(19:21)-L(20)-VL.c(21:19)|VL.b(22:24)-L(23)-VH.b(24:22)-L(25)-VH.a(26:3)-CH1(27:4){1}-H(28:11){2}-CH2(29:12)-CH3(30:13)-L(31)-VH.b(32:34)-L(33)-VL.b(34:32)-L(35)-VH.c(36:38)-L(37)-VL.c(38:36)",
+    "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
-    "IgG-IgG":"VH.a(1:12)-CH1(2:13){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VL.a(12:1)-CL(13:2){1}|VH.a(6:14)-CH1(7:15){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VL.a(14:6)-CL(15:7){1}|VH.b(16:26)-CH1(17:27){1}-H(18:23){2}-CH2(19:24)-CH3(20:25)-L-C(11)[MOD: orthophenylenedimaleimide fusion]|VH.b(21:28)-CH1(22:29){1}-H(23:18){2}-CH2(24:19)-CH3(25:20)|VL.b(26:16)-CL(27:17){1}|VL.b(28:21)-CL(29:22){1}"
+    'scFV-X-Fc-Body':"VL.a(1:3)-L(2)-VH.a(3:1)-X(4:10){1}[TYPE:FUSION]-CH2(5:11)-CH3(6:12)|VL.b(7:9)-L(8)-VH.b(9:7)-X(10:4){1}[TYPE:FUSION]-CH2(11:5)-CH3(12:6)",
+    "IgG-IgG":"VH.a(1:13)-CH1(2:14){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:15)-CH1(7:16){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L(11)-C(12)[MOD: orthophenylenedimaleimide fusion]|VL.a(13:1)-CL(14:2){1}|VL.a(15:6)-CL(16:7){1}|VH.b(17:28)-CH1(18:29){1}-H(19:25){2}-CH2(20:26)-CH3(21:27)-L(22)-C(12)[MOD: orthophenylenedimaleimide fusion]|VH.b(23:30)-CH1(24:31){1}-H(25:19){2}-CH2(26:20)-CH3(27:21)|VL.b(28:17)-CL(29:18){1}|VL.b(30:23)-CL(31:24){1}"
     }
 
     formats_keyslist= list(antibodyformats.keys())
