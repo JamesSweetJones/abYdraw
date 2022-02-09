@@ -4506,9 +4506,9 @@ def sequence_pipeline(canvas):
                                                     testx1 = (domains_dict.get(index)[0][4])
                                                     testx2 = (domains_dict.get(index)[0][8])
                                                     if testx1 > testx2:
-                                                        d2x1 = min_max[0]+Pairing_sensitivity
+                                                        d2x1 = min_max[0]-Pairing_sensitivity
                                                     else:
-                                                        d2x2 = min_max[1]-Pairing_sensitivity
+                                                        d2x2 = min_max[1]+Pairing_sensitivity
                                                 else:
                                                     d2x1 = min_max[0]-Pairing_sensitivity
                                                     d2x2 = min_max[1]+Pairing_sensitivity
@@ -4525,6 +4525,7 @@ def sequence_pipeline(canvas):
                                                                 disulphy1 = disulphides_dict.get(disulphides_keyslist[y])[0][1]
                                                                 disulphx2 = disulphides_dict.get(disulphides_keyslist[y])[0][2]
                                                                 disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
+                                                                print(d1x1 , disulphx2 , d1x2 , d1y1 , disulphy2 , d1y2 ," ", d2x1 , disulphx1 , d2x2 , d2y1 , disulphy1 , d2y2, '    ', d1x1 , disulphx1, d1x2, " ", d1y1, disulphy1 ,d1y2, " ",d2x1, disulphx2, d2x2," ", d2y1, disulphy2, d2y2)
                                                                 if ((d1x1 <= disulphx2 <= d1x2 and d1y1 <= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1 <= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1 <= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
                                                                     print("OOO LAWDY")
                                                                     disulphide_count += 1
@@ -4727,8 +4728,8 @@ def sequence_pipeline(canvas):
                                                     disulphide_count = 1
                                                     strings[i][j] = str("-L"+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
                                                     strings[a][b] = str("-L"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
-                                                    paired.append(int(number))
-                                                    paired.append(int(paired_number))
+                                                    #paired.append(int(number))
+                                                    #paired.append(int(paired_number))
 
 
 ##Find comments on domains and not on domains
