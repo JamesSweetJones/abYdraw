@@ -4808,7 +4808,7 @@ def sequence_pipeline(canvas):
                     comment = type_dict.get(type_keyslist[k])[1]
                     labelx = type_dict.get(type_keyslist[k])[0][0]
                     labely = type_dict.get(type_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)):
                         domain = strings[i][j].split("-")[1]
                         note = type_dict.get(type_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
@@ -4819,7 +4819,7 @@ def sequence_pipeline(canvas):
                     comment =note_dict.get(note_keyslist[k])[1]
                     labelx = note_dict.get(note_keyslist[k])[0][0]
                     labely = note_dict.get(note_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) :
                         domain = strings[i][j].split("-")[1]
                         note = note_dict.get(note_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
@@ -4845,7 +4845,7 @@ def sequence_pipeline(canvas):
                     comment =anti_dict.get(anti_keyslist[k])[1]
                     labelx = anti_dict.get(anti_keyslist[k])[0][0]
                     labely = anti_dict.get(anti_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) :
                         domain = strings[i][j].split("-")[1]
                         note = anti_dict.get(anti_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
@@ -4857,7 +4857,7 @@ def sequence_pipeline(canvas):
                     labelx = length_dict.get(length_keyslist[k])[0][0]
                     labely = length_dict.get(length_keyslist[k])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)):
                         domain = strings[i][j].split("-")[1]
                         note = length_dict.get(length_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
