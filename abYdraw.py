@@ -4751,8 +4751,8 @@ def sequence_pipeline(canvas):
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = type_dict.get(type_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
-                        noting = str("[TYPE:"+note+"]")
+                        note = re.sub("^ ","", note)
+                        noting = str("["+note+"]")
                         strings[i][j] += noting
                 for k in range(len(note_keyslist)):
                     comment =note_dict.get(note_keyslist[k])[1]
@@ -4761,8 +4761,8 @@ def sequence_pipeline(canvas):
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = note_dict.get(note_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
-                        noting = str("[NOTE:"+note+"]")
+                        note = re.sub("^ ","", note)
+                        noting = str("["+note+"]")
                         strings[i][j] += noting
                 for k in range(len(mod_keyslist)):
                     comment =mod_dict.get(mod_keyslist[k])[1]
@@ -4771,8 +4771,8 @@ def sequence_pipeline(canvas):
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = mod_dict.get(mod_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
-                        noting = str("[MOD:"+note+"]")
+                        note = re.sub("^ ","", note)
+                        noting = str("["+note+"]")
                         strings[i][j] += noting
                 for k in range(len(anti_keyslist)):
                     comment =anti_dict.get(anti_keyslist[k])[1]
@@ -4781,8 +4781,8 @@ def sequence_pipeline(canvas):
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = anti_dict.get(anti_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
-                        noting = str("[ANTI:"+note+"]")
+                        note = re.sub("^ ","", note)
+                        noting = str("["+note+"]")
                         strings[i][j] += noting
                 for k in range(len(length_keyslist)):
                     comment =length_dict.get(length_keyslist[k])[1]
@@ -4792,8 +4792,8 @@ def sequence_pipeline(canvas):
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
                         note = length_dict.get(length_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
-                        noting = str("[LENGTH:"+note+"]")
+                        note = re.sub("^ ","", note)
+                        noting = str("["+note+"]")
                         strings[i][j] += noting
             elif "-H" in strings[i][j]:
                 domain_type = strings[i][j].split("(")[0]
@@ -4812,7 +4812,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = type_dict.get(type_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[TYPE:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(note_keyslist)):
@@ -4823,7 +4823,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = note_dict.get(note_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         domain = re.sub("\(","*(", domain)
                         noting = str("-"+domain+"[NOTE:"+note+"]-")
                         strings[i][j] = noting
@@ -4837,7 +4837,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = mod_dict.get(mod_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         domain = re.sub("\(|\*\(","*(", domain)
                         noting = str("-"+domain+"[MOD:"+note+"]-")
                         strings[i][j] = noting
@@ -4849,7 +4849,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = anti_dict.get(anti_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[ANTI:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(length_keyslist)):
@@ -4861,7 +4861,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = length_dict.get(length_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[LENGTH:"+note+"]-")
                         strings[i][j] = noting
             elif "-C" in strings[i][j]:
@@ -4881,7 +4881,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = type_dict.get(type_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[TYPE:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(note_keyslist)):
@@ -4892,7 +4892,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = note_dict.get(note_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         #domain = re.sub("\(","*(", domain)
                         noting = str("-"+domain+"[NOTE:"+note+"]-")
                         strings[i][j] = noting
@@ -4904,7 +4904,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = mod_dict.get(mod_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         #domain = re.sub("\(","*(", domain)
                         noting = str("-"+domain+"[MOD:"+note+"]-")
                         strings[i][j] = noting
@@ -4917,7 +4917,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = anti_dict.get(anti_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[ANTI:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(length_keyslist)):
@@ -4929,7 +4929,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = length_dict.get(length_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-"+domain+"[LENGTH:"+note+"]-")
                         strings[i][j] = noting
             elif "-L" in strings[i][j]:
@@ -4948,7 +4948,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = type_dict.get(type_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-L[TYPE:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(note_keyslist)):
@@ -4960,7 +4960,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = note_dict.get(note_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         domain = re.sub("\(","*(", domain)
                         noting = str("-L[NOTE:"+note+"]-")
                         strings[i][j] = noting
@@ -4973,7 +4973,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = mod_dict.get(mod_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         domain = re.sub("\(","*(", domain)
                         noting = str("-L[MOD:"+note+"]-")
                         strings[i][j] = noting
@@ -4986,7 +4986,7 @@ def sequence_pipeline(canvas):
                         domain = strings[i][j].split("-")[1]
                         note = anti_dict.get(anti_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-L[ANTI:"+note+"]-")
                         strings[i][j] = noting
                 for k in range(len(length_keyslist)):
@@ -4998,7 +4998,7 @@ def sequence_pipeline(canvas):
                         #domain = strings[i][j].split("-")[1]
                         note = length_dict.get(length_keyslist[k])[1]
                         note = re.sub(domain_type, "",note)
-                        note = re.sub("NOTE:|TYPE:|MOD:|ANTI:|LENGTH:","", note)
+                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
                         noting = str("-L[LENGTH:"+note+"]-")
                         strings[i][j] = noting
 
@@ -5013,6 +5013,7 @@ def sequence_pipeline(canvas):
                 final_string+= str("|"+strings[i][j])
             elif j > 0 :
                 final_string += strings[i][j]
+    final_string = re.sub("\]\[",", ", str(final_string))
     final_string = re.sub("\-\-","-", str(final_string))
     final_string = re.sub("\-L\-\|","|",str(final_string))
     final_string = re.sub("\-\|","|",str(final_string))
