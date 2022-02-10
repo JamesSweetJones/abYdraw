@@ -30,6 +30,7 @@ def Get_dictionaries(x):
         x = re.sub("VHH","VHH.a",str(x))
         x = re.sub("VH","VH.a",str(x))
         x = re.sub("VL","VL.a",str(x))
+        x = re.sub("H\.aH","HH",str(x))
     ###Split chains into dictionaries
     brackets = []
     non_brackets = []
@@ -1806,7 +1807,7 @@ def Check_interactions(chains_list,canvas):
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 
-                elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]):
+                elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0]):
                     if CLI == False:
                         print("checkpoint6")
                     previous_H = True
@@ -7586,7 +7587,7 @@ if len(sys.argv) < 2:
     "Diabody-CH3":"VH.b(1:11)-L(2)-VL.a(3:13){1}-H(4:9){2}-CH3(5:10)|VH.b(6:14)-L(7)-VL.a(8:16){1}-H(9:4){2}-CH3(10:5)|VL.b(11:1)-L(12)-VH.a(13:3){1}|VL.b(14:6)-L(15)-VH.a(16:8){1}",
     "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:DISULPHIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:DISULPHIDE]",
     "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
-    "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
+    "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5:15)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15:5)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
     "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
     "Triplebody":"VH.a(1:7)-CH1(2:8){1}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)|VL.a(7:1)-CL(8:2){1}-L(9)-VL.c(10:12)-L(11)-VH.c(12:10)",
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
