@@ -154,6 +154,10 @@ def Get_dictionaries(x):
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
             if domain == "H*":
                 domain = re.sub("\*","", str(domain))
+                hmod = 1
+            else:
+                hmod = 0
+
 
             if domain == "L":
                 domain = "Linker"
@@ -186,7 +190,7 @@ def Get_dictionaries(x):
             else:
                 disulphide_bridges = 0
 
-            location = [location, disulphide_bridges,note]
+            location = [location, disulphide_bridges,note,hmod]
             domain = domain+str([j])
 
 
@@ -1511,6 +1515,7 @@ def Check_interactions(chains_list,canvas):
 
         for i in range(len(dictionary)):
             keyslist = list(dictionary.keys())
+            keyslist[i] = keyslist[i]
             V  = False
             X  = False
             direction = str(innie_or_outie_list[i])
@@ -1540,7 +1545,7 @@ def Check_interactions(chains_list,canvas):
                 if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
                     error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
                     raise_error(lower_canvas, error_message)
-                Domain_name_to_add = re.sub("\*|\+|\-","",Domain_name)
+                Domain_name_to_add = re.sub("\+|\-","",Domain_name)
                 Notes.append(Domain_name+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
@@ -1548,7 +1553,11 @@ def Check_interactions(chains_list,canvas):
                     XY = (Notes_positions[-1][1])+20
                     Notes_positions.append([(width/3),XY])
 
-
+            if "H*[" in keyslist[i]:
+                old_key = keyslist[i]
+                keyslist[i] = re.sub("\*","", str(keyslist[i]))
+                dictionary[keyslist[i]] = dictionary.pop(old_key)
+                print(keyslist[i])
             if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
                     location = dictionary.get(keyslist[i])[0][0]
@@ -4731,277 +4740,44 @@ def sequence_pipeline(canvas):
 
 
 ##Find comments on domains and not on domains
+    comment_dicts = [type_dict, mod_dict, anti_dict, length_dict, note_dict]
+    comment_lists = [type_keyslist, mod_keyslist, anti_keyslist, length_keyslist, note_keyslist]
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
             #print(domains_dict.get(full_chains[i][j])[0])
+            domain_type = strings[i][j].split("(")[0]
+            mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
+            domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
             if "-" not in strings[i][j]:
-                domain_type = strings[i][j].split("(")[0]
-                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
                 coordinates = domains_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]
-                d1x2 = min_max[1]
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-                for k in range(len(type_keyslist)):
-                    comment = type_dict.get(type_keyslist[k])[1]
-                    labelx = type_dict.get(type_keyslist[k])[0][0]
-                    labely = type_dict.get(type_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        note = type_dict.get(type_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub("^ ","", note)
-                        noting = str("["+note+"]")
-                        strings[i][j] += noting
-                for k in range(len(note_keyslist)):
-                    comment =note_dict.get(note_keyslist[k])[1]
-                    labelx = note_dict.get(note_keyslist[k])[0][0]
-                    labely = note_dict.get(note_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        note = note_dict.get(note_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub("^ ","", note)
-                        noting = str("["+note+"]")
-                        strings[i][j] += noting
-                for k in range(len(mod_keyslist)):
-                    comment =mod_dict.get(mod_keyslist[k])[1]
-                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
-                    labely = mod_dict.get(mod_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        note = mod_dict.get(mod_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub("^ ","", note)
-                        noting = str("["+note+"]")
-                        strings[i][j] += noting
-                for k in range(len(anti_keyslist)):
-                    comment =anti_dict.get(anti_keyslist[k])[1]
-                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
-                    labely = anti_dict.get(anti_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        note = anti_dict.get(anti_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub("^ ","", note)
-                        noting = str("["+note+"]")
-                        strings[i][j] += noting
-                for k in range(len(length_keyslist)):
-                    comment =length_dict.get(length_keyslist[k])[1]
-                    labelx = length_dict.get(length_keyslist[k])[0][0]
-                    labely = length_dict.get(length_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        note = length_dict.get(length_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub("^ ","", note)
-                        noting = str("["+note+"]")
-                        strings[i][j] += noting
-            elif "-H" in strings[i][j]:
-                domain_type = strings[i][j].split("(")[0]
-                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
+            elif "-" in strings[i][j]:
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]-50
-                d1x2 = min_max[1]+50
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-                for k in range(len(type_keyslist)):
-                    comment = type_dict.get(type_keyslist[k])[1]
-                    labelx = type_dict.get(type_keyslist[k])[0][0]
-                    labely = type_dict.get(type_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)):
-                        domain = strings[i][j].split("-")[1]
-                        note = type_dict.get(type_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[TYPE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(note_keyslist)):
-                    comment =note_dict.get(note_keyslist[k])[1]
-                    labelx = note_dict.get(note_keyslist[k])[0][0]
-                    labely = note_dict.get(note_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) :
-                        domain = strings[i][j].split("-")[1]
-                        note = note_dict.get(note_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        domain = re.sub("\(","*(", domain)
-                        noting = str("-"+domain+"[NOTE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(mod_keyslist)):
-                    comment =mod_dict.get(mod_keyslist[k])[1]
-                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
-                    labely = mod_dict.get(mod_keyslist[k])[0][1]
+            min_max = get_min_max_coordinates(coordinates)
+            d1x1 = min_max[0]
+            d1x2 = min_max[1]
+            d1y1 = min_max[2]
+            d1y2 = min_max[3]
+            for k in range(len(comment_lists)):
+                for l in range(len(comment_lists[k])):
+                    comment = comment_dicts[k].get(comment_lists[k][l])[1]
+                    labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
+                    labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) :#or domain_type in str(comment)
-                        print("RIGHT THAT WEIRD")
-                        domain = strings[i][j].split("-")[1]
-                        note = mod_dict.get(mod_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        domain = re.sub("\(|\*\(","*(", domain)
-                        noting = str("-"+domain+"[MOD:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(anti_keyslist)):
-                    comment =anti_dict.get(anti_keyslist[k])[1]
-                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
-                    labely = anti_dict.get(anti_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) :
-                        domain = strings[i][j].split("-")[1]
-                        note = anti_dict.get(anti_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[ANTI:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(length_keyslist)):
-                    comment =length_dict.get(length_keyslist[k])[1]
-                    labelx = length_dict.get(length_keyslist[k])[0][0]
-                    labely = length_dict.get(length_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)):
-                        domain = strings[i][j].split("-")[1]
-                        note = length_dict.get(length_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[LENGTH:"+note+"]-")
-                        strings[i][j] = noting
-            elif "-C" in strings[i][j]:
-                domain_type = "C"
-                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-                coordinates = domains_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]-50
-                d1x2 = min_max[1]+50
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-                for k in range(len(type_keyslist)):
-                    comment = type_dict.get(type_keyslist[k])[1]
-                    labelx = type_dict.get(type_keyslist[k])[0][0]
-                    labely = type_dict.get(type_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = type_dict.get(type_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[TYPE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(note_keyslist)):
-                    comment =note_dict.get(note_keyslist[k])[1]
-                    labelx = note_dict.get(note_keyslist[k])[0][0]
-                    labely = note_dict.get(note_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = note_dict.get(note_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        #domain = re.sub("\(","*(", domain)
-                        noting = str("-"+domain+"[NOTE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(mod_keyslist)):
-                    comment =mod_dict.get(mod_keyslist[k])[1]
-                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
-                    labely = mod_dict.get(mod_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = mod_dict.get(mod_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        #domain = re.sub("\(","*(", domain)
-                        noting = str("-"+domain+"[MOD:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(anti_keyslist)):
-                    comment =anti_dict.get(anti_keyslist[k])[1]
-                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
-                    labely = anti_dict.get(anti_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = anti_dict.get(anti_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[ANTI:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(length_keyslist)):
-                    comment =length_dict.get(length_keyslist[k])[1]
-                    labelx = length_dict.get(length_keyslist[k])[0][0]
-                    labely = length_dict.get(length_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = length_dict.get(length_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-"+domain+"[LENGTH:"+note+"]-")
-                        strings[i][j] = noting
-            elif "-L" in strings[i][j]:
-                domain_type = "Linker"
-                coordinates = bonds_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]-50
-                d1x2 = min_max[1]+50
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-                for k in range(len(type_keyslist)):
-                    comment = type_dict.get(type_keyslist[k])[1]
-                    labelx = type_dict.get(type_keyslist[k])[0][0]
-                    labely = type_dict.get(type_keyslist[k])[0][1]
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = type_dict.get(type_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-L[TYPE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(note_keyslist)):
-                    comment =note_dict.get(note_keyslist[k])[1]
-                    labelx = note_dict.get(note_keyslist[k])[0][0]
-                    labely = note_dict.get(note_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = note_dict.get(note_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        domain = re.sub("\(","*(", domain)
-                        noting = str("-L[NOTE:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(mod_keyslist)):
-                    comment =mod_dict.get(mod_keyslist[k])[1]
-                    labelx = mod_dict.get(mod_keyslist[k])[0][0]
-                    labely = mod_dict.get(mod_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = mod_dict.get(mod_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        domain = re.sub("\(","*(", domain)
-                        noting = str("-L[MOD:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(anti_keyslist)):
-                    comment =anti_dict.get(anti_keyslist[k])[1]
-                    labelx = anti_dict.get(anti_keyslist[k])[0][0]
-                    labely = anti_dict.get(anti_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        domain = strings[i][j].split("-")[1]
-                        note = anti_dict.get(anti_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-L[ANTI:"+note+"]-")
-                        strings[i][j] = noting
-                for k in range(len(length_keyslist)):
-                    comment =length_dict.get(length_keyslist[k])[1]
-                    labelx = length_dict.get(length_keyslist[k])[0][0]
-                    labely = length_dict.get(length_keyslist[k])[0][1]
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or domain_type in str(comment):
-                        #domain = strings[i][j].split("-")[1]
-                        note = length_dict.get(length_keyslist[k])[1]
-                        note = re.sub(domain_type, "",note)
-                        note = re.sub(" NOTE:| TYPE:| MOD:| ANTI:| LENGTH:","", note)
-                        noting = str("-L[LENGTH:"+note+"]-")
-                        strings[i][j] = noting
-
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or (("H" or "L") in mod_domain_type and mod_domain_type in str(comment)):
+                        note = comment_dicts[k].get(comment_lists[k][l])[1]
+                        note1 = note.split(":")[0]
+                        note2 = note.split(":")[1]
+                        note1 = re.sub(domain_type, "",note1)
+                        note1 = re.sub("^ |\* |\*","", note1)
+                        noting = str("["+note1+":"+note2+"]")
+                        strings[i][j] = re.sub("\*","", strings[i][j])
+                        if "MOD" in strings[i][j] or "MOD" in noting:
+                            strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
+                        if "-" not in strings[i][j]:
+                            strings[i][j] += noting
+                        elif "-" in strings[i][j]:
+                            strings[i][j] = strings[i][j].split("-")[1]
+                            strings[i][j] = str("-"+strings[i][j]+noting+"-")
 
 ##conver lists to expression
     final_string = ""
@@ -6508,7 +6284,7 @@ class MouseMover():
         global NOTE_labels
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        entry=CustomLabelEntry.get("1.0","end-1c")
+        entry=str("NOTE:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels")
             NOTE_labels[label] = [[xc,yc], entry]
@@ -6531,7 +6307,7 @@ class MouseMover():
         global ANTI_labels
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        entry=CustomLabelEntry.get("1.0","end-1c")
+        entry=str("ANTI:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels")
             ANTI_labels[label] = [[xc,yc], entry]
@@ -6539,7 +6315,7 @@ class MouseMover():
         global LENGTH_labels
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        entry=CustomLabelEntry.get("1.0","end-1c")
+        entry=str("LENGTH:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels")
             LENGTH_labels[label] = [[xc,yc], entry]
@@ -7788,15 +7564,15 @@ if len(sys.argv) < 2:
     antibodyformats = {
     "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
     "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
-    "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5) | VL.b(13:8)-CL(14:9){1}",
-    "Orthagonal Fab":"VH+.a(1:6)-CH1>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3@(5:12)|VL_.a(6:1)-CL@(7:2){1}|VH.b(8:13)-CH1>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3>(12:5)|VL.b(13:8)-CL@(14:9){1}",
+    "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3*@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5) | VL.b(13:8)-CL(14:9){1}",
+    "Orthagonal Fab":"VH*+.a(1:6)-CH1*>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3*@(5:12)|VL_.a(6:1)-CL*@(7:2){1}|VH.b(8:13)-CH1*>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5)|VL.b(13:8)-CL*@(14:9){1}",
     "IgG-H-scFV":"VH.a(1:19)-CH1(2:20){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.a(10:21)-CH1(11:22){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L(15)-VH.b(16:18)-L(17)-VL.b(18:16)|VL.a(19:1)-CL(20:2){1}|VL.a(21:10)-CL(22:11){1}",
     "IgG-L-scFV":"VH.a(1:11)-CH1(2:12){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:17)-CH1(7:18){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)|VL.a(11:1)-CL(12:2){1}-L(13)-VH.b(14:16)-L(15)-VL.b(16:14)|VL.a(17:6)-CL(18:7){1}-L(19)-VH.b(20:22)-L(21)-VL.b(22:20)",
     "scFV-H-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-H(4:11){2}-VH.b(5:7)-L(6)-VL.b(7:5)|VL.c(8:10)-L(9)-VH.c(10:8)-H(11:4){2}-VH.d(12:14)-L(13)-VL.d(14:12)",
     "F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
     "scFV":"VH.a(1:3)-L(2)-VL.a(3:1)",
     "scFV4":"VH.a(1:3)-L(2)-VL.a(3:1)-CL(4:8){1}|VL.a(5:7)-L(6)-VH.a(7:5)-CH1(8:4){1}-H(9:20){2}-CH2(10:21)-CH3(11:22)|VH.b(12:14)-L(13)-VL.b(14:12)-CL(15:19){1}|VL.b(16:18)-L(17)-VH.b(18:16)-CH1(19:15){1}-H(20:9){2}-CH2(21:10)-CH3(22:11)",
-    "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3>(12:5) | VHH.b(13) -CL(14:9){1}",
+    "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3*@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3*>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
     "BiTE":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
     "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[TYPE:FUSION, NOTE: human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
@@ -7804,17 +7580,20 @@ if len(sys.argv) < 2:
     "Diabody":"VH.a(1:4)-L(2)-VH.b(3:6)|VL.a(4:1)-L(5)-VL.b(6:3)",
     "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD:DISULPHIDE]-X(5:10)[TYPE:ZIPPER]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD:DISULPHIDE]-X(10:5)[TYPE:ZIPPER]",
     "scDiabody":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
-    "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
-    "scDiabody-Fc":"VH.b(1:3)-L(2)-VL.b(3:1)-L(4)-VH.a(5:7)-L(6)-VL.a(7:5)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VH.b(11:13)-L(12)-VL.b(13:11)-L(14)-VH.a(15:17)-L(16)-VL.a(17:15)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
+    "Tandem scFv-Fc":"VH.b(1:3)-L(2)-VL.b(3:1)-L(4)-VH.a(5:7)-L(6)-VL.a(7:5)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VH.b(11:13)-L(12)-VL.b(13:11)-L(14)-VH.a(15:17)-L(16)-VL.a(17:15)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
+    "scDiabody-Fc":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
+    "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:17){2}-CH3(9:18) |VL.b(10:16)-L(11)-VL.b(12:14)-L(13)-VH.b(14:12)-L(15)-VH.b(16:10)-H(17:8){2}-CH3(18:9)",
+    "Diabody-CH3":"VH.b(1:11)-L(2)-VL.a(3:13){1}-H(4:9){2}-CH3(5:10)|VH.b(6:14)-L(7)-VL.a(8:16){1}-H(9:4){2}-CH3(10:5)|VL.b(11:1)-L(12)-VH.a(13:3){1}|VL.b(14:6)-L(15)-VH.a(16:8){1}",
     "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:DISULPHIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:DISULPHIDE]",
     "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
     "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
     "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
     "Triplebody":"VH.a(1:7)-CH1(2:8){1}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)|VL.a(7:1)-CL(8:2){1}-L(9)-VL.c(10:12)-L(11)-VH.c(12:10)",
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
-    "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3>(14:5)",
+    "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3*@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3*>(14:5)",
     "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
-    "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)|VL.d(20:17)-CL(21:18){1}",
+    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE] |VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL*(15:2){1}[MOD:DISULFIDE] |VL.a(16:9)-CL*(17:10)[MOD:DISULFIDE] |VL.b(18:7)-CH1(19:8){1}",
+    "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:9)-CL(2:10){1}|VL.a(3:26)-CL(4:27){1}|VL.b(5:7)-L(6)-VH.b(7:5)-L(8)-VH.a(9:1)-CH1(10:2){1}-H(11:28){2}-CH2(12:29)-CH3(13:30)-L(14)-VH.b(15:17)-L(16)-VL.b(17:15)-L(18)-VH.c(19:21)-L(20)-VL.c(21:19)|VL.b(22:24)-L(23)-VH.b(24:22)-L(25)-VH.a(26:3)-CH1(27:4){1}-H(28:11){2}-CH2(29:12)-CH3(30:13)-L(31)-VH.b(32:34)-L(33)-VL.b(34:32)-L(35)-VH.c(36:38)-L(37)-VL.c(38:36)",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
