@@ -4764,7 +4764,7 @@ def sequence_pipeline(canvas):
                     labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
                     labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or (("H" or "L") in mod_domain_type and mod_domain_type in str(comment)):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment)):
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
                         note1 = note.split(":")[0]
                         note2 = note.split(":")[1]
