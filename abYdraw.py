@@ -4718,7 +4718,7 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
     Delete_lock = False
     Bond_lock = ""
 
-    if Domain_Primer == [] and domain_type == ""and domain_charge == "" and domain_mod == "" and extra_mods == "":
+    if Domain_Primer == [] and domain_type == "" and domain_charge == "" and domain_mod == "" and extra_mods == "":
         ##Turn off domain primer###
         Domain_Primer_Lock = ""
         lower_canvas.config(cursor = "fleur")
@@ -4727,22 +4727,15 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         domain_name = ""
-    elif Domain_Primer == []  and  domain_charge == "" and  domain_mod == "" and extra_mods == "" and domain_type != "":
+    elif Domain_Primer == []  and  (domain_charge != "" or  domain_mod != "" or extra_mods != "" or domain_type != ""):
+        print("BOOYAA")
         ###change specificitiy###
+        domain_name = str(domain_type+domain_mod+domain_charge+extra_mods)
         Domain_Primer_Lock = ""
         lower_canvas.config(cursor = "arrow")
         lower_canvas.bind("<Button-1>", mm.change_specificity)
         lower_canvas.unbind("<B1-Motion>")
         lower_canvas.unbind("<ButtonRelease-1>")
-        domain_name = ""
-    elif Domain_Primer == []  and   domain_type == "" and (domain_charge == "" or  domain_mod == "" or extra_mods == "") :
-        ###change specificitiy###
-        Domain_Primer_Lock = ""
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<Button-1>", mm.change_modification)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.unbind("<ButtonRelease-1>")
-        domain_name = ""
     elif Domain_Primer != []:
         ###update domain_type###
         if "V" in Domain_Primer[8]:
@@ -4769,13 +4762,7 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
         lower_canvas.config(cursor = "plus")
         domain_name = Domain_Primer[8]
-    else:
-        domain_name = str(domain_type+domain_mod+domain_charge+extra_mods)
-        Domain_Primer_Lock = ""
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<Button-1>", mm.change_modification)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.unbind("<ButtonRelease-1>")
+
 
         ###Update buttons###
     if  "VHH" in domain_name:
@@ -5728,86 +5715,6 @@ class MouseMover():
         widget = lower_canvas                       # Get handle to canvas
         # Convert screen coordinates to canvas coordinates
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
-        global canvas_polygons
-        global domain_type
-        global canvas_labels
-        global temp_label
-        global specificity_colours
-        label_keyslist = list(canvas_labels.keys())
-        polygons_keyslist = list(canvas_polygons.keys())
-        if domain_type != "":
-            if self.item not in polygons_keyslist:
-                if self.item in label_keyslist:
-                    polygons_keyslist = list(canvas_polygons.keys())
-                    for i in range(len(polygons_keyslist)):
-                        if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
-                            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
-                            min_max = get_min_max_coordinates(domain_coordinates)
-                            x1 = min_max[0]
-                            x2 = min_max[1]
-                            y1 = min_max[2]
-                            y2 = min_max[3]
-                            if x1< xc <x2 and y1 < yc < y2:
-                                self.item = polygons_keyslist[i]
-            domain_name = canvas_polygons.get(self.item)[1]
-            if "V" in domain_name:
-                new_domain_name = re.sub("a|b|c|d|e|f|g|h","",domain_name)
-                new_domain_name = re.sub("\.","."+domain_type,new_domain_name)
-                new_display_name= re.sub("\.|@|>|nano","", new_domain_name)
-
-                if "a" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
-                elif "b" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
-                elif "c" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
-                elif "d" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
-                elif "e" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
-                elif "f" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
-                elif "g" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
-                elif "h" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
-                elif "X" in str(new_domain_name):
-                    heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
-                else:
-                    heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
-                if "H" in new_domain_name:
-                    lower_canvas.itemconfig(self.item, fill = heavy_colour)
-                elif "L" in new_domain_name:
-                    lower_canvas.itemconfig(self.item, fill = light_colour)
-                canvas_polygons[self.item][1] = new_domain_name
-                ###change display label
-                domain_coordinates = (canvas_polygons.get(self.item)[0])
-                min_max = get_min_max_coordinates(domain_coordinates)
-                x1 = min_max[0]
-                x2 = min_max[1]
-                y1 = min_max[2]
-                y2 = min_max[3]
-                for i in range(len(label_keyslist)):
-                    labelx = canvas_labels.get(label_keyslist[i])[0][0]
-                    labely = canvas_labels.get(label_keyslist[i])[0][1]
-                    if min_max[1]-min_max[0] == 70:
-                        if canvas_labels.get(label_keyslist[i])[0][2] > canvas_labels.get(label_keyslist[i])[0][0]:
-                            labelx-=5
-                        elif canvas_labels.get(label_keyslist[i])[0][2] < canvas_labels.get(label_keyslist[i])[0][0]:
-                            labelx+=5
-                    if x1 <= labelx <=x2 and y1 <= labely <= y2:
-                        del canvas_labels[label_keyslist[i]]
-                        lower_canvas.delete(label_keyslist[i])
-                        label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label")
-                        canvas_labels[label] = [[labelx,labely], new_display_name]
-                        temp_label[label] = [[labelx,labely], new_domain_name]
-
-    def change_modification(self,event):
-        widget = lower_canvas                       # Get handle to canvas
-        # Convert screen coordinates to canvas coordinates
-        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        self.item = widget.find_closest(xc, yc,halo = 5, start="domain")[0]
         global canvas_polygons
         global domain_type
         global domain_mod
@@ -5815,52 +5722,61 @@ class MouseMover():
         global domain_charge
         global canvas_labels
         global temp_label
+        global specificity_colours
+        domain_self_item = False
         label_keyslist = list(canvas_labels.keys())
         polygons_keyslist = list(canvas_polygons.keys())
-        if domain_mod!= "" or domain_charge != "" or extra_mods != "":
-            if self.item not in polygons_keyslist:
-                if self.item in label_keyslist:
-                    polygons_keyslist = list(canvas_polygons.keys())
-                    for i in range(len(polygons_keyslist)):
-                        if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
-                            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
-                            min_max = get_min_max_coordinates(domain_coordinates)
-                            x1 = min_max[0]
-                            x2 = min_max[1]
-                            y1 = min_max[2]
-                            y2 = min_max[3]
-                            if x1< xc <x2 and y1 < yc < y2:
-                                self.item = polygons_keyslist[i]
+        for i in range(len(polygons_keyslist)):
+            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+            min_max = get_min_max_coordinates(domain_coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            if x1< xc <x2 and y1 < yc < y2:
+                self.item = polygons_keyslist[i]
+                domain_self_item = True
+        if domain_self_item == True:
             domain_name = canvas_polygons.get(self.item)[1]
-            new_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*","",domain_name)
+            clean_domain_name = re.sub("\.a|\.b|\.c|\.d|\.e|\.f|\.g|\.h|a|b|c|d|e|f|g|h","",domain_name)
+            clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*| ","",clean_domain_name)
+            if domain_type != "":
+                domain_type_to_add = re.sub("\.","",domain_type)
+                domain_type_to_add = str("."+domain_type_to_add)
+            elif domain_type == "":
+                if "." not in domain_name:
+                    domain_type_to_add = ""
+                else:
+                    domain_type_to_add = domain_name.split(".")[1]
 
-            domain_charge = re.sub("\_","-",domain_charge)
-            domain_charge_to_add = domain_charge
-            if domain_charge in str(domain_name):
-                if "+" in domain_charge:
-                    domain_charge_to_add = re.sub("\+","",domain_charge_to_add)
-                elif "-" in domain_charge:
-                    domain_charge_to_add = re.sub("\-","",domain_charge_to_add)
+            new_domain_name= str(clean_domain_name+domain_mod+extra_mods+domain_charge+domain_type_to_add)
 
-            domain_mod_to_add = domain_mod
-            if domain_mod in str(domain_name):
-                domain_mod_to_add = re.sub(domain_mod,"",domain_mod_to_add)
-
-            extra_mods_to_add = extra_mods
-            if extra_mods in str(domain_name):
-                if "*" in extra_mods:
-                    extra_mods_to_add = re.sub("\*","",extra_mods_to_add)
-                elif "!" in extra_mods:
-                    extra_mods_to_add = re.sub("\!","",extra_mods_to_add)
-
-            if "V" in domain_name:
-                new_domain_name = re.sub("\.",extra_mods_to_add+domain_mod_to_add+domain_charge_to_add+".",new_domain_name)
-                new_display_name= re.sub("\.|nano|nno","", new_domain_name)
+            if "a" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
+            elif "b" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[2], specificity_colours[3]
+            elif "c" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[4], specificity_colours[5]
+            elif "d" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[6], specificity_colours[7]
+            elif "e" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[8], specificity_colours[9]
+            elif "f" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[10], specificity_colours[11]
+            elif "g" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[12], specificity_colours[13]
+            elif "h" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[14], specificity_colours[15]
+            elif "X" in str(new_domain_name):
+                heavy_colour, light_colour = specificity_colours[18],specificity_colours[18]
             else:
-                new_domain_name +=extra_mods_to_add+domain_mod_to_add+domain_charge_to_add
-                new_display_name=  re.sub("\.|nano|nno","", new_domain_name)
+                heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
+            if "H" in new_domain_name:
+                lower_canvas.itemconfig(self.item, fill = heavy_colour)
+            elif "L" in new_domain_name:
+                lower_canvas.itemconfig(self.item, fill = light_colour)
             canvas_polygons[self.item][1] = new_domain_name
-                ###change display label
+            ###change display label
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
@@ -5871,17 +5787,21 @@ class MouseMover():
                 labelx = canvas_labels.get(label_keyslist[i])[0][0]
                 labely = canvas_labels.get(label_keyslist[i])[0][1]
                 if min_max[1]-min_max[0] == 70:
-                    if canvas_labels.get(label_keyslist[i])[0][2] > canvas_labels.get(label_keyslist[i])[0][0]:
+                    if canvas_labels.get(label_keyslist[i])[0][1] > canvas_labels.get(label_keyslist[i])[0][0]:
                         labelx-=5
-                    elif canvas_labels.get(label_keyslist[i])[0][2] < canvas_labels.get(label_keyslist[i])[0][0]:
+                    elif canvas_labels.get(label_keyslist[i])[0][1] < canvas_labels.get(label_keyslist[i])[0][0]:
                         labelx+=5
                 if x1 <= labelx <=x2 and y1 <= labely <= y2:
                     del canvas_labels[label_keyslist[i]]
                     lower_canvas.delete(label_keyslist[i])
+                    new_display_name = re.sub("\_","-", new_domain_name)
+                    new_display_name = re.sub("\@|\>|\.| ","", new_display_name)
                     label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label")
                     canvas_labels[label] = [[labelx,labely], new_display_name]
                     temp_label[label] = [[labelx,labely], new_domain_name]
 
+        elif domain_self_item == False:
+            return
     def change_orientation(self,event):
         self.startcoordinates = []
         self.newcoordinates =[]
