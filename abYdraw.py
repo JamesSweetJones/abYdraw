@@ -4811,6 +4811,8 @@ def sequence_pipeline(canvas):
                         elif "-" in strings[i][j]:
                             strings[i][j] = strings[i][j].split("-")[1]
                             strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
+                    else:
+                        strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
     final_string = ""
