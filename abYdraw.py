@@ -4961,11 +4961,13 @@ def domain_type_button(letter):
 
     elif letter in str(domain_type): #and Domain_Primer_Lock == "":
         domain_type = re.sub(str(letter),"",domain_type)
+        print("empty chairs at empty tables")
+        print(domain_type)
 
-        Domain_Primer_Lock = ""
-        Domain_Primer = []
-        for i in domain_buttons:
-            i.config(fg="black")
+        #Domain_Primer_Lock = ""
+        #Domain_Primer = []
+        #for i in domain_buttons:
+        #    i.config(fg="black")
 
 
         if letter == "a":
@@ -4985,6 +4987,12 @@ def domain_type_button(letter):
         elif letter == "h":
             h_button.config(fg="black")
         if domain_type == "" and Domain_Primer_Lock != "":
+            print("TI BO")
+            for i in domain_buttons:
+                i.config(fg="black")
+            if Domain_Primer != []:
+                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
+                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
             lower_canvas.bind("<Button-1>", mm.select)
             lower_canvas.bind("<B1-Motion>", mm.drag)
             lower_canvas.bind("<ButtonRelease-1>", mm.release)
@@ -5001,10 +5009,22 @@ def domain_type_button(letter):
                 lower_canvas.unbind("<B1-Motion>")
                 lower_canvas.unbind("<ButtonRelease-1>")
         else:
-            lower_canvas.bind("<Button-1>", mm.select)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "arrow")
+            if domain_type != "" and Domain_Primer_Lock != "":
+
+                lower_canvas.bind("<Button-1>", mm.place_domain)
+                lower_canvas.unbind("<B1-Motion>")
+                lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+                lower_canvas.config(cursor = "plus")
+            else:
+                print("HI HO")
+                Domain_Primer_Lock = ""
+                Domain_Primer = []
+                for i in domain_buttons:
+                    i.config(fg="black")
+                lower_canvas.bind("<Button-1>", mm.select)
+                lower_canvas.bind("<B1-Motion>", mm.drag)
+                lower_canvas.bind("<ButtonRelease-1>", mm.release)
+                lower_canvas.config(cursor = "arrow")
 def arc_checker(key,bonds_dict, domains_dict):
     domains_keyslist = list(domains_dict.keys())
     bondx1 = bonds_dict.get(key)[0][0]
