@@ -5746,11 +5746,35 @@ class MouseMover():
             elif domain_type == "":
                 if "." not in domain_name:
                     domain_type_to_add = ""
+                    for s in range(len(domain_name)):
+                        if domain_name[s].islower():
+                            domain_type_to_add += domain_name[s]
                 else:
                     domain_type_to_add = domain_name.split(".")[1]
 
-            new_domain_name= str(clean_domain_name+domain_mod+extra_mods+domain_charge+domain_type_to_add)
+            if "+" in str(domain_name) or "_" in str(domain_name):
+                if "+" in domain_charge and str(domain_name):
+                    domain_charge_to_add = re.sub("\+","",domain_charge)
+                elif "_" in domain_charge and str(domain_name):
+                    domain_charge_to_add = re.sub("\_","",domain_charge)
+            else:
+                domain_charge_to_add = domain_charge
 
+            if "@" in str(domain_name) or ">" in str(domain_name):
+                domain_mod_to_add = re.sub(domain_mod,"",domain_mod)
+            else:
+                domain_mod_to_add = domain_mod
+
+            if "*" in str(domain_name) or "!" in str(domain_name):
+                if "*" in extra_mods:
+                    extra_mods_to_add = re.sub("\*","",extra_mods)
+                if "!" in extra_mods:
+                    extra_mods_to_add = re.sub("\!","",extra_mods)
+            else:
+                extra_mods_to_add = extra_mods
+
+            new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
+            new_domain_name = re.sub(" ","",new_domain_name)
             if "a" in str(new_domain_name):
                 heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
             elif "b" in str(new_domain_name):
@@ -5786,16 +5810,11 @@ class MouseMover():
             for i in range(len(label_keyslist)):
                 labelx = canvas_labels.get(label_keyslist[i])[0][0]
                 labely = canvas_labels.get(label_keyslist[i])[0][1]
-                if min_max[1]-min_max[0] == 70:
-                    if canvas_labels.get(label_keyslist[i])[0][1] > canvas_labels.get(label_keyslist[i])[0][0]:
-                        labelx-=5
-                    elif canvas_labels.get(label_keyslist[i])[0][1] < canvas_labels.get(label_keyslist[i])[0][0]:
-                        labelx+=5
-                if x1 <= labelx <=x2 and y1 <= labely <= y2:
+                 if x1 <= labelx <=x2 and y1 <= labely <= y2:
                     del canvas_labels[label_keyslist[i]]
                     lower_canvas.delete(label_keyslist[i])
                     new_display_name = re.sub("\_","-", new_domain_name)
-                    new_display_name = re.sub("\@|\>|\.| ","", new_display_name)
+                    new_display_name = re.sub("\.| ","", new_display_name)
                     label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label")
                     canvas_labels[label] = [[labelx,labely], new_display_name]
                     temp_label[label] = [[labelx,labely], new_domain_name]
