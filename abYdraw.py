@@ -4766,19 +4766,23 @@ def sequence_pipeline(canvas):
                     #print(labelx,labely)
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment)):
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
-                        note1 = note.split(":")[0]
-                        note2 = note.split(":")[1]
-                        note1 = re.sub(domain_type, "",note1)
-                        note1 = re.sub("^ |\* |\*","", note1)
-                        noting = str("["+note1+":"+note2+"]")
+                        comments = note.split(",")
+                        comment_to_add = ""
+                        for x in range(len(comments)):
+                            note1 = comments[x].split(":")[0]
+                            note2 = comments[x].split(":")[1]
+                            note1 = re.sub(domain_type, "",note1)
+                            note1 = re.sub("^ |\* |\*","", note1)
+                            noting = str("["+note1+":"+note2+"]")
+                            comment_to_add +=noting
                         strings[i][j] = re.sub("\*","", strings[i][j])
-                        if "MOD" in strings[i][j] or "MOD" in noting:
+                        if "MOD" in strings[i][j] or "MOD" in noting and "X" not in strings[i][j]:
                             strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                         if "-" not in strings[i][j]:
-                            strings[i][j] += noting
+                            strings[i][j] += comment_to_add
                         elif "-" in strings[i][j]:
                             strings[i][j] = strings[i][j].split("-")[1]
-                            strings[i][j] = str("-"+strings[i][j]+noting+"-")
+                            strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
 
 ##conver lists to expression
     final_string = ""
@@ -7088,7 +7092,7 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
             fifthy         =    fourthy-38
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy]
 
-    if (slant == True or mod == "Leucine" or previous_H == True) and X == False:
+    if (slant == True or mod == "Leucine" or previous_H == True):# and X == False:
         top_bond    = [firstx,firsty+2]
     elif Build_up == True or X == True:
         top_bond    = [firstx,firsty+20]
