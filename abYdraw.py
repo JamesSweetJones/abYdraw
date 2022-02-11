@@ -4961,8 +4961,6 @@ def domain_type_button(letter):
 
     elif letter in str(domain_type): #and Domain_Primer_Lock == "":
         domain_type = re.sub(str(letter),"",domain_type)
-        print("empty chairs at empty tables")
-        print(domain_type)
 
         #Domain_Primer_Lock = ""
         #Domain_Primer = []
@@ -4987,7 +4985,6 @@ def domain_type_button(letter):
         elif letter == "h":
             h_button.config(fg="black")
         if domain_type == "" and Domain_Primer_Lock != "":
-            print("TI BO")
             for i in domain_buttons:
                 i.config(fg="black")
             if Domain_Primer != []:
@@ -5017,7 +5014,6 @@ def domain_type_button(letter):
                 lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
                 lower_canvas.config(cursor = "plus")
             else:
-                print("HI HO")
                 Domain_Primer_Lock = ""
                 Domain_Primer = []
                 for i in domain_buttons:
@@ -5927,14 +5923,12 @@ class MouseMover():
                         y1 = min_max[2]
                         y2 = min_max[3]
                         if x1 <= lab_x1 <= x2 and y1 <= lab_y1 <= y2:
-                            print("AYYY")
                             self.item = polygons_keyslist[j]
                             domain_self_item = True
         if domain_self_item == False:
 
             self.item = widget.find_closest(xc, yc)[0]
             if self.item not in polygons_keyslist and self.item not in labels_keyslist:
-                print("AYYY OK")
                 if self.item in TYPE_keyslist:
                     lower_canvas.delete(self.item)
                     del TYPE_labels[self.item]
