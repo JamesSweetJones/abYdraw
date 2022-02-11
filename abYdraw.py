@@ -5010,7 +5010,8 @@ def domain_type_button(letter):
                 lower_canvas.unbind("<ButtonRelease-1>")
         else:
             if domain_type != "" and Domain_Primer_Lock != "":
-
+                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
+                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
                 lower_canvas.bind("<Button-1>", mm.place_domain)
                 lower_canvas.unbind("<B1-Motion>")
                 lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
