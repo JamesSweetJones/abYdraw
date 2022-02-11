@@ -155,9 +155,9 @@ def Get_dictionaries(x):
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
             if domain == "H*":
                 domain = re.sub("\*","", str(domain))
-                hmod = 1
+                h_mod = 1
             else:
-                hmod = 0
+                h_mod = 0
 
 
             if domain == "L":
@@ -191,7 +191,7 @@ def Get_dictionaries(x):
             else:
                 disulphide_bridges = 0
 
-            location = [location, disulphide_bridges,note,hmod]
+            location = [location, disulphide_bridges,note,h_mod]
             domain = domain+str([j])
 
 
@@ -1330,6 +1330,7 @@ def Check_interactions(chains_list,canvas):
         ADCs             =[]
         Chem_con         =[]
         innie_or_outie_list=[]
+        h_mods = []
         interaction_counter = 0
         keyslist = list(dictionary.keys())
         H_count = 0
@@ -1525,6 +1526,7 @@ def Check_interactions(chains_list,canvas):
             previous_H =False
             mod= ""
             mod_label=""
+            h_mod = False
             if "V" in keyslist[i]:
                 V  = True
             elif "X" in keyslist[i]:
@@ -1540,13 +1542,20 @@ def Check_interactions(chains_list,canvas):
             Build_up=False
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
-
+            if ("H[" in keyslist[i]) and dictionary.get(keyslist[i])[3] == 1:
+                print("OH VERY NICE")
+                h_mod = True
+                h_mods.append(True)
+            else:
+                h_mods.append(False)
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
+                print(note_label)
                 if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
                     error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
                     raise_error(lower_canvas, error_message)
-                Domain_name_to_add = re.sub("\+|\-","",Domain_name)
+                if h_mod == True:
+                    Domain_name = "H*"
                 Notes.append(Domain_name+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
@@ -1554,11 +1563,7 @@ def Check_interactions(chains_list,canvas):
                     XY = (Notes_positions[-1][1])+20
                     Notes_positions.append([(width/3),XY])
 
-            if "H*[" in keyslist[i]:
-                old_key = keyslist[i]
-                keyslist[i] = re.sub("\*","", str(keyslist[i]))
-                dictionary[keyslist[i]] = dictionary.pop(old_key)
-                print(keyslist[i])
+
             if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
                     location = dictionary.get(keyslist[i])[0][0]
@@ -2240,7 +2245,11 @@ def Check_interactions(chains_list,canvas):
                     print("checkpoint19")
                 top_bond = getcoordinates[2]
                 if "H[" in keyslist[i-1]:
-                    hinges.append(bottom_bond + top_bond)
+                    print("OK TOOTOOT")
+                    print(h_mods)
+                    if h_mods[-2] == True:
+                        h_mod= True
+                    hinges.append([[bottom_bond + top_bond],h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
                     global L_Labels
@@ -2343,7 +2352,8 @@ def Check_interactions(chains_list,canvas):
                         extrabondy2=top_bond[1]+20
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                         if "H[" in keyslist[i]:
-                            hinges.append(extra_bond)
+                            print("FAN DABBY DOSY")
+                            hinges.append([[extra_bond], h_mod])
                         else:
                             bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
@@ -2575,12 +2585,14 @@ def Check_interactions(chains_list,canvas):
                 elif i+1 == len(dictionary):
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
-                        hinges.append([bottomx,bottomy,topx,topy])
+                        print("TOOODOOOODOOO")
+                        hinges.append([[bottomx,bottomy,topx,topy],h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
                             pass
                         else:
-                            hinges.append([bottomx,bottomy,topx,topy+20])
+                            print("OOOOOOP")
+                            hinges.append([[bottomx,bottomy,topx,topy+20],h_mod])
 
                     if Extra_bond == True and righthanded == False:
                         Label_Locations = [getcoordinates[3][0]-60,getcoordinates[3][1]]
@@ -3298,7 +3310,7 @@ def Check_interactions(chains_list,canvas):
     #                        if isinstance(coordinates_to_change[i][j][k][l], int) == True or isinstance(coordinates_to_change[i][j][k][l], float) == True:
     #                            if l %2 == 0:
     #                                coordinates_to_change[i][j][k][l] -= Xnew_start
-    #    print(Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
+    print(Hinges,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
     return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con)
 
 def render(chains_list,canvas,text_to_image):
@@ -3422,8 +3434,13 @@ def render(chains_list,canvas,text_to_image):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             canvas_polygons[domain] = [Linkers[i], "-L-"]
         for i in range(len(Hinges)):
-            domain = canvas.create_line(Hinges[i], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            canvas_polygons[domain] = [Hinges[i], "-H-"]
+            domain = canvas.create_line(Hinges[i][0][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
+            print(Hinges)
+            if Hinges[i][1] == True:
+                print("HELL YES")
+                canvas_polygons[domain] = [Hinges[i][0][0], "-H*-"]
+            else:
+                canvas_polygons[domain] = [Hinges[i][0][0], "-H-"]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
@@ -4432,7 +4449,7 @@ def sequence_pipeline(canvas):
         for j in range(len(strings[i])):
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-":
-                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j]:
+                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
                     assigned_match = False
@@ -4461,6 +4478,9 @@ def sequence_pipeline(canvas):
                     counter += 1
                 elif "-L-" in strings[i][j]:
                     strings[i][j] = str("-L("+str(counter)+")-")
+                    counter += 1
+                elif "-H*-" in strings[i][j]:
+                    strings[i][j] = str("-H*("+str(counter)+")-")
                     counter += 1
 
 
@@ -4528,7 +4548,7 @@ def sequence_pipeline(canvas):
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
+                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
                                                             disulphide_count = 0
 
                                                             for y in range(len(disulphides_keyslist)):
@@ -4631,7 +4651,7 @@ def sequence_pipeline(canvas):
                                                         #paired.append(int(number))
                                                         #paired.append(int(paired_number))
 
-            elif ":" not in str(strings[i][j]) and "-H(" in str(strings[i][j]):
+            elif ":" not in str(strings[i][j]) and "-H" in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
@@ -4650,7 +4670,7 @@ def sequence_pipeline(canvas):
                     d1y2 = (bonds_dict.get(index)[0][3])+5
 
                     for f in range(len(bonds_keyslist)):
-                        if bonds_keyslist[f] != index and "-H-" in bonds_dict.get(bonds_keyslist[f])[1]:
+                        if bonds_keyslist[f] != index and "-H" in bonds_dict.get(bonds_keyslist[f])[1]:
                             for a in range(len(full_chains)):
                                 for b in range(len(full_chains[a])):
                                     if int(full_chains[a][b]) == int(bonds_keyslist[f]) and ":" not in strings[a][b]:
@@ -4680,13 +4700,20 @@ def sequence_pipeline(canvas):
                                                         disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
                                                         if ((d1x1 <= disulphx2 <= d1x2 and d1y1<= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1<= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1<= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
                                                             disulphide_count += 1
-
+                                                    if "*" in str(strings[i][j]):
+                                                        ijDomain_name = "H*"
+                                                    else:
+                                                        ijDomain_name = "H"
+                                                    if "*" in str(strings[a][b]):
+                                                        abDomain_name = "H*"
+                                                    else:
+                                                        abDomain_name = "H"
                                                     if disulphide_count == 0:
-                                                        strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")-")
-                                                        strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")-")
+                                                        strings[i][j] = str("-"+ijDomain_name+"("+str(number)+":"+str(paired_number)+")-")
+                                                        strings[a][b] = str("-"+abDomain_name+"("+str(paired_number)+":"+str(number)+")-")
                                                     elif disulphide_count > 0:
-                                                        strings[i][j] = str("-H"+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
-                                                        strings[a][b] = str("-H"+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
+                                                        strings[i][j] = str("-"+ijDomain_name+"("+str(number)+":"+str(paired_number)+")"+"{"+str(disulphide_count)+"}-")
+                                                        strings[a][b] = str("-"+abDomain_name+"("+str(paired_number)+":"+str(number)+")"+"{"+str(disulphide_count)+"}-")
                                                     paired.append(int(number))
                                                     paired.append(int(paired_number))
 ##Search for linkers connected by disulphide bonds
@@ -4740,7 +4767,7 @@ def sequence_pipeline(canvas):
                                                     #paired.append(int(number))
                                                     #paired.append(int(paired_number))
 
-
+    print(strings)
 ##Find comments on domains and not on domains
     comment_dicts = [type_dict, mod_dict, anti_dict, length_dict, note_dict]
     comment_lists = [type_keyslist, mod_keyslist, anti_keyslist, length_keyslist, note_keyslist]
@@ -4765,7 +4792,7 @@ def sequence_pipeline(canvas):
                     labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
                     labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment)):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
                         comments = note.split(",")
                         comment_to_add = ""
@@ -4988,6 +5015,7 @@ def domain_type_button(letter):
         elif letter == "h":
             h_button.config(fg="black")
         if domain_type == "" and Domain_Primer_Lock != "":
+            print("HELP oh my oh my")
             for i in domain_buttons:
                 i.config(fg="black")
             if Domain_Primer != []:
@@ -5010,6 +5038,7 @@ def domain_type_button(letter):
                 lower_canvas.unbind("<ButtonRelease-1>")
         else:
             if domain_type != "" and Domain_Primer_Lock != "":
+                "ho hi"
                 Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
                 Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
                 lower_canvas.bind("<Button-1>", mm.place_domain)
@@ -5017,6 +5046,7 @@ def domain_type_button(letter):
                 lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
                 lower_canvas.config(cursor = "plus")
             else:
+                "Hi Ho"
                 Domain_Primer_Lock = ""
                 Domain_Primer = []
                 for i in domain_buttons:
@@ -5773,7 +5803,7 @@ class MouseMover():
         self.newcoordinates = [xc,yc]
         return(newcoordinates)
     def release(self, event):
-        
+
         global Label_lock
         if self.newcoordinates==[]:
             self.newcoordinates.append(self.startcoordinates[0])
