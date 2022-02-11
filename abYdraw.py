@@ -1543,7 +1543,6 @@ def Check_interactions(chains_list,canvas):
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
             if ("H[" in keyslist[i]) and dictionary.get(keyslist[i])[3] == 1:
-                print("OH VERY NICE")
                 h_mod = True
                 h_mods.append(True)
             else:
@@ -2245,8 +2244,6 @@ def Check_interactions(chains_list,canvas):
                     print("checkpoint19")
                 top_bond = getcoordinates[2]
                 if "H[" in keyslist[i-1]:
-                    print("OK TOOTOOT")
-                    print(h_mods)
                     if h_mods[-2] == True:
                         h_mod= True
                     hinges.append([[bottom_bond + top_bond],h_mod])
@@ -2352,7 +2349,6 @@ def Check_interactions(chains_list,canvas):
                         extrabondy2=top_bond[1]+20
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                         if "H[" in keyslist[i]:
-                            print("FAN DABBY DOSY")
                             hinges.append([[extra_bond], h_mod])
                         else:
                             bonds.append(extra_bond)
@@ -2585,13 +2581,11 @@ def Check_interactions(chains_list,canvas):
                 elif i+1 == len(dictionary):
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
-                        print("TOOODOOOODOOO")
                         hinges.append([[bottomx,bottomy,topx,topy],h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
                             pass
                         else:
-                            print("OOOOOOP")
                             hinges.append([[bottomx,bottomy,topx,topy+20],h_mod])
 
                     if Extra_bond == True and righthanded == False:
@@ -3437,7 +3431,6 @@ def render(chains_list,canvas,text_to_image):
             domain = canvas.create_line(Hinges[i][0][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
             print(Hinges)
             if Hinges[i][1] == True:
-                print("HELL YES")
                 canvas_polygons[domain] = [Hinges[i][0][0], "-H*-"]
             else:
                 canvas_polygons[domain] = [Hinges[i][0][0], "-H-"]
@@ -3628,174 +3621,6 @@ def render_pipeline(canvas):
     render(coordinates, lower_canvas,True)
 
 ############################################
-def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global Domain_Primer
-    global Domain_Primer_Lock
-    global all_buttons
-    global domain_type
-    global domain_mod
-    global domain_charge
-    global extra_mods
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global Domain_Primer_Lock
-    global Domain_Primer
-    Delete_lock = False
-    Bond_lock = ""
-    Domain_Primer = []
-    global domain_buttons
-    global bond_buttons
-    for i in domain_buttons:
-        i.config(fg = "black")
-    for i in bond_buttons:
-        i.config(fg="black")
-    for i in delete_buttons:
-        i.config(fg="black")
-    if domain_type != "":
-        if Domain_Primer_Lock != domain_name:
-            Domain_Primer_Lock = domain_name
-            Delete_lock = False
-            Bond_lock = ""
-            lower_canvas.bind("<Button-1>", mm.place_domain)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-            lower_canvas.config(cursor = "plus")
-            status_label.config(text=domain_name)
-            Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy,False,4]
-            if domain_mod != "":
-                if  domain_mod == "@" or domain_mod== ">":
-                    Domain_Primer[5] == domain_mod
-
-            if domain_charge !="":
-                if domain_charge == "+" or domain_charge == "_":
-                    domain_charge = re.sub("\_","-", domain_charge)
-                    Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
-                    if "V" in Domain_Primer[8]:
-                        Domain_Primer[8] = re.sub("\.",domain_charge+".",Domain_Primer[8])
-                    else:
-                        Domain_Primer[8] += domain_charge
-            if extra_mods !="":
-                Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
-                if "V" in Domain_Primer[8]:
-                    Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
-                else:
-                    Domain_Primer[8] += extra_mods
-            if  "VHH" in domain_name:
-                nanobody_button.config(fg="red")
-            elif "VH" in domain_name:
-                InsertVHDomainButton.config(fg="red")
-            elif "VL" in domain_name:
-                InsertVLDomainButton.config(fg="red")
-            elif "CH1" in domain_name:
-                InsertCH1DomainButton.config(fg="red")
-            elif "CH2" in domain_name:
-                InsertCH2DomainButton.config(fg="red")
-            elif "CH3" in domain_name:
-                InsertCH3DomainButton.config(fg="red")
-            elif "CH4" in domain_name:
-                InsertCH4DomainButton.config(fg="red")
-            elif "CL" in domain_name:
-                InsertCLDomainButton.config(fg="red")
-            elif "X" in domain_name:
-                InsertXDomainButton.config(fg="red")
-            elif "C" in domain_name:
-                InsertCDomainButton.config(fg="red")
-
-        elif Domain_Primer_Lock == domain_name:
-            Domain_Primer_Lock = ""
-            Bond_lock = ""
-            lower_canvas.bind("<Button-1>", mm.select)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "fleur")
-            status_label.config(text="")
-            Domain_Primer = []
-            if domain_type != "":
-                Domain_Primer_Lock = ""
-                lower_canvas.config(cursor = "arrow")
-                lower_canvas.bind("<Button-1>", mm.change_specificity)
-                lower_canvas.unbind("<B1-Motion>")
-                lower_canvas.unbind("<ButtonRelease-1>")
-            #domain_type = ""
-            domain_charge = ""
-            domain_mod = ""
-            extra_mods = ""
-    elif domain_type == "":
-        if Domain_Primer_Lock != domain_name:
-            Domain_Primer_Lock = domain_name
-            Delete_lock = False
-            Bond_lock = ""
-            lower_canvas.bind("<Button-1>", mm.place_domain)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-            lower_canvas.config(cursor = "plus")
-            status_label.config(text=domain_name)
-            Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy,False,4]
-            if Domain_Primer != []:
-                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
-                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
-            if domain_mod != "":
-                if  domain_mod == "@" or domain_mod== ">":
-                    Domain_Primer[5] == domain_mod
-
-            if domain_charge !="":
-                if domain_charge == "+" or domain_charge == "_":
-                    domain_charge = re.sub("\_","-", domain_charge)
-                    Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
-                    if "V" in Domain_Primer[8]:
-                        Domain_Primer[8] = re.sub("\.",domain_charge+".",Domain_Primer[8])
-                    else:
-                        Domain_Primer[8] += domain_charge
-            if extra_mods !="":
-                Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
-                if "V" in Domain_Primer[8]:
-                    Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
-                else:
-                    Domain_Primer[8] += extra_mods
-            if  "VHH" in domain_name:
-                nanobody_button.config(fg="red")
-            elif "VH" in domain_name:
-                InsertVHDomainButton.config(fg="red")
-            elif "VL" in domain_name:
-                InsertVLDomainButton.config(fg="red")
-            elif "CH1" in domain_name:
-                InsertCH1DomainButton.config(fg="red")
-            elif "CH2" in domain_name:
-                InsertCH2DomainButton.config(fg="red")
-            elif "CH3" in domain_name:
-                InsertCH3DomainButton.config(fg="red")
-            elif "CH4" in domain_name:
-                InsertCH4DomainButton.config(fg="red")
-            elif "CL" in domain_name:
-                InsertCLDomainButton.config(fg="red")
-            elif "X" in domain_name:
-                InsertXDomainButton.config(fg="red")
-            elif "C" in domain_name:
-                InsertCDomainButton.config(fg="red")
-
-        elif Domain_Primer_Lock == domain_name:
-            Domain_Primer_Lock = ""
-            Bond_lock = ""
-            lower_canvas.bind("<Button-1>", mm.select)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "fleur")
-            status_label.config(text="")
-            Domain_Primer = []
-            if domain_type != "":
-                Domain_Primer_Lock = ""
-                lower_canvas.config(cursor = "arrow")
-                lower_canvas.bind("<Button-1>", mm.change_specificity)
-                lower_canvas.unbind("<B1-Motion>")
-                lower_canvas.unbind("<ButtonRelease-1>")
-            #domain_type = ""
-            domain_charge = ""
-            domain_mod = ""
-            extra_mods = ""
 
 ############################################
 def save_as_png(canvas):
@@ -4878,7 +4703,209 @@ def delete_all_button(canvas):
     Domain_Primer_Lock=""
     textBox.delete("1.0","end")
 
+################Keypad buttons############
+def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
+    global Domain_Primer
+    global Domain_Primer_Lock
+    global bond_buttons
+    global delete_buttons
+    global comments_buttons
+    global Bond_lock
+    global Delete_lock
+    global all_buttons
+    for i in all_buttons:
+        i.config(fg="black")
+    Delete_lock = False
+    Bond_lock = ""
 
+    if Domain_Primer == [] and domain_type == ""and domain_charge == "" and domain_mod == "" and extra_mods == "":
+        ##Turn off domain primer###
+        Domain_Primer_Lock = ""
+        lower_canvas.config(cursor = "fleur")
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        domain_name = ""
+    elif Domain_Primer == []  and  domain_charge == "" and  domain_mod == "" and extra_mods == "" and domain_type != "":
+        ###change specificitiy###
+        Domain_Primer_Lock = ""
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_specificity)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        domain_name = ""
+    elif Domain_Primer == []  and   domain_type == "" and (domain_charge == "" or  domain_mod == "" or extra_mods == "") :
+        ###change specificitiy###
+        Domain_Primer_Lock = ""
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_modification)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+        domain_name = ""
+    elif Domain_Primer != []:
+        ###update domain_type###
+        if "V" in Domain_Primer[8]:
+            Domain_Primer[8] = re.sub("\.|a|b|c|d|e|f|g|h","",Domain_Primer[8])
+            Domain_Primer[8] += str("."+domain_type)
+        ###update KIH mods####
+        Domain_Primer[5] = domain_mod
+        ###update charge####
+        Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
+        if "V" in Domain_Primer[8]:
+            Domain_Primer[8] = re.sub("\.",domain_charge+".",Domain_Primer[8])
+        else:
+            Domain_Primer[8] += domain_charge
+        ##update extra mods###
+        Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
+        if "V" in Domain_Primer[8]:
+            Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
+        else:
+            Domain_Primer[8] += extra_mods
+        Domain_Primer[8] = Domain_Primer[8]
+        Domain_Primer[5] = Domain_Primer[5]
+        lower_canvas.bind("<Button-1>", mm.place_domain)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        lower_canvas.config(cursor = "plus")
+        domain_name = Domain_Primer[8]
+    else:
+        domain_name = str(domain_type+domain_mod+domain_charge+extra_mods)
+        Domain_Primer_Lock = ""
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_modification)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+
+        ###Update buttons###
+    if  "VHH" in domain_name:
+        nanobody_button.config(fg="red")
+    elif "VH" in domain_name:
+        InsertVHDomainButton.config(fg="red")
+    elif "VL" in domain_name:
+        InsertVLDomainButton.config(fg="red")
+    elif "CH1" in domain_name:
+        InsertCH1DomainButton.config(fg="red")
+    elif "CH2" in domain_name:
+        InsertCH2DomainButton.config(fg="red")
+    elif "CH3" in domain_name:
+        InsertCH3DomainButton.config(fg="red")
+    elif "CH4" in domain_name:
+        InsertCH4DomainButton.config(fg="red")
+    elif "CL" in domain_name:
+        InsertCLDomainButton.config(fg="red")
+    elif "X" in domain_name:
+        InsertXDomainButton.config(fg="red")
+    elif "C" in domain_name:
+        InsertCDomainButton.config(fg="red")
+    if "a" in domain_type:
+        a_button.config(fg="red")
+    if "b" in domain_type:
+        b_button.config(fg="red")
+    if "c" in domain_type:
+        c_button.config(fg="red")
+    if "d" in domain_type:
+        d_button.config(fg="red")
+    if "e" in domain_type:
+        e_button.config(fg="red")
+    if "f" in domain_type:
+        f_button.config(fg="red")
+    if "g" in domain_type:
+        g_button.config(fg="red")
+    if "h" in domain_type:
+        h_button.config(fg="red")
+    if "!" in extra_mods:
+        Gly_button.config(fg="red")
+    if "*" in extra_mods:
+        Mod_button.config(fg="red")
+    if domain_mod == ">":
+        KIH_knob.configure(fg="red")
+    elif domain_mod == "@":
+        KIH_hole.configure(fg="red")
+    if domain_charge == "+":
+        Positive_charge.configure(fg="red")
+    elif domain_charge == "_":
+        Negative_charge.configure(fg="red")
+
+def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    global Domain_Primer_Lock
+    if Domain_Primer_Lock == "" or Domain_Primer_Lock != domain_name:
+        Domain_Primer = [righthanded,slant,V,direction,X,mod,interaction,previous_H,domain_name,Light,Heavy,False,4]
+        Domain_Primer_Lock = domain_name
+    elif Domain_Primer_Lock == domain_name:
+        Domain_Primer_Lock = ""
+        Domain_Primer = []
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+
+
+def domain_type_button(letter):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    if domain_type == "" or letter not in domain_type:
+        domain_type = str(letter)
+    elif domain_type != "" and letter not in domain_type:
+        domain_type += str(letter)
+    elif letter in domain_type:
+        domain_type = re.sub(letter,"",str(domain_type))
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+
+def domain_mod_button(letter):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    if domain_mod == "" or letter not in domain_mod:
+        domain_mod = str(letter)
+    elif domain_mod != "" and letter not in domain_mod:
+        domain_mod += str(letter)
+    elif letter in domain_mod:
+        domain_mod = re.sub(letter,"",str(domain_mod))
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+
+def extra_mod_button(letter):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    if extra_mods == "" or letter not in extra_mods:
+        extra_mods = str(letter)
+    elif extra_mods != "" and letter not in extra_mods:
+        extra_mods += str(letter)
+    elif letter in extra_mods:
+        if letter == "!":
+            extra_mods = re.sub("\!","",str(extra_mods))
+        elif letter == "*":
+            extra_mods = re.sub("\*","",str(extra_mods))
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+
+def domain_charge_button(letter):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    if domain_charge == "" or letter not in domain_charge:
+        domain_charge = str(letter)
+    elif domain_charge != "" and letter not in domain_charge:
+        domain_charge += str(letter)
+    elif letter in domain_charge:
+        if letter == "+":
+            domain_charge = re.sub("\+","",str(domain_charge))
+        elif letter == "_":
+            domain_charge = re.sub("\_","",str(domain_charge))
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+
+##########################################
 def delete_button(canvas):
     '''
     Mouse click deletes object from canvas
@@ -4923,138 +4950,7 @@ def delete_button(canvas):
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
 
-def domain_type_button(letter):
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global domain_charge
-    global domain_mod
-    global extra_mods
-    global domain_type
-    global Domain_Primer_Lock
-    global Domain_Primer
-    global bond_buttons
-    global comments_buttons
-    global domain_buttons
-    global delete_buttons
-    global specificity_buttons
-    for i in bond_buttons:
-        i.config(fg = "black")
-    for i in comments_buttons:
-        i.config(fg = "black")
-    for i in delete_buttons:
-        i.config(fg = "black")
-    #for i in specificity_buttons:
-    #    i.config(fg = "black")
-    Delete_lock = False
-    Bond_lock = ""
-    if Domain_Primer_Lock != "":
-        lower_canvas.bind("<Button-1>", mm.place_domain)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-        lower_canvas.config(cursor = "plus")
-    if Domain_Primer_Lock == "":
-        lower_canvas.config(cursor = "fleur")
-        lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    status_label.config(text="")
-    domain_letter = str(letter)
 
-    if letter not in str(domain_type):
-        domain_type += letter
-        if letter == "a":
-            a_button.config(fg="red")
-        elif letter == "b":
-            b_button.config(fg="red")
-        elif letter == "c":
-            c_button.config(fg="red")
-        elif letter == "d":
-            d_button.config(fg="red")
-        elif letter == "e":
-            e_button.config(fg="red")
-        elif letter == "f":
-            f_button.config(fg="red")
-        elif letter == "g":
-            g_button.config(fg="red")
-        elif letter == "h":
-            h_button.config(fg="red")
-        if Domain_Primer != []:
-            Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
-            Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
-        elif Domain_Primer_Lock == "":
-            lower_canvas.config(cursor = "arrow")
-            lower_canvas.bind("<Button-1>", mm.change_specificity)
-            lower_canvas.unbind("<B1-Motion>")
-            lower_canvas.unbind("<ButtonRelease-1>")
-
-    elif letter in str(domain_type): #and Domain_Primer_Lock == "":
-        domain_type = re.sub(str(letter),"",domain_type)
-
-        #Domain_Primer_Lock = ""
-        #Domain_Primer = []
-        #for i in domain_buttons:
-        #    i.config(fg="black")
-
-
-        if letter == "a":
-            a_button.config(fg="black")
-        elif letter == "b":
-            b_button.config(fg="black")
-        elif letter == "c":
-            c_button.config(fg="black")
-        elif letter == "d":
-            d_button.config(fg="black")
-        elif letter == "e":
-            e_button.config(fg="black")
-        elif letter == "f":
-            f_button.config(fg="black")
-        elif letter == "g":
-            g_button.config(fg="black")
-        elif letter == "h":
-            h_button.config(fg="black")
-        if domain_type == "" and Domain_Primer_Lock != "":
-            print("HELP oh my oh my")
-            for i in domain_buttons:
-                i.config(fg="black")
-            if Domain_Primer != []:
-                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
-                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
-            lower_canvas.config(cursor = "fleur")
-            lower_canvas.bind("<Button-1>", mm.select)
-            lower_canvas.bind("<B1-Motion>", mm.drag)
-            lower_canvas.bind("<ButtonRelease-1>", mm.release)
-        elif domain_type != "" and Domain_Primer_Lock == "":
-            if (domain_charge != "" or domain_mod !="" or extra_mods != ""):
-                lower_canvas.config(cursor = "arrow")
-                lower_canvas.bind("<Button-1>", mm.change_modification)
-                lower_canvas.unbind("<B1-Motion>")
-                lower_canvas.unbind("<ButtonRelease-1>")
-            elif (domain_charge == "" and domain_mod =="" and extra_mods == ""):
-                lower_canvas.config(cursor = "arrow")
-                lower_canvas.bind("<Button-1>", mm.change_specificity)
-                lower_canvas.unbind("<B1-Motion>")
-                lower_canvas.unbind("<ButtonRelease-1>")
-        else:
-            if domain_type != "" and Domain_Primer_Lock != "":
-                "ho hi"
-                Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
-                Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
-                lower_canvas.bind("<Button-1>", mm.place_domain)
-                lower_canvas.unbind("<B1-Motion>")
-                lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-                lower_canvas.config(cursor = "plus")
-            else:
-                "Hi Ho"
-                Domain_Primer_Lock = ""
-                Domain_Primer = []
-                for i in domain_buttons:
-                    i.config(fg="black")
-                lower_canvas.bind("<Button-1>", mm.select)
-                lower_canvas.bind("<B1-Motion>", mm.drag)
-                lower_canvas.bind("<ButtonRelease-1>", mm.release)
-                lower_canvas.config(cursor = "fleur")
 def arc_checker(key,bonds_dict, domains_dict):
     domains_keyslist = list(domains_dict.keys())
     bondx1 = bonds_dict.get(key)[0][0]
@@ -5097,202 +4993,7 @@ def arc_checker(key,bonds_dict, domains_dict):
 
     return(bondx1,bondy1,bondx2,bondy2)
 
-def extra_mod_button(letter):
-    global extra_mods
-    global domain_type
-    global domain_charge
-    global domain_mod
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global Domain_Primer
-    global Domain_Primer_Lock
-    Delete_lock = False
-    Bond_lock = ""
-    global bond_buttons
-    global delete_buttons
-    global comments_buttons
-    for i in bond_buttons:
-        i.config(fg="black")
-    for i in delete_buttons:
-        i.config(fg="black")
-    for i in comments_buttons:
-        i.config(fg="black")
-    if Domain_Primer_Lock != "":
-        lower_canvas.bind("<Button-1>", mm.place_domain)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-        lower_canvas.config(cursor = "plus")
-    elif Domain_Primer_Lock == "":
-        lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "fleur")
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    selected_mod = str(letter)
-    if selected_mod not in str(extra_mods):
-        extra_mods += selected_mod
-        if selected_mod == "!":
-            Gly_button.config(fg = "red")
-        elif selected_mod == "*":
-            Mod_button.config(fg="red")
-        if Domain_Primer != [] and (selected_mod == "!" or selected_mod == "*"):
-            Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
-            if "V" in Domain_Primer[8]:
-                Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
-            else:
-                Domain_Primer[8] += extra_mods
 
-    elif selected_mod in str(extra_mods):
-        if selected_mod == "!":
-            extra_mods = re.sub("\!","",extra_mods)
-            Gly_button.config(fg = "black")
-            if Domain_Primer != []:
-                Domain_Primer[8] = re.sub("\!","",Domain_Primer[8])
-        elif selected_mod == "*":
-            extra_mods = re.sub("\*","",extra_mods)
-            Mod_button.config(fg="black")
-            if Domain_Primer !=[]:
-                Domain_Primer[8] = re.sub("\*","",Domain_Primer[8])
-
-    if (domain_charge != "" or domain_mod !="" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<Button-1>", mm.change_modification)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.unbind("<ButtonRelease-1>")
-
-
-def domain_mod_button(letter):
-    domain_letter = str(letter)
-    global domain_mod
-    global domain_charge
-    global extra_mods
-    global domain_type
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global Domain_Primer
-    global Domain_Primer_Lock
-    Delete_lock = False
-    Bond_lock = ""
-    global bond_buttons
-    global delete_buttons
-    global comments_buttons
-    for i in bond_buttons:
-        i.config(fg="black")
-    for i in delete_buttons:
-        i.config(fg="black")
-    for i in comments_buttons:
-        i.config(fg="black")
-
-    if Domain_Primer_Lock != "":
-        lower_canvas.bind("<Button-1>", mm.place_domain)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-        lower_canvas.config(cursor = "plus")
-    elif Domain_Primer_Lock == "":
-        lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "fleur")
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    buttons = [KIH_hole, KIH_knob]
-    for i in buttons:
-        i.config(fg="black")
-    if domain_mod != str(letter):
-        domain_mod = str(letter)
-        if letter == ">" or letter == "@":
-            global domain_direction
-            domain_direction = "innie"
-            if letter == ">":
-                KIH_knob.configure(fg="red")
-            elif letter == "@":
-                KIH_hole.configure(fg="red")
-
-        if Domain_Primer != [] and (letter == "@" or letter == ">"):
-            Domain_Primer[5] = re.sub(Domain_Primer[5],letter,Domain_Primer[5])
-            re.sub("\@|\>","", Domain_Primer[8])
-            if "." in Domain_Primer[8]:
-                Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
-            else:
-                Domain_Primer[8] += letter
-
-    elif domain_mod == str(letter) and Domain_Primer_Lock != "":
-        domain_mod = ""
-        if Domain_Primer != []:
-            Domain_Primer[5] = re.sub(".*",letter,Domain_Primer[5])
-            re.sub("\@|\>","", Domain_Primer[8])
-            if "." in Domain_Primer[8]:
-                Domain_Primer[8] = re.sub("\.", letter+".",Domain_Primer[8])
-            else:
-                Domain_Primer[8] += letter
-
-    elif domain_mod == str(letter):
-        domain_mod = ""
-        if Domain_Primer != []:
-            Domain_Primer[8] = re.sub("\@|\>","", Domain_Primer[8])
-    if (domain_charge != "" or domain_mod != "" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<Button-1>", mm.change_modification)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.unbind("<ButtonRelease-1>")
-
-
-
-def domain_charge_button(charge):
-    letter = str(charge)
-    global domain_mod
-    global Bond_lock
-    global Delete_lock
-    global Label_lock
-    global domain_charge
-    global Domain_Primer_Lock
-    global Domain_Primer
-    Delete_lock = False
-    Bond_lock = ""
-    if Domain_Primer_Lock != "":
-        lower_canvas.bind("<Button-1>", mm.place_domain)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
-        lower_canvas.config(cursor = "plus")
-    elif Domain_Primer_Lock == "":
-        lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "fleur")
-        lower_canvas.bind("<B1-Motion>", mm.drag)
-        lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    global bond_buttons
-    global delete_buttons
-    global comments_buttons
-    for i in bond_buttons:
-        i.config(fg="black")
-    for i in delete_buttons:
-        i.config(fg="black")
-    for i in comments_buttons:
-        i.config(fg="black")
-    buttons = [Positive_charge, Negative_charge]
-    for i in buttons:
-        i.config(fg="black")
-    if domain_charge != str(letter):
-        domain_charge = str(letter)
-        if letter == "+":
-            Positive_charge.configure(fg="red")
-        elif letter == "_":
-            Negative_charge.configure(fg="red")
-        if Domain_Primer_Lock != "" and (letter == "+" or letter == "_"):
-            Domain_Primer[8] = re.sub("\+|\-|\_","",Domain_Primer[8])
-            if "V" in Domain_Primer[8]:
-                Domain_Primer[8] = re.sub("\.",letter+".",Domain_Primer[8])
-            else:
-                Domain_Primer[8] += letter
-
-    elif domain_charge == str(letter):
-        domain_charge = ""
-        if Domain_Primer != []:
-            Domain_Primer[8] = re.sub("\+|\_|\-","",Domain_Primer[8])
-
-    if (domain_charge != "" or domain_mod !="" or extra_mods != "") and domain_type == "" and Domain_Primer_Lock == "":
-        lower_canvas.config(cursor = "arrow")
-        lower_canvas.bind("<Button-1>", mm.change_modification)
-        lower_canvas.unbind("<B1-Motion>")
-        lower_canvas.unbind("<ButtonRelease-1>")
 
 def bond_drag_button(canvas,name,buttonpress):
     global Bond_lock
@@ -5508,7 +5209,7 @@ def labels_button(canvas):
                 label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label")
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
-            elif domain_label == "-H-":
+            elif domain_label == "-H-" or domain_label == "-H*-" :
                 domain_name = re.sub("-","", domain_label)
                 firstx  = domain_coordinates[0]
                 secondx = domain_coordinates[2]
@@ -5781,6 +5482,7 @@ class MouseMover():
                     labely_theory = (y1+y2)/2
                     label_text_test = re.sub("\.|\>|\@","",canvas_polygons.get(self.item)[1])
                     label_text_test = re.sub("\_","-",label_text_test)
+                    print(label_text_test, label_text)
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5853,7 +5555,6 @@ class MouseMover():
                                 for y in range(len(canvas_keyslist)):
                                     if bonds_list[x] == canvas_keyslist[y]:
                                         bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
-                            print(domains_dict, bonds_dict)
                             bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
                             bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
                             bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
@@ -5930,7 +5631,6 @@ class MouseMover():
         ANTI_keyslist = list(ANTI_labels.keys())
         LENGTH_keyslist = list(LENGTH_labels.keys())
         domain_self_item = False
-        print(canvas_polygons)
         for i in range(len(polygons_keyslist)):
             domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
             min_max = get_min_max_coordinates(domain_coordinates)
@@ -6340,6 +6040,7 @@ class MouseMover():
         canvas_polygons[domain] = [domaincoordinates[0], domain_name]
         if Label_lock == True:
             domain_name = re.sub("\.|@|>","",domain_name)
+            domain_name = re.sub("\_","-",domain_name)
             label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
             canvas_labels[label] = [domaincoordinates[3], domain_name]
         global domain_mod
@@ -7563,24 +7264,24 @@ if len(sys.argv) < 2:
     nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
     ###Insert bonds buttons ###
     ##Col1
-    InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"+domain_mod+"."+domain_type),False,True))
+    InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"),False,True))
     InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-    InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"+domain_mod),False,True))
+    InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"),False,True))
     InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
-    InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"+domain_mod),False,True))
+    InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"),False,True))
     InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
-    InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"+domain_mod),False,True))
+    InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"),False,True))
     InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
     ##Col2
-    InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"+domain_mod+"."+domain_type),True,False))
+    InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"),True,False))
     InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-    InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"+domain_mod),True,False))
+    InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"),True,False))
     InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
-    InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"+domain_mod),False,True))
+    InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"),False,True))
     InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-    InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"+domain_mod),True,False))
+    InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"),True,False))
     InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
-    InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"+domain_mod),True,False))
+    InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"),True,False))
     InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
 
     ###Drag and pull bonds###
