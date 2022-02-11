@@ -3568,7 +3568,7 @@ def sequence_render_pipeline(canvas):
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    lower_canvas.config(cursor = "arrow")
+    lower_canvas.config(cursor = "fleur")
     status_label.config(text="")
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
@@ -3603,7 +3603,7 @@ def render_pipeline(canvas):
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    lower_canvas.config(cursor = "arrow")
+    lower_canvas.config(cursor = "fleur")
     status_label.config(text="")
     entry=textBox.get("1.0","end-1c")
     split_chains = Get_dictionaries(entry)
@@ -3694,7 +3694,7 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
             lower_canvas.bind("<Button-1>", mm.select)
             lower_canvas.bind("<B1-Motion>", mm.drag)
             lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "arrow")
+            lower_canvas.config(cursor = "fleur")
             status_label.config(text="")
             Domain_Primer = []
             if domain_type != "":
@@ -3768,7 +3768,7 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
             lower_canvas.bind("<Button-1>", mm.select)
             lower_canvas.bind("<B1-Motion>", mm.drag)
             lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "arrow")
+            lower_canvas.config(cursor = "fleur")
             status_label.config(text="")
             Domain_Primer = []
             if domain_type != "":
@@ -3838,7 +3838,7 @@ def Get_Template_File(canvas):
         canvas.bind("<Button-1>", mm.select)
         canvas.bind("<B1-Motion>", mm.drag)
         canvas.bind("<ButtonRelease-1>", mm.release)
-        canvas.config(cursor = "arrow")
+        canvas.config(cursor = "fleur")
         status_label.config(text="")
         entry=textBox.get("1.0","end-1c")
     elif CLI == True:
@@ -4158,6 +4158,7 @@ def sequence_pipeline(canvas):
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
+    lower_canvas.config(cursor = "fleur")
     polygons_keyslist = list(canvas_polygons.keys())
     TYPE_keyslist = list(TYPE_labels.keys())
     NOTE_keyslist = list(NOTE_labels.keys())
@@ -4888,6 +4889,7 @@ def delete_button(canvas):
     elif Delete_lock == True:
         Delete_lock = False
         InsertDelClickButton.config(fg="black")
+        lower_canvas.config(cursor = "fleur")
         lower_canvas.unbind("<Button-1>")
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -4925,6 +4927,7 @@ def domain_type_button(letter):
         lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
         lower_canvas.config(cursor = "plus")
     if Domain_Primer_Lock == "":
+        lower_canvas.config(cursor = "fleur")
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.config(cursor = "arrow")
         lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -4990,10 +4993,10 @@ def domain_type_button(letter):
             if Domain_Primer != []:
                 Domain_Primer[8] = re.sub("a|b|c|d|e|f|g|h","",Domain_Primer[8])
                 Domain_Primer[8] = re.sub("\.","."+domain_type,Domain_Primer[8])
+            lower_canvas.config(cursor = "fleur")
             lower_canvas.bind("<Button-1>", mm.select)
             lower_canvas.bind("<B1-Motion>", mm.drag)
             lower_canvas.bind("<ButtonRelease-1>", mm.release)
-            lower_canvas.config(cursor = "arrow")
         elif domain_type != "" and Domain_Primer_Lock == "":
             if (domain_charge != "" or domain_mod !="" or extra_mods != ""):
                 lower_canvas.config(cursor = "arrow")
@@ -5021,7 +5024,7 @@ def domain_type_button(letter):
                 lower_canvas.bind("<Button-1>", mm.select)
                 lower_canvas.bind("<B1-Motion>", mm.drag)
                 lower_canvas.bind("<ButtonRelease-1>", mm.release)
-                lower_canvas.config(cursor = "arrow")
+                lower_canvas.config(cursor = "fleur")
 def arc_checker(key,bonds_dict, domains_dict):
     domains_keyslist = list(domains_dict.keys())
     bondx1 = bonds_dict.get(key)[0][0]
@@ -5092,7 +5095,7 @@ def extra_mod_button(letter):
         lower_canvas.config(cursor = "plus")
     elif Domain_Primer_Lock == "":
         lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
     selected_mod = str(letter)
@@ -5158,7 +5161,7 @@ def domain_mod_button(letter):
         lower_canvas.config(cursor = "plus")
     elif Domain_Primer_Lock == "":
         lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
     buttons = [KIH_hole, KIH_knob]
@@ -5222,7 +5225,7 @@ def domain_charge_button(charge):
         lower_canvas.config(cursor = "plus")
     elif Domain_Primer_Lock == "":
         lower_canvas.bind("<Button-1>", mm.select)
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
     global bond_buttons
@@ -5303,7 +5306,7 @@ def bond_drag_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 def Linker_bond_button(canvas,name,buttonpress):
     global Bond_lock
@@ -5348,7 +5351,7 @@ def Linker_bond_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 
 def disulphide_bond_button(canvas,name,buttonpress):
@@ -5395,7 +5398,7 @@ def disulphide_bond_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 def Hinge_bond_button(canvas,name,buttonpress):
     global Bond_lock
@@ -5440,7 +5443,7 @@ def Hinge_bond_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 def labels_button(canvas):
     global Label_lock
@@ -5532,7 +5535,7 @@ def SelectCommentTypeButton(letter):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 def CommentLabelButton_function(canvas):
     global CustomLabelLock
@@ -5606,7 +5609,7 @@ def CommentLabelButton_function(canvas):
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         status_label.config(text="")
-        lower_canvas.config(cursor = "arrow")
+        lower_canvas.config(cursor = "fleur")
 
 def raise_error(canvas,message):
     global CLI
@@ -5642,7 +5645,7 @@ def items_selected(e):
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
-    lower_canvas.config(cursor = "arrow")
+    lower_canvas.config(cursor = "fleur")
     status_label.config(text="")
     i=Library.curselection()
 
@@ -5770,7 +5773,7 @@ class MouseMover():
         self.newcoordinates = [xc,yc]
         return(newcoordinates)
     def release(self, event):
-        lower_canvas.config(cursor = "arrow")
+        
         global Label_lock
         if self.newcoordinates==[]:
             self.newcoordinates.append(self.startcoordinates[0])
@@ -6540,6 +6543,7 @@ class MouseMover():
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
+        lower_canvas.config(cursor = "fleur")
 
 
 
@@ -8328,6 +8332,7 @@ if len(sys.argv) < 2:
     # Bind mouse events to methods (could also be in the constructor)
     lower_canvas.bind("<Button-1>", mm.select)
     lower_canvas.bind("<B1-Motion>", mm.drag)
+    lower_canvas.config(cursor = "fleur")
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
     lower_canvas.bind("<Button-2>", mm.change_orientation)
     lower_canvas.bind("<Button-3>", mm.change_orientation)
