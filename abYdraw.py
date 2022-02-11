@@ -3725,8 +3725,6 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
             domain_mod = ""
             extra_mods = ""
     elif domain_type == "":
-        domain_type = "a"
-        a_button.config(fg="red")
         if Domain_Primer_Lock != domain_name:
             Domain_Primer_Lock = domain_name
             Delete_lock = False
