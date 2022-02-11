@@ -5893,7 +5893,6 @@ class MouseMover():
         global LENGTH_labels
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
-        self.item = widget.find_closest(xc, yc)[0]        # ID for closest
         polygons_keyslist = list(canvas_polygons.keys())
         labels_keyslist = list(canvas_labels.keys())
         TYPE_keyslist = list(TYPE_labels.keys())
@@ -5901,32 +5900,58 @@ class MouseMover():
         MOD_keyslist = list(MOD_labels.keys())
         ANTI_keyslist = list(ANTI_labels.keys())
         LENGTH_keyslist = list(LENGTH_labels.keys())
-        if self.item in TYPE_keyslist:
-            lower_canvas.delete(self.item)
-            del TYPE_labels[self.item]
-        elif self.item in NOTE_keyslist:
-            lower_canvas.delete(self.item)
-            del NOTE_labels[self.item]
-        elif self.item in ANTI_keyslist:
-            lower_canvas.delete(self.item)
-            del ANTI_labels[self.item]
-        elif self.item in MOD_keyslist:
-            lower_canvas.delete(self.item)
-            del MOD_labels[self.item]
-        elif self.item in LENGTH_keyslist:
-            lower_canvas.delete(self.item)
-            del LENGTH_labels[self.item]
-        elif self.item in labels_keyslist:
-            for i in range(len(polygons_keyslist)):
-                if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
-                    domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
-                    min_max = get_min_max_coordinates(domain_coordinates)
-                    x1 = min_max[0]
-                    x2 = min_max[1]
-                    y1 = min_max[2]
-                    y2 = min_max[3]
-                    if x1< xc <x2 and y1 < yc < y2:
-                        self.item = polygons_keyslist[i]
+        domain_self_item = False
+        for i in range(len(polygons_keyslist)):
+            domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+            min_max = get_min_max_coordinates(domain_coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            if x1< xc <x2 and y1 < yc < y2:
+                self.item = polygons_keyslist[i]
+                domain_self_item = True
+
+        if domain_self_item == False:
+            for i in range(len(labels_keyslist)):
+                label_coordinates = (canvas_labels.get(labels_keyslist[i])[0])
+                lab_x1 = min_max[0]
+                lab_y1 = min_max[1]
+                if lab_x1 == xc and lab_y1 == yc:
+                    for j in range(len(polygons_keyslist)):
+                        domain_coordinates = (canvas_polygons.get(polygons_keyslist[j])[0])
+                        min_max = get_min_max_coordinates(domain_coordinates)
+                        x1 = min_max[0]
+                        x2 = min_max[1]
+                        y1 = min_max[2]
+                        y2 = min_max[3]
+                        if x1 <= lab_x1 <= x2 and y1 <= lab_y1 <= y2:
+                            print("AYYY")
+                            self.item = polygons_keyslist[j]
+                            domain_self_item = True
+        if domain_self_item == False:
+
+            self.item = widget.find_closest(xc, yc)[0]
+            if self.item not in polygons_keyslist and self.item not in labels_keyslist:
+                print("AYYY OK")
+                if self.item in TYPE_keyslist:
+                    lower_canvas.delete(self.item)
+                    del TYPE_labels[self.item]
+                elif self.item in NOTE_keyslist:
+                    lower_canvas.delete(self.item)
+                    del NOTE_labels[self.item]
+                elif self.item in ANTI_keyslist:
+                    lower_canvas.delete(self.item)
+                    del ANTI_labels[self.item]
+                elif self.item in MOD_keyslist:
+                    lower_canvas.delete(self.item)
+                    del MOD_labels[self.item]
+                elif self.item in LENGTH_keyslist:
+                    lower_canvas.delete(self.item)
+                    del LENGTH_labels[self.item]
+            else:
+                self.item = None
+
 
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             Domain_name = (canvas_polygons.get(self.item)[1])
