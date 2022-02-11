@@ -5901,6 +5901,7 @@ class MouseMover():
         ANTI_keyslist = list(ANTI_labels.keys())
         LENGTH_keyslist = list(LENGTH_labels.keys())
         domain_self_item = False
+        print(canvas_polygons)
         for i in range(len(polygons_keyslist)):
             domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
             min_max = get_min_max_coordinates(domain_coordinates)
@@ -5949,6 +5950,9 @@ class MouseMover():
                 elif self.item in LENGTH_keyslist:
                     lower_canvas.delete(self.item)
                     del LENGTH_labels[self.item]
+            elif self.item in polygons_keyslist and "disulphide" in canvas_polygons.get(self.item)[1]:
+                lower_canvas.delete(self.item)
+                del canvas_polygons[self.item]
             else:
                 self.item = None
 
