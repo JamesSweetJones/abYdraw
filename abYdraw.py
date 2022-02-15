@@ -4631,6 +4631,7 @@ def sequence_pipeline(canvas):
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
             #print(domains_dict.get(full_chains[i][j])[0])
+            comment_found = False
             domain_type = strings[i][j].split("(")[0]
             mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
             domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
@@ -4653,6 +4654,7 @@ def sequence_pipeline(canvas):
                     labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
                     if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
+                        comment_found = True
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
                         comments = note.split(",")
                         comment_to_add = ""
@@ -4677,9 +4679,8 @@ def sequence_pipeline(canvas):
                             print("3")
                             strings[i][j] = strings[i][j].split("-")[1]
                             strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-                    #else:
-                        #strings[i][j] = re.sub("\*","",strings[i][j])
-                        #print("REMOVE", strings[i][j])
+            if comment_found == False:
+                strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
     final_string = ""
@@ -5116,7 +5117,6 @@ def Linker_bond_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag_Linker_bond)
         InsertLinkerButton.config(fg="red")
         lower_canvas.bind("<ButtonRelease-1>", mm.release_Linker_bond)
-        status_label.config(text="Hinge lock on")
         lower_canvas.config(cursor = "cross")
 
     elif str(Bond_lock) == str(buttonpress):
@@ -5163,7 +5163,6 @@ def disulphide_bond_button(canvas,name,buttonpress):
         InsertDBondButton.config(fg="red")
         if name == "-":
             lower_canvas.bind("<ButtonRelease-1>", mm.release_Disulphide_bond)
-            status_label.config(text="Disulphide lock on")
         lower_canvas.config(cursor = "cross")
 
     elif str(Bond_lock) == str(buttonpress):
@@ -5208,7 +5207,6 @@ def Hinge_bond_button(canvas,name,buttonpress):
         lower_canvas.bind("<B1-Motion>", mm.drag_Hinge_bond)
         InsertLHingeButton.config(fg="red")
         lower_canvas.bind("<ButtonRelease-1>", mm.release_Hinge_bond)
-        status_label.config(text="Hinge lock on")
         lower_canvas.config(cursor = "cross")
 
     elif str(Bond_lock) == str(buttonpress):
@@ -5615,7 +5613,7 @@ class MouseMover():
                                 continue
                             else:
                                 lower_canvas.delete(canvas_keyslist[i])
-                                del canvas_polygons[canvas_keyslist[i]] 
+                                del canvas_polygons[canvas_keyslist[i]]
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
