@@ -5557,41 +5557,41 @@ class MouseMover():
                     new_coordinates.append((coordinates[i]+diffy))
             canvas_polygons[self.item]=[new_coordinates, name]
 
-            if self.newcoordinates != self.startcoordinates[0]:
-                arcs_list = lower_canvas.find_withtag("arcs")
-                min_max = get_min_max_coordinates(coordinates)
-                x1 = min_max[0]
-                x2 = min_max[1]
-                y1 = min_max[2]
-                y2 = min_max[3]
-
-                for i in range(len(canvas_keyslist)):
-                    if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
-                        domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
-                        bondx1 = domain_coordinates[0]
-                        bondy1 = domain_coordinates[1]
-                        bondx2 = domain_coordinates[2]
-                        bondy2 = domain_coordinates[3]
-                        if canvas_keyslist[i] in arcs_list:
-                            domains_list = lower_canvas.find_withtag("domain")
-                            domains_dict = {}
-                            for x in range(len(domains_list)):
-                                for y in range(len(canvas_keyslist)):
-                                    if domains_list[x] == canvas_keyslist[y]:
-                                        domains_dict[y] = canvas_polygons.get(canvas_keyslist[y])
-                            bonds_list = lower_canvas.find_withtag("bonds")
-                            bonds_dict = {}
-                            for x in range(len(bonds_list)):
-                                for y in range(len(canvas_keyslist)):
-                                    if bonds_list[x] == canvas_keyslist[y]:
-                                        bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
-                            bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
-                            bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
-                            bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
-                            bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
-                        if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
-                            lower_canvas.delete(canvas_keyslist[i])
-                            del canvas_polygons[canvas_keyslist[i]]
+            #if self.newcoordinates != self.startcoordinates[0]:
+            #    arcs_list = lower_canvas.find_withtag("arcs")
+            #    min_max = get_min_max_coordinates(coordinates)
+            #    x1 = min_max[0]
+            #    x2 = min_max[1]
+            #    y1 = min_max[2]
+            #    y2 = min_max[3]
+#
+            #    for i in range(len(canvas_keyslist)):
+            #        if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
+            #            domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
+            #            bondx1 = domain_coordinates[0]
+            #            bondy1 = domain_coordinates[1]
+            #            bondx2 = domain_coordinates[2]
+            #            bondy2 = domain_coordinates[3]
+            #            if canvas_keyslist[i] in arcs_list:
+            #                domains_list = lower_canvas.find_withtag("domain")
+            #                domains_dict = {}
+            #                for x in range(len(domains_list)):
+            #                    for y in range(len(canvas_keyslist)):
+            #                        if domains_list[x] == canvas_keyslist[y]:
+            #                            domains_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+            #                bonds_list = lower_canvas.find_withtag("bonds")
+            #                bonds_dict = {}
+            #                for x in range(len(bonds_list)):
+            #                    for y in range(len(canvas_keyslist)):
+            #                        if bonds_list[x] == canvas_keyslist[y]:
+            #                            bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+            #                bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
+            #                bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
+            #                bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
+            #                bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
+            #            if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
+            #                lower_canvas.delete(canvas_keyslist[i])
+            #                del canvas_polygons[canvas_keyslist[i]]
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
