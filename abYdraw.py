@@ -4665,7 +4665,7 @@ def sequence_pipeline(canvas):
                             comment_to_add +=noting
                         print(strings[i][j])
                         strings[i][j] = re.sub("\*","", strings[i][j])
-                        if "MOD" in strings[i][j] or "MOD" in str(noting):
+                        if "MOD" in strings[i][j] or "MOD" in str(comments):
                             print("1")
                             strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                             print(strings[i][j])
@@ -5572,42 +5572,41 @@ class MouseMover():
                 elif i%2!=0:
                     new_coordinates.append((coordinates[i]+diffy))
             canvas_polygons[self.item]=[new_coordinates, name]
-
-            #if self.newcoordinates != self.startcoordinates[0]:
-            #    arcs_list = lower_canvas.find_withtag("arcs")
-            #    min_max = get_min_max_coordinates(coordinates)
-            #    x1 = min_max[0]
-            #    x2 = min_max[1]
-            #    y1 = min_max[2]
-            #    y2 = min_max[3]
+            bonds_to_check = []
+            if self.newcoordinates != self.startcoordinates[0]:
+                arcs_list = lower_canvas.find_withtag("arcs")
+                min_max = get_min_max_coordinates(coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
 #
-            #    for i in range(len(canvas_keyslist)):
-            #        if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
-            #            domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
-            #            bondx1 = domain_coordinates[0]
-            #            bondy1 = domain_coordinates[1]
-            #            bondx2 = domain_coordinates[2]
-            #            bondy2 = domain_coordinates[3]
-            #            if canvas_keyslist[i] in arcs_list:
-            #                domains_list = lower_canvas.find_withtag("domain")
-            #                domains_dict = {}
-            #                for x in range(len(domains_list)):
-            #                    for y in range(len(canvas_keyslist)):
-            #                        if domains_list[x] == canvas_keyslist[y]:
-            #                            domains_dict[y] = canvas_polygons.get(canvas_keyslist[y])
-            #                bonds_list = lower_canvas.find_withtag("bonds")
-            #                bonds_dict = {}
-            #                for x in range(len(bonds_list)):
-            #                    for y in range(len(canvas_keyslist)):
-            #                        if bonds_list[x] == canvas_keyslist[y]:
-            #                            bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
-            #                bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
-            #                bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
-            #                bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
-            #                bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
-            #            if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
-            #                lower_canvas.delete(canvas_keyslist[i])
-            #                del canvas_polygons[canvas_keyslist[i]]
+                for i in range(len(canvas_keyslist)):
+                    if "-" in str(canvas_polygons.get(canvas_keyslist[i])[1]):
+                        domain_coordinates = (canvas_polygons.get(canvas_keyslist[i])[0])
+                        bondx1 = domain_coordinates[0]
+                        bondy1 = domain_coordinates[1]
+                        bondx2 = domain_coordinates[2]
+                        bondy2 = domain_coordinates[3]
+                        if canvas_keyslist[i] in arcs_list:
+                            domains_list = lower_canvas.find_withtag("domain")
+                            domains_dict = {}
+                            for x in range(len(domains_list)):
+                                for y in range(len(canvas_keyslist)):
+                                    if domains_list[x] == canvas_keyslist[y]:
+                                        domains_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+                            bonds_list = lower_canvas.find_withtag("bonds")
+                            bonds_dict = {}
+                            for x in range(len(bonds_list)):
+                                for y in range(len(canvas_keyslist)):
+                                    if bonds_list[x] == canvas_keyslist[y]:
+                                        bonds_dict[y] = canvas_polygons.get(canvas_keyslist[y])
+                            bondx1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[0]
+                            bondy1 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[1]
+                            bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
+                            bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
+                        if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
+                            bonds_to_check.append(canvas_keyslist[i])
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
@@ -7272,13 +7271,21 @@ if len(sys.argv) < 2:
     nanobody_button = tk.Button(frame2,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
     nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
     a_button.bind("<Button-2>", domain_type_button_right_click("a"))
+    a_button.bind("<Button-3>", domain_type_button_right_click("a"))
     b_button.bind("<Button-2>", domain_type_button_right_click("b"))
+    b_button.bind("<Button-3>", domain_type_button_right_click("b"))
     c_button.bind("<Button-2>", domain_type_button_right_click("c"))
+    c_button.bind("<Button-3>", domain_type_button_right_click("c"))
     d_button.bind("<Button-2>", domain_type_button_right_click("d"))
+    d_button.bind("<Button-3>", domain_type_button_right_click("d"))
     e_button.bind("<Button-2>", domain_type_button_right_click("e"))
+    e_button.bind("<Button-3>", domain_type_button_right_click("e"))
     f_button.bind("<Button-2>", domain_type_button_right_click("f"))
+    f_button.bind("<Button-3>", domain_type_button_right_click("f"))
     g_button.bind("<Button-2>", domain_type_button_right_click("g"))
+    g_button.bind("<Button-3>", domain_type_button_right_click("g"))
     h_button.bind("<Button-2>", domain_type_button_right_click("h"))
+    h_button.bind("<Button-3>", domain_type_button_right_click("h"))
     ###Insert bonds buttons ###
     ##Col1
     InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"),False,True))
