@@ -158,6 +158,11 @@ def Get_dictionaries(x):
                 h_mod = 1
             else:
                 h_mod = 0
+            if domain == "X*":
+                domain = re.sub("\*","", str(domain))
+                x_mod = 1
+            else:
+                x_mod = 0
 
 
             if domain == "L":
@@ -191,7 +196,7 @@ def Get_dictionaries(x):
             else:
                 disulphide_bridges = 0
 
-            location = [location, disulphide_bridges,note,h_mod]
+            location = [location, disulphide_bridges,note,h_mod,x_mod]
             domain = domain+str([j])
 
 
@@ -1527,6 +1532,7 @@ def Check_interactions(chains_list,canvas):
             mod= ""
             mod_label=""
             h_mod = False
+            x_mod = False
             if "V" in keyslist[i]:
                 V  = True
             elif "X" in keyslist[i]:
@@ -1542,11 +1548,18 @@ def Check_interactions(chains_list,canvas):
             Build_up=False
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
+            if ("X" in keyslist[i]) and dictionary.get(keyslist[i])[4] == 1:
+                x_mod = True
+                print(x_mod)
+                mod_label = "*"
+            else:
+                x_mod = False
             if ("H[" in keyslist[i]) and dictionary.get(keyslist[i])[3] == 1:
                 h_mod = True
                 h_mods.append(True)
             else:
                 h_mods.append(False)
+
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
                 print(note_label)
@@ -1555,6 +1568,8 @@ def Check_interactions(chains_list,canvas):
                     raise_error(lower_canvas, error_message)
                 if h_mod == True:
                     Domain_name = "H*"
+                elif x_mod == True:
+                    Domain_name = "X*"
                 Notes.append(Domain_name+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
@@ -2443,6 +2458,7 @@ def Check_interactions(chains_list,canvas):
                 global Show_Leucine_Zippers
                 if  "X[" in keyslist[i] and (mod != "Leucine" or Show_Leucine_Zippers == False):
                     ADCs.append(getcoordinates[0])
+
                 elif "C[" in keyslist[i] and (mod != "Leucine" or Show_Leucine_Zippers == False):
                     Chem_con.append(getcoordinates[0])
                 if slant == True and righthanded == False:
@@ -2453,6 +2469,9 @@ def Check_interactions(chains_list,canvas):
                     Label_Locations = [getcoordinates[3][0],getcoordinates[3][1]]
                 text_coordinates.append([Label_Locations])
                 text = dictionary.get(keyslist[i])[0]
+                if x_mod == True:
+                    mod_label = "*"
+                Domain_name = "X"
                 Location_Text.append(str(text)+mod_label)
                 Domain_Text.append(str(Domain_name)+mod_label)
                 Domain_number = Domain_name+str([i])
@@ -3510,7 +3529,10 @@ def render(chains_list,canvas,text_to_image):
                     non_redundant_ADCs_sorted.append(j)
             for i in range(len(non_redundant_ADCs)):
                 domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=1,tags="domain")
-                canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
+                if "X*" in str(Domain_Text):
+                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X*"]
+                else:
+                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
             non_redundant_CCs = []
@@ -4610,7 +4632,10 @@ def sequence_pipeline(canvas):
             domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
             if "-" not in strings[i][j]:
                 coordinates = domains_dict.get(full_chains[i][j])[0]
-            elif "-" in strings[i][j]:
+            elif "-" in strings[i][j] and "H" not in strings[i][j]:
+                coordinates = bonds_dict.get(full_chains[i][j])[0]
+            elif "-" in strings[i][j] and "H" in strings[i][j]:
+                print(bonds_dict.get(full_chains[i][j])[0])
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
             min_max = get_min_max_coordinates(coordinates)
             d1x1 = min_max[0]
@@ -4623,7 +4648,7 @@ def sequence_pipeline(canvas):
                     labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
                     labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment) and  "*" in mod_domain_type) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
                         comments = note.split(",")
                         comment_to_add = ""
@@ -4634,16 +4659,23 @@ def sequence_pipeline(canvas):
                             note1 = re.sub("^ |\* |\*","", note1)
                             noting = str("["+note1+":"+note2+"]")
                             comment_to_add +=noting
+                        print(strings[i][j])
                         strings[i][j] = re.sub("\*","", strings[i][j])
-                        if "MOD" in strings[i][j] or "MOD" in noting and "X" not in strings[i][j]:
+                        if "MOD" in strings[i][j] or "MOD" in noting:
+                            print("1")
                             strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
+                            print(strings[i][j])
                         if "-" not in strings[i][j]:
                             strings[i][j] += comment_to_add
+                            print("2")
+                            print(strings[i][j])
                         elif "-" in strings[i][j]:
+                            print("3")
                             strings[i][j] = strings[i][j].split("-")[1]
                             strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-                    else:
-                        strings[i][j] = re.sub("\*","",strings[i][j])
+                    #else:
+                        #strings[i][j] = re.sub("\*","",strings[i][j])
+                        #print("REMOVE", strings[i][j])
 
 ##conver lists to expression
     final_string = ""
