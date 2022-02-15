@@ -4647,6 +4647,7 @@ def sequence_pipeline(canvas):
                 final_string+= str("|"+strings[i][j])
             elif j > 0 :
                 final_string += strings[i][j]
+    final_string = re.sub("\.\(",".a(", str(final_string))
     final_string = re.sub("\]\[",", ", str(final_string))
     final_string = re.sub("\-\-","-", str(final_string))
     final_string = re.sub("\-L\-\|","|",str(final_string))
