@@ -5550,8 +5550,8 @@ class MouseMover():
         coordinates = canvas_polygons.get(self.item)
         self.newcoordinates = [xc,yc]
         return(newcoordinates)
-    def release(self, event):
 
+    def release(self, event):
         global Label_lock
         if self.newcoordinates==[]:
             self.newcoordinates.append(self.startcoordinates[0])
@@ -5606,7 +5606,16 @@ class MouseMover():
                             bondx2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[2]
                             bondy2 = arc_checker(canvas_keyslist[i],bonds_dict, domains_dict)[3]
                         if x1< bondx2 <x2 and y1 < bondy2  < y2 or  x1< bondx1 <x2 and y1 < bondy1  < y2:
-                            bonds_to_check.append(canvas_keyslist[i])
+                            min_max_new = get_min_max_coordinates(new_coordinates)
+                            new_coordinatesx1 = min_max_new[0]
+                            new_coordinatesx2 = min_max_new[1]
+                            new_coordinatesy1 = min_max_new[2]
+                            new_coordinatesy2 = min_max_new[3]
+                            if new_coordinatesx1< bondx2 <new_coordinatesx2 and new_coordinatesy1 < bondy2  < new_coordinatesy2 or  new_coordinatesx1< bondx1 <new_coordinatesx2 and new_coordinatesy1 < bondy1  < new_coordinatesy2:
+                                continue
+                            else:
+                                lower_canvas.delete(canvas_keyslist[i])
+                                del canvas_polygons[canvas_keyslist[i]] 
             if Label_lock == True:
                 temp_label_key = list(temp_label.keys())
                 if len(temp_label_key) >0:
