@@ -5895,9 +5895,8 @@ class MouseMover():
             elif "L" in new_domain_name:
                 lower_canvas.itemconfig(self.item, fill = light_colour)
             if domain_name == "-H-" and "*" in extra_mods:
-                print("OH YES")
                 new_domain_name = "-H*-"
-            elif domain_name == "-H*-" and "*" not in extra_mods:
+            elif "H*" in domain_name   and "V" not in domain_name and "*" not in extra_mods_to_add:
                 new_domain_name = "-H-"
             canvas_polygons[self.item][1] = new_domain_name
             ###change display label
