@@ -5789,9 +5789,11 @@ class MouseMover():
                     extra_mods_to_add = re.sub("\!","",extra_mods)
             else:
                 extra_mods_to_add = extra_mods
-
-            new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
-            new_domain_name = re.sub(" ","",new_domain_name)
+            if "V" in domain_name:
+                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
+            else:
+                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add)    
+                new_domain_name = re.sub(" ","",new_domain_name)
             if "a" in str(new_domain_name):
                 heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
             elif "b" in str(new_domain_name):
