@@ -5754,12 +5754,20 @@ class MouseMover():
                             domain_type_to_add += domain_name[s]
                 else:
                     domain_type_to_add = domain_name.split(".")[1]
-
-            if "+" in str(domain_name) or "_" in str(domain_name):
-                if "+" in domain_charge and str(domain_name):
+            #domain = re.sub("\-", "_", domain_name)
+            if "+" in str(domain_name) or "_" in str(domain_name) or "-" in str(domain_name):
+                print("YES")
+                if "+" in domain_charge and "+" in str(domain_name):
+                    print("1")
                     domain_charge_to_add = re.sub("\+","",domain_charge)
-                elif "_" in domain_charge and str(domain_name):
+                elif "_" in domain_charge and "_"  in str(domain_name):
+                    print("2")
+                    print(domain_name)
                     domain_charge_to_add = re.sub("\_","",domain_charge)
+                    print("DOMAIN CHARGE TO ADD", domain_charge_to_add)
+
+                else:
+                    domain_charge_to_add = domain_charge
             else:
                 domain_charge_to_add = domain_charge
 
