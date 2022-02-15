@@ -4652,7 +4652,7 @@ def sequence_pipeline(canvas):
                     labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
                     labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
                     #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment) and  "*" in mod_domain_type) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
+                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" or "C") in mod_domain_type and mod_domain_type in str(comment)) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
                         note = comment_dicts[k].get(comment_lists[k][l])[1]
                         comments = note.split(",")
                         comment_to_add = ""
@@ -4665,7 +4665,7 @@ def sequence_pipeline(canvas):
                             comment_to_add +=noting
                         print(strings[i][j])
                         strings[i][j] = re.sub("\*","", strings[i][j])
-                        if "MOD" in strings[i][j] or "MOD" in noting:
+                        if "MOD" in strings[i][j] or "MOD" in str(noting):
                             print("1")
                             strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                             print(strings[i][j])
@@ -4873,6 +4873,18 @@ def prime_domain_button(canvas,startx,starty,righthanded,slant,V,direction,X,mod
         Domain_Primer = []
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
+def domain_type_button_right_click(letter):
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    print("OH DEARY ME")
+    if domain_type != "" and letter not in domain_type:
+        domain_type += str(letter)
+        update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+    else:
+        return
 
 def domain_type_button(letter):
     global domain_type
@@ -4880,7 +4892,7 @@ def domain_type_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
-    if domain_type == "" and letter not in domain_type:
+    if domain_type == "" or letter not in domain_type:
         print("1")
         domain_type = str(letter)
     elif domain_type != "" and letter not in domain_type:
@@ -7259,6 +7271,14 @@ if len(sys.argv) < 2:
     ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
     nanobody_button = tk.Button(frame2,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
     nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    a_button.bind("<Button-2>", domain_type_button_right_click("a"))
+    b_button.bind("<Button-2>", domain_type_button_right_click("b"))
+    c_button.bind("<Button-2>", domain_type_button_right_click("c"))
+    d_button.bind("<Button-2>", domain_type_button_right_click("d"))
+    e_button.bind("<Button-2>", domain_type_button_right_click("e"))
+    f_button.bind("<Button-2>", domain_type_button_right_click("f"))
+    g_button.bind("<Button-2>", domain_type_button_right_click("g"))
+    h_button.bind("<Button-2>", domain_type_button_right_click("h"))
     ###Insert bonds buttons ###
     ##Col1
     InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"),False,True))
