@@ -2246,8 +2246,8 @@ def Check_interactions(chains_list,canvas):
                 if "H[" in keyslist[i-1]:
                     if h_mods[-2] == True:
                         h_mod= True
-                    coordinates = bottom_bond + top_bond
-                    hinges.append([coordinates,h_mod])
+                    hcoordinates = bottom_bond + top_bond
+                    hinges.append([hcoordinates,h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
                     global L_Labels
@@ -2350,7 +2350,8 @@ def Check_interactions(chains_list,canvas):
                         extrabondy2=top_bond[1]+20
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                         if "H[" in keyslist[i]:
-                            hinges.append([extra_bond, h_mod])
+                            h_coordinates = extra_bond
+                            hinges.append([h_coordinates, h_mod])
                         else:
                             bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
@@ -2582,14 +2583,14 @@ def Check_interactions(chains_list,canvas):
                 elif i+1 == len(dictionary):
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
-                        coordinates = [bottomx,bottomy,topx,topy]
-                        hinges.append([coordinates,h_mod])
+                        h_coordinates = [bottomx,bottomy,topx,topy]
+                        hinges.append([h_coordinates,h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
                             pass
                         else:
-                            coordinates = [bottomx,bottomy,topx,topy+20]
-                            hinges.append([coordinates,h_mod])
+                            h_coordinates = [bottomx,bottomy,topx,topy+20]
+                            hinges.append([h_coordinates,h_mod])
 
                     if Extra_bond == True and righthanded == False:
                         Label_Locations = [getcoordinates[3][0]-60,getcoordinates[3][1]]
@@ -2731,6 +2732,7 @@ def Check_interactions(chains_list,canvas):
         teststartx = width
         teststarty = 0
         testHpositionVHb = renderchains(VHb_1_test,teststartx,teststarty, canvas)[25]
+        print("testHpositionVHb", testHpositionVHb)
         test_H_positionx = testHpositionVHb[0]
         test_H_positiony = testHpositionVHb[1]
         differencetest_desiredx1 = test_H_positionx - VHb_H_coordinatesx
@@ -3189,7 +3191,7 @@ def Check_interactions(chains_list,canvas):
                 frag4_startx=frag4_start[0][0]-60
                 frag4_starty=frag4_start[0][1]
             frag4_stat= renderchains(fragment4,frag4_startx,frag4_starty, canvas)
-            hingey1 = frag3_stat[26][0][1]
+            hingey1 = frag3_stat[26][0][0][1]
 
 
             for i in range(len(completed_disulphidebridges)):
@@ -3280,6 +3282,7 @@ def Check_interactions(chains_list,canvas):
     names_list_heavy_h  = VHa_stats[50] + VLa_stats[50] + VHb_stats[50] + VLb_stats[50] + frag1_stat[50] + frag2_stat[50] + frag3_stat[50] + frag4_stat[50]
     names_list_light_h  = VHa_stats[51] + VLa_stats[51] + VHb_stats[51] + VLb_stats[51] + frag1_stat[51] + frag2_stat[51] + frag3_stat[51] + frag4_stat[51]
     Chem_con            = VHa_stats[52] + VLa_stats[52] + VHb_stats[52] + VLb_stats[52] + frag1_stat[52] + frag2_stat[52] + frag3_stat[52] + frag4_stat[52]
+    print(Hinges,disulphide_bridges)
     if Yout_of_range == True:
         Ynew_start = Yhow_much-10
         coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot,Chem_con]
@@ -5792,7 +5795,7 @@ class MouseMover():
             if "V" in domain_name:
                 new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
             else:
-                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add)    
+                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add)
                 new_domain_name = re.sub(" ","",new_domain_name)
             if "a" in str(new_domain_name):
                 heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
@@ -7314,8 +7317,9 @@ if len(sys.argv) < 2:
     "F(ab)2":"VH.a(1:4) - CH1(2:5){1} -H(3:8){2} | VL.a(4:1) - CL(5:2){1} | VH.b(6:9) - CH1(7:10){1} - H(8:3){2} | VL.b(9:6) - CL(10:7){1}",
     "scFV":"VH.a(1:3)-L(2)-VL.a(3:1)",
     "scFV4":"VH.a(1:3)-L(2)-VL.a(3:1)-CL(4:8){1}|VL.a(5:7)-L(6)-VH.a(7:5)-CH1(8:4){1}-H(9:20){2}-CH2(10:21)-CH3(11:22)|VH.b(12:14)-L(13)-VL.b(14:12)-CL(15:19){1}|VL.b(16:18)-L(17)-VH.b(18:16)-CH1(19:15){1}-H(20:9){2}-CH2(21:10)-CH3(22:11)",
-    "sdFV4":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3*@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3*>(12:5) | VHH.b(13) -CL(14:9){1}",
+    "VHH4-IgG":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3*@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3*>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
+    "Camelid":"VHH.a(1)-H(2:6){3}-CH2(3:7)-CH3(4:8)|VHH.a(5)-H(6:2){3}-CH2(7:3)-CH3(8:4)",
     "BiTE":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
     "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[TYPE:FUSION, NOTE: human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
     "Cov-X-body":"X(1)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
@@ -7334,7 +7338,7 @@ if len(sys.argv) < 2:
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
     "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3*@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3*>(14:5)",
     "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
-    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE] |VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL*(15:2){1}[MOD:DISULFIDE] |VL.a(16:9)-CL*(17:10)[MOD:DISULFIDE] |VL.b(18:7)-CH1(19:8){1}",
+    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE] | VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:9)-CL(2:10){1}|VL.a(3:26)-CL(4:27){1}|VL.b(5:7)-L(6)-VH.b(7:5)-L(8)-VH.a(9:1)-CH1(10:2){1}-H(11:28){2}-CH2(12:29)-CH3(13:30)-L(14)-VH.b(15:17)-L(16)-VL.b(17:15)-L(18)-VH.c(19:21)-L(20)-VL.c(21:19)|VL.b(22:24)-L(23)-VH.b(24:22)-L(25)-VH.a(26:3)-CH1(27:4){1}-H(28:11){2}-CH2(29:12)-CH3(30:13)-L(31)-VH.b(32:34)-L(33)-VL.b(34:32)-L(35)-VH.c(36:38)-L(37)-VL.c(38:36)",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
