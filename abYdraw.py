@@ -2246,7 +2246,8 @@ def Check_interactions(chains_list,canvas):
                 if "H[" in keyslist[i-1]:
                     if h_mods[-2] == True:
                         h_mod= True
-                    hinges.append([[bottom_bond + top_bond],h_mod])
+                    coordinates = bottom_bond + top_bond
+                    hinges.append([coordinates,h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
                     global L_Labels
@@ -2349,7 +2350,7 @@ def Check_interactions(chains_list,canvas):
                         extrabondy2=top_bond[1]+20
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                         if "H[" in keyslist[i]:
-                            hinges.append([[extra_bond], h_mod])
+                            hinges.append([extra_bond, h_mod])
                         else:
                             bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
@@ -2581,12 +2582,14 @@ def Check_interactions(chains_list,canvas):
                 elif i+1 == len(dictionary):
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
-                        hinges.append([[bottomx,bottomy,topx,topy],h_mod])
+                        coordinates = [bottomx,bottomy,topx,topy]
+                        hinges.append([coordinates,h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
                             pass
                         else:
-                            hinges.append([[bottomx,bottomy,topx,topy+20],h_mod])
+                            coordinates = [bottomx,bottomy,topx,topy+20]
+                            hinges.append([coordinates,h_mod])
 
                     if Extra_bond == True and righthanded == False:
                         Label_Locations = [getcoordinates[3][0]-60,getcoordinates[3][1]]
@@ -2981,8 +2984,9 @@ def Check_interactions(chains_list,canvas):
             test_H_positionfrag1 = frag1_stat[26]
 
 
-            test_H_positionx = test_H_positionfrag1[0][0]
-            test_H_positiony = test_H_positionfrag1[0][1]
+            test_H_positionx = test_H_positionfrag1[0][0][0]
+            test_H_positiony = test_H_positionfrag1[0][0][1]
+            print(test_H_positionx, test_H_positiony)
             frag1_differencetest_desiredx = test_H_positionx - VHa_H_coordinatesx
             frag1_differencetest_desiredy = test_H_positiony - VHa_H_coordinatesy
             coordinates_to_change = [frag1_stat[0],frag1_stat[1],frag1_stat[2],frag1_stat[3],frag1_stat[4],frag1_stat[5],frag1_stat[6],frag1_stat[7],frag1_stat[36],frag1_stat[37],frag1_stat[38],frag1_stat[39],frag1_stat[40],frag1_stat[41],frag1_stat[42],frag1_stat[43],frag1_stat[8],frag1_stat[26],frag1_stat[27],frag1_stat[24],frag1_stat[11], frag1_stat[10]]
@@ -3118,8 +3122,8 @@ def Check_interactions(chains_list,canvas):
             test_H_positionfrag3 = frag3_stat[26]
 
 
-            test_H_positionx = test_H_positionfrag3[0][0]
-            test_H_positiony = test_H_positionfrag3[0][1]
+            test_H_positionx = test_H_positionfrag3[0][0][0]
+            test_H_positiony = test_H_positionfrag3[0][0][1]
             frag3_differencetest_desiredx = VHb_H_coordinatesx- test_H_positionx
             frag3_differencetest_desiredy = VHb_H_coordinatesy- test_H_positiony
             coordinates_to_change = [frag3_stat[0],frag3_stat[1],frag3_stat[2],frag3_stat[3],frag3_stat[4],frag3_stat[5],frag3_stat[6],frag3_stat[7],frag3_stat[36],frag3_stat[37],frag3_stat[38],frag3_stat[39],frag3_stat[40],frag3_stat[41],frag3_stat[42],frag3_stat[43],frag3_stat[8],frag3_stat[26],frag3_stat[27],frag3_stat[24],frag3_stat[11], frag3_stat[10]]
@@ -3428,8 +3432,9 @@ def render(chains_list,canvas,text_to_image):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             canvas_polygons[domain] = [Linkers[i], "-L-"]
         for i in range(len(Hinges)):
-            domain = canvas.create_line(Hinges[i][0][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            print(Hinges)
+            print("HINGES", Hinges[i][0])
+            domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
+
             if Hinges[i][1] == True:
                 canvas_polygons[domain] = [Hinges[i][0][0], "-H*-"]
             else:
