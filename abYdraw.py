@@ -3436,9 +3436,9 @@ def render(chains_list,canvas,text_to_image):
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
 
             if Hinges[i][1] == True:
-                canvas_polygons[domain] = [Hinges[i][0][0], "-H*-"]
+                canvas_polygons[domain] = [Hinges[i][0], "-H*-"]
             else:
-                canvas_polygons[domain] = [Hinges[i][0][0], "-H-"]
+                canvas_polygons[domain] = [Hinges[i][0], "-H-"]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
@@ -5736,6 +5736,7 @@ class MouseMover():
         polygons_keyslist = list(canvas_polygons.keys())
         for i in range(len(polygons_keyslist)):
             domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+            print(domain_coordinates)
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
             x2 = min_max[1]
@@ -7966,7 +7967,7 @@ if len(sys.argv) < 2:
         "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and AbML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
         " ",
         "7. Exporting and Saving",
-        "Exporting the canvas image as .eps file can be done by 'Export EPS' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
+        "Exporting the canvas image as .eps file can be done by 'Export Image' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
         "Finally you may export a Template File from the expression in the entry box which is a format of notating important BsAb residues. The programme cannot locate these residues but it can identify the features that are in the BsAb that users may want to include in the Template Files.",
         " ",
         "8. Settings",
@@ -8037,7 +8038,7 @@ if len(sys.argv) < 2:
     export_frame.place(relx=0.79, rely=0.945, relwidth=0.20,relheight=0.03)
     template_file_button = tk.Button(export_frame, text = "Export template file", bg = "#CFCFCF", font=20, command=lambda: Get_Template_File(lower_canvas))
     template_file_button.place(relx=0, rely=0, relwidth=0.5,relheight=1)
-    Image_file_button = tk.Button(export_frame, text = "Export EPS", bg = "#CFCFCF", font=20, command=lambda: save_as_png(lower_canvas))
+    Image_file_button = tk.Button(export_frame, text = "Export Image", bg = "#CFCFCF", font=20, command=lambda: save_as_png(lower_canvas))
     Image_file_button.place(relx=0.5, rely=0, relwidth=0.5,relheight=1)
     #img = str("AbYdraw_icon.png")
     #root.iconphoto(False, tk.PhotoImage(file=img))
@@ -8051,7 +8052,7 @@ if len(sys.argv) < 2:
     filemenu.add_command(label="Open", command=lambda: browseFiles())
     filemenu.add_command(label="Save", command=lambda: save_txt_file())
     filemenu.add_command(label="Export template file", command=lambda: Get_Template_File(lower_canvas))
-    filemenu.add_command(label="Export EPS", command=lambda: save_as_png(lower_canvas))
+    filemenu.add_command(label="Export Image", command=lambda: save_as_png(lower_canvas))
 
     filemenu.add_separator()
 
