@@ -3593,9 +3593,11 @@ def sequence_render_pipeline(canvas):
     global domain_type
     global domain_charge
     global domain_mod
+    global extra_mods
     global all_buttons
     Delete_lock = False
     Bond_lock = ""
+    extra_mods = ""
     domain_mod = ""
     domain_type = ""
     domain_charge = ""
@@ -3629,12 +3631,14 @@ def render_pipeline(canvas):
     global domain_type
     global domain_charge
     global domain_mod
+    global extra_mods
     global all_buttons
     Delete_lock = False
     Bond_lock = ""
     domain_mod = ""
     domain_type = ""
     domain_charge = ""
+    extra_mods = ""
     Domain_Primer_Lock =""
     CustomLabelLock = ""
     Domain_Primer = []
