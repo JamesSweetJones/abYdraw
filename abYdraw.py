@@ -153,12 +153,12 @@ def Get_dictionaries(x):
         for j in range(len(chain)):
             domain   =  str(chain[j])
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
-            if domain == "H*":
+            if "H*" in domain and "V" not in domain:
                 domain = re.sub("\*","", str(domain))
                 h_mod = 1
             else:
                 h_mod = 0
-            if domain == "X*":
+            if "X*" in domain  :
                 domain = re.sub("\*","", str(domain))
                 x_mod = 1
             else:
@@ -4637,16 +4637,33 @@ def sequence_pipeline(canvas):
             domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
             if "-" not in strings[i][j]:
                 coordinates = domains_dict.get(full_chains[i][j])[0]
+                min_max = get_min_max_coordinates(coordinates)
+                d1x1 = min_max[0]
+                d1x2 = min_max[1]
+                d1y1 = min_max[2]
+                d1y2 = min_max[3]
             elif "-" in strings[i][j] and "H" not in strings[i][j]:
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
+                min_max = get_min_max_coordinates(coordinates)
+                d1x1 = min_max[0]
+                d1x2 = min_max[1]
+                d1y1 = min_max[2]
+                d1y2 = min_max[3]
             elif "-" in strings[i][j] and "H" in strings[i][j]:
                 print(bonds_dict.get(full_chains[i][j])[0])
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
-            min_max = get_min_max_coordinates(coordinates)
-            d1x1 = min_max[0]
-            d1x2 = min_max[1]
-            d1y1 = min_max[2]
-            d1y2 = min_max[3]
+                if coordinates[0] < coordinates[2]:
+                    min_max = get_min_max_coordinates(coordinates)
+                    d1x1 = min_max[0]
+                    d1x2 = min_max[1]+40
+                    d1y1 = min_max[2]
+                    d1y2 = min_max[3]
+                elif coordinates[0] > coordinates[2]:
+                    min_max = get_min_max_coordinates(coordinates)
+                    d1x1 = min_max[0]-40
+                    d1x2 = min_max[1]
+                    d1y1 = min_max[2]
+                    d1y2 = min_max[3]
             for k in range(len(comment_lists)):
                 for l in range(len(comment_lists[k])):
                     comment = comment_dicts[k].get(comment_lists[k][l])[1]
@@ -4679,8 +4696,8 @@ def sequence_pipeline(canvas):
                             print("3")
                             strings[i][j] = strings[i][j].split("-")[1]
                             strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-            if comment_found == False:
-                strings[i][j] = re.sub("\*","",strings[i][j])
+            #if comment_found == False:
+            #    strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
     final_string = ""
@@ -4880,9 +4897,10 @@ def domain_type_button_right_click(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
-    print("OH DEARY ME")
     if domain_type != "" and letter not in domain_type:
         domain_type += str(letter)
+        sorted_string = sorted(domain_type)
+        domain_type = "".join(sorted_string)
         update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
     else:
         return
@@ -5806,6 +5824,7 @@ class MouseMover():
             domain_name = canvas_polygons.get(self.item)[1]
             clean_domain_name = re.sub("\.a|\.b|\.c|\.d|\.e|\.f|\.g|\.h|a|b|c|d|e|f|g|h","",domain_name)
             clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*| ","",clean_domain_name)
+            print(domain_name)
             if domain_type != "":
                 domain_type_to_add = re.sub("\.","",domain_type)
                 domain_type_to_add = str("."+domain_type_to_add)
@@ -5875,6 +5894,11 @@ class MouseMover():
                 lower_canvas.itemconfig(self.item, fill = heavy_colour)
             elif "L" in new_domain_name:
                 lower_canvas.itemconfig(self.item, fill = light_colour)
+            if domain_name == "-H-" and "*" in extra_mods:
+                print("OH YES")
+                new_domain_name = "-H*-"
+            elif domain_name == "-H*-" and "*" not in extra_mods:
+                new_domain_name = "-H-"
             canvas_polygons[self.item][1] = new_domain_name
             ###change display label
             domain_coordinates = (canvas_polygons.get(self.item)[0])
@@ -5989,7 +6013,6 @@ class MouseMover():
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=X_colour, width=1, tags="domain")
             elif "C" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=C_colour, width=1, tags="domain")
-
 
             if Label_lock == True:
                 label_keyslist = list(canvas_labels.keys())
