@@ -4729,7 +4729,6 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
         domain_name = ""
     elif Domain_Primer == []  and  (domain_charge != "" or  domain_mod != "" or extra_mods != "" or domain_type != ""):
-        print("BOOYAA")
         ###change specificitiy###
         domain_name = str(domain_type+domain_mod+domain_charge+extra_mods)
         Domain_Primer_Lock = ""
@@ -4837,11 +4836,14 @@ def domain_type_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
-    if domain_type == "" or letter not in domain_type:
+    if domain_type == "" and letter not in domain_type:
+        print("1")
         domain_type = str(letter)
     elif domain_type != "" and letter not in domain_type:
+        print("2")
         domain_type += str(letter)
     elif letter in domain_type:
+        print("3")
         domain_type = re.sub(letter,"",str(domain_type))
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
