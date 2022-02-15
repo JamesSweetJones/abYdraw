@@ -5810,7 +5810,7 @@ class MouseMover():
             for i in range(len(label_keyslist)):
                 labelx = canvas_labels.get(label_keyslist[i])[0][0]
                 labely = canvas_labels.get(label_keyslist[i])[0][1]
-                 if x1 <= labelx <=x2 and y1 <= labely <= y2:
+                if x1 <= labelx <=x2 and y1 <= labely <= y2:
                     del canvas_labels[label_keyslist[i]]
                     lower_canvas.delete(label_keyslist[i])
                     new_display_name = re.sub("\_","-", new_domain_name)
