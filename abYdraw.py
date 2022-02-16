@@ -351,7 +351,7 @@ def Get_dictionaries(x):
         VHb_checked = VHb
     elif chain_count ==1:
         VHa_checked = VHa
-    if ("a" not in (VHa_checked) and "a" in str(VHb_checked)):
+    if ("a" not in str(VHa_checked) and "a" in str(VHb_checked)):
         if "C[" in str(VHb_checked) and "C[" not in str(VHa_checked):
             pass
         else:
@@ -4255,49 +4255,38 @@ def sequence_pipeline(canvas):
         strings.append(string)
 
 ##reorder chains by specificity
-    #specificities = ["a","b","c","d","e","f","g","h"]
-    #categorised_chains = []
+    #print("strings", strings)
+    #print("full_chains",full_chains)
+    #chain_starters = []
+    #chain_starters_coords = []
+    #for i in range(len(full_chains)):
+    #    chain_starters.append(full_chains[i][0])
+    #    chain_starters_coords.append(domains_dict.get(full_chains[i][0])[0][0])
+
+
+    #sorted_y_idx_list = sorted(range(len(chain_starters_coords)),key=lambda x:chain_starters_coords[x])
+    #Xs = [chain_starters[i] for i in sorted_y_idx_list ]
+    #print("Xs", Xs)
+    #if 1 <= len(Xs) <= 3:
+    #    reordered_chain = Xs
+    #elif len(Xs) == 4:
+    #    reordered_chain = [Xs[1], Xs[0], Xs[2],Xs[3]]
+    #if len(Xs) > 4:
+    #    for i in range(4,len(Xs)):
+    #        reordered_chain.append(Xs[i])
+    #
+    #print("reordered chain", reordered_chain)
+    #reordered_full_chains = []
     #reordered_strings = []
-    #reordered_chains = []
-    #not_specified_strings = []
-    #not_specified_chains  = []
-    #specificities_lists_strings = [[],[],[],[],[],[],[],[]]
-    #specificities_lists_chains  = [[],[],[],[],[],[],[],[]]
-    #first_appearances =           [[],[],[],[],[],[],[],[]]
-    #for i in range(len(strings)):
-    #    for j in range(len(specificities)):
-    #        if specificities[j] in str(strings[i]) and full_chains[i] not in categorised_chains:
-    #            specificities_lists_strings[j].append(strings[i])
-    #            specificities_lists_chains[j].append(full_chains[i])
-    #            categorised_chains.append(full_chains[i])
-    #            for k in range(len(strings[i])):
-    #                if specificities[j] in str(strings[i][k]):
-    #                    first_appearances[j].append(k)
-    #                    break
-    #    if full_chains[i] not in categorised_chains:
-    #        not_specified_strings.append(strings[i])
-    #        not_specified_chains.append(full_chains[i])
-    #        categorised_chains.append(full_chains[i])
+    #for i in range(len(reordered_chain)):
+    #    domain = reordered_chain[i]
+    #    for j in range(len(full_chains)):
+    #        if domain == full_chains[j][0]:
+    #            reordered_full_chains.append(full_chains[j])
+    #            reordered_strings.append(strings[j])
 
-    #for i in range(len(specificities_lists_strings)):
-    #    if all(x == first_appearances[i][0] for x in first_appearances[i]):
-    #        specificities_lists_strings[i] = specificities_lists_strings[i]
-    #        specificities_lists_chains[i] = specificities_lists_chains[i]
-    #    else:
-    #        specificities_lists_strings[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_strings[i]))]
-    #        specificities_lists_chains[i] = [x for _,x in sorted(zip(first_appearances[i],specificities_lists_chains[i]))]
-
-    #for i in range(len(specificities_lists_strings)):
-    #    for j in range(len(specificities_lists_strings[i])):
-    #        reordered_strings.append(specificities_lists_strings[i][j])
-    #        reordered_chains.append(specificities_lists_chains[i][j])
-
-    #for i in range(len(not_specified_strings)):
-    #    reordered_strings.append(not_specified_strings[i])
-    #    reordered_chains.append(not_specified_chains[i])
-
+    #full_chains = reordered_full_chains
     #strings = reordered_strings
-    #full_chains = reordered_chains
 
 #number chains
     counter = 1
@@ -5863,8 +5852,11 @@ class MouseMover():
                     extra_mods_to_add = re.sub("\*","",extra_mods)
                 if "!" in extra_mods:
                     extra_mods_to_add = re.sub("\!","",extra_mods)
+                else:
+                    extra_mods_to_add = extra_mods
             else:
                 extra_mods_to_add = extra_mods
+
             if "V" in domain_name:
                 new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
             else:
