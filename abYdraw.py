@@ -4622,7 +4622,7 @@ def sequence_pipeline(canvas):
             #print(domains_dict.get(full_chains[i][j])[0])
             comment_found = False
             domain_type = strings[i][j].split("(")[0]
-            mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
+            mod_domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
             domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
             if "-" not in strings[i][j] or "X" in strings[i][j] or "-C" in strings[i][j]:
                 coordinates = domains_dict.get(full_chains[i][j])[0]
@@ -4673,9 +4673,8 @@ def sequence_pipeline(canvas):
                             noting = str("["+note1+":"+note2+"]")
                             comment_to_add +=noting
                         print(strings[i][j])
-                        strings[i][j] = re.sub("\*","", strings[i][j])
-                        if "MOD" in strings[i][j] or "MOD" in str(comments):
-                            print("1")
+                        if "*" in strings[i][j]:
+                            strings[i][j] = re.sub("\*","", strings[i][j])
                             strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                             print(strings[i][j])
                         if "-" not in strings[i][j]:
@@ -5848,14 +5847,18 @@ class MouseMover():
             else:
                 domain_mod_to_add = domain_mod
 
+            extra_mods_to_add = ""
             if "*" in str(domain_name) or "!" in str(domain_name):
-                if "*" in extra_mods:
-                    extra_mods_to_add = re.sub("\*","",extra_mods)
-                if "!" in extra_mods:
-                    extra_mods_to_add = re.sub("\!","",extra_mods)
-                else:
-                    extra_mods_to_add = extra_mods
+                if "*" in str(extra_mods):
+                    print("1")
+                    extra_mods_to_add += re.sub("\*","",extra_mods)
+
+                if "!" in str(extra_mods):
+                    print("2")
+                    extra_mods_to_add += re.sub("\!","",extra_mods)
+                
             else:
+                print("4")
                 extra_mods_to_add = extra_mods
 
             if "V" in domain_name:
