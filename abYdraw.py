@@ -158,7 +158,7 @@ def Get_dictionaries(x):
                 h_mod = 1
             else:
                 h_mod = 0
-            if "X*" in domain  :
+            if "X*" in domain or "C*" in domain:
                 domain = re.sub("\*","", str(domain))
                 x_mod = 1
             else:
@@ -1548,12 +1548,13 @@ def Check_interactions(chains_list,canvas):
             Build_up=False
             Build_down=True
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
-            if ("X" in keyslist[i]) and dictionary.get(keyslist[i])[4] == 1:
+            if (("X" in keyslist[i]) or ("C[" in keyslist[i])) and dictionary.get(keyslist[i])[4] == 1:
                 x_mod = True
                 print(x_mod)
                 mod_label = "*"
             else:
                 x_mod = False
+
             if ("H[" in keyslist[i]) and dictionary.get(keyslist[i])[3] == 1:
                 h_mod = True
                 h_mods.append(True)
@@ -1568,8 +1569,10 @@ def Check_interactions(chains_list,canvas):
                     raise_error(lower_canvas, error_message)
                 if h_mod == True:
                     Domain_name = "H*"
-                elif x_mod == True:
+                elif x_mod == True and "X" in keyslist[i]:
                     Domain_name = "X*"
+                elif x_mod == True and "C[" in keyslist[i]:
+                    Domain_name = "C*"
                 Notes.append(Domain_name+" "+note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
@@ -3542,7 +3545,10 @@ def render(chains_list,canvas,text_to_image):
             print(non_redundant_CCs_sorted)
             for i in range(len(non_redundant_CCs)):
                 domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=1,tags="domain")
-                canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
+                if "C*" in str(Domain_Text):
+                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C*"]
+                else:
+                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
 
     #Labels
         if Label_lock == True:
@@ -4308,12 +4314,16 @@ def sequence_pipeline(canvas):
                             strings[i][j] = str("-X("+str(assigned_keyslist_check)+")-")
                         elif strings[i][j] == "C":
                             strings[i][j] = str("-C("+str(assigned_keyslist_check)+")-")
+                        elif  strings[i][j] == "C*":
+                            strings[i][j] = str("-C("+str(counter)+")-")
                     elif assigned_match == False:
                         if "-" not in strings[i][j]:
                             strings[i][j] += str("("+str(counter)+")")
                         elif "-X-" in strings[i][j]:
                             strings[i][j] = str("-X("+str(counter)+")-")
                         elif  strings[i][j] == "C":
+                            strings[i][j] = str("-C("+str(counter)+")-")
+                        elif  strings[i][j] == "C*":
                             strings[i][j] = str("-C("+str(counter)+")-")
                         assigned_numbers[counter] = coordinates
                         counter += 1
@@ -4327,7 +4337,7 @@ def sequence_pipeline(canvas):
                     strings[i][j] = str("-H*("+str(counter)+")-")
                     counter += 1
 
-
+    print(strings)
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
@@ -4336,7 +4346,7 @@ def sequence_pipeline(canvas):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
-                if number not in paired and ("X[" not in str(strings[i][j]) and str(strings[i][j]) != "C"):
+                if number not in paired and ("X[" not in str(strings[i][j]) and str(strings[i][j]) != "C" and str(strings[i][j]) != "C*"):
                     domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
                     index = full_chains[i][j]
                     min_max = get_min_max_coordinates((domains_dict.get(index)[0]))
