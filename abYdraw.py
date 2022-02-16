@@ -4624,14 +4624,15 @@ def sequence_pipeline(canvas):
             domain_type = strings[i][j].split("(")[0]
             mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
             domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-            if "-" not in strings[i][j]:
+            if "-" not in strings[i][j] or "X" in strings[i][j] or "-C" in strings[i][j]:
                 coordinates = domains_dict.get(full_chains[i][j])[0]
                 min_max = get_min_max_coordinates(coordinates)
                 d1x1 = min_max[0]
                 d1x2 = min_max[1]
                 d1y1 = min_max[2]
                 d1y2 = min_max[3]
-            elif "-" in strings[i][j] and "H" not in strings[i][j]:
+            elif "-" in strings[i][j] and "H" not in strings[i][j] and "X" not in strings[i][j] and "-C" not in strings[i][j]:
+                print(strings[i][j],full_chains[i][j])
                 coordinates = bonds_dict.get(full_chains[i][j])[0]
                 min_max = get_min_max_coordinates(coordinates)
                 d1x1 = min_max[0]
