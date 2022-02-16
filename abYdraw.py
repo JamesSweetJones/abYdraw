@@ -1563,7 +1563,14 @@ def Check_interactions(chains_list,canvas):
 
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
-                print(note_label)
+                non_redundant_note_label = ""
+                note_label_split = note_label.split(", ")
+                for x in range(len(note_label_split)):
+                    if note_label_split[x] not in str(non_redundant_note_label):
+                        if x+1 == len(note_label_split):
+                            non_redundant_note_label += str(note_label_split[x])
+                        else:
+                            non_redundant_note_label += str(note_label_split[x]+", ")
                 if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
                     error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
                     raise_error(lower_canvas, error_message)
@@ -1573,7 +1580,7 @@ def Check_interactions(chains_list,canvas):
                     Domain_name = "X*"
                 elif x_mod == True and "C[" in keyslist[i]:
                     Domain_name = "C*"
-                Notes.append(Domain_name+" "+note_label)
+                Notes.append(Domain_name+" "+non_redundant_note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
                 elif len(Notes_positions) > 0:
@@ -4621,76 +4628,80 @@ def sequence_pipeline(canvas):
                                                     #paired.append(int(number))
                                                     #paired.append(int(paired_number))
 
-    print(strings)
 ##Find comments on domains and not on domains
     comment_dicts = [type_dict, mod_dict, anti_dict, length_dict, note_dict]
     comment_lists = [type_keyslist, mod_keyslist, anti_keyslist, length_keyslist, note_keyslist]
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
-            #print(domains_dict.get(full_chains[i][j])[0])
-            comment_found = False
-            domain_type = strings[i][j].split("(")[0]
-            mod_domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-            domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-            if "-" not in strings[i][j] or "X" in strings[i][j] or "-C" in strings[i][j]:
-
-                coordinates = domains_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]
-                d1x2 = min_max[1]
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-            elif "-" in strings[i][j] and "H" not in strings[i][j] and "X" not in strings[i][j] and "-C" not in strings[i][j]:
-                coordinates = bonds_dict.get(full_chains[i][j])[0]
-                min_max = get_min_max_coordinates(coordinates)
-                d1x1 = min_max[0]
-                d1x2 = min_max[1]
-                d1y1 = min_max[2]
-                d1y2 = min_max[3]
-            elif "-" in strings[i][j] and "H" in strings[i][j]:
-                print(bonds_dict.get(full_chains[i][j])[0])
-                coordinates = bonds_dict.get(full_chains[i][j])[0]
-                if coordinates[0] < coordinates[2]:
+            if strings[i][j] != "-":
+                #print(domains_dict.get(full_chains[i][j])[0])
+                comment_found = False
+                domain_type = strings[i][j].split("(")[0]
+                mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
+                mod_domain_type1 = str(mod_domain_type+" ")
+                mod_domain_type2 = str(mod_domain_type+"* ")
+                domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
+                if "-" not in strings[i][j] or "X" in strings[i][j] or "-C" in strings[i][j]:
+                    coordinates = domains_dict.get(full_chains[i][j])[0]
                     min_max = get_min_max_coordinates(coordinates)
                     d1x1 = min_max[0]
-                    d1x2 = min_max[1]+40
-                    d1y1 = min_max[2]
-                    d1y2 = min_max[3]
-                elif coordinates[0] > coordinates[2]:
-                    min_max = get_min_max_coordinates(coordinates)
-                    d1x1 = min_max[0]-40
                     d1x2 = min_max[1]
                     d1y1 = min_max[2]
                     d1y2 = min_max[3]
-            for k in range(len(comment_lists)):
-                for l in range(len(comment_lists[k])):
-                    comment = comment_dicts[k].get(comment_lists[k][l])[1]
-                    labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
-                    labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
-                    print(mod_domain_type,comment)
-                    #print(labelx,labely)
-                    if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (("X" or "C" or "-") not in mod_domain_type and mod_domain_type in str(comment) and "*" in mod_domain_type) or (("X" in str(mod_domain_type) or "C" in str(mod_domain_type) and str(mod_domain_type) in str(comment))) or ((("H" or "L") in mod_domain_type and (comment[0] == "H" or comment[0] == "L")) and mod_domain_type in str(comment) and "*" in mod_domain_type):
-                        comment_found = True
-                        note = comment_dicts[k].get(comment_lists[k][l])[1]
-                        comments = note.split(",")
-                        comment_to_add = ""
-                        for x in range(len(comments)):
-                            note1 = comments[x].split(":")[0]
-                            note2 = comments[x].split(":")[1]
-                            note1 = re.sub(domain_type, "",note1)
-                            note1 = re.sub("^ |\* |\*","", note1)
-                            noting = str("["+note1+":"+note2+"]")
-                            comment_to_add +=noting
-                        if "*" in strings[i][j]:
-                            strings[i][j] = re.sub("\*","", strings[i][j])
-                            strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
-                        if "-" not in strings[i][j]:
-                            strings[i][j] += comment_to_add
-                        elif "-" in strings[i][j]:
-                            strings[i][j] = strings[i][j].split("-")[1]
-                            strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-            #if comment_found == False:
-            #    strings[i][j] = re.sub("\*","",strings[i][j])
+                elif "-" in strings[i][j] and "H" not in strings[i][j] and "X" not in strings[i][j] and "-C" not in strings[i][j]:
+                    coordinates = bonds_dict.get(full_chains[i][j])[0]
+                    min_max = get_min_max_coordinates(coordinates)
+                    d1x1 = min_max[0]
+                    d1x2 = min_max[1]
+                    d1y1 = min_max[2]
+                    d1y2 = min_max[3]
+                elif "-" in strings[i][j] and "H" in strings[i][j]:
+                    coordinates = bonds_dict.get(full_chains[i][j])[0]
+                    if coordinates[0] < coordinates[2]:
+                        min_max = get_min_max_coordinates(coordinates)
+                        d1x1 = min_max[0]
+                        d1x2 = min_max[1]+40
+                        d1y1 = min_max[2]
+                        d1y2 = min_max[3]
+                    elif coordinates[0] > coordinates[2]:
+                        min_max = get_min_max_coordinates(coordinates)
+                        d1x1 = min_max[0]-40
+                        d1x2 = min_max[1]
+                        d1y1 = min_max[2]
+                        d1y2 = min_max[3]
+                for k in range(len(comment_lists)):
+                    for l in range(len(comment_lists[k])):
+                        comment = comment_dicts[k].get(comment_lists[k][l])[1]
+                        labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
+                        labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
+                        if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (str(mod_domain_type1) in str(comment)) :#or (str(mod_domain_type2) in str(comment)):
+                            comment_found = True
+                            note = comment_dicts[k].get(comment_lists[k][l])[1]
+                            comments = note.split(", ")
+                            non_redundant_comments = []
+                            for x in range(len(comments)):
+                                if str(comments[x]) not in str(non_redundant_comments):
+                                    non_redundant_comments.append(str(comments[x]))
+                            comment_to_add = ""
+                            for x in range(len(non_redundant_comments)):
+                                note1 = non_redundant_comments[x].split(":")[0]
+                                note2 = non_redundant_comments[x].split(":")[1]
+                                note1 = re.sub(domain_type, "",note1)
+                                note1 = re.sub("^ |\* |\*","", note1)
+                                noting = str("["+note1+":"+note2+"]")
+                                comment_to_add +=str(noting)
+                            if "*" in strings[i][j]:
+                                strings[i][j] = re.sub("\*","", strings[i][j])
+                            if "MOD" in str(non_redundant_comments):
+                                strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
+                            if str(comment_to_add) not in str(strings[i][j]):
+                                if "-" not in strings[i][j]:
+                                    strings[i][j] += str(comment_to_add)
+                                elif "-" in strings[i][j]:
+                                    strings[i][j] = strings[i][j].split("-")[1]
+                                    strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
+            if comment_found == False:
+                strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
     final_string = ""
