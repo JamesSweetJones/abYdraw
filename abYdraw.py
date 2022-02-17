@@ -5679,10 +5679,10 @@ def update_domain_comments(comment,xc,yc):
             y2 = min_max[3]
         if (x1<= xc <=x2 and y1 <= yc <=y2):
             domain_name =canvas_polygons[canvas_keyslist[i]][2]
-            if comment != "":
-                domain_name += str(comment)
-            elif comment == "":
-                canvas_polygons[canvas_keyslist[i]][2] = "" 
+            #if comment != "":
+            #    domain_name += str(comment)
+            #if comment == "":
+            canvas_polygons[canvas_keyslist[i]][2] += comment
 
 
 def items_selected(e):
