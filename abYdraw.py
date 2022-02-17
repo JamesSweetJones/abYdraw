@@ -153,7 +153,7 @@ def Get_dictionaries(x):
         for j in range(len(chain)):
             domain   =  str(chain[j])
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
-            if ("H*" in domain or "L*" in domain) and "V" not in domain:
+            if (("H*" in domain or "L*" in domain) or ("H(" in chain[j] and "[" in chain[j]) or ("L(" in chain[j] and "[" in chain[j])) and "V" not in domain:
                 domain = re.sub("\*","", str(domain))
                 h_mod = 1
             else:
@@ -733,7 +733,9 @@ def Check_interactions(chains_list,canvas):
         keyslist = list(chain_dict.keys())
         fragments = []
         ADCs      = []
+        ADCs_comments= []
         CCs       = []
+        CCs_comments=[]
         previous_linker = 0
 
         coordinates_list_heavy_a= []
@@ -768,7 +770,23 @@ def Check_interactions(chains_list,canvas):
         names_list_light_g      = []
         names_list_heavy_h      = []
         names_list_light_h      = []
-
+        comments_list_heavy_a      = []
+        comments_list_light_a      = []
+        comments_list_heavy_b      = []
+        comments_list_light_b      = []
+        comments_list_heavy_c      = []
+        comments_list_light_c      = []
+        comments_list_heavy_d      = []
+        comments_list_light_d      = []
+        comments_list_heavy_e      = []
+        comments_list_light_e      = []
+        comments_list_heavy_f      = []
+        comments_list_light_f      = []
+        comments_list_heavy_g      = []
+        comments_list_light_g      = []
+        comments_list_heavy_h      = []
+        comments_list_light_h      = []
+        print(dictionary)
         for x in range(len(keyslist)):
             if "Linker" in keyslist[x]:
                 fragments.append(keyslist[previous_linker:x])
@@ -784,8 +802,11 @@ def Check_interactions(chains_list,canvas):
                     current_fragment.append(fragments[x][i])
                 elif "X[" in fragments[x][i]:
                     ADCs.append(fragments[x][i])
+                    ADCs_comments.append(dictionary.get(fragments[x][i])[1])
                 elif "C[" in fragments[x][i]:
                     CCs.append(fragments[x][i])
+                    CCs_comments.append(dictionary.get(fragments[x][i])[1])
+
 
             fragments[x] = current_fragment
 
@@ -810,182 +831,218 @@ def Check_interactions(chains_list,canvas):
 
                 return(str(x_cleaned_up))
 
-
             if "a" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                        print("HEAVY A COORDS", dictionary.get(fragments[x][i])[0])
+                        coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_a.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_a.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_a.append(cleaned_up)
             elif "b" in str(fragments[x]) and "a" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_b.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_b.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_b.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_b.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_b.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_b.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_b.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_b.append(cleaned_up)
             elif "c" in str(fragments[x]) and "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_c.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_c.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_c.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_c.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_c.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_c.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_c.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_c.append(cleaned_up)
             elif "d" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_d.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_d.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_d.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_d.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_d.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_d.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_d.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_d.append(cleaned_up)
             elif "e" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_e.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_e.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_e.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_e.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_e.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_e.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_e.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_e.append(cleaned_up)
             elif "f" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_f.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_f.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_f.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_f.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_f.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_f.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_f.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_f.append(cleaned_up)
             elif "g" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "e" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_g.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_g.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_g.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_g.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_g.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_g.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_g.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_g.append(cleaned_up)
             elif "h" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "e" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_h.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_h.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_h.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_h.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_h.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_h.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_h.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_h.append(cleaned_up)
             elif "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_heavy_a.append(cleaned_up)
                     elif "L" in str(fragments[x][i]):
-                        coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+                        coordinates_list_light_a.append(dictionary.get(fragments[x][i])[0])
+                        comments_list_light_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
                         names_list_light_a.append(cleaned_up)
             else:
                 for i in range(len(fragments[x])):
                     if "a" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_a.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_a.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_a.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_a.append(cleaned_up)
                     elif "b" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_b.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_b.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_b.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_b.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_b.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_b.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_b.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_b.append(cleaned_up)
                     elif "c" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_c.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_c.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_c.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_c.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_c.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_c.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_c.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_c.append(cleaned_up)
                     elif "d" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_d.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_d.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_d.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_d.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_d.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_d.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_d.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_d.append(cleaned_up)
                     elif "e" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_e.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_e.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_e.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_e.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_e.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_e.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_e.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_e.append(cleaned_up)
                     elif "f" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_f.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_f.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_f.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_f.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_f.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_f.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_f.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_f.append(cleaned_up)
                     elif "g" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_g.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_g.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_g.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_g.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_g.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_g.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_g.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_g.append(cleaned_up)
                     elif "h" in str(fragments[x][i]):
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_h.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_h.append(dictionary.get(fragments[x][i])[0])
+                            cooments_list_heavy_h.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_h.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_h.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_h.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_h.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_h.append(cleaned_up)
                     else:
                         if "H" in str(fragments[x][i]):
-                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_heavy_a.append(cleaned_up)
                         elif "L" in str(fragments[x][i]):
-                            coordinates_list_light_a.append(dictionary.get(fragments[x][i]))
+                            coordinates_list_light_a.append(dictionary.get(fragments[x][i])[0])
+                            comments_list_light_a.append(dictionary.get(fragments[x][i])[1])
                             cleaned_up = fragment_cleanup(fragments[x][i])
                             names_list_light_a.append(cleaned_up)
 
-        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,CCs)
+        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,CCs,comments_list_heavy_a,comments_list_light_a,comments_list_heavy_b,comments_list_light_b,comments_list_heavy_c,comments_list_light_c,comments_list_heavy_d,comments_list_light_d,comments_list_heavy_e,comments_list_light_e,comments_list_heavy_f,comments_list_light_f,comments_list_heavy_g,comments_list_light_g,comments_list_heavy_h,comments_list_light_h,ADCs_comments,CCs_comments)
 
 
 
@@ -1317,13 +1374,29 @@ def Check_interactions(chains_list,canvas):
         bonds                   = []
         hinges                  = []
         linkers                 = []
-        first_interaction = []
+        first_interaction       = []
         H_disulphide_bridge_count=0
         disulphidebridge1        =[]
         disulphidebridge2        =[]
         disulphidebridge3        =[]
         disulphidebridge4        =[]
         disulphidebridge5        =[]
+        comments_list_heavy_a      = []
+        comments_list_light_a      = []
+        comments_list_heavy_b      = []
+        comments_list_light_b      = []
+        comments_list_heavy_c      = []
+        comments_list_light_c      = []
+        comments_list_heavy_d      = []
+        comments_list_light_d      = []
+        comments_list_heavy_e      = []
+        comments_list_light_e      = []
+        comments_list_heavy_f      = []
+        comments_list_light_f      = []
+        comments_list_heavy_g      = []
+        comments_list_light_g      = []
+        comments_list_heavy_h      = []
+        comments_list_light_h      = []
         Location_Text=[]
         text_coordinates= []
         Domain_Text     = []
@@ -1333,7 +1406,9 @@ def Check_interactions(chains_list,canvas):
         arcs_right_slant= []
         Build_up_downlist=[]
         ADCs             =[]
+        ADCs_comments    =[]
         Chem_con         =[]
+        CCs_comments     =[]
         innie_or_outie_list=[]
         h_mods = []
         l_mods = []
@@ -1563,15 +1638,17 @@ def Check_interactions(chains_list,canvas):
 
             if ("H[" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
                 h_mod = True
-                h_mods.append(True)
+                h_mods.append(dictionary.get(keyslist[i])[2])
+                print("H_MOD_APPENDED")
             else:
                 h_mods.append(False)
 
             if ("L" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
-                l_mods.append(True)
+                print("LMOD_APPENDED")
+                l_mods.append(dictionary.get(keyslist[i])[2])
             else:
                 l_mods.append(False)
-
+            non_redundant_note_label = ""
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
                 non_redundant_note_label = ""
@@ -2281,13 +2358,15 @@ def Check_interactions(chains_list,canvas):
                     print("checkpoint19")
                 top_bond = getcoordinates[2]
                 if "H[" in keyslist[i-1]:
-                    if h_mods[-2] == True:
-                        h_mod= True
+                    if h_mods[-2] !=False:
+                        h_mod= h_mods[-2]
                     hcoordinates = bottom_bond + top_bond
+                    print("HMOD", h_mods)
                     hinges.append([hcoordinates,h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
-                    l_mod_normal.append(l_mods[-1])
+                    print(l_mods)
+                    l_mod_normal.append(l_mods[-2])
                     global L_Labels
                     if L_Labels == True:
                         L_Domain_name = "L"
@@ -2347,7 +2426,7 @@ def Check_interactions(chains_list,canvas):
                             linkers.append([bottom_bond[0], bottom_bond[1], top_bond[0]+3,top_bond[1]-18])
                         elif righthanded == False:
                             linkers.append([bottom_bond[0], bottom_bond[1], top_bond[0]-3,top_bond[1]-18])
-                        l_mod_normal.append(l_mods[-1])
+                        l_mod_normal.append(l_mods[-2])
 
                 else:
                     if "Linker[" in keyslist[i-1]:
@@ -2362,7 +2441,8 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_left_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_left_arc_slant.append(l_mods[-1])
+                            print("LMODS", l_mods)
+                            l_mods_left_arc_slant.append(l_mods[-2])
                     elif righthanded==False and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]-50
@@ -2371,7 +2451,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_left.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_left_arc.append(l_mods[-1])
+                            l_mods_left_arc.append(l_mods[-2])
                     elif righthanded==True and slant == True:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]
@@ -2380,7 +2460,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_right_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_right_arc_slant.append(l_mods[-1])
+                            l_mods_right_arc_slant.append(l_mods[-2])
                     elif righthanded==True and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]+50
@@ -2389,7 +2469,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_right.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_right_arc.append(l_mods[-1])
+                            l_mods_right_arc.append(l_mods[-2])
                     if Extra_bond==True:
                         extrabondx1=top_bond[0]
                         extrabondy1=top_bond[1]-20
@@ -2398,6 +2478,8 @@ def Check_interactions(chains_list,canvas):
                         extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                         if "H[" in keyslist[i]:
                             h_coordinates = extra_bond
+                            if h_mod == True:
+                                h_mod= hmods[-1]
                             hinges.append([h_coordinates, h_mod])
                         else:
                             bonds.append(extra_bond)
@@ -2431,7 +2513,7 @@ def Check_interactions(chains_list,canvas):
 
 
 ###append domains to dictionary of domain names and coordinates
-            chain_dict[keyslist[i]] = getcoordinates[0]
+            chain_dict[keyslist[i]] = [getcoordinates[0], non_redundant_note_label]
 
             if i+1 == len(keyslist):
                 dictionaries_to_append   = assign_to_chain(chain_dict)
@@ -2469,6 +2551,25 @@ def Check_interactions(chains_list,canvas):
                 names_list_heavy_h       += dictionaries_to_append[30]
                 names_list_light_h       += dictionaries_to_append[31]
                 Chem_con                 += dictionaries_to_append[32]
+                comments_list_heavy_a += dictionaries_to_append[33]
+                comments_list_light_a += dictionaries_to_append[34]
+                comments_list_heavy_b += dictionaries_to_append[35]
+                comments_list_light_b += dictionaries_to_append[36]
+                comments_list_heavy_c += dictionaries_to_append[37]
+                comments_list_light_c += dictionaries_to_append[38]
+                comments_list_heavy_d += dictionaries_to_append[39]
+                comments_list_light_d += dictionaries_to_append[40]
+                comments_list_heavy_e += dictionaries_to_append[41]
+                comments_list_light_e += dictionaries_to_append[42]
+                comments_list_heavy_f += dictionaries_to_append[43]
+                comments_list_light_f += dictionaries_to_append[44]
+                comments_list_heavy_g += dictionaries_to_append[45]
+                comments_list_light_g += dictionaries_to_append[46]
+                comments_list_heavy_h += dictionaries_to_append[47]
+                comments_list_light_h += dictionaries_to_append[48]
+                ADCs_comments         += dictionaries_to_append[49]
+                CCs_comments          += dictionaries_to_append[50]
+                print("ADCs_comments", ADCs_comments)
 
                 #print(All_positions_and_chains)
                 #ADCs += dictionaries_to_append[10]
@@ -2638,12 +2739,16 @@ def Check_interactions(chains_list,canvas):
                     if slant == True:
                         top_bond[1] = top_bond[1]+5
                         h_coordinates = [bottomx,bottomy,topx,topy]
+                        if h_mod == True:
+                            h_mod= hmods[-1]
                         hinges.append([h_coordinates,h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
                             pass
                         else:
                             h_coordinates = [bottomx,bottomy,topx,topy+20]
+                            if h_mod == True:
+                                h_mod= hmods[-1]
                             hinges.append([h_coordinates,h_mod])
 
                     if Extra_bond == True and righthanded == False:
@@ -2682,7 +2787,7 @@ def Check_interactions(chains_list,canvas):
         allbonds = bonds
         allbonds = [x for x in bonds if x != []]
         #allbonds = bonds
-        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,Chem_con,l_mod_normal,l_mods_left_arc,l_mods_right_arc,l_mods_right_arc,l_mods_right_arc_slant)
+        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,Chem_con,l_mod_normal,l_mods_left_arc,l_mods_right_arc,l_mods_left_arc_slant,l_mods_right_arc_slant,comments_list_heavy_a,comments_list_light_a,comments_list_heavy_b,comments_list_light_b,comments_list_heavy_c,comments_list_light_c,comments_list_heavy_d,comments_list_light_d,comments_list_heavy_e,comments_list_light_e,comments_list_heavy_f,comments_list_light_f,comments_list_heavy_g,comments_list_light_g,comments_list_heavy_h,comments_list_light_h,ADCs_comments,CCs_comments)
 
 ##Get starting positions
     VHa_2_test = VHa_chain.copy()
@@ -3327,6 +3432,24 @@ def Check_interactions(chains_list,canvas):
     l_mods_right_arc    = VHa_stats[55] + VLa_stats[55] + VHb_stats[55] + VLb_stats[55] + frag1_stat[55] + frag2_stat[55] + frag3_stat[55] + frag4_stat[55]
     l_mods_left_arc_slant = VHa_stats[56] + VLa_stats[56] + VHb_stats[56] + VLb_stats[56] + frag1_stat[56] + frag2_stat[56] + frag3_stat[56] + frag4_stat[56]
     l_mods_right_arc_slant= VHa_stats[57] + VLa_stats[57] + VHb_stats[57] + VLb_stats[57] + frag1_stat[57] + frag2_stat[57] + frag3_stat[57] + frag4_stat[57]
+    comments_list_heavy_a= VHa_stats[58] + VLa_stats[58] + VHb_stats[58] + VLb_stats[58] + frag1_stat[58] + frag2_stat[58] + frag3_stat[58] + frag4_stat[58]
+    comments_list_light_a=VHa_stats[59] + VLa_stats[59] + VHb_stats[59] + VLb_stats[59] + frag1_stat[59] + frag2_stat[59] + frag3_stat[59] + frag4_stat[59]
+    comments_list_heavy_b=VHa_stats[60] + VLa_stats[60] + VHb_stats[60] + VLb_stats[60] + frag1_stat[60] + frag2_stat[60] + frag3_stat[60] + frag4_stat[60]
+    comments_list_light_b=VHa_stats[61] + VLa_stats[61] + VHb_stats[61] + VLb_stats[61] + frag1_stat[61] + frag2_stat[61] + frag3_stat[61] + frag4_stat[61]
+    comments_list_heavy_c=VHa_stats[62] + VLa_stats[62] + VHb_stats[62] + VLb_stats[62] + frag1_stat[62] + frag2_stat[62] + frag3_stat[62] + frag4_stat[62]
+    comments_list_light_c=VHa_stats[63] + VLa_stats[63] + VHb_stats[63] + VLb_stats[63] + frag1_stat[63] + frag2_stat[63] + frag3_stat[63] + frag4_stat[63]
+    comments_list_heavy_d=VHa_stats[64] + VLa_stats[64] + VHb_stats[64] + VLb_stats[64] + frag1_stat[64] + frag2_stat[64] + frag3_stat[64] + frag4_stat[64]
+    comments_list_light_d=VHa_stats[65] + VLa_stats[65] + VHb_stats[65] + VLb_stats[65] + frag1_stat[65] + frag2_stat[65] + frag3_stat[65] + frag4_stat[65]
+    comments_list_heavy_e=VHa_stats[66] + VLa_stats[66] + VHb_stats[66] + VLb_stats[66] + frag1_stat[66] + frag2_stat[66] + frag3_stat[66] + frag4_stat[66]
+    comments_list_light_e=VHa_stats[67] + VLa_stats[67] + VHb_stats[67] + VLb_stats[67] + frag1_stat[67] + frag2_stat[67] + frag3_stat[67] + frag4_stat[67]
+    comments_list_heavy_f=VHa_stats[68] + VLa_stats[68] + VHb_stats[68] + VLb_stats[68] + frag1_stat[68] + frag2_stat[68] + frag3_stat[68] + frag4_stat[68]
+    comments_list_light_f=VHa_stats[69] + VLa_stats[69] + VHb_stats[69] + VLb_stats[69] + frag1_stat[69] + frag2_stat[69] + frag3_stat[69] + frag4_stat[69]
+    comments_list_heavy_g=VHa_stats[70] + VLa_stats[70] + VHb_stats[70] + VLb_stats[70] + frag1_stat[70] + frag2_stat[70] + frag3_stat[70] + frag4_stat[70]
+    comments_list_light_g=VHa_stats[71] + VLa_stats[71] + VHb_stats[71] + VLb_stats[71] + frag1_stat[71] + frag2_stat[71] + frag3_stat[71] + frag4_stat[71]
+    comments_list_heavy_h=VHa_stats[72] + VLa_stats[72] + VHb_stats[72] + VLb_stats[72] + frag1_stat[72] + frag2_stat[72] + frag3_stat[72] + frag4_stat[72]
+    comments_list_light_h=VHa_stats[73] + VLa_stats[73] + VHb_stats[73] + VLb_stats[73] + frag1_stat[73] + frag2_stat[73] + frag3_stat[73] + frag4_stat[73]
+    ADCs_comments       = VHa_stats[74] + VLa_stats[74] + VHb_stats[74] + VLb_stats[74] + frag1_stat[74] + frag2_stat[74] + frag3_stat[74] + frag4_stat[74]
+    CCs_comments        = VHa_stats[75] + VLa_stats[75] + VHb_stats[75] + VLb_stats[75] + frag1_stat[75] + frag2_stat[75] + frag3_stat[75] + frag4_stat[75]
 
     if Yout_of_range == True:
         Ynew_start = Yhow_much-10
@@ -3357,7 +3480,7 @@ def Check_interactions(chains_list,canvas):
     #                            if l %2 == 0:
     #                                coordinates_to_change[i][j][k][l] -= Xnew_start
     print(Hinges,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
-    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con,l_mods_normal,l_mods_left_arc,l_mods_right_arc,l_mods_right_arc,l_mods_right_arc_slant)
+    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con,l_mods_normal,l_mods_left_arc,l_mods_right_arc,l_mods_left_arc_slant,l_mods_right_arc_slant,comments_list_heavy_a,comments_list_light_a,comments_list_heavy_b,comments_list_light_b,comments_list_heavy_c,comments_list_light_c,comments_list_heavy_d,comments_list_light_d,comments_list_heavy_e,comments_list_light_e,comments_list_heavy_f,comments_list_light_f,comments_list_heavy_g,comments_list_light_g,comments_list_heavy_h,comments_list_light_h, ADCs_comments, CCs_comments)
 
 def render(chains_list,canvas,text_to_image):
     if text_to_image == True:
@@ -3433,33 +3556,68 @@ def render(chains_list,canvas,text_to_image):
         ADCs               = chains_list[29]
         CCs                = chains_list[46]
         l_mods_normal      = chains_list[47]
+        for x in range(len(l_mods_normal)):
+            if l_mods_normal[x] == False:
+                l_mods_normal[x] = ""
         l_mods_left_arc    = chains_list[48]
+        for x in range(len(l_mods_left_arc)):
+            if l_mods_left_arc[x] == False:
+                l_mods_left_arc[x] = ""
         l_mods_right_arc   = chains_list[49]
-        l_mods_left_arc_slant = chains_list[50]
-        l_mods_right_arc_slant = chains_list[51]
+        for x in range(len(l_mods_right_arc)):
+            if l_mods_right_arc[x] == False:
+                l_mods_right_arc[x] = ""
+        l_mods_left_arc_slant=chains_list[50]
+        for x in range(len(l_mods_left_arc_slant)):
+            if l_mods_left_arc_slant[x] == False:
+                l_mods_left_arc_slant[x] = ""
+        l_mods_right_arc_slant=chains_list[51]
+        for x in range(len(l_mods_right_arc_slant)):
+            if l_mods_right_arc_slant[x] == False:
+                l_mods_right_arc_slant[x] = ""
+        print(l_mods_normal)
+        comments_list_heavy_a=chains_list[52]
+        comments_list_light_a=chains_list[53]
+        comments_list_heavy_b=chains_list[54]
+        comments_list_light_b=chains_list[55]
+        comments_list_heavy_c=chains_list[56]
+        comments_list_light_c=chains_list[57]
+        comments_list_heavy_d=chains_list[58]
+        comments_list_light_d=chains_list[59]
+        comments_list_heavy_e=chains_list[60]
+        comments_list_light_e=chains_list[61]
+        comments_list_heavy_f=chains_list[62]
+        comments_list_light_f=chains_list[63]
+        comments_list_heavy_g=chains_list[64]
+        comments_list_light_g=chains_list[65]
+        comments_list_heavy_h=chains_list[66]
+        comments_list_light_h=chains_list[67]
+        X_comments           =chains_list[68]
+        C_comments           =chains_list[69]
+        print("X_COMMENTS", X_comments)
 
 
     #disulphide_bridge
         if disulphide_bridges != []:
             for i in range(len(disulphide_bridges)):
                 domain = canvas.create_line(disulphide_bridges[i], fill='#FF4040', width = Bond_thickness,tags="disulphide", arrow=tk.BOTH, arrowshape=Arrow_dimensions)
-                canvas_polygons[domain] = [disulphide_bridges[i], "-disulphide-"]
+                canvas_polygons[domain] = [disulphide_bridges[i], "-disulphide-", ""]
 
     #Bonds
         for i in range(len(Bonds)):
             domain = canvas.create_line(Bonds[i], fill=bond_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            canvas_polygons[domain] = [Bonds[i], "-"]
+            canvas_polygons[domain] = [Bonds[i], "-",""]
         if arcs_left!=[]:
             for i in range(len(arcs_left)):
                 if arcs_left[i][1] == False:
                     domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, fill=bond_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
-                    canvas_polygons[domain] = [arcs_left[i][0], "-"]
+                    canvas_polygons[domain] = [arcs_left[i][0], "-",""]
                 elif arcs_left[i][1] == True:
                     domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
-                    if l_mods_left_arc[i] == True:
-                        canvas_polygons[domain] = [arcs_left[i][0], "-L*-"]
+                    if "MOD" in str(l_mods_left_arc[i]):
+                        canvas_polygons[domain] = [arcs_left[i][0], "-L*-", l_mods_left_arc[i]]
                     else:
-                        canvas_polygons[domain] = [arcs_left[i][0], "-L-"]
+                        canvas_polygons[domain] = [arcs_left[i][0], "-L-", l_mods_left_arc[i]]
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
                 if arcs_right[i][1] == False:
@@ -3467,10 +3625,10 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_right[i][0], "-"]
                 elif arcs_right[i][1] == True:
                     domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
-                    if l_mods_right_arc[i] == True:
-                        canvas_polygons[domain] = [arcs_right[i][0], "-L*-"]
+                    if "MOD" in str(l_mods_right_arc[i]):
+                        canvas_polygons[domain] = [arcs_right[i][0], "-L*-",l_mods_right_arc]
                     else:
-                        canvas_polygons[domain] = [arcs_right[i][0], "-L-"]
+                        canvas_polygons[domain] = [arcs_right[i][0], "-L-",l_mods_right_arc]
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
                 if arcs_left_slant[i][1] == False:
@@ -3478,10 +3636,10 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-"]
                 elif arcs_left_slant[i][1] == True:
                     domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
-                    if l_mods_left_arc_slant[i] == True:
-                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L*-"]
+                    if "MOD" in str(l_mods_left_arc_slant[i]):
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L*-",l_mods_right_arc[i]]
                     else:
-                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-"]
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-",l_mods_right_arc[i]]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
                 if arcs_right_slant[i][1] == False:
@@ -3489,81 +3647,83 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-"]
                 elif  arcs_right_slant[i][1] == True:
                     domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
-                    if l_mods_right_arc_slant[i] == True:
-                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L*-"]
+                    if "MOD" in str(l_mods_right_arc_slant[i]):
+                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L*-",l_mods_right_arc_slant[i] ]
                     else:
-                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-"]
+                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-",l_mods_right_arc_slant[i]]
         for i in range(len(Linkers)):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            if l_mods_normal[i] == True:
-                canvas_polygons[domain] = [Linkers[i], "-L*-"]
+            if "MOD" in str(l_mods_normal[i]):
+                print("OH YES THAT'S IT")
+                canvas_polygons[domain] = [Linkers[i], "-L*-", l_mods_normal[i]]
             else:
-                canvas_polygons[domain] = [Linkers[i], "-L-"]
+                canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
             print("HINGES", Hinges[i][0])
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-
-            if Hinges[i][1] == True:
-                canvas_polygons[domain] = [Hinges[i][0], "-H*-"]
+            if Hinges[i][1] == False:
+                Hinges[i][1] = ""
+            if "MOD" in  str(Hinges[i][1]):
+                canvas_polygons[domain] = [Hinges[i][0], "-H*-",Hinges[i][1]]
             else:
-                canvas_polygons[domain] = [Hinges[i][0], "-H-"]
+                canvas_polygons[domain] = [Hinges[i][0], "-H-", Hinges[i][1]]
 
     #A domains
         for i in range(len(Heavy_Domains_a)):
             domain = canvas.create_polygon(Heavy_Domains_a[i], outline='#000000',fill=specificity_colours[0], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i]]
+            canvas_polygons[domain] = [Heavy_Domains_a[i], names_Heavy_a[i],comments_list_heavy_a[i]]
         for i in range(len(Light_Domains_a)):
             domain = canvas.create_polygon(Light_Domains_a[i], outline='#000000',fill=specificity_colours[1], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i]]
+            canvas_polygons[domain] = [Light_Domains_a[i], names_Light_a[i],comments_list_light_a[i]]
     #B domains
         for i in range(len(Heavy_Domains_b)):
             domain = canvas.create_polygon(Heavy_Domains_b[i], outline='#000000',fill=specificity_colours[2], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i]]
+            canvas_polygons[domain] = [Heavy_Domains_b[i], names_Heavy_b[i],comments_list_heavy_b[i]]
         for i in range(len(Light_Domains_b)):
             domain = canvas.create_polygon(Light_Domains_b[i], outline='#000000',fill=specificity_colours[3], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i]]
+            canvas_polygons[domain] = [Light_Domains_b[i], names_Light_b[i],comments_list_light_b[i]]
     #C domains
         for i in range(len(Heavy_Domains_c)):
             domain = canvas.create_polygon(Heavy_Domains_c[i], outline='#000000',fill=specificity_colours[4], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i]]
+            canvas_polygons[domain] = [Heavy_Domains_c[i], names_Heavy_c[i],comments_list_heavy_c[i]]
         for i in range(len(Light_Domains_c)):
             domain = canvas.create_polygon(Light_Domains_c[i], outline='#000000',fill=specificity_colours[5], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i]]
+            canvas_polygons[domain] = [Light_Domains_c[i], names_Light_c[i],comments_list_light_c[i]]
     #D domains
         for i in range(len(Heavy_Domains_d)):
             domain = canvas.create_polygon(Heavy_Domains_d[i], outline='#000000',fill=specificity_colours[6], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i]]
+            canvas_polygons[domain] = [Heavy_Domains_d[i], names_Heavy_d[i],comments_list_heavy_d[i]]
         for i in range(len(Light_Domains_d)):
             domain = canvas.create_polygon(Light_Domains_d[i], outline='#000000',fill=specificity_colours[7], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i]]
+            canvas_polygons[domain] = [Light_Domains_d[i], names_Light_d[i],comments_list_light_d[i]]
     #E domains
         for i in range(len(Heavy_Domains_e)):
             domain = canvas.create_polygon(Heavy_Domains_e[i], outline='#000000',fill=specificity_colours[8], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i]]
+            canvas_polygons[domain] = [Heavy_Domains_e[i], names_Heavy_e[i],comments_list_heavy_e[i]]
         for i in range(len(Light_Domains_e)):
             domain = canvas.create_polygon(Light_Domains_e[i], outline='#000000',fill=specificity_colours[9], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i]]
+            canvas_polygons[domain] = [Light_Domains_e[i], names_Light_e[i],comments_list_light_e[i]]
     #F domains
         for i in range(len(Heavy_Domains_f)):
             domain = canvas.create_polygon(Heavy_Domains_f[i], outline='#000000',fill=specificity_colours[10], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i]]
+            canvas_polygons[domain] = [Heavy_Domains_f[i], names_Heavy_f[i],comments_list_heavy_f[i]]
         for i in range(len(Light_Domains_f)):
             domain = canvas.create_polygon(Light_Domains_f[i], outline='#000000',fill=specificity_colours[11], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i]]
+            canvas_polygons[domain] = [Light_Domains_f[i], names_Light_f[i],comments_list_light_f[i]]
     #G domains
         for i in range(len(Heavy_Domains_g)):
             domain = canvas.create_polygon(Heavy_Domains_g[i], outline='#000000',fill=specificity_colours[12], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i]]
+            canvas_polygons[domain] = [Heavy_Domains_g[i], names_Heavy_g[i],comments_list_heavy_g[i]]
         for i in range(len(Light_Domains_g)):
             domain = canvas.create_polygon(Light_Domains_g[i], outline='#000000',fill=specificity_colours[13], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i]]
+            canvas_polygons[domain] = [Light_Domains_g[i], names_Light_g[i],comments_list_light_g[i]]
     #H domains
         for i in range(len(Heavy_Domains_h)):
             domain = canvas.create_polygon(Heavy_Domains_h[i], outline='#000000',fill=specificity_colours[14], width=1,tags="domain")
-            canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i]]
+            canvas_polygons[domain] = [Heavy_Domains_h[i], names_Heavy_h[i],comments_list_heavy_h[i]]
         for i in range(len(Light_Domains_h)):
             domain = canvas.create_polygon(Light_Domains_h[i], outline='#000000',fill=specificity_colours[15], width=1,tags="domain")
-            canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i]]
+            canvas_polygons[domain] = [Light_Domains_h[i], names_Light_h[i],comments_list_light_h[i]]
     #ADCs
         if ADCs != []:
             non_redundant_ADCs = []
@@ -3576,9 +3736,9 @@ def render(chains_list,canvas,text_to_image):
             for i in range(len(non_redundant_ADCs)):
                 domain = canvas.create_polygon(non_redundant_ADCs[i], outline='#000000',fill=specificity_colours[18], width=1,tags="domain")
                 if "X*" in str(Domain_Text):
-                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X*"]
+                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X*", X_comments[i]]
                 else:
-                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
+                    canvas_polygons[domain] = [non_redundant_ADCs[i],  "X", X_comments[i]]
     #CCs
         if CCs != []:
             non_redundant_CCs = []
@@ -3592,9 +3752,9 @@ def render(chains_list,canvas,text_to_image):
             for i in range(len(non_redundant_CCs)):
                 domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=1,tags="domain")
                 if "C*" in str(Domain_Text):
-                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C*"]
+                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C*", C_comments[i]]
                 else:
-                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C"]
+                    canvas_polygons[domain] = [non_redundant_CCs[i],  "C", C_comments[i]]
 
     #Labels
         if Label_lock == True:
@@ -4355,7 +4515,7 @@ def sequence_pipeline(canvas):
             print(strings[i][j])
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-" :
-                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j]:
+                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-L*-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
                     assigned_match = False
@@ -4391,6 +4551,9 @@ def sequence_pipeline(canvas):
                     counter += 1
                 elif "-H*-" in strings[i][j]:
                     strings[i][j] = str("-H*("+str(counter)+")-")
+                    counter += 1
+                elif "-L*-" in strings[i][j]:
+                    strings[i][j] = str("-L*("+str(counter)+")-")
                     counter += 1
 
     print(strings)
@@ -4688,66 +4851,70 @@ def sequence_pipeline(canvas):
                 mod_domain_type1 = str(mod_domain_type+" ")
                 mod_domain_type2 = str(mod_domain_type+"* ")
                 domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-                if "-" not in strings[i][j] or "X" in strings[i][j] or "-C" in strings[i][j]:
+                if "-" not in strings[i][j]:
                     coordinates = domains_dict.get(full_chains[i][j])[0]
-                    min_max = get_min_max_coordinates(coordinates)
-                    d1x1 = min_max[0]
-                    d1x2 = min_max[1]
-                    d1y1 = min_max[2]
-                    d1y2 = min_max[3]
-                elif "-" in strings[i][j] and "H" not in strings[i][j] and "X" not in strings[i][j] and "-C" not in strings[i][j]:
+                    stored_comment = domains_dict.get(full_chains[i][j])[2]
+
+                elif "-" in strings[i][j]:
                     coordinates = bonds_dict.get(full_chains[i][j])[0]
-                    min_max = get_min_max_coordinates(coordinates)
-                    d1x1 = min_max[0]
-                    d1x2 = min_max[1]
-                    d1y1 = min_max[2]
-                    d1y2 = min_max[3]
-                elif "-" in strings[i][j] and "H" in strings[i][j]:
-                    coordinates = bonds_dict.get(full_chains[i][j])[0]
-                    if coordinates[0] < coordinates[2]:
-                        min_max = get_min_max_coordinates(coordinates)
-                        d1x1 = min_max[0]
-                        d1x2 = min_max[1]+40
-                        d1y1 = min_max[2]
-                        d1y2 = min_max[3]
-                    elif coordinates[0] > coordinates[2]:
-                        min_max = get_min_max_coordinates(coordinates)
-                        d1x1 = min_max[0]-40
-                        d1x2 = min_max[1]
-                        d1y1 = min_max[2]
-                        d1y2 = min_max[3]
-                for k in range(len(comment_lists)):
-                    for l in range(len(comment_lists[k])):
-                        comment = comment_dicts[k].get(comment_lists[k][l])[1]
-                        labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
-                        labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
-                        if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or (str(mod_domain_type1) in str(comment)) :#or (str(mod_domain_type2) in str(comment)):
-                            comment_found = True
-                            note = comment_dicts[k].get(comment_lists[k][l])[1]
-                            comments = note.split(", ")
-                            non_redundant_comments = []
-                            for x in range(len(comments)):
-                                if str(comments[x]) not in str(non_redundant_comments):
-                                    non_redundant_comments.append(str(comments[x]))
-                            comment_to_add = ""
-                            for x in range(len(non_redundant_comments)):
-                                note1 = non_redundant_comments[x].split(":")[0]
-                                note2 = non_redundant_comments[x].split(":")[1]
-                                note1 = re.sub(domain_type, "",note1)
-                                note1 = re.sub("^ |\* |\*","", note1)
-                                noting = str("["+note1+":"+note2+"]")
-                                comment_to_add +=str(noting)
-                            if "*" in strings[i][j] :#or "MOD" in str(non_redundant_comments):
-                                strings[i][j] = re.sub("\*","", strings[i][j])
-                                strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
-                            if str(comment_to_add) not in str(strings[i][j]):
-                                if "-" not in strings[i][j]:
-                                    strings[i][j] += str(comment_to_add)
-                                elif "-" in strings[i][j]:
-                                    strings[i][j] = strings[i][j].split("-")[1]
-                                    strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-            if comment_found == False and "*" not in strings[i][j]:
-                strings[i][j] = re.sub("\*","",strings[i][j])
+                    stored_comment = bonds_dict.get(full_chains[i][j])[2]
+
+                if stored_comment != "":
+                    print("OK YEAH")
+                    comments = stored_comment.split(", ")
+
+                    non_redundant_comments = []
+                    for x in range(len(comments)):
+                        if str(comments[x]) not in str(non_redundant_comments):
+                            non_redundant_comments.append(str(comments[x]))
+                    print("NON REDUNDANT",non_redundant_comments)
+                    comment_to_add = ""
+                    for x in range(len(non_redundant_comments)):
+                        note1 = non_redundant_comments[x].split(":")[0]
+                        note2 = non_redundant_comments[x].split(":")[1]
+                        noting = str("["+note1+":"+note2+"]")
+                        comment_to_add +=str(noting)
+                    print("ADDING", comment_to_add)
+                    if "-" not in strings[i][j]:
+                        strings[i][j] += str(comment_to_add)
+                    elif "-" in strings[i][j]:
+                        strings[i][j] = strings[i][j].split("-")[1]
+                        strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
+                    if "*" in strings[i][j] or "MOD" in str(non_redundant_comments):
+                        strings[i][j] = re.sub("\*","", strings[i][j])
+                        strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
+                #for k in range(len(comment_lists)):
+                #    for l in range(len(comment_lists[k])):
+                #        comment = comment_dicts[k].get(comment_lists[k][l])[1]
+                #        labelx = comment_dicts[k].get(comment_lists[k][l])[0][0]
+                #        labely = comment_dicts[k].get(comment_lists[k][l])[0][1]
+                #        if ((d1x1 <= labelx <= d1x2) and (d1y1 <= labely <= d1y2)) or stored_comment != "":#(str(mod_domain_type1) in str(comment)) or (str(mod_domain_type2) in str(comment)):
+                #            comment_found = True
+                #            note = comment_dicts[k].get(comment_lists[k][l])[1]
+                #            comments = note.split(", ")
+                #            non_redundant_comments = []
+                #            for x in range(len(comments)):
+                #                if str(comments[x]) not in str(non_redundant_comments):
+                #                    non_redundant_comments.append(str(comments[x]))
+                #            comment_to_add = ""
+                #            for x in range(len(non_redundant_comments)):
+                #                note1 = non_redundant_comments[x].split(":")[0]
+                #                note2 = non_redundant_comments[x].split(":")[1]
+                #                note1 = re.sub(domain_type, "",note1)
+                #                note1 = re.sub("^ |\* |\*","", note1)
+                #                noting = str("["+note1+":"+note2+"]")
+                #                comment_to_add +=str(noting)
+                #            if "*" in strings[i][j] or "MOD" in str(non_redundant_comments):
+                #                strings[i][j] = re.sub("\*","", strings[i][j])
+                #                strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
+                #            if str(comment_to_add) not in str(strings[i][j]):
+                #                if "-" not in strings[i][j]:
+                #                    strings[i][j] += str(comment_to_add)
+                #                elif "-" in strings[i][j]:
+                #                    strings[i][j] = strings[i][j].split("-")[1]
+                #                    strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
+            #if comment_found == False and "*" not in strings[i][j]:
+            #    strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
     final_string = ""
@@ -5468,6 +5635,49 @@ def raise_error(canvas,message):
         print(message)
     raise IndexError
 
+def update_domain_comments(comment,xc,yc):
+    global canvas_polygons
+    canvas_keyslist = list(canvas_polygons.keys())
+    for i in range(len(canvas_keyslist)):
+        domain_name = canvas_polygons.get(canvas_keyslist[i])[1]
+        if "-" in str(domain_name) and "H" in str(domain_name):
+            coordinates = canvas_polygons.get(canvas_keyslist[i])[0]
+            if coordinates[0] < coordinates[2]:
+                min_max = get_min_max_coordinates(coordinates)
+                x1 = min_max[0]
+                x2 = min_max[1]+40
+                y1 = min_max[2]
+                y2 = min_max[3]
+            elif coordinates[0] > coordinates[2]:
+                min_max = get_min_max_coordinates(coordinates)
+                x1 = min_max[0]-40
+                x2 = min_max[1]
+                y1 = min_max[2]
+                y2 = min_max[3]
+        elif "-" in str(domain_name) and "L" in str(domain_name):
+            coordinates = canvas_polygons.get(canvas_keyslist[i])[0]
+            min_max = get_min_max_coordinates(coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+            if x1==x2:
+                x1 -=5
+                x2 +=5
+            if y1==y2:
+                y1 -=5
+                y2 -=5
+        else:
+            coordinates = canvas_polygons.get(canvas_keyslist[i])[0]
+            min_max = get_min_max_coordinates(coordinates)
+            x1 = min_max[0]
+            x2 = min_max[1]
+            y1 = min_max[2]
+            y2 = min_max[3]
+        if (x1<= xc <=x2 and y1 <= yc <=y2):
+            canvas_polygons[canvas_keyslist[i]][2] += str(comment)
+
+
 def items_selected(e):
     '''
     Render item selected in library
@@ -5627,13 +5837,14 @@ class MouseMover():
             diffy = y2-y1
             coordinates    = canvas_polygons.get(self.item)[0]
             name           = canvas_polygons.get(self.item)[1]
+            comment        = canvas_polygons.get(self.item)[2]
             new_coordinates= []
             for i in range(len(coordinates)):
                 if i%2 ==0:
                     new_coordinates.append((coordinates[i]+diffx))
                 elif i%2!=0:
                     new_coordinates.append((coordinates[i]+diffy))
-            canvas_polygons[self.item]=[new_coordinates, name]
+            canvas_polygons[self.item]=[new_coordinates, name, comment]
             bonds_to_check = []
             if self.newcoordinates != self.startcoordinates[0]:
                 arcs_list = lower_canvas.find_withtag("arcs")
@@ -5802,6 +6013,7 @@ class MouseMover():
 
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             Domain_name = (canvas_polygons.get(self.item)[1])
+            comment = (canvas_polygons.get(self.item)[2])
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
             x2 = min_max[1]
@@ -5818,7 +6030,7 @@ class MouseMover():
                     del canvas_labels[labels_keyslist[i]]
             lower_canvas.delete(self.item)
             del canvas_polygons[self.item]
-            deleted_polygons = {self.item:[domain_coordinates,Domain_name]}
+            deleted_polygons = {self.item:[domain_coordinates,Domain_name,comment]}
         else:
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             Domain_name = (canvas_polygons.get(self.item)[1])
@@ -5976,6 +6188,7 @@ class MouseMover():
             for i in range(len(polygons_keyslist)):
                 if "-" not in str(canvas_polygons.get(polygons_keyslist[i])[1]):
                     domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
+
                     xs= []
                     ys= []
                     for f in range(len(domain_coordinates)):
@@ -5992,6 +6205,7 @@ class MouseMover():
 
         coordinates    = canvas_polygons.get(self.item)[0]
         domain_name    = canvas_polygons.get(self.item)[1]
+        domain_comment = canvas_polygons.get(self.item)[2]
         ##reverse coordinates
         x1 = (canvas_polygons.get(self.item)[0][4])
         x2 = (canvas_polygons.get(self.item)[0][8])
@@ -6060,14 +6274,14 @@ class MouseMover():
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
-
                     if x1< labelx <x2 and y1 < labely < y2:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
-                        #temp_label[label_keyslist[i]] = [[labelx,labely], label_text]
-                        canvas_polygons[domain] = [new_coordinates, domain_name]
                         label = lower_canvas.create_text([labelx,labely], text = label_text, tags = "label")
                         canvas_labels[label] = [[labelx,labely], label_text]
+
+            canvas_polygons[domain] = [new_coordinates, domain_name, domain_comment]
+
 
 
         else:
@@ -6079,6 +6293,7 @@ class MouseMover():
         global specificity_colours
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
+        domain_comment =""
         startx = xc
         starty = yc-40
         Domain_Primer[5] = re.sub("\+|\-|\_","",Domain_Primer[5])
@@ -6114,12 +6329,12 @@ class MouseMover():
             domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=heavy_colour, width=1, tags="domain")
         elif Domain_Primer[9] == True:
             domain = lower_canvas.create_polygon(domaincoordinates[0], outline='#000000',fill=light_colour, width=1, tags="domain")
-        canvas_polygons[domain] = [domaincoordinates[0], domain_name]
+        canvas_polygons[domain] = [domaincoordinates[0], domain_name, domain_comment]
         if Label_lock == True:
             domain_name = re.sub("\.|@|>","",domain_name)
             domain_name = re.sub("\_","-",domain_name)
             label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label")
-            canvas_labels[label] = [domaincoordinates[3], domain_name]
+            canvas_labels[label] = [domaincoordinates[3], domain_name, domain_comment]
         global domain_mod
         #domain_mod = ""
         global domain_direction
@@ -6127,51 +6342,66 @@ class MouseMover():
     def place_domain_release(self,event):
         lower_canvas.config(cursor = "plus")
 
+
     def place_type_label(self,event):
         global TYPE_labels
         global Type_options
+        global canvas_polygons
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if Type_list_header.get() != "TYPE":
             label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels")
             MOD_labels[label] = [[xc,yc], Type_list_header.get()]
+            update_domain_comments(str(", "+Type_list_header.get()),xc,yc)
+
+
 
     def place_note_label(self,event):
         global NOTE_labels
+        global canvas_polygons
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("NOTE:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels")
             NOTE_labels[label] = [[xc,yc], entry]
+            update_domain_comments(str(", "+entry),xc,yc)
 
     def place_mod_label(self,event):
         global MOD_labels
         global Mod_options
+        global canvas_polygons
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if mod_list_header.get() != "MOD":
             label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels")
             MOD_labels[label] = [[xc,yc], mod_list_header.get()]
+            update_domain_comments(str(", "+mod_list_header.get()),xc,yc)
 
     def place_anti_label(self,event):
         global ANTI_labels
+        global canvas_polygons
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("ANTI:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels")
             ANTI_labels[label] = [[xc,yc], entry]
+            update_domain_comments(str(", "+entry),xc,yc)
+
     def place_length_label(self,event):
         global LENGTH_labels
+        global canvas_polygons
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("LENGTH:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels")
             LENGTH_labels[label] = [[xc,yc], entry]
+            update_domain_comments(str(", "+entry),xc,yc)
+
     ###Draw and drag bonds###
     def start_bond(self,event):
         lower_canvas.delete("draggable_line")
@@ -6199,7 +6429,7 @@ class MouseMover():
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[1], width=Bond_thickness, tags=("bonds","connector"), arrow=tk.LAST , arrowshape=Bond_Arrows)
-        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name,""]
         self.startcoordinates = []
         self.newcoordinates   = []
     def release_Hinge_bond(self,event):
@@ -6209,7 +6439,7 @@ class MouseMover():
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-H-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[2], width=Bond_thickness, tags=("bonds","hinge"), arrow=tk.LAST , arrowshape=Bond_Arrows)
-        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name,""]
         self.startcoordinates = []
         self.newcoordiantes   = []
     def release_Linker_bond(self,event):
@@ -6219,7 +6449,7 @@ class MouseMover():
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-L-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[3], width=Bond_thickness, tags=("bonds","linker"), arrow=tk.LAST , arrowshape=Bond_Arrows)
-        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name,""]
         self.startcoordinates = []
         self.newcoordinates =[]
     def drag_disulphide_bond(self,event):
@@ -6263,7 +6493,7 @@ class MouseMover():
         y1,y2 = self.startcoordinates[1], self.newcoordinates[1]
         name = "-disulphide-"
         domain = lower_canvas.create_line(x1,y1,x2,y2, fill=bond_colours[0], width=Bond_thickness, tags="disulphide", arrow=tk.BOTH, arrowshape=Bond_Arrows)
-        canvas_polygons[domain] = [[x1,y1,x2,y2],name]
+        canvas_polygons[domain] = [[x1,y1,x2,y2],name,""]
         self.startcoordinates = []
         self.newcoordinates =[]
 
@@ -7044,6 +7274,7 @@ if len(sys.argv) < 2:
             to_replace = max(deleted_polygons_keys)
             domain_coordinates = deleted_polygons.get(to_replace)[0]
             domain_name = deleted_polygons.get(to_replace)[1]
+            domain_comment=deleted_polygons.get(to_replace)[2]
             if "-" not in domain_name:
                 if "a" in str(domain_name):
                     heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
@@ -7071,7 +7302,7 @@ if len(sys.argv) < 2:
                     domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
                 elif "L" in domain_name:
                     domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
-                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                canvas_polygons[domain] = [domain_coordinates, domain_name, domain_comment]
                 if Label_lock == True:
                     domain_name = re.sub("\.|@|>","",domain_name)
                     labelx = get_min_max_coordinates(domain_coordinates)[4]
@@ -7085,18 +7316,18 @@ if len(sys.argv) < 2:
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
                 domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
-                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment ]
             elif domain_name == "-H-" :####
                 domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
-                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
             elif domain_name == "-L-" :####
                 domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
-                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
             elif domain_name == "-disulphide-":####
                 domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
-                canvas_polygons[domain] = [domain_coordinates, domain_name]
+                canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
             deleted_polygons = {}
-            Deletes_to_redo[to_replace] = [domain_coordinates, domain_name]
+            Deletes_to_redo[to_replace] = [domain_coordinates, domain_name,domain_comment]
         else:
             keys = list(canvas_polygons.keys())+list(TYPE_labels.keys())+list(NOTE_labels.keys())+list(MOD_labels.keys())+list(ANTI_labels.keys())+list(LENGTH_labels.keys())
             to_delete = max(keys)
@@ -7202,6 +7433,7 @@ if len(sys.argv) < 2:
             keys = list(Polygon_to_redo.keys())+list(NOTE_to_redo.keys())+list(TYPE_to_redo.keys())
             to_redo = min(keys)
             domain_name = Polygon_to_redo.get(to_redo)[1]
+            domain_comment = Polygon_to_redo.get(to_redo)[2]
             domain_coordinates = Polygon_to_redo.get(to_redo)[0]
             if to_redo in (Polygon_to_redo.keys()):
                 if "-" not in domain_name:
@@ -7231,7 +7463,7 @@ if len(sys.argv) < 2:
                         domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
                     elif "L" in domain_name:
                         domain = lower_canvas.create_polygon(domain_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
-                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                     if Label_lock == True:
                         domain_name = re.sub("\.|@|>","",domain_name)
                         labelx = get_min_max_coordinates(domain_coordinates)[4]
@@ -7242,19 +7474,19 @@ if len(sys.argv) < 2:
                             elif domain_coordinates[2] < domain_coordinates[0]:
                                 labelx+=5
                         label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label")
-                        canvas_labels[label] = [[labelx,labely], domain_name]
+                        canvas_labels[label] = [[labelx,labely], domain_name,domain_comment]
                 elif domain_name == "-" :####
                     domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
-                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                 elif domain_name == "-H-" :####
                     domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
-                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                 elif domain_name == "-L-" :####
                     domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
-                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                 elif domain_name == "-disulphide-":####
                     domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
-                    canvas_polygons[domain] = [domain_coordinates, domain_name]
+                    canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                 del Polygon_to_redo[to_redo]
             elif to_redo in list(TYPE_labels.keys()):
                 label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
