@@ -835,7 +835,6 @@ def Check_interactions(chains_list,canvas):
             if "a" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
                     if "H" in str(fragments[x][i]):
-                        print("HEAVY A COORDS", dictionary.get(fragments[x][i])[0])
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -1640,12 +1639,10 @@ def Check_interactions(chains_list,canvas):
             if ("H[" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
                 h_mod = True
                 h_mods.append(dictionary.get(keyslist[i])[2])
-                print("H_MOD_APPENDED")
             else:
                 h_mods.append(False)
 
             if ("L" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
-                print("LMOD_APPENDED")
                 l_mods.append(dictionary.get(keyslist[i])[2])
             else:
                 l_mods.append(False)
@@ -2362,11 +2359,9 @@ def Check_interactions(chains_list,canvas):
                     if h_mods[-2] !=False:
                         h_mod= h_mods[-2]
                     hcoordinates = bottom_bond + top_bond
-                    print("HMOD", h_mods)
                     hinges.append([hcoordinates,h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
-                    print(l_mods)
                     l_mod_normal.append(l_mods[-2])
                     global L_Labels
                     if L_Labels == True:
@@ -2442,8 +2437,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_left_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            print("LMODS", l_mods)
-                            l_mods_left_arc_slant.append(l_mods[-2])
+                            l_mods_left_arc_slant.append(l_mods[-1])
                     elif righthanded==False and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]-50
@@ -2452,7 +2446,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_left.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_left_arc.append(l_mods[-2])
+                            l_mods_left_arc.append(l_mods[-1])
                     elif righthanded==True and slant == True:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]
@@ -2461,7 +2455,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_right_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_right_arc_slant.append(l_mods[-2])
+                            l_mods_right_arc_slant.append(l_mods[-1])
                     elif righthanded==True and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]+50
@@ -2470,7 +2464,7 @@ def Check_interactions(chains_list,canvas):
                         arcbottomy= bottom_bond[1]
                         arcs_right.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
                         if Linker == True:
-                            l_mods_right_arc.append(l_mods[-2])
+                            l_mods_right_arc.append(l_mods[-1])
                     if Extra_bond==True:
                         extrabondx1=top_bond[0]
                         extrabondy1=top_bond[1]-20
@@ -2480,7 +2474,7 @@ def Check_interactions(chains_list,canvas):
                         if "H[" in keyslist[i]:
                             h_coordinates = extra_bond
                             if h_mod == True:
-                                h_mod= hmods[-1]
+                                h_mod= h_mods[-1]
                             hinges.append([h_coordinates, h_mod])
                         else:
                             bonds.append(extra_bond)
@@ -2740,7 +2734,7 @@ def Check_interactions(chains_list,canvas):
                         top_bond[1] = top_bond[1]+5
                         h_coordinates = [bottomx,bottomy,topx,topy]
                         if h_mod == True:
-                            h_mod= hmods[-1]
+                            h_mod= h_mods[-1]
                         hinges.append([h_coordinates,h_mod])
                     elif slant == False:
                         if tangle_found == True and dictionary == VHa_chain:
@@ -2748,7 +2742,7 @@ def Check_interactions(chains_list,canvas):
                         else:
                             h_coordinates = [bottomx,bottomy,topx,topy+20]
                             if h_mod == True:
-                                h_mod= hmods[-1]
+                                h_mod= h_mods[-1]
                             hinges.append([h_coordinates,h_mod])
 
                     if Extra_bond == True and righthanded == False:
@@ -3576,6 +3570,7 @@ def render(chains_list,canvas,text_to_image):
             if l_mods_right_arc_slant[x] == False:
                 l_mods_right_arc_slant[x] = ""
         print(l_mods_normal)
+
         comments_list_heavy_a=chains_list[52]
         comments_list_light_a=chains_list[53]
         comments_list_heavy_b=chains_list[54]
@@ -3594,7 +3589,6 @@ def render(chains_list,canvas,text_to_image):
         comments_list_light_h=chains_list[67]
         X_comments           =chains_list[68]
         C_comments           =chains_list[69]
-        print("X_COMMENTS", X_comments)
 
 
     #disulphide_bridge
@@ -3637,9 +3631,9 @@ def render(chains_list,canvas,text_to_image):
                 elif arcs_left_slant[i][1] == True:
                     domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
                     if "MOD" in str(l_mods_left_arc_slant[i]):
-                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L*-",l_mods_right_arc[i]]
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L*-",l_mods_left_arc_slant[i]]
                     else:
-                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-",l_mods_right_arc[i]]
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-",l_mods_left_arc_slant[i]]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
                 if arcs_right_slant[i][1] == False:
@@ -3654,12 +3648,10 @@ def render(chains_list,canvas,text_to_image):
         for i in range(len(Linkers)):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             if "MOD" in str(l_mods_normal[i]):
-                print("OH YES THAT'S IT")
                 canvas_polygons[domain] = [Linkers[i], "-L*-", l_mods_normal[i]]
             else:
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
-            print("HINGES", Hinges[i][0])
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
             if Hinges[i][1] == False:
                 Hinges[i][1] = ""
@@ -3741,7 +3733,6 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [non_redundant_ADCs[i],  "X", X_comments[i]]
     #CCs
         if CCs != []:
-            print("CC_COmments",C_comments)
             non_redundant_CCs = []
             non_redundant_CCs_sorted = []
             for i in range(len(CCs)):
@@ -3749,7 +3740,6 @@ def render(chains_list,canvas,text_to_image):
                 if j not in non_redundant_CCs_sorted:
                     non_redundant_CCs.append(CCs[i])
                     non_redundant_CCs_sorted.append(j)
-            print(non_redundant_CCs_sorted)
             for i in range(len(non_redundant_CCs)):
                 domain = canvas.create_polygon(non_redundant_CCs[i], outline='#000000',fill=specificity_colours[19], width=1,tags="domain")
                 if "C*" in str(Domain_Text):
@@ -4241,7 +4231,6 @@ def sequence_pipeline(canvas):
     global MOD_labels
     global ANTI_labels
     global LENGTH_labels
-    print(canvas_polygons)
     for i in range(len(all_buttons)):
         all_buttons[i].config(fg="black")
     lower_canvas.config(cursor = "arrow")
@@ -4259,8 +4248,7 @@ def sequence_pipeline(canvas):
     LENGTH_keyslist=list(LENGTH_labels.keys())
     domains_list = lower_canvas.find_withtag("domain")
     domains_dict = {}
-    print(polygons_keyslist)
-    print(domains_list)
+
     for i in range(len(domains_list)):
         for j in range(len(polygons_keyslist)):
             if domains_list[i] == polygons_keyslist[j]:
@@ -4513,7 +4501,6 @@ def sequence_pipeline(canvas):
     assigned_numbers = {}
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            print(strings[i][j])
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-" :
                 if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-L*-" not in strings[i][j]:
@@ -4557,7 +4544,6 @@ def sequence_pipeline(canvas):
                     strings[i][j] = str("-L*("+str(counter)+")-")
                     counter += 1
 
-    print(strings)
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
