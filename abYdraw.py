@@ -5117,6 +5117,9 @@ def domain_type_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
+    domain_mod = ""
+    extra_mods = ""
+    domain_charge = ""
     if domain_type == "" or letter not in domain_type:
         domain_type = str(letter)
     elif domain_type != "" and letter not in domain_type:
@@ -5131,6 +5134,10 @@ def domain_mod_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
+    global domain_type
+    domain_type = ""
+    extra_mods = ""
+    domain_charge = ""
     if domain_mod == "" or letter not in domain_mod:
         domain_mod = str(letter)
     elif domain_mod != "" and letter not in domain_mod:
@@ -5145,6 +5152,10 @@ def extra_mod_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
+    global domain_type
+    domain_type = ""
+    domain_mod = ""
+    domain_charge = ""
     if extra_mods == "" or letter not in extra_mods:
         extra_mods = str(letter)
     elif extra_mods != "" and letter not in extra_mods:
@@ -5162,6 +5173,10 @@ def domain_charge_button(letter):
     global extra_mods
     global domain_charge
     global Domain_Primer
+    global domain_type
+    domain_type = ""
+    domain_mod = ""
+    extra_mods = ""
     if domain_charge == "" or letter not in domain_charge:
         domain_charge = str(letter)
     elif domain_charge != "" and letter not in domain_charge:
