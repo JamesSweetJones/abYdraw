@@ -69,7 +69,7 @@
 	<key>PythonInfoDict</key>
 	<dict>
 		<key>PythonExecutable</key>
-		<string>/Users/james/Documents/LIDO/Smiles_scripts/exe/venv/bin/python</string>
+		<string>/Users/james/opt/anaconda3/bin/python3</string>
 		<key>PythonLongVersion</key>
 		<string>3.8.12 (default, Oct 12 2021, 06:23:56) 
 [Clang 10.0.0 ]</string>

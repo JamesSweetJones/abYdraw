@@ -11,21 +11,39 @@ def _reset_sys_path():
 _reset_sys_path()
 
 
-def _site_packages(prefix, real_prefix, global_site_packages):
+def _site_packages():
     import os
     import site
     import sys
 
     paths = []
-
-    paths.append(
-        os.path.join(
-            prefix, "lib", "python%d.%d" % (sys.version_info[:2]), "site-packages"
+    prefixes = [sys.prefix]
+    if sys.exec_prefix != sys.prefix:
+        prefixes.append(sys.exec_prefix)
+    for prefix in prefixes:
+        paths.append(
+            os.path.join(
+                prefix, "lib", "python%d.%d" % (sys.version_info[:2]), "site-packages"
+            )
         )
-    )
-    if os.path.join(".framework", "") in os.path.join(prefix, ""):
+
+    if os.path.join(".framework", "") in os.path.join(sys.prefix, ""):
         home = os.environ.get("HOME")
         if home:
+            # Sierra and later
+            paths.append(
+                os.path.join(
+                    home,
+                    "Library",
+                    "Python",
+                    "%d.%d" % (sys.version_info[:2]),
+                    "lib",
+                    "python",
+                    "site-packages",
+                )
+            )
+
+            # Before Sierra
             paths.append(
                 os.path.join(
                     home,
@@ -45,23 +63,9 @@ def _site_packages(prefix, real_prefix, global_site_packages):
     for path in paths:
         site.addsitedir(path)
 
-    # Ensure that the global site packages get placed on sys.path after
-    # the site packages from the virtual environment (this functionality
-    # is also in virtualenv)
-    sys.__egginsert = len(sys.path)
 
-    if global_site_packages:
-        site.addsitedir(
-            os.path.join(
-                real_prefix,
-                "lib",
-                "python%d.%d" % (sys.version_info[:2]),
-                "site-packages",
-            )
-        )
+_site_packages()
 
-
-_site_packages('/Users/james/Documents/LIDO/Smiles_scripts/exe/venv', '/Users/james/opt', 0)
 
 def _chdir_resource():
     import os
