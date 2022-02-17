@@ -786,7 +786,6 @@ def Check_interactions(chains_list,canvas):
         comments_list_light_g      = []
         comments_list_heavy_h      = []
         comments_list_light_h      = []
-        print(dictionary)
         for x in range(len(keyslist)):
             if "Linker" in keyslist[x]:
                 fragments.append(keyslist[previous_linker:x])
@@ -798,14 +797,16 @@ def Check_interactions(chains_list,canvas):
 
             current_fragment = []
             for i in range(len(fragments[x])):
-                if "H[" not in str(fragments[x][i]) and "X[" not in str(fragments[x][i]):
+                if "H[" not in str(fragments[x][i]) and "X[" not in str(fragments[x][i])  :
                     current_fragment.append(fragments[x][i])
+                    if "C[" in fragments[x][i]:
+                        CCs_comments.append(dictionary.get(fragments[x][i])[1])
                 elif "X[" in fragments[x][i]:
                     ADCs.append(fragments[x][i])
                     ADCs_comments.append(dictionary.get(fragments[x][i])[1])
                 elif "C[" in fragments[x][i]:
                     CCs.append(fragments[x][i])
-                    CCs_comments.append(dictionary.get(fragments[x][i])[1])
+
 
 
             fragments[x] = current_fragment
@@ -2569,7 +2570,6 @@ def Check_interactions(chains_list,canvas):
                 comments_list_light_h += dictionaries_to_append[48]
                 ADCs_comments         += dictionaries_to_append[49]
                 CCs_comments          += dictionaries_to_append[50]
-                print("ADCs_comments", ADCs_comments)
 
                 #print(All_positions_and_chains)
                 #ADCs += dictionaries_to_append[10]
@@ -3741,6 +3741,7 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [non_redundant_ADCs[i],  "X", X_comments[i]]
     #CCs
         if CCs != []:
+            print("CC_COmments",C_comments)
             non_redundant_CCs = []
             non_redundant_CCs_sorted = []
             for i in range(len(CCs)):
@@ -4851,7 +4852,7 @@ def sequence_pipeline(canvas):
                 mod_domain_type1 = str(mod_domain_type+" ")
                 mod_domain_type2 = str(mod_domain_type+"* ")
                 domain_type = re.sub("\.|\*|\+|\-|\@|\>","", str(domain_type))
-                if "-" not in strings[i][j]:
+                if "-" not in strings[i][j] or "C" in strings[i][j] or "X" in strings[i][j]:
                     coordinates = domains_dict.get(full_chains[i][j])[0]
                     stored_comment = domains_dict.get(full_chains[i][j])[2]
 
@@ -4860,21 +4861,18 @@ def sequence_pipeline(canvas):
                     stored_comment = bonds_dict.get(full_chains[i][j])[2]
 
                 if stored_comment != "":
-                    print("OK YEAH")
                     comments = stored_comment.split(", ")
 
                     non_redundant_comments = []
                     for x in range(len(comments)):
                         if str(comments[x]) not in str(non_redundant_comments):
                             non_redundant_comments.append(str(comments[x]))
-                    print("NON REDUNDANT",non_redundant_comments)
                     comment_to_add = ""
                     for x in range(len(non_redundant_comments)):
                         note1 = non_redundant_comments[x].split(":")[0]
                         note2 = non_redundant_comments[x].split(":")[1]
                         noting = str("["+note1+":"+note2+"]")
                         comment_to_add +=str(noting)
-                    print("ADDING", comment_to_add)
                     if "-" not in strings[i][j]:
                         strings[i][j] += str(comment_to_add)
                     elif "-" in strings[i][j]:
