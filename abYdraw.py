@@ -153,7 +153,7 @@ def Get_dictionaries(x):
         for j in range(len(chain)):
             domain   =  str(chain[j])
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
-            if (("H*" in domain or "L*" in domain) or ("H(" in chain[j] and "[" in chain[j]) or ("L(" in chain[j] and "[" in chain[j])) and "V" not in domain:
+            if (("H*" in domain or "L*" in domain) or ("H(" in chain[j] and "[" in chain[j]) or ("L(" in chain[j] and "[" in chain[j])) and "V" not in domain and "CL" not in domain:
                 domain = re.sub("\*","", str(domain))
                 h_mod = 1
             else:
@@ -4835,9 +4835,9 @@ def sequence_pipeline(canvas):
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
             if strings[i][j] != "-":
-                #print(domains_dict.get(full_chains[i][j])[0])
                 comment_found = False
                 domain_type = strings[i][j].split("(")[0]
+                print(domain_type)
                 mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
                 mod_domain_type1 = str(mod_domain_type+" ")
                 mod_domain_type2 = str(mod_domain_type+"* ")
