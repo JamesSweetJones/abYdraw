@@ -4074,6 +4074,13 @@ def sequence_pipeline(canvas):
     '''
     global all_buttons
     global Pairing_sensitivity
+    global canvas_polygons
+    global TYPE_labels
+    global NOTE_labels
+    global MOD_labels
+    global ANTI_labels
+    global LENGTH_labels
+    print(canvas_polygons)
     for i in range(len(all_buttons)):
         all_buttons[i].config(fg="black")
     lower_canvas.config(cursor = "arrow")
@@ -4091,6 +4098,8 @@ def sequence_pipeline(canvas):
     LENGTH_keyslist=list(LENGTH_labels.keys())
     domains_list = lower_canvas.find_withtag("domain")
     domains_dict = {}
+    print(polygons_keyslist)
+    print(domains_list)
     for i in range(len(domains_list)):
         for j in range(len(polygons_keyslist)):
             if domains_list[i] == polygons_keyslist[j]:
@@ -4343,8 +4352,9 @@ def sequence_pipeline(canvas):
     assigned_numbers = {}
     for i in range(len(strings)):
         for j in range(len(strings[i])):
+            print(strings[i][j])
             assigned_keyslist = list(assigned_numbers.keys())
-            if str(strings[i][j]) != "-":
+            if str(strings[i][j]) != "-" :
                 if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
@@ -4727,7 +4737,7 @@ def sequence_pipeline(canvas):
                                 note1 = re.sub("^ |\* |\*","", note1)
                                 noting = str("["+note1+":"+note2+"]")
                                 comment_to_add +=str(noting)
-                            if "*" in strings[i][j] or "MOD" in str(non_redundant_comments):
+                            if "*" in strings[i][j] :#or "MOD" in str(non_redundant_comments):
                                 strings[i][j] = re.sub("\*","", strings[i][j])
                                 strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                             if str(comment_to_add) not in str(strings[i][j]):
@@ -6269,6 +6279,12 @@ class MouseMover():
         global specificity_colours
         lower_canvas.delete("all")
         polygons_keyslist = list(canvas_polygons.keys())
+        new_polygon_dict = {}
+        new_TYPE_dict = {}
+        new_NOTE_dict ={}
+        new_ANTI_dict = {}
+        new_MOD_dict = {}
+        new_LENGTH_dict = {}
         for i in range(len(polygons_keyslist)):
             domain_coordinates = canvas_polygons.get(polygons_keyslist[i])[0]
             domain_name = canvas_polygons.get(polygons_keyslist[i])[1]
@@ -6320,17 +6336,29 @@ class MouseMover():
             elif domain_name == "-L-" :####
                 domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
             elif domain_name == "-disulphide-":####
-                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags=("disulphide","bonds"))
+                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags="disulphide")
+            new_polygon_dict[domain] = [domain_coordinates, domain_name]
         for i in range(len(list(TYPE_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels")
+            new_TYPE_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(NOTE_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels")
+            new_NOTE_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(MOD_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels")
+            new_MOD_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(ANTI_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels")
+            new_ANTI_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(LENGTH_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels")
+            new_LENGTH_dict[label][domain_coordinates, entry]
+        canvas_polygons = new_polygon_dict
+        TYPE_labels = new_TYPE_dict
+        NOTE_labels = new_NOTE_dict
+        ANTI_labels = new_ANTI_dict
+        MOD_labels = new_MOD_dict
+        LENGTH_labels = new_LENGTH_dict
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.bind("<B1-Motion>", mm.drag)
         lower_canvas.bind("<ButtonRelease-1>", mm.release)
