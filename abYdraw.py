@@ -5678,7 +5678,11 @@ def update_domain_comments(comment,xc,yc):
             y1 = min_max[2]
             y2 = min_max[3]
         if (x1<= xc <=x2 and y1 <= yc <=y2):
-            canvas_polygons[canvas_keyslist[i]][2] += str(comment)
+            domain_name =canvas_polygons[canvas_keyslist[i]][2]
+            if comment != "":
+                domain_name += str(comment)
+            elif comment == "":
+                canvas_polygons[canvas_keyslist[i]][2] = "" 
 
 
 def items_selected(e):
@@ -5998,18 +6002,23 @@ class MouseMover():
                 if self.item in TYPE_keyslist:
                     lower_canvas.delete(self.item)
                     del TYPE_labels[self.item]
+                    update_domain_comments("",xc,yc)
                 elif self.item in NOTE_keyslist:
                     lower_canvas.delete(self.item)
                     del NOTE_labels[self.item]
+                    update_domain_comments("",xc,yc)
                 elif self.item in ANTI_keyslist:
                     lower_canvas.delete(self.item)
                     del ANTI_labels[self.item]
+                    update_domain_comments("",xc,yc)
                 elif self.item in MOD_keyslist:
                     lower_canvas.delete(self.item)
                     del MOD_labels[self.item]
+                    update_domain_comments("",xc,yc)
                 elif self.item in LENGTH_keyslist:
                     lower_canvas.delete(self.item)
                     del LENGTH_labels[self.item]
+                    update_domain_comments("",xc,yc)
             elif self.item in polygons_keyslist and "disulphide" in canvas_polygons.get(self.item)[1]:
                 lower_canvas.delete(self.item)
                 del canvas_polygons[self.item]
