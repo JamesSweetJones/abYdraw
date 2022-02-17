@@ -4924,7 +4924,8 @@ def sequence_pipeline(canvas):
 
 ##display string to textbox
     textBox.delete("1.0","end")
-    textBox.insert("1.0",str(final_string))
+    for i in final_string:
+        textBox.insert("end",i)
 
 
 def button_hover(e):
@@ -5670,7 +5671,7 @@ def items_selected(e):
     '''
     Render item selected in library
     '''
-    textBox.delete("1.0","end")
+
     global Bond_lock
     global Delete_lock
     global antibodyformats
@@ -5685,14 +5686,17 @@ def items_selected(e):
     lower_canvas.bind("<ButtonRelease-1>", mm.release)
     lower_canvas.config(cursor = "fleur")
     status_label.config(text="")
-    i=Library.curselection()
-
-    index = i[0]
-    entry = antibodyformats.get(formats_keyslist[index])
-    textBox.insert("1.0",str(entry))
-    split_chains = Get_dictionaries(entry)
-    coordinates  = Check_interactions(split_chains, lower_canvas)
-    render(coordinates,lower_canvas,True)
+    try:
+        i=Library.curselection()
+        index = i[0]
+        textBox.delete("1.0","end")
+        entry = antibodyformats.get(formats_keyslist[index])
+        textBox.insert("1.0",str(entry))
+        split_chains = Get_dictionaries(entry)
+        coordinates  = Check_interactions(split_chains, lower_canvas)
+        render(coordinates,lower_canvas,True)
+    except IndexError:
+        return
 
 class MouseMover():
     startcoordinates = []
