@@ -5678,11 +5678,13 @@ def update_domain_comments(comment,xc,yc):
             y1 = min_max[2]
             y2 = min_max[3]
         if (x1<= xc <=x2 and y1 <= yc <=y2):
-            domain_name =canvas_polygons[canvas_keyslist[i]][2]
-            #if comment != "":
-            #    domain_name += str(comment)
-            #if comment == "":
-            canvas_polygons[canvas_keyslist[i]][2] += comment
+            domain_comment =canvas_polygons[canvas_keyslist[i]][2]
+            domain_comment_test = re.sub(" |,","",domain_comment)
+            comment_test   = re.sub(" |,","",comment)
+            if comment_test in str(domain_comment_test):
+                canvas_polygons[canvas_keyslist[i]][2] = re.sub(comment_test,"",domain_comment)
+            elif comment_test not in str(domain_comment_test):
+                canvas_polygons[canvas_keyslist[i]][2] += comment
 
 
 def items_selected(e):
