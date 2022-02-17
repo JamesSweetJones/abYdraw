@@ -153,7 +153,7 @@ def Get_dictionaries(x):
         for j in range(len(chain)):
             domain   =  str(chain[j])
             domain = str(re.sub("\[.*\]|\(.*\)|\{.*\}|\[|\'|\]|\.","", str(domain)))
-            if "H*" in domain and "V" not in domain:
+            if ("H*" in domain or "L*" in domain) and "V" not in domain:
                 domain = re.sub("\*","", str(domain))
                 h_mod = 1
             else:
@@ -163,6 +163,7 @@ def Get_dictionaries(x):
                 x_mod = 1
             else:
                 x_mod = 0
+
 
 
             if domain == "L":
@@ -402,7 +403,6 @@ def Get_dictionaries(x):
 
     if chain_count >= 4 and Claw == False:
         if VHa_checked == {} or VHb_checked == {} or VLa_checked == {} or VLb_checked == {}:
-            print(VHa_checked, VHb_checked , VLa_checked ,VLb_checked)
             error_message = "ERROR: There has been an error in pairing chains in your antibody"
             raise_error(lower_canvas, error_message)
         if fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}: #Check for second IgG
@@ -1336,6 +1336,12 @@ def Check_interactions(chains_list,canvas):
         Chem_con         =[]
         innie_or_outie_list=[]
         h_mods = []
+        l_mods = []
+        l_mod_normal = []
+        l_mods_left_arc = []
+        l_mods_right_arc= []
+        l_mods_left_arc_slant = []
+        l_mods_right_arc_slant= []
         interaction_counter = 0
         keyslist = list(dictionary.keys())
         H_count = 0
@@ -1531,6 +1537,7 @@ def Check_interactions(chains_list,canvas):
             previous_H =False
             mod= ""
             mod_label=""
+            l_mod = False
             h_mod = False
             x_mod = False
             if "V" in keyslist[i]:
@@ -1550,16 +1557,20 @@ def Check_interactions(chains_list,canvas):
             Domain_name = str(re.sub("\@|\>|\<|\[.*\]","",str(keyslist[i])))
             if (("X" in keyslist[i]) or ("C[" in keyslist[i])) and dictionary.get(keyslist[i])[4] == 1:
                 x_mod = True
-                print(x_mod)
                 mod_label = "*"
             else:
                 x_mod = False
 
-            if ("H[" in keyslist[i]) and dictionary.get(keyslist[i])[3] == 1:
+            if ("H[" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
                 h_mod = True
                 h_mods.append(True)
             else:
                 h_mods.append(False)
+
+            if ("L" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
+                l_mods.append(True)
+            else:
+                l_mods.append(False)
 
             if dictionary.get(keyslist[i])[2] != "":
                 note_label = str(dictionary.get(keyslist[i])[2])
@@ -1580,6 +1591,7 @@ def Check_interactions(chains_list,canvas):
                     Domain_name = "X*"
                 elif x_mod == True and "C[" in keyslist[i]:
                     Domain_name = "C*"
+
                 Notes.append(Domain_name+" "+non_redundant_note_label)
                 if len(Notes_positions) == 0:
                     Notes_positions.append([(width/3),(height-100)])
@@ -2275,6 +2287,7 @@ def Check_interactions(chains_list,canvas):
                     hinges.append([hcoordinates,h_mod])
                 elif "Linker[" in keyslist[i-1]:
                     linkers.append(bottom_bond + top_bond)
+                    l_mod_normal.append(l_mods[-1])
                     global L_Labels
                     if L_Labels == True:
                         L_Domain_name = "L"
@@ -2334,6 +2347,7 @@ def Check_interactions(chains_list,canvas):
                             linkers.append([bottom_bond[0], bottom_bond[1], top_bond[0]+3,top_bond[1]-18])
                         elif righthanded == False:
                             linkers.append([bottom_bond[0], bottom_bond[1], top_bond[0]-3,top_bond[1]-18])
+                        l_mod_normal.append(l_mods[-1])
 
                 else:
                     if "Linker[" in keyslist[i-1]:
@@ -2347,6 +2361,8 @@ def Check_interactions(chains_list,canvas):
                         arcbottomx= bottom_bond[0]+50
                         arcbottomy= bottom_bond[1]
                         arcs_left_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
+                        if Linker == True:
+                            l_mods_left_arc_slant.append(l_mods[-1])
                     elif righthanded==False and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]-50
@@ -2354,6 +2370,8 @@ def Check_interactions(chains_list,canvas):
                         arcbottomx= bottom_bond[0]+50
                         arcbottomy= bottom_bond[1]
                         arcs_left.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
+                        if Linker == True:
+                            l_mods_left_arc.append(l_mods[-1])
                     elif righthanded==True and slant == True:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]
@@ -2361,6 +2379,8 @@ def Check_interactions(chains_list,canvas):
                         arcbottomx= bottom_bond[0]-50
                         arcbottomy= bottom_bond[1]
                         arcs_right_slant.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
+                        if Linker == True:
+                            l_mods_right_arc_slant.append(l_mods[-1])
                     elif righthanded==True and slant == False:
                         top_bond = getcoordinates[2]
                         arc_topx  = top_bond[0]+50
@@ -2368,6 +2388,8 @@ def Check_interactions(chains_list,canvas):
                         arcbottomx= bottom_bond[0]-50
                         arcbottomy= bottom_bond[1]
                         arcs_right.append([[arc_topx, arc_topy, arcbottomx,arcbottomy],Linker])
+                        if Linker == True:
+                            l_mods_right_arc.append(l_mods[-1])
                     if Extra_bond==True:
                         extrabondx1=top_bond[0]
                         extrabondy1=top_bond[1]-20
@@ -2467,11 +2489,9 @@ def Check_interactions(chains_list,canvas):
             elif ("X[" in keyslist[i] or "C[" in keyslist[i]):
                 global Show_Leucine_Zippers
                 if  "X[" in keyslist[i] and (mod != "Leucine" or Show_Leucine_Zippers == False):
-                    print("OK THAT'S WRONG")
                     ADCs.append(getcoordinates[0])
 
                 elif "C[" in keyslist[i] and (mod != "Leucine" or Show_Leucine_Zippers == False):
-                    print("")
                     Chem_con.append(getcoordinates[0])
                 if slant == True and righthanded == False:
                     Label_Locations = [getcoordinates[3][0]-20,getcoordinates[3][1]]
@@ -2662,7 +2682,7 @@ def Check_interactions(chains_list,canvas):
         allbonds = bonds
         allbonds = [x for x in bonds if x != []]
         #allbonds = bonds
-        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,Chem_con)
+        return(coordinates_list_heavy_a,coordinates_list_light_a,coordinates_list_heavy_b,coordinates_list_light_b,coordinates_list_heavy_c,coordinates_list_light_c,coordinates_list_heavy_d,coordinates_list_light_d,allbonds,Location_Text,text_coordinates,disulphidebridge1, disulphidebridge2 ,disulphidebridge3,disulphidebridge4,disulphidebridge5,completed_disulphidebridges,Domain_Text,Notes,Notes_positions, arcs_left,arcs_right, arcs_left_slant, arcs_right_slant,ADCs,first_interaction, hinges, linkers,names_list_heavy_a,names_list_light_a,names_list_heavy_b,names_list_light_b,names_list_heavy_c,names_list_light_c,names_list_heavy_d,names_list_light_d,coordinates_list_heavy_e,coordinates_list_light_e,coordinates_list_heavy_f,coordinates_list_light_f,coordinates_list_heavy_g,coordinates_list_light_g,coordinates_list_heavy_h,coordinates_list_light_h,names_list_heavy_e,names_list_light_e,names_list_heavy_f,names_list_light_f,names_list_heavy_g,names_list_light_g,names_list_heavy_h,names_list_light_h,Chem_con,l_mod_normal,l_mods_left_arc,l_mods_right_arc,l_mods_right_arc,l_mods_right_arc_slant)
 
 ##Get starting positions
     VHa_2_test = VHa_chain.copy()
@@ -2766,7 +2786,6 @@ def Check_interactions(chains_list,canvas):
         teststartx = width
         teststarty = 0
         testHpositionVHb = renderchains(VHb_1_test,teststartx,teststarty, canvas)[25]
-        print("testHpositionVHb", testHpositionVHb)
         test_H_positionx = testHpositionVHb[0]
         test_H_positiony = testHpositionVHb[1]
         differencetest_desiredx1 = test_H_positionx - VHb_H_coordinatesx
@@ -3022,10 +3041,7 @@ def Check_interactions(chains_list,canvas):
 
             test_H_positionx = test_H_positionfrag1[0][0][0]
             test_H_positiony = test_H_positionfrag1[0][0][1]
-            frag1_stat_26_to_change = []
-            for i in range(len(frag1_stat[26])):
-                frag1_stat_26_to_change.append(frag1_stat[26][i][0])
-            print(frag1_stat_26_to_change)
+
             frag1_differencetest_desiredx = test_H_positionx - VHa_H_coordinatesx
             frag1_differencetest_desiredy = test_H_positiony - VHa_H_coordinatesy
             coordinates_to_change = [frag1_stat[0],frag1_stat[1],frag1_stat[2],frag1_stat[3],frag1_stat[4],frag1_stat[5],frag1_stat[6],frag1_stat[7],frag1_stat[36],frag1_stat[37],frag1_stat[38],frag1_stat[39],frag1_stat[40],frag1_stat[41],frag1_stat[42],frag1_stat[43],frag1_stat[8],frag1_stat[26][0],frag1_stat[27],frag1_stat[24],frag1_stat[11], frag1_stat[10]]
@@ -3138,7 +3154,6 @@ def Check_interactions(chains_list,canvas):
             #    for j in range(len(fragment1_keyslist)):
             #        try:
             #            keyslist_number = fragment1.get(fragment1_keyslist[j])[1]
-            #            print()
             #            if number == keyslist_number:
             #                for l in range(len(H_disulphide_coordinates.get(H_keyslist[i])[0])):
             #                    print("ELLO ELLO", H_disulphide_coordinates.get(H_keyslist[i])[0][l])
@@ -3307,7 +3322,12 @@ def Check_interactions(chains_list,canvas):
     names_list_heavy_h  = VHa_stats[50] + VLa_stats[50] + VHb_stats[50] + VLb_stats[50] + frag1_stat[50] + frag2_stat[50] + frag3_stat[50] + frag4_stat[50]
     names_list_light_h  = VHa_stats[51] + VLa_stats[51] + VHb_stats[51] + VLb_stats[51] + frag1_stat[51] + frag2_stat[51] + frag3_stat[51] + frag4_stat[51]
     Chem_con            = VHa_stats[52] + VLa_stats[52] + VHb_stats[52] + VLb_stats[52] + frag1_stat[52] + frag2_stat[52] + frag3_stat[52] + frag4_stat[52]
-    print(Hinges,disulphide_bridges)
+    l_mods_normal       = VHa_stats[53] + VLa_stats[53] + VHb_stats[53] + VLb_stats[53] + frag1_stat[53] + frag2_stat[53] + frag3_stat[53] + frag4_stat[53]
+    l_mods_left_arc     = VHa_stats[54] + VLa_stats[54] + VHb_stats[54] + VLb_stats[54] + frag1_stat[54] + frag2_stat[54] + frag3_stat[54] + frag4_stat[54]
+    l_mods_right_arc    = VHa_stats[55] + VLa_stats[55] + VHb_stats[55] + VLb_stats[55] + frag1_stat[55] + frag2_stat[55] + frag3_stat[55] + frag4_stat[55]
+    l_mods_left_arc_slant = VHa_stats[56] + VLa_stats[56] + VHb_stats[56] + VLb_stats[56] + frag1_stat[56] + frag2_stat[56] + frag3_stat[56] + frag4_stat[56]
+    l_mods_right_arc_slant= VHa_stats[57] + VLa_stats[57] + VHb_stats[57] + VLb_stats[57] + frag1_stat[57] + frag2_stat[57] + frag3_stat[57] + frag4_stat[57]
+
     if Yout_of_range == True:
         Ynew_start = Yhow_much-10
         coordinates_to_change = [Heavy_Domains_a,Light_Domains_a,Heavy_Domains_b,Light_Domains_b,Heavy_Domains_c,Light_Domains_c,Heavy_Domains_d,Light_Domains_d,Heavy_Domains_e,Light_Domains_e,Heavy_Domains_f,Light_Domains_f,Heavy_Domains_g,Light_Domains_g,Heavy_Domains_h,Light_Domains_h,Bonds,Hinges,Linkers,ADCs,disulphide_bridges, Label_spot,Chem_con]
@@ -3337,7 +3357,7 @@ def Check_interactions(chains_list,canvas):
     #                            if l %2 == 0:
     #                                coordinates_to_change[i][j][k][l] -= Xnew_start
     print(Hinges,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h)
-    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con)
+    return(Bonds,disulphide_bridges,Hinges,Linkers,Heavy_Domains_a,names_list_heavy_a,Light_Domains_a,names_list_light_a,Heavy_Domains_b,names_list_heavy_b,Light_Domains_b,names_list_light_b,Heavy_Domains_c,names_list_heavy_c,Light_Domains_c,names_list_light_c,Heavy_Domains_d,names_list_heavy_d,Light_Domains_d,names_list_light_d,Label_Text,Label_spot,Domain_Text,Notes,Notes_positions,arcs_left,arcs_right,arcs_left_slant,arcs_right_slant,ADCs,Heavy_Domains_e,names_list_heavy_e,Light_Domains_e,names_list_light_e,Heavy_Domains_f,names_list_heavy_f,Light_Domains_f,names_list_light_f,Heavy_Domains_g,names_list_heavy_g,Light_Domains_g,names_list_light_g,Heavy_Domains_h,names_list_heavy_h,Light_Domains_h,names_list_light_h,Chem_con,l_mods_normal,l_mods_left_arc,l_mods_right_arc,l_mods_right_arc,l_mods_right_arc_slant)
 
 def render(chains_list,canvas,text_to_image):
     if text_to_image == True:
@@ -3412,6 +3432,11 @@ def render(chains_list,canvas,text_to_image):
         arcs_right_slant   = chains_list[28]
         ADCs               = chains_list[29]
         CCs                = chains_list[46]
+        l_mods_normal      = chains_list[47]
+        l_mods_left_arc    = chains_list[48]
+        l_mods_right_arc   = chains_list[49]
+        l_mods_left_arc_slant = chains_list[50]
+        l_mods_right_arc_slant = chains_list[51]
 
 
     #disulphide_bridge
@@ -3431,7 +3456,10 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_left[i][0], "-"]
                 elif arcs_left[i][1] == True:
                     domain = canvas.create_arc(arcs_left[i][0], start=90, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_left","arcs"))
-                    canvas_polygons[domain] = [arcs_left[i][0], "-L-"]
+                    if l_mods_left_arc[i] == True:
+                        canvas_polygons[domain] = [arcs_left[i][0], "-L*-"]
+                    else:
+                        canvas_polygons[domain] = [arcs_left[i][0], "-L-"]
         if arcs_right!=[]:
             for i in range(len(arcs_right)):
                 if arcs_right[i][1] == False:
@@ -3439,7 +3467,10 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_right[i][0], "-"]
                 elif arcs_right[i][1] == True:
                     domain = canvas.create_arc(arcs_right[i][0], start=270, extent=180, style=tk.ARC, outline=linker_colour, width = Bond_thickness,tags=("bonds","arcs_right","arcs"))
-                    canvas_polygons[domain] = [arcs_right[i][0], "-L-"]
+                    if l_mods_right_arc[i] == True:
+                        canvas_polygons[domain] = [arcs_right[i][0], "-L*-"]
+                    else:
+                        canvas_polygons[domain] = [arcs_right[i][0], "-L-"]
         if arcs_left_slant != []:
             for i in range(len(arcs_left_slant)):
                 if arcs_left_slant[i][1] == False:
@@ -3447,7 +3478,10 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_left_slant[i][0], "-"]
                 elif arcs_left_slant[i][1] == True:
                     domain = canvas.create_arc(arcs_left_slant[i][0], start=150, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_left_slant","arcs"))
-                    canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-"]
+                    if l_mods_left_arc_slant[i] == True:
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L*-"]
+                    else:
+                        canvas_polygons[domain] = [arcs_left_slant[i][0], "-L-"]
         if arcs_right_slant != []:
             for i in range(len(arcs_right_slant)):
                 if arcs_right_slant[i][1] == False:
@@ -3455,10 +3489,16 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [arcs_right_slant[i][0], "-"]
                 elif  arcs_right_slant[i][1] == True:
                     domain = canvas.create_arc(arcs_right_slant[i][0], start=270, extent=120, outline = linker_colour, style=tk.ARC,width=Bond_thickness,tags=("bonds","arcs_right_slant","arcs"))
-                    canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-"]
+                    if l_mods_right_arc_slant[i] == True:
+                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L*-"]
+                    else:
+                        canvas_polygons[domain] = [arcs_right_slant[i][0], "-L-"]
         for i in range(len(Linkers)):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            canvas_polygons[domain] = [Linkers[i], "-L-"]
+            if l_mods_normal[i] == True:
+                canvas_polygons[domain] = [Linkers[i], "-L*-"]
+            else:
+                canvas_polygons[domain] = [Linkers[i], "-L-"]
         for i in range(len(Hinges)):
             print("HINGES", Hinges[i][0])
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
@@ -3541,7 +3581,6 @@ def render(chains_list,canvas,text_to_image):
                     canvas_polygons[domain] = [non_redundant_ADCs[i],  "X"]
     #CCs
         if CCs != []:
-            print("OK THEN!")
             non_redundant_CCs = []
             non_redundant_CCs_sorted = []
             for i in range(len(CCs)):
@@ -4599,8 +4638,6 @@ def sequence_pipeline(canvas):
                         disulphy1 = disulphides_dict.get(disulphides_keyslist[x])[0][1]
                         disulphx2 = disulphides_dict.get(disulphides_keyslist[x])[0][2]
                         disulphy2 = disulphides_dict.get(disulphides_keyslist[x])[0][3]
-                        print(d1x1,disulphx1,d1x2,d1y1,disulphy1,d1y2)
-                        print(d1x1,disulphx2,d1x2,d1y1,disulphy2,d1y2)
                         if (d1x1 <= disulphx2 <= d1x2 and d1y1<= disulphy2 <= d1y2) or (d1x1 <= disulphx1 <= d1x2 and d1y1<= disulphy1 <= d1y2):
                             for f in range(len(bonds_keyslist)):
                                 if bonds_keyslist[f] != index:
@@ -4690,9 +4727,8 @@ def sequence_pipeline(canvas):
                                 note1 = re.sub("^ |\* |\*","", note1)
                                 noting = str("["+note1+":"+note2+"]")
                                 comment_to_add +=str(noting)
-                            if "*" in strings[i][j]:
+                            if "*" in strings[i][j] or "MOD" in str(non_redundant_comments):
                                 strings[i][j] = re.sub("\*","", strings[i][j])
-                            if "MOD" in str(non_redundant_comments):
                                 strings[i][j] = strings[i][j].split("(")[0]+"*("+strings[i][j].split("(")[1]
                             if str(comment_to_add) not in str(strings[i][j]):
                                 if "-" not in strings[i][j]:
@@ -4700,7 +4736,7 @@ def sequence_pipeline(canvas):
                                 elif "-" in strings[i][j]:
                                     strings[i][j] = strings[i][j].split("-")[1]
                                     strings[i][j] = str("-"+strings[i][j]+comment_to_add+"-")
-            if comment_found == False:
+            if comment_found == False and "*" not in strings[i][j]:
                 strings[i][j] = re.sub("\*","",strings[i][j])
 
 ##conver lists to expression
@@ -4916,13 +4952,10 @@ def domain_type_button(letter):
     global domain_charge
     global Domain_Primer
     if domain_type == "" or letter not in domain_type:
-        print("1")
         domain_type = str(letter)
     elif domain_type != "" and letter not in domain_type:
-        print("2")
         domain_type += str(letter)
     elif letter in domain_type:
-        print("3")
         domain_type = re.sub(letter,"",str(domain_type))
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
@@ -5548,7 +5581,6 @@ class MouseMover():
                     labely_theory = (y1+y2)/2
                     label_text_test = re.sub("\.|\>|\@","",canvas_polygons.get(self.item)[1])
                     label_text_test = re.sub("\_","-",label_text_test)
-                    print(label_text_test, label_text)
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -5815,7 +5847,6 @@ class MouseMover():
         polygons_keyslist = list(canvas_polygons.keys())
         for i in range(len(polygons_keyslist)):
             domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
-            print(domain_coordinates)
             min_max = get_min_max_coordinates(domain_coordinates)
             x1 = min_max[0]
             x2 = min_max[1]
@@ -5828,7 +5859,6 @@ class MouseMover():
             domain_name = canvas_polygons.get(self.item)[1]
             clean_domain_name = re.sub("\.a|\.b|\.c|\.d|\.e|\.f|\.g|\.h|a|b|c|d|e|f|g|h","",domain_name)
             clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*| ","",clean_domain_name)
-            print(domain_name)
             if domain_type != "":
                 domain_type_to_add = re.sub("\.","",domain_type)
                 domain_type_to_add = str("."+domain_type_to_add)
@@ -5842,16 +5872,10 @@ class MouseMover():
                     domain_type_to_add = domain_name.split(".")[1]
             #domain = re.sub("\-", "_", domain_name)
             if "+" in str(domain_name) or "_" in str(domain_name) or "-" in str(domain_name):
-                print("YES")
                 if "+" in domain_charge and "+" in str(domain_name):
-                    print("1")
                     domain_charge_to_add = re.sub("\+","",domain_charge)
                 elif "_" in domain_charge and "_"  in str(domain_name):
-                    print("2")
-                    print(domain_name)
                     domain_charge_to_add = re.sub("\_","",domain_charge)
-                    print("DOMAIN CHARGE TO ADD", domain_charge_to_add)
-
                 else:
                     domain_charge_to_add = domain_charge
             else:
@@ -5865,15 +5889,10 @@ class MouseMover():
             extra_mods_to_add = ""
             if "*" in str(domain_name) or "!" in str(domain_name):
                 if "*" in str(extra_mods):
-                    print("1")
                     extra_mods_to_add += re.sub("\*","",extra_mods)
-
                 if "!" in str(extra_mods):
-                    print("2")
                     extra_mods_to_add += re.sub("\!","",extra_mods)
-
             else:
-                print("4")
                 extra_mods_to_add = extra_mods
 
             if "V" in domain_name:
@@ -6104,13 +6123,10 @@ class MouseMover():
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
-        if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "TYPE_labels")
-            TYPE_labels[label] = [[xc,yc], entry]
-        else:
-            if Type_list_header.get() != "TYPE":
-                label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels")
-                MOD_labels[label] = [[xc,yc], Type_list_header.get()]
+        if Type_list_header.get() != "TYPE":
+            label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels")
+            MOD_labels[label] = [[xc,yc], Type_list_header.get()]
+
     def place_note_label(self,event):
         global NOTE_labels
         widget = lower_canvas
@@ -6126,13 +6142,9 @@ class MouseMover():
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
-        if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "MOD_labels")
-            MOD_labels[label] = [[xc,yc], entry]
-        else:
-            if mod_list_header.get() != "MOD":
-                label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels")
-                MOD_labels[label] = [[xc,yc], mod_list_header.get()]
+        if mod_list_header.get() != "MOD":
+            label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels")
+            MOD_labels[label] = [[xc,yc], mod_list_header.get()]
 
     def place_anti_label(self,event):
         global ANTI_labels
