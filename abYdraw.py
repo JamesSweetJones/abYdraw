@@ -1062,7 +1062,7 @@ def Check_interactions(chains_list,canvas):
         def in_or_out(n,chain,first_comp,second_comp,Build_in,Build_out,fragment1,fragment2,fragment3,fragment4,Light_chain_check):
             chain_keyslist = list(chain.keys())
             check_VHa_VLa_interactor = False
-            if len(chain.get(chain_keyslist[n])[0]) == 1:
+            if len(chain.get(chain_keyslist[n])[0]) == 1 or ("VHH" in str(chain_keyslist[n])) :
                 innie_or_outie_list.append("Single_Fv_Chain")
             else:
                 interactor = chain.get(chain_keyslist[n])[0][1]
@@ -1207,7 +1207,7 @@ def Check_interactions(chains_list,canvas):
                 if n == 0:
                     try:
                         if "Linker[" in keyslist[n+1]:
-                            if len(chain.get(keyslist[n])[0]) == 1:
+                            if len(chain.get(keyslist[n])[0]) == 1 or ("VHH" in str(keyslist[n])):
                                 innie_or_outie_list.append("Single_Fv_Chain")
                             else:
                                 try:
@@ -1240,7 +1240,7 @@ def Check_interactions(chains_list,canvas):
                                     innie_or_outie_list.append("innie")
 
                         elif "Linker[" not in keyslist[n+1]:
-                            if len(chain.get(keyslist[n])[0]) == 1:
+                            if len(chain.get(keyslist[n])[0]) == 1 or ("VHH" in str(keyslist[n])):
                                 innie_or_outie_list.append("Single_Fv_Chain")
                             elif chain_count == 2 or chain_count == 1:
                                 if Light_chain_check == False:
@@ -1249,7 +1249,7 @@ def Check_interactions(chains_list,canvas):
 
                                 innie_or_outie_list.append(default)
                     except IndexError:
-                        if len(chain.get(keyslist[n])[0]) == 1:
+                        if len(chain.get(keyslist[n])[0]) == 1 or ("VHH" in str(keyslist[n])):
                             innie_or_outie_list.append("Single_Fv_Chain")
                         else:
                             innie_or_outie_list.append(default)
@@ -4548,7 +4548,7 @@ def sequence_pipeline(canvas):
     paired = []
     for i in range(len(strings)):
         for j in range(len(strings[i])):
-            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]) and "VHH" not in str(strings[i][j]):
+            if ":" not in str(strings[i][j]) and "-" not in str(strings[i][j]):# and "VHH" not in str(strings[i][j]):
                 number =  re.findall("\((.*?)\)", str(strings[i][j]))
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
@@ -4560,7 +4560,7 @@ def sequence_pipeline(canvas):
                     d1x2 = min_max[1]
                     d1y1 = min_max[2]
                     d1y2 = min_max[3]
-                    if "V" in str(domains_dict.get(index)[1]):
+                    if "V" in str(domains_dict.get(index)[1]) and "VHH" not in str(domains_dict.get(index)[1]):
                         testx1 = (domains_dict.get(index)[0][4])
                         testx2 = (domains_dict.get(index)[0][8])
                         if testx1 > testx2:
@@ -4572,6 +4572,7 @@ def sequence_pipeline(canvas):
                         d1x2 = min_max[1]+Pairing_sensitivity
                         d1y1 = min_max[2]
                         d1y2 = min_max[3]
+
                     #Search for overlapping matching domains
                     for f in range(len(domains_keyslist)):
                         if domains_keyslist[f] != index:
@@ -4608,7 +4609,8 @@ def sequence_pipeline(canvas):
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
+                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])):
+
                                                             disulphide_count = 0
 
                                                             for y in range(len(disulphides_keyslist)):
@@ -4618,8 +4620,10 @@ def sequence_pipeline(canvas):
                                                                 disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
                                                                 if ((d1x1 <= disulphx2 <= d1x2 and d1y1 <= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1 <= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1 <= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
                                                                     disulphide_count += 1
-
-                                                            if disulphide_count == 0:
+                                                            if "VHH" in str(strings[i][j]) and disulphide_count == 0:
+                                                                strings[i][j] = str(domain_name+"("+str(number)+")")
+                                                                strings[a][b] = str(paired_name+"("+str(paired_number)+")")
+                                                            elif disulphide_count == 0:
                                                                 strings[i][j] = str(domain_name+"("+str(number)+":"+str(paired_number)+")")
                                                                 strings[a][b] = str(paired_name+"("+str(paired_number)+":"+str(number)+")")
                                                             elif disulphide_count > 0:
@@ -7518,7 +7522,7 @@ if len(sys.argv) < 2:
     domain_mod  = ""
     extra_mods  = ""
     domain_charge=""
-    Pairing_sensitivity = 30
+    Pairing_sensitivity = 40
     Bond_thickness = 2
     domain_direction = "constant"
     H_Labels = False
@@ -7678,7 +7682,7 @@ if len(sys.argv) < 2:
     "scFV4":"VH.a(1:3)-L(2)-VL.a(3:1)-CL(4:8){1}|VL.a(5:7)-L(6)-VH.a(7:5)-CH1(8:4){1}-H(9:20){2}-CH2(10:21)-CH3(11:22)|VH.b(12:14)-L(13)-VL.b(14:12)-CL(15:19){1}|VL.b(16:18)-L(17)-VH.b(18:16)-CH1(19:15){1}-H(20:9){2}-CH2(21:10)-CH3(22:11)",
     "VHH4-IgG":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3*@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3*>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
-    "Camelid":"VHH.a(1)-H(2:6){3}-CH2(3:7)-CH3(4:8)|VHH.a(5)-H(6:2){3}-CH2(7:3)-CH3(8:4)",
+    "Camelid":"VHH.a(1:5){1}-H(2:6){2}-CH2(3:7)-CH3(4:8)|VHH.a(5:1){1}-H(6:2){2}-CH2(7:3)-CH3(8:4)",
     "BiTE":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
     "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[TYPE:FUSION, NOTE: human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
     "Cov-X-body":"X(1)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
@@ -7781,17 +7785,18 @@ if len(sys.argv) < 2:
                 Bond_Arrows = (0,0,0)
 
 
+
         settings_frame = tk.Frame(tab1, bg = "#D3D3D3")
         settings_frame.place(relx=0.05, rely = 0.05,relheight = 0.9, relwidth = 0.9)
 
         ttk.Label(settings_frame,text ="Pairing Sensitivity (pixels)").place(relx=0.1, rely = 0.02)
         sensitivity_scalebar = tk.Scale(settings_frame, from_=0, to=100, orient="horizontal")
-        sensitivity_scalebar.set(30)
+        sensitivity_scalebar.set(Pairing_sensitivity)
         sensitivity_scalebar.place(relx=0.1, rely = 0.10,relheight = 0.2, relwidth = 0.8)
 
         ttk.Label(settings_frame,text ="Bond Thickness (pixels)").place(relx=0.1, rely = 0.30)
         bond_thickness_scalebar = tk.Scale(settings_frame, from_=0, to=5, orient="horizontal")
-        bond_thickness_scalebar.set(2)
+        bond_thickness_scalebar.set(Bond_thickness)
         bond_thickness_scalebar.place(relx=0.1, rely = 0.37,relheight = 0.2, relwidth = 0.8)
 
         ttk.Label(settings_frame,text ="Bond Arrows").place(relx=0.1, rely = 0.6)
@@ -7801,17 +7806,17 @@ if len(sys.argv) < 2:
 
         ttk.Label(settings_frame,text ="H Labels").place(relx=0.3, rely = 0.6)
         H_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-        H_label_scalebar.set(0)
+        H_label_scalebar.set(H_Labels)
         H_label_scalebar.place(relx=0.3, rely = 0.67,relheight = 0.2, relwidth = 0.2)
 
         ttk.Label(settings_frame,text ="L Labels").place(relx=0.5, rely = 0.6)
         L_label_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-        L_label_scalebar.set(0)
+        L_label_scalebar.set(L_Labels)
         L_label_scalebar.place(relx=0.5, rely = 0.67,relheight = 0.2, relwidth = 0.2)
 
         ttk.Label(settings_frame,text ="Leucine Zippers").place(relx=0.7, rely = 0.6)
         Leucine_zipper_scalebar = tk.Scale(settings_frame, from_=0, to=1, orient="horizontal")
-        Leucine_zipper_scalebar.set(0)
+        Leucine_zipper_scalebar.set(Show_Leucine_Zippers)
         Leucine_zipper_scalebar.place(relx=0.7, rely = 0.67,relheight = 0.2, relwidth = 0.2)
 
         Update_settings_button= tk.Button(settings_frame, font=20, text = "Update", command =lambda: Update_settings())
