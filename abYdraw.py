@@ -8492,9 +8492,9 @@ else:
     my_parser.add_argument('-a','--arrows', nargs='?',type=int,help='Toggle bond direction arrows 0-1 (default 0)')
     my_parser.add_argument('-b','--thickness', type=int,help='Set bond thickness 1-5 (default 2)')
 
-    my_parser.print_help()
+    #my_parser.print_help()
     args = my_parser.parse_args()
-    print(args)
+    #print(args)
     input_path = args.file
     input_string = args.input
     if input_string is not None and input_path is None:
