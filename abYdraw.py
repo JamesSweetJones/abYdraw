@@ -52,6 +52,8 @@ def Get_dictionaries(x):
 
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
+    for i in range(len(brackets)):
+        brackets[i]= re.sub(",","",brackets[i])
     y = ""
     counter = 0
     if len(non_brackets) > len(brackets):
@@ -8356,7 +8358,8 @@ if len(sys.argv) < 2:
         "on at a time, but you may choose any combination of modifications and specificities to accompany your selection. Specificity types are only applicable to VH or VL domains but when drawing other domains, a default 'a' value is set. Once selected you will notice the cursor will change from arrow to '+' sign. This means you can left-click to insert your chosen domain type onto the canvas at the location you have clicked. If no domain types are selected but a modification or specificity",
         "are, then by clicking on a domain on the canvas, you may replace its current specificity and modification to those you have selected.",
         "Domains may be connected with the connector options in the first column of the palette. When a connector type is selected it will become highlighted in red and the user must click and drag the bond from its starting position to its end, making sure each end is inside the boundaries two domains it links. Bonds are unidirectional and start from N-terminus to C-terminus.",
-        "Comments may be added by selecting a comment type, which will highlight the button just pressed and the 'Comment' button and then inputting the comment into the entry box beneath the palette. Comments may then be drawn on the domains they are applicable to. To disable further commenting, ensure the comment type and 'Comment' buttons are no longer highlighted.",
+        "Comments may be added by selecting a comment type, which will highlight the button just pressed and the 'Comment' button and then inputting the comment into the entry box or drop-down menus beneath the palette. Comments may then be drawn on the domains they are applicable to. To disable further commenting, ensure the comment type and 'Comment' buttons are no longer highlighted.",
+        "Comments may be removed by commenting on a domain where that comment is already applied and tidying the canvas."
         "If no domain types or modifications are selected then domains, linkers and comments may be rearranged by clicking and dragging them. You must ensure that interacting domains are positioned close together at roughly the same level and that VH and VL domains face each other to complete their antigen binding domains. Their orientations can be changed by right-clicking the relevant domains. Furthermore features may be deleted by selecting the 'Delete' button on the palette and",
         "then selecting what to delete. To remove all features, click 'Clear All' and the canvas will be made blank.",
         "Once domains and connectors are arranged, click the 'Get AbML' button to generate the AbML descriptor string for this sequence. Once this has been generated it will appear in the input box. You may then click 'Get structure' again to re-render the schematic with abYdraw. Alternatively, the 'Tidy' button performs both steps of this operation. Once rendered, an image may be altered by adding or removing domains. By clicking 'Get Sequence' or 'Tidy', you will obtain a new expression",
@@ -8366,7 +8369,7 @@ if len(sys.argv) < 2:
         "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and AbML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
         " ",
         "7. Exporting and Saving",
-        "Exporting the canvas image as .eps file can be done by 'Export Image' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
+        "Exporting the canvas image as .eps, .jpeg or .png file can be done by 'Export Image' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
         "Finally you may export a Template File from the expression in the entry box which is a format of notating important BsAb residues. The programme cannot locate these residues but it can identify the features that are in the BsAb that users may want to include in the Template Files.",
         " ",
         "8. Settings",
@@ -8477,7 +8480,7 @@ else:
     # Create the parser
     my_parser = argparse.ArgumentParser(prog="abYdraw",
                                         usage='python %(prog)s [options]',
-                                        description='Draws antibody formats')
+                                        description="This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and with both command-line and graphical interfaces built by using standard packages TKinter to in order to make it as accessible as possible.")
 
     my_parser.add_argument('-f','--file', type=str,help='the path to plaintext file with AbML expression')
     my_parser.add_argument('-i','--input', type=str,help='string of AbML input')
