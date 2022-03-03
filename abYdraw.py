@@ -6662,7 +6662,8 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
 
     #if V == True and direction == "constant":
     #    if righthanded == False:
-
+    firstx  = ""
+    firsty = ""
     global Show_Leucine_Zippers
     if V == False and  direction == "constant" and mod == "" and X == False:
         firstx      = startx
@@ -7227,6 +7228,10 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
                 fifthx     =    fourthx-30
             fifthy         =    fourthy-38
             coordinates = [firstx , firsty , secondx , secondy, thirdx, thirdy, fourthx, fourthy, fifthx, fifthy]
+    if firstx == "" and firsty == "":
+        error_message = str("There has been an error in rendering your structure")
+        raise_error(lower_canvas,error_message)
+
 
     if (slant == True or mod == "Leucine" or previous_H == True):# and X == False:
         top_bond    = [firstx,firsty+2]
@@ -8657,7 +8662,7 @@ else:
         rendering = render(coordinates, lower_canvas,True)
         if format != "png" and format != "jpeg" and format !="eps":
             message = "Please specify a correct format"
-            raise_error(message,lower_canvas)
+            raise_error(lower_canvas,message)
         if save == 1:
             CLI_save_png(format, output_name,lower_canvas)
         if template == 1:
