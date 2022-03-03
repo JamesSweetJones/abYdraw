@@ -2153,15 +2153,35 @@ def Check_interactions(chains_list,canvas):
                     elif chain_count == 2 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+2 == dictionary.get(keyslist[i-2])[1]:
                         if CLI == False:
                             print("checkpoint16")
+
                         if dictionary == VHa_chain:
-                            Build_up=True
-                            Build_down=False
-                            if slant==True and righthanded == False:
-                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                            elif  slant==True and righthanded == True:
-                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                            elif slant==False:
-                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            tangle_found = False
+                            if chain_count ==2:
+                                keyslista = list(VHa_chain.keys())
+                                keyslistb = list(VHb_chain.keys())
+                                try:
+                                    interactor = VHa_chain.get(keyslista[0])[1]
+                                    if "Linker[" in keyslista[1]:
+                                        interactor_2 = VHa_chain.get(keyslista[2])[1]
+                                    else:
+                                        interactor_2 = VHa_chain.get(keyslista[1])[1]
+                                    if interactor_2 < interactor: #and "H[" in keyslista[-1]:
+                                        tangle_found = True
+                                except IndexError:
+                                    pass
+
+
+                            if tangle_found == True:
+                                Build_up=True
+                                Build_down=False
+                                if slant==True and righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif  slant==True and righthanded == True:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif slant==False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif tangle_found == False:
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         elif dictionary == VHb_chain:
                             try:
