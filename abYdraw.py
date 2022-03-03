@@ -184,10 +184,13 @@ def Get_dictionaries(x):
                 error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
                 raise_error(lower_canvas, error_message)
             for i in range(len(locationstr)):
-                if i == 0:
-                    location_counting.append(int(locationstr[i]))
-                location.append(int(locationstr[i]))
-
+                try:
+                    if i == 0:
+                        location_counting.append(int(locationstr[i]))
+                    location.append(int(locationstr[i]))
+                except ValueError:
+                    error_message = str("Domain "+chain[j]+" is not numbered")
+                    raise_error(lower_canvas,error_message)
 
 
 
