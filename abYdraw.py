@@ -1649,7 +1649,6 @@ def Check_interactions(chains_list,canvas):
                 h_mods.append(dictionary.get(keyslist[i])[2])
             elif ("H[" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 2:
                 h_mod = 2
-                print("OOOH WE GOT A HMOD")
                 h_mods.append("^")
             else:
                 h_mods.append(False)
@@ -3694,10 +3693,8 @@ def render(chains_list,canvas,text_to_image):
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            print(Hinges[i][1])
             if Hinges[i][1] == False:
                 Hinges[i][1] = ""
-                print("OH YEAHHH")
                 canvas_polygons[domain] = [Hinges[i][0], "-H-", Hinges[i][1]]
             elif "MOD" in  str(Hinges[i][1]) or Hinges[i][1] != False  and "^" not in Hinges[i][1]:
                 canvas_polygons[domain] = [Hinges[i][0], "-H*-",Hinges[i][1]]
@@ -5033,6 +5030,34 @@ def delete_all_button(canvas):
     textBox.delete("1.0","end")
 
 ################Keypad buttons############
+def remove_mods_button_function():
+    global remove_mods_button_lock
+    global domain_type
+    global domain_mod
+    global extra_mods
+    global domain_charge
+    global Domain_Primer
+    global Domain_Primer_Lock
+    if remove_mods_button_lock == 0:
+        remove_mods_button.config(fg="red")
+        remove_mods_button_lock = 1
+        domain_charge = ""
+        extra_mods = ""
+        domain_mod = ""
+        update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
+        lower_canvas.config(cursor = "arrow")
+        lower_canvas.bind("<Button-1>", mm.change_specificity)
+        lower_canvas.unbind("<B1-Motion>")
+        lower_canvas.unbind("<ButtonRelease-1>")
+    elif remove_mods_button_lock == 1:
+        remove_mods_button.config(fg="black")
+        remove_mods_button_lock = 0
+        lower_canvas.config(cursor = "fleur")
+        lower_canvas.unbind("<Button-1>")
+        lower_canvas.bind("<Button-1>", mm.select)
+        lower_canvas.bind("<B1-Motion>", mm.drag)
+        lower_canvas.bind("<ButtonRelease-1>", mm.release)
+
 def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
     global Domain_Primer
     global Domain_Primer_Lock
@@ -5078,7 +5103,7 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         else:
             Domain_Primer[8] += domain_charge
         ##update extra mods###
-        Domain_Primer[8] = re.sub("\!|\*","",Domain_Primer[8])
+        Domain_Primer[8] = re.sub("\!|\*|\^","",Domain_Primer[8])
         if "V" in Domain_Primer[8]:
             Domain_Primer[8] = re.sub("\.",extra_mods+".",Domain_Primer[8])
         else:
@@ -5133,6 +5158,8 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         Gly_button.config(fg="red")
     if "*" in extra_mods:
         Mod_button.config(fg="red")
+    if "^" in extra_mods:
+        Drug_button.config(fg="red")
     if domain_mod == ">":
         KIH_knob.configure(fg="red")
     elif domain_mod == "@":
@@ -5225,6 +5252,8 @@ def extra_mod_button(letter):
             extra_mods = re.sub("\!","",str(extra_mods))
         elif letter == "*":
             extra_mods = re.sub("\*","",str(extra_mods))
+        elif letter == "^":
+            extra_mods = re.sub("\^","",str(extra_mods))
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
 def domain_charge_button(letter):
@@ -6158,7 +6187,7 @@ class MouseMover():
         if domain_self_item == True:
             domain_name = canvas_polygons.get(self.item)[1]
             clean_domain_name = re.sub("\.a|\.b|\.c|\.d|\.e|\.f|\.g|\.h|a|b|c|d|e|f|g|h","",domain_name)
-            clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*| ","",clean_domain_name)
+            clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*|\^","",clean_domain_name)
             if domain_type != "":
                 domain_type_to_add = re.sub("\.","",domain_type)
                 domain_type_to_add = str("."+domain_type_to_add)
@@ -7629,6 +7658,7 @@ if len(sys.argv) < 2:
     H_Labels = False
     L_Labels = False
     Show_Leucine_Zippers = False
+    remove_mods_button_lock = 0
     Bond_Arrows=(0,0,0)
     ######################BUTTONS
     a_button= tk.Button(frame2,text="a",bg = "#CFCFCF", command =lambda: domain_type_button("a"))
@@ -7651,6 +7681,8 @@ if len(sys.argv) < 2:
     Mod_button.place(relx = 0.61, rely = 0.41, relheight = 0.1, relwidth=0.05)
     Gly_button = tk.Button(frame2,text="!",bg = "#CFCFCF", command =lambda: extra_mod_button("!"))
     Gly_button.place(relx = 0.66, rely = 0.41, relheight = 0.1, relwidth=0.05)
+    Drug_button = tk.Button(frame2,text="^",bg = "#CFCFCF", command =lambda: extra_mod_button("^"))
+    Drug_button.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.05)
     KIH_knob= tk.Button(frame2,text=">",bg = "#CFCFCF", command =lambda: domain_mod_button(">"))
     KIH_knob.place(relx = 0.71, rely = 0.41, relheight = 0.1, relwidth=0.05)
     KIH_hole= tk.Button(frame2,text="@",bg = "#CFCFCF", command =lambda: domain_mod_button("@"))
@@ -7659,8 +7691,10 @@ if len(sys.argv) < 2:
     Positive_charge.place(relx = 0.61, rely = 0.51, relheight = 0.1, relwidth=0.05)
     Negative_charge= tk.Button(frame2,text="-",bg = "#CFCFCF", command =lambda: domain_charge_button("_"))
     Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
+    remove_mods_button = tk.Button(frame2,text="rm",bg = "#CFCFCF", command =lambda: remove_mods_button_function())
+    remove_mods_button.place(relx = 0.76,rely = 0.51, relheight = 0.1, relwidth= 0.05)
     LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
-    LengthLabelButton.place(relx = 0.71,rely = 0.51, relheight = 0.1, relwidth= 0.1)
+    LengthLabelButton.place(relx = 0.81,rely = 0.61,relheight = 0.1, relwidth= 0.18)
     NoteLabelButton = tk.Button(frame2,text="NOTE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("NOTE"))
     NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
     TypeLabelButton = tk.Button(frame2,text="TYPE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("TYPE"))
@@ -7744,7 +7778,7 @@ if len(sys.argv) < 2:
 
 
     CustomLabelButton = tk.Button(frame2,text="Comment", bg="#CFCFCF", command=lambda: CommentLabelButton_function(lower_canvas))
-    CustomLabelButton.place(relx = 0.81,rely = 0.61, relheight = 0.2, relwidth= 0.18)
+    CustomLabelButton.place(relx = 0.81,rely = 0.71, relheight = 0.1, relwidth= 0.18)
     CustomLabelEntry = tk.Text(frame2, font=20)
     CustomLabelEntry.place(relx=0.67,rely = 0.83, relwidth=0.31,relheight=0.15)
     ##Status bar###
@@ -8501,7 +8535,7 @@ if len(sys.argv) < 2:
     domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button]
     bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
     specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
-    mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button]
+    mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button,Drug_button]
     comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton]
     delete_buttons = [InsertDelAllButton, InsertDelClickButton]
     all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons + comments_buttons + delete_buttons
