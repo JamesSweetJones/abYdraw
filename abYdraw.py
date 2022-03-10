@@ -1656,6 +1656,8 @@ def Check_interactions(chains_list,canvas):
 
             if ("L" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 1:
                 l_mods.append(dictionary.get(keyslist[i])[2])
+            elif ("L" in keyslist[i]) and  dictionary.get(keyslist[i])[3] == 2:
+                l_mods.append("^")
             else:
                 l_mods.append(False)
             non_redundant_note_label = ""
@@ -3685,6 +3687,9 @@ def render(chains_list,canvas,text_to_image):
             domain = canvas.create_line(Linkers[i], fill=linker_colour, width = Bond_thickness,tags="bonds", arrow=tk.LAST, arrowshape=Arrow_dimensions)
             if "MOD" in str(l_mods_normal[i]):
                 canvas_polygons[domain] = [Linkers[i], "-L*-", l_mods_normal[i]]
+            elif "^" in str(l_mods_normal[i]):
+                l_mods_normal[i] = re.sub("\^","",l_mods_normal[i])
+                canvas_polygons[domain] = [Linkers[i], "-L^-", l_mods_normal[i]]
             else:
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
@@ -4546,7 +4551,7 @@ def sequence_pipeline(canvas):
         for j in range(len(strings[i])):
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-" :
-                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-H^-" not in strings[i][j] and "-L*-" not in strings[i][j]:
+                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-L^-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-H^-" not in strings[i][j] and "-L*-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
                     assigned_match = False
@@ -4589,7 +4594,9 @@ def sequence_pipeline(canvas):
                 elif "-L*-" in strings[i][j]:
                     strings[i][j] = str("-L*("+str(counter)+")-")
                     counter += 1
-
+                elif "-L^-" in strings[i][j]:
+                    strings[i][j] = str("-L^("+str(counter)+")-")
+                    counter += 1
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
@@ -4886,7 +4893,6 @@ def sequence_pipeline(canvas):
     for i in range(len(full_chains)):
         for j in range(len(full_chains[i])):
             if strings[i][j] != "-":
-                print(strings[i][j])
                 comment_found = False
                 domain_type = strings[i][j].split("(")[0]
                 mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
