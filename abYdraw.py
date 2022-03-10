@@ -564,7 +564,7 @@ def Get_dictionaries(x):
             error_message = str("ERROR: ! modifications are only allowed in CH2 domains, not "+ domain_to_print)
             raise_error(lower_canvas, error_message)
         if "Linker[" not in all_to_check_keys[i]:
-            domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*","", domain_to_print)
+            domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^","", domain_to_print)
             if domain not in possible_domains:
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
