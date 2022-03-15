@@ -2455,8 +2455,8 @@ def Check_interactions(chains_list,canvas):
 
 
                 else:
-
-                    bonds.append(bottom_bond + top_bond)
+                    if "Linker[" not in keyslist[i]:
+                        bonds.append(bottom_bond + top_bond)
                 #if mod=="Leucine":
                 #    bonds.append(getcoordinates[0])
             elif i > 0 and Build_up==True:
@@ -2540,6 +2540,7 @@ def Check_interactions(chains_list,canvas):
                                 h_mod= h_mods[-1]
                             hinges.append([h_coordinates, h_mod])
                         else:
+                            print("WHOOPS1")
                             bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
                             bottomx=extrabondx1
@@ -4439,7 +4440,7 @@ def sequence_pipeline(canvas):
 
 
 
-##get raw chains in format
+    ##get raw chains in format
     for i in range(len(chains)):
         start = chains[i]
         string = []
@@ -4544,8 +4545,8 @@ def sequence_pipeline(canvas):
         strings.append(string)
 
 ##reorder chains by specificity
-    #print("strings", strings)
-    #print("full_chains",full_chains)
+    print("strings", strings)
+    print("full_chains",full_chains)
     #chain_starters = []
     #chain_starters_coords = []
     #for i in range(len(full_chains)):
