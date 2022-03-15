@@ -7805,7 +7805,7 @@ if len(sys.argv) < 2:
     Type_list_header.set(Type_options[0])
     Type_menu = tk.OptionMenu(frame2, Type_list_header, *Type_options)
     Type_menu.place(relx=0.01,rely = 0.83, relwidth=0.33,relheight=0.15)
-    Mod_options = ["MOD", "MOD:ENHANCEFCRN","MOD:ENHANCEADCC",    "MOD:STRANDEXCHANGE","MOD:DISULPHIDE",    "MOD:DISULFIDE", "MOD:MOD:REMDISULPHIDE",    "MOD:PI",    "MOD:CONJUGATION",   "MOD:HEXAMER",    "MOD:NOFCGR",    "MOD:NOPROTEINA","MOD:NOOX",    "MOD:NOADCC",    "MOD:NOCDC",    "MOD:NOADCP",    "MOD:NOADCCCDC",    "MOD:NOGLYCOS","MOD:NOADE",    "MOD:NOAGG",    "MOD:NOPROT",    "MOD:REMCYS",    "MOD:STABILIZATION",    "MOD:AFFINITY",    "MOD:OTHER"]
+    Mod_options = ["MOD", "MOD:ENHANCEFCRN","MOD:ENHANCEADCC",    "MOD:STRANDEXCHANGE","MOD:DISULPHIDE",    "MOD:DISULFIDE", "MOD:REMDISULPHIDE","MOD:REMDISULFIDE",    "MOD:PI",    "MOD:CONJUGATION",   "MOD:HEXAMER",    "MOD:NOFCGR",    "MOD:NOPROTEINA","MOD:NOOX",    "MOD:NOADCC",    "MOD:NOCDC",    "MOD:NOADCP",    "MOD:NOADCCCDC",    "MOD:NOGLYCOS","MOD:NOADE",    "MOD:NOAGG",    "MOD:NOPROT",    "MOD:REMCYS",    "MOD:STABILIZATION",    "MOD:AFFINITY",    "MOD:OTHER"]
     mod_list_header = tk.StringVar(frame2)
     mod_list_header.set(Mod_options[0])
     Mod_menu = tk.OptionMenu(frame2, mod_list_header, *Mod_options)
@@ -7858,13 +7858,13 @@ if len(sys.argv) < 2:
     "HSAbody":"VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-X(5)[TYPE:FUSION, NOTE: human serum albumin]-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)",
     "Cov-X-body":"X(1)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.a(2:7)- CH1(3:8){1}-H(4:12){2}-CH2(5:11)-CH3(6:12) | VL.a(7:2)-CL(8:3){1} | X(9)[TYPE:OTHER, NOTE: pharmacophore peptide heterodimer]-VH.b(10:15)-CH1(11:16){1}-H(12:4){2}- CH2(13:5)-CH3 (14:6) | VL.b(15:10)-CL(16:11){1}",
     "Diabody":"VH.a(1:4)-L(2)-VH.b(3:6)|VL.a(4:1)-L(5)-VL.b(6:3)",
-    "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD:REMDISULPHIDE]-X(5:10)[TYPE:ZIPPER]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD:REMDISULPHIDE]-X(10:5)[TYPE:ZIPPER]",
+    "Miniantibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H*(4:9){1}[MOD:REMDISULFIDE]-X(5:10)[TYPE:ZIPPER]|VH.b(6:8)-L(7)-VL.b(8:6)-H*(9:4){1}[MOD:REMDISULFIDE]-X(10:5)[TYPE:ZIPPER]",
     "scDiabody":"VH.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.b(5:3)-L(6)-VL.b(7:1)",
     "Tandem scFv-Fc":"VH.b(1:3)-L(2)-VL.b(3:1)-L(4)-VH.a(5:7)-L(6)-VL.a(7:5)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VH.b(11:13)-L(12)-VL.b(13:11)-L(14)-VH.a(15:17)-L(16)-VL.a(17:15)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
     "scDiabody-Fc":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
     "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:17){2}-CH3(9:18) |VL.b(10:16)-L(11)-VL.b(12:14)-L(13)-VH.b(14:12)-L(15)-VH.b(16:10)-H(17:8){2}-CH3(18:9)",
     "Diabody-CH3":"VH.b(1:11)-L(2)-VL.a(3:13){1}-H(4:9){2}-CH3(5:10)|VH.b(6:14)-L(7)-VL.a(8:16){1}-H(9:4){2}-CH3(10:5)|VL.b(11:1)-L(12)-VH.a(13:3){1}|VL.b(14:6)-L(15)-VH.a(16:8){1}",
-    "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:REMDISULPHIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:REMDISULPHIDE]",
+    "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:REMDISULFIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:REMDISULFIDE]",
     "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
     "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5:15)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15:5)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
     "Fv-Fc":"VH.a(1:5){1}-H(2:7){2}-CH1(3:8)-CH2(4:9)| VL.a(5:1){1}|VH.b(6:10){1}-H(7:2){2}-CH1(8:3)-CH2(9:4)|VL.b(10:6){1}",
