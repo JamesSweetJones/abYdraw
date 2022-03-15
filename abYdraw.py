@@ -1939,11 +1939,21 @@ def Check_interactions(chains_list,canvas):
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 
-                elif "H[" in keyslist[i-1]  and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0]):
+                elif  ("H[" in keyslist[i-1] and "Linker[" in keyslist[i]) or ("H[" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0])) :
                     if CLI == False:
                         print("checkpoint6")
                     previous_H = True
                     slant=False
+                    if "Linker[" in keyslist[i]:
+                        Extra_bond=True
+                        print("number1")
+                        if righthanded == True :
+                            print("number2")
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif righthanded == False:
+                            print("number3")
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
                     if chain_count <=2:
                         if dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
                             try:
@@ -2037,8 +2047,12 @@ def Check_interactions(chains_list,canvas):
                     if CLI == False:
                         print("checkpoint10")
                     previous_chain = chain[i-2]
+                    if "H[" in keyslist[i-2]:
+                        previous_chain = chain[i-3]
                     previous_domain = keyslist[i-2]
                     previous_number = previous_number+1
+
+
 
 
 ##SdFV
@@ -2263,17 +2277,28 @@ def Check_interactions(chains_list,canvas):
                                 return(True,startx,starty+95 )
                             elif clash == False:
                                 return(False,startx,starty )
-
-                        clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
-                        if clash[0] == True:
-                            Build_up = True
-                            Build_down=False
-                        if slant == True and righthanded == True:
-                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                        elif slant == True and righthanded == False:
-                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                        else:
-                            getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        if "H[" not in keyslist[i-2]:
+                            clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
+                            if clash[0] == True:
+                                Build_up = True
+                                Build_down=False
+                            if slant == True and righthanded == True:
+                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif slant == True and righthanded == False:
+                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            else:
+                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif "H[" in keyslist[i-2]:
+                            print(previous_chain)
+                            if  righthanded == True:
+                                print("number1")
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-20,(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif righthanded == False:
+                                print("number2")
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+20,(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            else:
+                                print("number3")
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 ##H disulphides
             if "H[" in keyslist[i] or "H*[" in keyslist[i] or "H^[" in keyslist[i] or "Linker[" in keyslist[i] and len(dictionary.get(keyslist[i])) >1 and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
@@ -2387,7 +2412,7 @@ def Check_interactions(chains_list,canvas):
             #    bonds.append(bottom_bond + top_bond)
             else:
                 chain.append(getcoordinates[0])
-            if i > 0 and Build_down==True and ("H[" not in keyslist[i] and not "Linker[" in keyslist[i]):
+            if i > 0 and Build_down==True and ("H[" not in keyslist[i]):# and not "Linker[" in keyslist[i]):
                 if CLI == False:
                     print("checkpoint19")
                 top_bond = getcoordinates[2]
@@ -2427,6 +2452,7 @@ def Check_interactions(chains_list,canvas):
                         text_coordinates.append([L_Label_Locations])
                         Location_Text.append(str(L_text)+mod_label)
                         Domain_Text.append(str(L_Domain_name)+mod_label)
+
 
                 else:
 
@@ -2539,6 +2565,16 @@ def Check_interactions(chains_list,canvas):
 
                 if changed_righthand == True:
                     righthanded = True
+            if "Linker[" in keyslist[i] and "H[" in keyslist[i-1]:
+                print("OH WOW AN EXTRA BOND")
+                if Extra_bond == True:
+                    extrabondx1=top_bond[0]
+                    extrabondy1=top_bond[1]
+                    extrabondx2=top_bond[0]
+                    extrabondy2=top_bond[1]+40
+                    extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
+                    linkers.append(extra_bond)
+                    l_mod_normal.append(l_mods[-2])
 
 
 
