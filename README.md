@@ -86,7 +86,7 @@ Precompiled versions of abYdraw are available for Windows and MacOS on our resea
 
 ### 3. Graphical Interface
 
-![abYdraw Interface](https://github.com/JamesSweetJones/abYdraw/blob/main/Interface.png)
+![abYdraw Interface](https://github.com/JamesSweetJones/abYdraw/blob/main/Interface_new.png)
 
 The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side. Starting with the left hand column, the first is the Domain palette **(A)** which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions **(B)**, thirdly the input box for AbML expressions **(C)** and a buttonpad that will render antibody schematics or output AbML to the textbox **(D)**. On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics **(E)** and underneath there are two buttons which are involved in exporting the schematic **(F)**.
 
