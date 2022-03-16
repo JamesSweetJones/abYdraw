@@ -2540,7 +2540,6 @@ def Check_interactions(chains_list,canvas):
                                 h_mod= h_mods[-1]
                             hinges.append([h_coordinates, h_mod])
                         else:
-                            print("WHOOPS1")
                             bonds.append(extra_bond)
                         if H_disulphide_bridge_count > 0:
                             bottomx=extrabondx1
@@ -2570,9 +2569,9 @@ def Check_interactions(chains_list,canvas):
                 print("OH WOW AN EXTRA BOND")
                 if Extra_bond == True:
                     extrabondx1=top_bond[0]
-                    extrabondy1=top_bond[1]
+                    extrabondy1=top_bond[1]-2
                     extrabondx2=top_bond[0]
-                    extrabondy2=top_bond[1]+40
+                    extrabondy2=top_bond[1]+42
                     extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
                     linkers.append(extra_bond)
                     l_mod_normal.append(l_mods[-2])
@@ -4393,6 +4392,12 @@ def sequence_pipeline(canvas):
 
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
+    checked_bonds_dict = {}
+    for key,value in bonds_dict.items():
+        if value not in checked_bonds_dict.values():
+            checked_bonds_dict[key] = value
+    bonds_dict = checked_bonds_dict
+    extra_bonds_dict = bonds_dict
     print("Disulphides", disulphides_dict)
     print("Types", type_dict)
     print("Notes", note_dict)
@@ -4405,6 +4410,7 @@ def sequence_pipeline(canvas):
     current_chain_coords_lists = []
     domains_keyslist = list(domains_dict.keys())
     bonds_keyslist = list(bonds_dict.keys())
+    extra_bonds_keyslist = list(extra_bonds_dict.keys())
     disulphides_keyslist = list(disulphides_dict.keys())
     type_keyslist = list(type_dict.keys())
     note_keyslist = list(note_dict.keys())
@@ -4481,6 +4487,7 @@ def sequence_pipeline(canvas):
                 ##find continuing bond
                 bondx2 = bonds_dict.get(full_chain[-1])[0][2]
                 bondy2 = bonds_dict.get(full_chain[-1])[0][3]
+                print(bondx2,bondy2)
                 if arcs_keyslist != []:
                     if full_chain[-1] in arcs_keyslist:
                         bondx2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[2]
@@ -4489,14 +4496,14 @@ def sequence_pipeline(canvas):
 
 
                 for j in range(len(domains_dict)):
+                    print("J", j)
                     min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[j])[0])
                     domainx1 = min_max[0]
                     domainx2 = min_max[1]
                     domainy1 = min_max[2]
                     domainy2 = min_max[3]
-                    print(domainx1 , bondx2 , domainx2 , domainy1 , bondy2 , domainy2)
                     if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
-                        print("HELL YES")
+                        print("IT COming together")
                         continuation_found = True
                         full_chain.append(domains_keyslist[j])
                         string.append(domains_dict.get(domains_keyslist[j])[1])
@@ -4507,31 +4514,44 @@ def sequence_pipeline(canvas):
                         domainy1 = min_max[2]
                         domainy2 = min_max[3]
                         for n in range(len(bonds_keyslist)):
+                            print("N",n)
                             bondx1 = bonds_dict.get(bonds_keyslist[n])[0][0]
                             bondy1 = bonds_dict.get(bonds_keyslist[n])[0][1]
                             if arcs_keyslist != []:
                                 if bonds_keyslist[n] in arcs_keyslist:
                                     bondx1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[0]
                                     bondy1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[1]
+
                             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
-                                print("WAIT NO")
+                                print("OH MY OH MY", domainx1, bondx1, domainx2 , domainy1 , bondy1 , domainy2, domains_dict.get(domains_keyslist[j])[1])
                                 connection_found = True
                                 full_chain.append(bonds_keyslist[n])
                                 string.append(bonds_dict.get(bonds_keyslist[n])[1])
-                                for k in range(len(bonds_dict)):
-                                    bondcoordinates = bonds_dict.get(bonds_keyslist[k])[0]
-                                    bond2x1 = bondcoordinates[0]
-                                    bond2y1 = bondcoordinates[1]
-                                    print(bondx2,bond2x1,bondy2,bond2y1)
-                                    if bondx2 == bond2x1 and bondy2 == bond2y1:
-                                        print("OH BOY OH BOY")
-                                        #counter +=1
-                                        full_chain.append(bonds_keyslist[k])
-                                        string.append(bonds_dict.get(bonds_keyslist[k])[1])
-                                        #bondx2 = bonds_dict.get(bonds_keyslist[j])[0][2]
-                                        #bondy2 = bonds_dict.get(bonds_keyslist[j])[0][3]
-                                        #print(bondx2,bondy2)
+                                print((bonds_dict.get(bonds_keyslist[n])[1]))
+                                ##Check for extra bonds
+                                if "-H" in str(bonds_dict.get(bonds_keyslist[n])[1]):
+                                    for k in range(len(extra_bonds_keyslist)):
+                                        bondcoordinates_test = bonds_dict.get(bonds_keyslist[n])[0]
+                                        bond_test2x1 = bondcoordinates_test[2]
+                                        bond_test2y1 = bondcoordinates_test[3]
+                                        bondcoordinates = extra_bonds_dict.get(extra_bonds_keyslist[k])[0]
+                                        bond2x1 = bondcoordinates[0]
+                                        bond2y1 = bondcoordinates[1]
+                                        #print(bondx2,bond2x1,bondy2,bond2y1)
+                                        if bond_test2x1 == bond2x1 and bond_test2y1 == bond2y1:
+                                            print("OH BOY OH BOY")
+                                            full_chain.append(extra_bonds_keyslist[k])
+                                            string.append(extra_bonds_dict.get(extra_bonds_keyslist[k])[1])
+                                            extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
+                                            del extra_bonds_keyslist[extra_bonds_keyslist[k]]
+                                            bondx2 = bonds_dict.get(full_chain[-1])[0][2]
+                                            bondy2 = bonds_dict.get(full_chain[-1])[0][3]
+                                            connection_found = False
+                                            break
+
+                                    break
                                 break
+
 
 
                 if connection_found == True:
@@ -5121,6 +5141,7 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
     global Bond_lock
     global Delete_lock
     global all_buttons
+    global remove_mods_button_lock
     for i in all_buttons:
         i.config(fg="black")
     Delete_lock = False
@@ -5143,6 +5164,8 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         lower_canvas.bind("<Button-1>", mm.change_specificity)
         lower_canvas.unbind("<B1-Motion>")
         lower_canvas.unbind("<ButtonRelease-1>")
+        remove_mods_button_lock = 0
+        remove_mods_button.config(fg="black")
     elif Domain_Primer != []:
         ###update domain_type###
         if "V" in Domain_Primer[8]:
