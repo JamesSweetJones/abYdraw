@@ -3730,7 +3730,8 @@ def render(chains_list,canvas,text_to_image):
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
             domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            if Hinges[i][1] == False:
+            print("HINGES", Hinges[i][1] )
+            if Hinges[i][1] == False or isinstance(Hinges[i][1], int) == True or isinstance(Hinges[i][1], float) == True:
                 Hinges[i][1] = ""
                 canvas_polygons[domain] = [Hinges[i][0], "-H-", Hinges[i][1]]
             elif "MOD" in  str(Hinges[i][1]) or Hinges[i][1] != False  and "^" not in Hinges[i][1]:
@@ -4486,13 +4487,16 @@ def sequence_pipeline(canvas):
                         bondy2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[3]
 
 
+
                 for j in range(len(domains_dict)):
                     min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[j])[0])
                     domainx1 = min_max[0]
                     domainx2 = min_max[1]
                     domainy1 = min_max[2]
                     domainy2 = min_max[3]
+                    print(domainx1 , bondx2 , domainx2 , domainy1 , bondy2 , domainy2)
                     if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
+                        print("HELL YES")
                         continuation_found = True
                         full_chain.append(domains_keyslist[j])
                         string.append(domains_dict.get(domains_keyslist[j])[1])
@@ -4510,9 +4514,23 @@ def sequence_pipeline(canvas):
                                     bondx1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[0]
                                     bondy1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[1]
                             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
+                                print("WAIT NO")
                                 connection_found = True
                                 full_chain.append(bonds_keyslist[n])
                                 string.append(bonds_dict.get(bonds_keyslist[n])[1])
+                                for k in range(len(bonds_dict)):
+                                    bondcoordinates = bonds_dict.get(bonds_keyslist[k])[0]
+                                    bond2x1 = bondcoordinates[0]
+                                    bond2y1 = bondcoordinates[1]
+                                    print(bondx2,bond2x1,bondy2,bond2y1)
+                                    if bondx2 == bond2x1 and bondy2 == bond2y1:
+                                        print("OH BOY OH BOY")
+                                        #counter +=1
+                                        full_chain.append(bonds_keyslist[k])
+                                        string.append(bonds_dict.get(bonds_keyslist[k])[1])
+                                        #bondx2 = bonds_dict.get(bonds_keyslist[j])[0][2]
+                                        #bondy2 = bonds_dict.get(bonds_keyslist[j])[0][3]
+                                        #print(bondx2,bondy2)
                                 break
 
 
@@ -4540,13 +4558,13 @@ def sequence_pipeline(canvas):
 
 
 
+
         #full_directions.append(directions)
         full_chains.append(full_chain)
         strings.append(string)
 
 ##reorder chains by specificity
-    print("strings", strings)
-    print("full_chains",full_chains)
+
     #chain_starters = []
     #chain_starters_coords = []
     #for i in range(len(full_chains)):
@@ -4940,7 +4958,6 @@ def sequence_pipeline(canvas):
                 elif "-" in strings[i][j]:
                     coordinates = bonds_dict.get(full_chains[i][j])[0]
                     stored_comment = bonds_dict.get(full_chains[i][j])[2]
-                print(stored_comment)
                 if stored_comment != "":
                     comments = stored_comment.split(", ")
 
