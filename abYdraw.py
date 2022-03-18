@@ -2419,10 +2419,9 @@ def Check_interactions(chains_list,canvas):
                 if "H[" in keyslist[i-1]:
                     if h_mods[-2] !=False:
                         h_mod= h_mods[-2]
-                    print("HMOD!!", h_mod)
                     hcoordinates = bottom_bond + top_bond
                     hinges.append([hcoordinates,h_mod])
-                elif "Linker[" in keyslist[i-1]:
+                elif "Linker[" in keyslist[i-1] and "H[" not in keyslist[i-2]:
                     linkers.append(bottom_bond + top_bond)
                     l_mod_normal.append(l_mods[-2])
                     global L_Labels
@@ -2455,7 +2454,7 @@ def Check_interactions(chains_list,canvas):
 
 
                 else:
-                    if "Linker[" not in keyslist[i]:
+                    if "Linker[" not in keyslist[i] and "Linker[" not in keyslist[i-1]:
                         bonds.append(bottom_bond + top_bond)
                 #if mod=="Leucine":
                 #    bonds.append(getcoordinates[0])
@@ -2566,13 +2565,13 @@ def Check_interactions(chains_list,canvas):
                 if changed_righthand == True:
                     righthanded = True
             if "Linker[" in keyslist[i] and "H[" in keyslist[i-1]:
-                print("OH WOW AN EXTRA BOND")
                 if Extra_bond == True:
                     extrabondx1=top_bond[0]
-                    extrabondy1=top_bond[1]-2
+                    extrabondy1=top_bond[1]
                     extrabondx2=top_bond[0]
-                    extrabondy2=top_bond[1]+42
+                    extrabondy2=top_bond[1]+40
                     extra_bond = [extrabondx1,extrabondy1,extrabondx2,extrabondy2]
+
                     linkers.append(extra_bond)
                     l_mod_normal.append(l_mods[-2])
 
@@ -4496,14 +4495,12 @@ def sequence_pipeline(canvas):
 
 
                 for j in range(len(domains_dict)):
-                    print("J", j)
                     min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[j])[0])
                     domainx1 = min_max[0]
                     domainx2 = min_max[1]
                     domainy1 = min_max[2]
                     domainy2 = min_max[3]
                     if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
-                        print("IT COming together")
                         continuation_found = True
                         full_chain.append(domains_keyslist[j])
                         string.append(domains_dict.get(domains_keyslist[j])[1])
@@ -4514,7 +4511,6 @@ def sequence_pipeline(canvas):
                         domainy1 = min_max[2]
                         domainy2 = min_max[3]
                         for n in range(len(bonds_keyslist)):
-                            print("N",n)
                             bondx1 = bonds_dict.get(bonds_keyslist[n])[0][0]
                             bondy1 = bonds_dict.get(bonds_keyslist[n])[0][1]
                             if arcs_keyslist != []:
@@ -4523,33 +4519,30 @@ def sequence_pipeline(canvas):
                                     bondy1 = arc_checker(bonds_keyslist[n],bonds_dict, domains_dict)[1]
 
                             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
-                                print("OH MY OH MY", domainx1, bondx1, domainx2 , domainy1 , bondy1 , domainy2, domains_dict.get(domains_keyslist[j])[1])
                                 connection_found = True
                                 full_chain.append(bonds_keyslist[n])
                                 string.append(bonds_dict.get(bonds_keyslist[n])[1])
-                                print((bonds_dict.get(bonds_keyslist[n])[1]))
-                                ##Check for extra bonds
-                                if "-H" in str(bonds_dict.get(bonds_keyslist[n])[1]):
-                                    for k in range(len(extra_bonds_keyslist)):
-                                        bondcoordinates_test = bonds_dict.get(bonds_keyslist[n])[0]
-                                        bond_test2x1 = bondcoordinates_test[2]
-                                        bond_test2y1 = bondcoordinates_test[3]
-                                        bondcoordinates = extra_bonds_dict.get(extra_bonds_keyslist[k])[0]
-                                        bond2x1 = bondcoordinates[0]
-                                        bond2y1 = bondcoordinates[1]
-                                        #print(bondx2,bond2x1,bondy2,bond2y1)
-                                        if bond_test2x1 == bond2x1 and bond_test2y1 == bond2y1:
-                                            print("OH BOY OH BOY")
-                                            full_chain.append(extra_bonds_keyslist[k])
-                                            string.append(extra_bonds_dict.get(extra_bonds_keyslist[k])[1])
-                                            extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
-                                            del extra_bonds_keyslist[extra_bonds_keyslist[k]]
-                                            bondx2 = bonds_dict.get(full_chain[-1])[0][2]
-                                            bondy2 = bonds_dict.get(full_chain[-1])[0][3]
-                                            connection_found = False
-                                            break
+                                for k in range(len(bonds_keyslist)):
+                                    try:
+                                        bond_x2 = bonds_dict.get(bonds_keyslist[n])[0][2]
+                                        bond_y2 = bonds_dict.get(bonds_keyslist[n])[0][3]
+                                        bondcoordinates_test = bonds_dict.get(bonds_keyslist[k])[0]
+                                        bond_test2x1 = bondcoordinates_test[0]
+                                        bond_test2y1 = bondcoordinates_test[1]
+                                            #print(bondx2,bond2x1,bondy2,bond2y1)
+                                        if bond_test2x1 == bond_x2 and bond_test2y1 == bond_y2:
+                                            full_chain.append(bonds_keyslist[k])
+                                            string.append(bonds_dict.get(bonds_keyslist[k])[1])
+                                                    #extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
+                                                    #del extra_bonds_keyslist[extra_bonds_keyslist[k]]
 
-                                    break
+
+                                    except IndexError:
+                                        pass
+
+
+
+
                                 break
 
 
@@ -4557,6 +4550,7 @@ def sequence_pipeline(canvas):
                 if connection_found == True:
                     continuation_found = True
                 else:
+
                     continuation_found = False
                     for j in range(len(hinges_keyslist)): #check for extra bonds
                         try:
@@ -7915,7 +7909,7 @@ if len(sys.argv) < 2:
     "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
     "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE] | VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
-    "scFV-IgG-scFV-scFV": "VL.a(1:9)-CL(2:10){1}|VL.a(3:26)-CL(4:27){1}|VL.b(5:7)-L(6)-VH.b(7:5)-L(8)-VH.a(9:1)-CH1(10:2){1}-H(11:28){2}-CH2(12:29)-CH3(13:30)-L(14)-VH.b(15:17)-L(16)-VL.b(17:15)-L(18)-VH.c(19:21)-L(20)-VL.c(21:19)|VL.b(22:24)-L(23)-VH.b(24:22)-L(25)-VH.a(26:3)-CH1(27:4){1}-H(28:11){2}-CH2(29:12)-CH3(30:13)-L(31)-VH.b(32:34)-L(33)-VL.b(34:32)-L(35)-VH.c(36:38)-L(37)-VL.c(38:36)",
+    "scFV-IgG-scFV-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-VH.b(5:35)-CH1(6:36){1}-H(7:24){2}-CH2(8:25)-CH3(9:26)-L(10)-VH.c(11:13)-L(12)-VL.c(13:11)-L(14)-VH.d(15:17)-L(16)-VL.d(17:15)|VL.a(18:20)-L(19)-VH.a(20:18)-L(21)-VH.b(22:37)-CH1(23:38){1}-H(24:7){2}-CH2(25:8)-CH3(26:9)-L(27)-VH.c(28:30)-L(29)-VL.c(30:28)-L(31)-VH.d(32:34)-L(33)-VL.d(34:32)|VL.b(35:5)-CL(36:6){1}|VL.b(37:22)-CL(38:23){1}",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
     'scFV-X-Fc-Body':"VL.a(1:3)-L(2)-VH.a(3:1)-X(4:10){1}[TYPE:FUSION]-CH2(5:11)-CH3(6:12)|VL.b(7:9)-L(8)-VH.b(9:7)-X(10:4){1}[TYPE:FUSION]-CH2(11:5)-CH3(12:6)",
