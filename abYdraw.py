@@ -52,8 +52,7 @@ def Get_dictionaries(x):
 
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
-    for i in range(len(brackets)):
-        brackets[i]= re.sub(",","",brackets[i])
+
     y = ""
     counter = 0
     if len(non_brackets) > len(brackets):
@@ -92,7 +91,6 @@ def Get_dictionaries(x):
         chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1', 'fragment2', 'fragment3']
     elif len(splitx) ==8:
         chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b', 'fragment1', 'fragment2', 'fragment3', 'fragment4']
-
     chain_count = len(splitx)
     VHa     = {}
     VHb     = {}
@@ -4969,6 +4967,7 @@ def sequence_pipeline(canvas):
                     coordinates = domains_dict.get(full_chains[i][j])[0]
                     stored_comment = domains_dict.get(full_chains[i][j])[2]
 
+
                 elif "-" in strings[i][j]:
                     coordinates = bonds_dict.get(full_chains[i][j])[0]
                     stored_comment = bonds_dict.get(full_chains[i][j])[2]
@@ -4981,10 +4980,16 @@ def sequence_pipeline(canvas):
                             non_redundant_comments.append(str(comments[x]))
                     comment_to_add = ""
                     for x in range(len(non_redundant_comments)):
+                        colon_counter = 0
+                        for z in range(len(non_redundant_comments[x])):
+                            if non_redundant_comments[x][z] == ":":
+                                colon_counter +=1
+
                         note1 = non_redundant_comments[x].split(":")[0]
                         note2 = non_redundant_comments[x].split(":")[1]
                         noting = str("["+note1+":"+note2+"]")
                         comment_to_add +=str(noting)
+                        print(comment_to_add)
                     if "-" not in strings[i][j]:
                         strings[i][j] += str(comment_to_add)
                     elif "-" in strings[i][j]:
@@ -5031,6 +5036,7 @@ def sequence_pipeline(canvas):
 
 ##conver lists to expression
     final_string = ""
+    print(strings[i])
     for i in range(len(strings)):
         for j in range(len(strings[i])):
             if j == 0 and i == 0:
