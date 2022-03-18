@@ -52,6 +52,7 @@ def Get_dictionaries(x):
 
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
+        non_brackets[i]= re.sub(",","",non_brackets[i])
 
     y = ""
     counter = 0
@@ -4528,7 +4529,7 @@ def sequence_pipeline(canvas):
                                         bond_test2x1 = bondcoordinates_test[0]
                                         bond_test2y1 = bondcoordinates_test[1]
                                             #print(bondx2,bond2x1,bondy2,bond2y1)
-                                        if bond_test2x1 == bond_x2 and bond_test2y1 == bond_y2:
+                                        if bond_x2-5 <= bond_test2x1 <= bond_x2+5 and bond_y2-5 <= bond_test2y1 <= bond_y2+5:
                                             full_chain.append(bonds_keyslist[k])
                                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
                                                     #extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
@@ -7883,6 +7884,7 @@ if len(sys.argv) < 2:
     Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
     antibodyformats = {
     "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
+    "IgG (H-L)":"VH.a(1:13)-CH1(2:14){1}-H(3:9){2}-L(4)-CH2(5:11)-CH3(6:12)|VH.a(7:15)-CH1(8:16){1}-H(9:3){2}-L(10)-CH2(11:5)-CH3(12:6)|VL.a(13:1)-CL(14:2){1}|VL.a(15:7)-CL(16:8){1}",
     "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
     "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3*@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5) | VL.b(13:8)-CL(14:9){1}",
     "Orthagonal Fab":"VH*+.a(1:6)-CH1*>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3*@(5:12)|VL_.a(6:1)-CL*@(7:2){1}|VH.b(8:13)-CH1*>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5)|VL.b(13:8)-CL*@(14:9){1}",
