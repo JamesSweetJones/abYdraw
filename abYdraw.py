@@ -6296,11 +6296,18 @@ class MouseMover():
             extra_mods_to_add = ""
             if "*" in str(domain_name) or "!" in str(domain_name) or "^" in str(domain_name):
                 if "*" in str(extra_mods):
-                    extra_mods_to_add += re.sub("\*","",extra_mods)
+                    extra_mods_to_add = re.sub("\*","",extra_mods)
                 if "!" in str(extra_mods):
-                    extra_mods_to_add += re.sub("\!","",extra_mods)
+                    extra_mods_to_add = re.sub("\!","",extra_mods)
                 if "^" in str(extra_mods):
-                    extra_mods_to_add += re.sub("\^","",extra_mods)
+                    extra_mods_to_add = re.sub("\^","",extra_mods)
+                if "*" in str(domain_name):
+                    extra_mods_to_add += "*"
+                if "!" in str(domain_name):
+                    extra_mods_to_add += "!"
+                if "^" in str(domain_name):
+                    extra_mods_to_add += "^"
+
             else:
                 extra_mods_to_add = extra_mods
 
