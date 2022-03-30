@@ -698,7 +698,9 @@ def Check_interactions(chains_list,canvas):
         currentx = bottomx
         currenty = bottomy
         for i in range(n):
+
             new_y=currenty+incrementsy
+
             if righthanded == True:
                 new_x=currentx-incrementsx
             elif righthanded == False:
@@ -706,6 +708,8 @@ def Check_interactions(chains_list,canvas):
             disulphide_points.append([new_x ,new_y])
             currentx = new_x
             currenty = new_y
+            print("newx", new_x, "new y", new_y)
+        print("DISULPHIDE POINTS", disulphide_points)
         return(disulphide_points)
 
     def extra_disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
@@ -1692,12 +1696,14 @@ def Check_interactions(chains_list,canvas):
 
             if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
+                    print("NO NO NO")
                     location = dictionary.get(keyslist[i])[0][0]
                     disulphide_bridge_count = int(dictionary.get(keyslist[i])[1])
                     location    = dictionary.get(keyslist[i])[0]
                     dictionary[keyslist[i]] = location
                     if "H[" in keyslist[i]:
                         H_disulphide_bridge_count = disulphide_bridge_count
+
 
                 except:
                     disulphide_bridge_count = 0
@@ -1773,7 +1779,13 @@ def Check_interactions(chains_list,canvas):
                 else:
                     if CLI == False:
                         print("checkpoint1")
-                    getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                    if "H[" not in keyslist[i]:
+                        print("OOOH JAAA")
+                        getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                    else:
+                        getcoordinates = [[startx,starty,startx,starty,startx,starty,startx,starty],[startx,starty],[startx,starty],[startx,starty]]
+                        print("OOOH NOO")
+                        pass
 
             elif i > 0:
                 previous_domain = keyslist[i-1]
@@ -1795,7 +1807,7 @@ def Check_interactions(chains_list,canvas):
 
 
 
-                if "H[" in keyslist[i-1]:
+                if "H[" in keyslist[i-1] and i-1 != 0:
 
                     previous_domain = keyslist[i-2]
                     previous_chain  = chain[i-2]
@@ -1875,6 +1887,12 @@ def Check_interactions(chains_list,canvas):
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 
+                elif "H[" in keyslist[i-1] and i-1 == 0:
+                    slant = False
+                    if righthanded == False:
+                        getcoordinates = domainmaker(All_positions_and_chains,(startx+20),(starty+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                    elif righthanded == True:
+                        getcoordinates = domainmaker(All_positions_and_chains,(startx-20),(starty+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                 elif ("X[" in keyslist[i] or "C[" in keyslist[i]) and "H[" not in keyslist[i-1] and len(dictionary.get(keyslist[i])) == 1:
                     if CLI == False:
@@ -1945,12 +1963,9 @@ def Check_interactions(chains_list,canvas):
                     slant=False
                     if "Linker[" in keyslist[i]:
                         Extra_bond=True
-                        print("number1")
                         if righthanded == True :
-                            print("number2")
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif righthanded == False:
-                            print("number3")
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     if chain_count <=2:
@@ -1965,7 +1980,16 @@ def Check_interactions(chains_list,canvas):
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         else:
-                            if righthanded == True :
+
+                            if "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
+                                print("OH YES")
+                                if righthanded == True :
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+
+                            elif righthanded == True :
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             elif righthanded == False:
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -1991,6 +2015,12 @@ def Check_interactions(chains_list,canvas):
                         pass
                         if CLI == False:
                             print("checkpoint7.5")
+                            try:
+                                if "H[" in keyslist[i+1]:
+                                    print("OH YEAH, IT")
+                                    #getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
+                            except IndexError:
+                                pass
                     elif slant == True and righthanded == True:
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-5,(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     elif slant == True and righthanded == False:
@@ -2000,7 +2030,7 @@ def Check_interactions(chains_list,canvas):
                     Build_in  = False
                     Build_out = True
 
-                elif chain_count == 2 and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and "X" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+3):
+                elif chain_count == 2 and  "H[" not in keyslist[0] and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and "X" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+3):
                     if CLI == False:
                         print("checkpoint8")
                     if chain_count == 2:
@@ -2290,21 +2320,23 @@ def Check_interactions(chains_list,canvas):
                         elif "H[" in keyslist[i-2]:
                             print(previous_chain)
                             if  righthanded == True:
-                                print("number1")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-20,(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             elif righthanded == False:
-                                print("number2")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+20,(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             else:
-                                print("number3")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 ##H disulphides
             if "H[" in keyslist[i] or "H*[" in keyslist[i] or "H^[" in keyslist[i] or "Linker[" in keyslist[i] and len(dictionary.get(keyslist[i])) >1 and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
                 print("DISULPHIDE CHECKPOINT")
+                if i == 0:
+                    bottom_bond = [startx,starty]
                 if Build_up == False:
                     bottomx=bottom_bond[0]
-                    bottomy=bottom_bond[1]
+                    if "Linker[" in keyslist[i-1]:
+                        bottomy = bottom_bond[1]+30
+                    else:
+                        bottomy=bottom_bond[1]
                     if H_count %2 !=0:
                         if slant == True and righthanded == False:
                             topx = bottomx+20
@@ -2316,55 +2348,48 @@ def Check_interactions(chains_list,canvas):
                     elif H_count %2 == 0:
                         #slant = True
                         if slant == True and righthanded == False:
-                            topx = bottomx-20
-                        elif slant == True and righthanded == True:
                             topx = bottomx+20
+                        elif slant == True and righthanded == True:
+                            topx = bottomx-20
                         elif slant==False:
                             topx = bottomx
                         topy = bottomy+40
+
                     location   = dictionary.get(keyslist[i])[0]
                     if "H" in keyslist[i]:
                         interactor = dictionary.get(keyslist[i])[1]
-                        H_bond_coordinates = disulphide_maker(H_disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
-                        H_disulphide_coordinates[interactor]=H_bond_coordinates
-                        H_disulphidebridge_keyslist = list(H_disulphide_coordinates.keys())
-                        for j in range(len(H_disulphide_coordinates)):
-                            if int(H_disulphidebridge_keyslist[j]) == int(location):
-                                for x in range(len(H_disulphide_coordinates.get(interactor))):
-                                    coordinate1 = H_disulphide_coordinates.get(interactor)[x][0]
-                                    coordinate2 = H_disulphide_coordinates.get(interactor)[x][1]
-                                    coordinate3 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][0]
-                                    coordinate4 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][1]
-                                    coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
-                                    completed_disulphidebridges.append(coordinates)
-                        if H_disulphide_bridge_count > 10:
-                            if noted_Hbonds==False:
-                                Notes.append((H_disulphide_bridge_count, "hinge disulphide bonds"))
-                                noted_Hbonds==True
-                                if len(Notes_positions) == 0:
-                                    Notes_positions.append([(width/3),(height-100)])
-                                elif len(Notes_positions) > 0:
-                                    XY = (Notes_positions[-1][1])+20
-                                    Notes_positions.append([(width/3),XY])
-                    elif "Linker[" in keyslist[i]:
-                        bottomy = bottomy-15
-                        try:
-                            if dictionary.get(keyslist[i-1])[0] == dictionary.get(keyslist[i+1])[0][1]:
-                                bottomy += 20
-                                topy = bottomy-80
-                                if Build_in == True:
-                                    if righthanded == False:
-                                        topx = bottomx+20
-                                    elif righthanded == True:
-                                        topx = bottomx-20
-                                elif Build_in == False:
-                                    if righthanded == False:
-                                        topx = bottomx-60
-                                    elif righthanded == True:
-                                        topx = bottomx+60
-                        except IndexError:
+                        disulph_checker = True
+                        for n in range(len(list(H_disulphide_coordinates.keys()))):
+                            if H_disulphide_coordinates.get(list(H_disulphide_coordinates.keys())[n]) == []:
+                                disulph_checker = False
+                        if disulph_checker == True:
+                            print(interactor,H_disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                            H_bond_coordinates = disulphide_maker(H_disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                            H_disulphide_coordinates[interactor]=H_bond_coordinates
+                            H_disulphidebridge_keyslist = list(H_disulphide_coordinates.keys())
+                            print(H_disulphide_coordinates)
+                            for j in range(len(H_disulphide_coordinates)):
+                                if int(H_disulphidebridge_keyslist[j]) == int(location):
+                                    for x in range(len(H_disulphide_coordinates.get(interactor))):
+                                        coordinate1 = H_disulphide_coordinates.get(interactor)[x][0]
+                                        coordinate2 = H_disulphide_coordinates.get(interactor)[x][1]
+                                        coordinate3 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][0]
+                                        coordinate4 = H_disulphide_coordinates.get(H_disulphidebridge_keyslist[j])[x][1]
+                                        coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
+                                        completed_disulphidebridges.append(coordinates)
+                            if H_disulphide_bridge_count > 10:
+                                if noted_Hbonds==False:
+                                    Notes.append((H_disulphide_bridge_count, "hinge disulphide bonds"))
+                                    noted_Hbonds==True
+                                    if len(Notes_positions) == 0:
+                                        Notes_positions.append([(width/3),(height-100)])
+                                    elif len(Notes_positions) > 0:
+                                        XY = (Notes_positions[-1][1])+20
+                                        Notes_positions.append([(width/3),XY])
+                        elif "Linker[" in keyslist[i]:
+                            bottomy = bottomy-15
                             try:
-                                if dictionary.get(keyslist[i-1])[1] == dictionary.get(keyslist[i+1])[0][0]:
+                                if dictionary.get(keyslist[i-1])[0] == dictionary.get(keyslist[i+1])[0][1]:
                                     bottomy += 20
                                     topy = bottomy-80
                                     if Build_in == True:
@@ -2378,24 +2403,39 @@ def Check_interactions(chains_list,canvas):
                                         elif righthanded == True:
                                             topx = bottomx+60
                             except IndexError:
-                                pass
-                        location   = dictionary.get(keyslist[i])[0]
-                        interactor = dictionary.get(keyslist[i])[1]
-                        if bottomy > topy:
-                            bottomy,topy = topy,bottomy
-                            bottomx,topx = topx,bottomx
-                        H_bond_coordinates = disulphide_maker(disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
-                        extra_disulphide_bridges[interactor]=H_bond_coordinates
-                        extra_disulphidebridge_keyslist = list(extra_disulphide_bridges.keys())
-                        for j in range(len(extra_disulphide_bridges)):
-                            if int(extra_disulphidebridge_keyslist[j]) == int(location):
-                                for x in range(len(extra_disulphide_bridges.get(interactor))):
-                                    coordinate1 = extra_disulphide_bridges.get(interactor)[x][0]
-                                    coordinate2 = extra_disulphide_bridges.get(interactor)[x][1]
-                                    coordinate3 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][0]
-                                    coordinate4 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][1]
-                                    coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
-                                    completed_disulphidebridges.append(coordinates)
+                                try:
+                                    if dictionary.get(keyslist[i-1])[1] == dictionary.get(keyslist[i+1])[0][0]:
+                                        bottomy += 20
+                                        topy = bottomy-80
+                                        if Build_in == True:
+                                            if righthanded == False:
+                                                topx = bottomx+20
+                                            elif righthanded == True:
+                                                topx = bottomx-20
+                                        elif Build_in == False:
+                                            if righthanded == False:
+                                                topx = bottomx-60
+                                            elif righthanded == True:
+                                                topx = bottomx+60
+                                except IndexError:
+                                    pass
+                            location   = dictionary.get(keyslist[i])[0]
+                            interactor = dictionary.get(keyslist[i])[1]
+                            if bottomy > topy:
+                                bottomy,topy = topy,bottomy
+                                bottomx,topx = topx,bottomx
+                            H_bond_coordinates = disulphide_maker(disulphide_bridge_count,bottomx,bottomy,topx,topy,righthanded)
+                            extra_disulphide_bridges[interactor]=H_bond_coordinates
+                            extra_disulphidebridge_keyslist = list(extra_disulphide_bridges.keys())
+                            for j in range(len(extra_disulphide_bridges)):
+                                if int(extra_disulphidebridge_keyslist[j]) == int(location):
+                                    for x in range(len(extra_disulphide_bridges.get(interactor))):
+                                        coordinate1 = extra_disulphide_bridges.get(interactor)[x][0]
+                                        coordinate2 = extra_disulphide_bridges.get(interactor)[x][1]
+                                        coordinate3 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][0]
+                                        coordinate4 = extra_disulphide_bridges.get(extra_disulphidebridge_keyslist[j])[x][1]
+                                        coordinates = [coordinate1,coordinate2,coordinate3,coordinate4]
+                                        completed_disulphidebridges.append(coordinates)
 
 
 
@@ -2414,10 +2454,28 @@ def Check_interactions(chains_list,canvas):
             if i > 0 and Build_down==True and ("H[" not in keyslist[i]):# and not "Linker[" in keyslist[i]):
                 if CLI == False:
                     print("checkpoint19")
+                    try:
+                        if "Linker[" in keyslist[i] and "H[" in keyslist[i+1]:
+
+                            #top_bond = (previous_chain[6])-5
+                            #bottom_bond = (previous_chain[7]+20)
+                            #print(bottom_bond)
+                            top_bond = [bottom_bond[0],bottom_bond[1]+30]
+                            linkers.append(bottom_bond+ top_bond )
+                            l_mod_normal.append(l_mods[-2])
+                            bottom_bond = top_bond
+
+                    except IndexError:
+                        pass
                 top_bond = getcoordinates[2]
                 if "H[" in keyslist[i-1]:
                     if h_mods[-2] !=False:
                         h_mod= h_mods[-2]
+                    try:
+                        if "Linker" in keyslist[i-2]:
+                            bottom_bond[1] = bottom_bond[1] + 30
+                    except IndexError:
+                        pass
                     hcoordinates = bottom_bond + top_bond
                     hinges.append([hcoordinates,h_mod])
                 elif "Linker[" in keyslist[i-1] and "H[" not in keyslist[i-2]:
@@ -2579,6 +2637,7 @@ def Check_interactions(chains_list,canvas):
 
 
 ###append domains to dictionary of domain names and coordinates
+
             chain_dict[keyslist[i]] = [getcoordinates[0], non_redundant_note_label]
 
             if i+1 == len(keyslist):
@@ -4388,6 +4447,7 @@ def sequence_pipeline(canvas):
             if hinges_list[i] == polygons_keyslist[j]:
                 hinges_dict[j] = canvas_polygons.get(polygons_keyslist[j])
 
+    
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
     checked_bonds_dict = {}
@@ -4403,6 +4463,7 @@ def sequence_pipeline(canvas):
     print("mod", mod_dict)
     print("length", length_dict)
     print("ARCS", arcs_dict)
+
     chains=[]
     current_chain_str = []
     current_chain_coords_lists = []
@@ -4480,17 +4541,32 @@ def sequence_pipeline(canvas):
                 else:
                     continuation_found = False
 
+
             elif full_chain !=[]:
                 connection_found = False
                 ##find continuing bond
                 bondx2 = bonds_dict.get(full_chain[-1])[0][2]
                 bondy2 = bonds_dict.get(full_chain[-1])[0][3]
-                print(bondx2,bondy2)
                 if arcs_keyslist != []:
                     if full_chain[-1] in arcs_keyslist:
                         bondx2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[2]
                         bondy2 = arc_checker(full_chain[-1],bonds_dict, domains_dict)[3]
+                for k in range(len(bonds_keyslist)):
+                    try:
+                        bond_x2 = bondx2
+                        bond_y2 = bondy2
+                        bondcoordinates_test = bonds_dict.get(bonds_keyslist[k])[0]
+                        bond_test2x1 = bondcoordinates_test[0]
+                        bond_test2y1 = bondcoordinates_test[1]
+                            #print(bondx2,bond2x1,bondy2,bond2y1)
+                        if bond_x2-5 <= bond_test2x1 <= bond_x2+5 and bond_y2-5 <= bond_test2y1 <= bond_y2+5:
+                            full_chain.append(bonds_keyslist[k])
+                            string.append(bonds_dict.get(bonds_keyslist[k])[1])
+                    except IndexError:
+                        pass
 
+                bondx2 = bonds_dict.get(full_chain[-1])[0][2]
+                bondy2 = bonds_dict.get(full_chain[-1])[0][3]
 
 
                 for j in range(len(domains_dict)):
@@ -4537,7 +4613,7 @@ def sequence_pipeline(canvas):
 
 
                                     except IndexError:
-                                        pass
+                                        continue
 
 
 
@@ -4549,7 +4625,6 @@ def sequence_pipeline(canvas):
                 if connection_found == True:
                     continuation_found = True
                 else:
-
                     continuation_found = False
                     for j in range(len(hinges_keyslist)): #check for extra bonds
                         try:
@@ -4572,10 +4647,11 @@ def sequence_pipeline(canvas):
 
 
 
+
         #full_directions.append(directions)
+
         full_chains.append(full_chain)
         strings.append(string)
-
 ##reorder chains by specificity
 
     #chain_starters = []
@@ -4662,6 +4738,7 @@ def sequence_pipeline(canvas):
                 elif "-L^-" in strings[i][j]:
                     strings[i][j] = str("-L^("+str(counter)+")-")
                     counter += 1
+    print(strings)
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
@@ -4671,6 +4748,7 @@ def sequence_pipeline(canvas):
                 number =  int(re.sub("\[|\'|\]","", str(number)))
 
                 if number not in paired and ("X[" not in str(strings[i][j]) and str(strings[i][j]) != "C" and str(strings[i][j]) != "C*"):
+
                     domain_name = re.sub("\((.*?)\)","",str(strings[i][j]))
                     index = full_chains[i][j]
                     min_max = get_min_max_coordinates((domains_dict.get(index)[0]))
@@ -4678,6 +4756,10 @@ def sequence_pipeline(canvas):
                     d1x2 = min_max[1]
                     d1y1 = min_max[2]
                     d1y2 = min_max[3]
+                    if "X" in strings[i][j]:
+                        Pairing_sensitivity = 15
+                    else:
+                        Pairing_sensitivity = 30
                     if "V" in str(domains_dict.get(index)[1]) and "VHH" not in str(domains_dict.get(index)[1]):
                         testx1 = (domains_dict.get(index)[0][4])
                         testx2 = (domains_dict.get(index)[0][8])
@@ -4698,6 +4780,10 @@ def sequence_pipeline(canvas):
                                 for b in range(len(full_chains[a])):
                                     try:
                                         if int(full_chains[a][b]) == int(domains_keyslist[f]) and ":" not in strings[a][b]:
+                                            if "X" in str(domains_dict.get(domains_keyslist[f])[1]):
+                                                Pairing_sensitivity = 15
+                                            else:
+                                                Pairing_sensitivity = 30
                                             paired_domain = strings[a][b]
                                             paired_number =  re.findall("\((.*?)\)", str(paired_domain))
                                             paired_number =  str(re.sub("\[|\'|\]","", str(paired_number)))
