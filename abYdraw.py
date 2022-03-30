@@ -4447,7 +4447,7 @@ def sequence_pipeline(canvas):
             if hinges_list[i] == polygons_keyslist[j]:
                 hinges_dict[j] = canvas_polygons.get(polygons_keyslist[j])
 
-    
+
     print("DOMAINs", domains_dict)
     print("BONDS", bonds_dict)
     checked_bonds_dict = {}
@@ -4500,6 +4500,8 @@ def sequence_pipeline(canvas):
             chains.append(domains_keyslist[i])
             start_found = False
 
+
+    print(chains)
     strings         = []
     full_chains     = []
     #full_directions = []
@@ -6376,6 +6378,10 @@ class MouseMover():
 
             if "@" in str(domain_name) or ">" in str(domain_name):
                 domain_mod_to_add = re.sub(domain_mod,"",domain_mod)
+                if "@" in str(domain_name):
+                    domain_mod_to_add +="@"
+                if ">" in str(domain_name):
+                    domain_mod_to_add+=">"
             else:
                 domain_mod_to_add = domain_mod
 
