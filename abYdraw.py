@@ -6402,12 +6402,21 @@ class MouseMover():
 
             else:
                 extra_mods_to_add = extra_mods
-
-            if "V" in domain_name:
-                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
-            else:
-                new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add)
-                new_domain_name = re.sub(" ","",new_domain_name)
+            global remove_mods_button_lock
+            print("remove_mods_button_lock", remove_mods_button_lock)
+            if remove_mods_button_lock == 0:
+                if "V" in domain_name:
+                    new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add+domain_type_to_add)
+                else:
+                    new_domain_name= str(clean_domain_name+domain_mod_to_add+extra_mods_to_add+domain_charge_to_add)
+                    new_domain_name = re.sub(" ","",new_domain_name)
+            elif remove_mods_button_lock == 1:
+                print("number 1")
+                if "V" in domain_name:
+                    new_domain_name= str(clean_domain_name+domain_type_to_add)
+                else:
+                    new_domain_name= str(clean_domain_name)
+                    new_domain_name = re.sub(" ","",new_domain_name)
             if "a" in str(new_domain_name):
                 heavy_colour, light_colour = specificity_colours[0], specificity_colours[1]
             elif "b" in str(new_domain_name):
