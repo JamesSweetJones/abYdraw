@@ -8141,6 +8141,8 @@ if len(sys.argv) < 2:
                 Bond_Arrows = (8,10,3)
             else:
                 Bond_Arrows = (0,0,0)
+            render_pipeline(lower_canvas)
+
 
 
 
@@ -8648,8 +8650,7 @@ if len(sys.argv) < 2:
 
             Font_size = font_size_scalebar.get()
             Font_colour = text_new_colour
-            print(text_new_colour)
-
+            render_pipeline(lower_canvas)
 
         text_settings_frame = tk.Frame(tab3, bg = "#D3D3D3")
         text_settings_frame.place(relx=0.05, rely = 0.05,relheight = 0.9, relwidth = 0.9)
