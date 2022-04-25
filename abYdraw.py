@@ -8655,8 +8655,8 @@ if len(sys.argv) < 2:
         text_settings_frame = tk.Frame(tab3, bg = "#D3D3D3")
         text_settings_frame.place(relx=0.05, rely = 0.05,relheight = 0.9, relwidth = 0.9)
 
-        ttk.Label(text_settings_frame,text ="Font Size").place(relx=0.1, rely = 0.02)
-        font_size_scalebar = tk.Scale(text_settings_frame, from_=1, to=25, orient="horizontal")
+        ttk.Label(text_settings_frame,text ="Font Size (pixels)").place(relx=0.1, rely = 0.02)
+        font_size_scalebar = tk.Scale(text_settings_frame, from_=10, to=25, orient="horizontal")
         font_size_scalebar.set(Font_size)
         font_size_scalebar.place(relx=0.1, rely = 0.10,relheight = 0.2, relwidth = 0.8)
 
