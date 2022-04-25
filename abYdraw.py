@@ -7873,6 +7873,7 @@ if len(sys.argv) < 2:
     Font_size = 15
     Font_colour = '#000000'
     Font_Family = 'Helvetica'
+    text_new_colour = "#000000"
     Bond_thickness = 2
     domain_direction = "constant"
     H_Labels = False
@@ -8642,13 +8643,12 @@ if len(sys.argv) < 2:
         revertallcoloursbutton= tk.Button(changerframe, font=20, text = "Revert all colours", command =lambda: revertallcolours())
         revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.1, relwidth = 0.5)
         #Frame 3
-        text_new_colour = "#000000"
+
         def Update_text_settings():
             global Font_size
             global Font_colour
-            global text_new_colour
-
             Font_size = font_size_scalebar.get()
+            global text_new_colour
             Font_colour = text_new_colour
             render_pipeline(lower_canvas)
 
