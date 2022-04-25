@@ -4789,6 +4789,8 @@ def sequence_pipeline(canvas):
                                         if int(full_chains[a][b]) == int(domains_keyslist[f]) and ":" not in strings[a][b]:
                                             if "X" in str(domains_dict.get(domains_keyslist[f])[1]):
                                                 Pairing_sensitivity = 15
+                                            elif "VHH" in str(domains_dict.get(domains_keyslist[f])[1]):
+                                                Pairing_sensitivity = 50
                                             else:
                                                 Pairing_sensitivity = 30
                                             paired_domain = strings[a][b]
@@ -4831,7 +4833,9 @@ def sequence_pipeline(canvas):
                                                                 disulphy2 = disulphides_dict.get(disulphides_keyslist[y])[0][3]
                                                                 if ((d1x1 <= disulphx2 <= d1x2 and d1y1 <= disulphy2 <= d1y2) and (d2x1 <= disulphx1 <= d2x2 and d2y1 <= disulphy1 <= d2y2)) or ((d1x1 <= disulphx1 <= d1x2 and d1y1 <= disulphy1 <= d1y2) and (d2x1 <= disulphx2 <= d2x2 and d2y1 <= disulphy2 <= d2y2)):
                                                                     disulphide_count += 1
+
                                                             if "VHH" in str(strings[i][j]) and disulphide_count == 0:
+                                                                print("WELL THAT FUCKED UP")
                                                                 strings[i][j] = str(domain_name+"("+str(number)+")")
                                                                 strings[a][b] = str(paired_name+"("+str(paired_number)+")")
                                                             elif disulphide_count == 0:
@@ -8738,7 +8742,7 @@ if len(sys.argv) < 2:
         "To update the settings,users must press the update button and re-render their schematic to see their new schematic. The second tab is the colour-coding menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. 'Change colour' allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by 'Revert colour' or 'Revert all colours'",
         " ",
         ]
-        manual_textbox = tk.Text(manual_frame,wrap="word", fill=Font_colour, font=20)
+        manual_textbox = tk.Text(manual_frame,wrap="word", font=20)
         manual_textbox.place(relx=0, rely = 0, relheight = 1, relwidth = 1)
         for i in range(len(Manual)):
             manual_textbox.insert("end",str(Manual[i]+"\n"))
