@@ -552,6 +552,10 @@ def Get_dictionaries(x):
     for i in range(len(all_to_check_keys)):
         possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
+        if "Linker" in all_to_check_keys[i] and "Linker" in all_to_check_keys[i+1]:
+            error_message = str("ERROR: abYdraw does not allow L-L connections")
+            raise_error(lower_canvas, error_message)
+
         if "V" in str(all_to_check_keys[i]):
             if bool(re.search("[a-h]",all_to_check_keys[i])) == False:
                 domain = re.sub("\[.*\]","",all_to_check_keys[i])
@@ -1781,11 +1785,9 @@ def Check_interactions(chains_list,canvas):
                     if CLI == False:
                         print("checkpoint1")
                     if "H[" not in keyslist[i]:
-                        print("OOOH JAAA")
                         getcoordinates = domainmaker(All_positions_and_chains,startx,starty, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     else:
                         getcoordinates = [[startx,starty,startx,starty,startx,starty,startx,starty],[startx,starty],[startx,starty],[startx,starty]]
-                        print("OOOH NOO")
                         pass
 
             elif i > 0:
@@ -1983,7 +1985,6 @@ def Check_interactions(chains_list,canvas):
                         else:
 
                             if "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
-                                print("OH YES")
                                 if righthanded == True :
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                                 elif righthanded == False:
@@ -2018,7 +2019,6 @@ def Check_interactions(chains_list,canvas):
                             print("checkpoint7.5")
                             try:
                                 if "H[" in keyslist[i+1]:
-                                    print("OH YEAH, IT")
                                     #getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
                             except IndexError:
                                 pass
@@ -4567,7 +4567,6 @@ def sequence_pipeline(canvas):
                         bond_test2y1 = bondcoordinates_test[1]
                             #print(bondx2,bond2x1,bondy2,bond2y1)
                         if bond_x2-1 <= bond_test2x1 <= bond_x2+1 and bond_y2-1 <= bond_test2y1 <= bond_y2+1:
-                            print("OH dear lord no!")
                             full_chain.append(bonds_keyslist[k])
                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
                             bondx2 = bonds_dict.get(full_chain[-1])[0][2]
@@ -4837,7 +4836,6 @@ def sequence_pipeline(canvas):
                                                                     disulphide_count += 1
 
                                                             if "VHH" in str(strings[i][j]) and disulphide_count == 0:
-                                                                print("WELL THAT FUCKED UP")
                                                                 strings[i][j] = str(domain_name+"("+str(number)+")")
                                                                 strings[a][b] = str(paired_name+"("+str(paired_number)+")")
                                                             elif disulphide_count == 0:
