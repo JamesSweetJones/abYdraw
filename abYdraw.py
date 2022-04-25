@@ -4566,14 +4566,16 @@ def sequence_pipeline(canvas):
                         bond_test2x1 = bondcoordinates_test[0]
                         bond_test2y1 = bondcoordinates_test[1]
                             #print(bondx2,bond2x1,bondy2,bond2y1)
-                        if bond_x2-5 <= bond_test2x1 <= bond_x2+5 and bond_y2-5 <= bond_test2y1 <= bond_y2+5:
+                        if bond_x2-1 <= bond_test2x1 <= bond_x2+1 and bond_y2-1 <= bond_test2y1 <= bond_y2+1:
+                            print("OH dear lord no!")
                             full_chain.append(bonds_keyslist[k])
                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
+                            bondx2 = bonds_dict.get(full_chain[-1])[0][2]
+                            bondy2 = bonds_dict.get(full_chain[-1])[0][3]
                     except IndexError:
                         pass
 
-                bondx2 = bonds_dict.get(full_chain[-1])[0][2]
-                bondy2 = bonds_dict.get(full_chain[-1])[0][3]
+
 
 
                 for j in range(len(domains_dict)):
@@ -4612,7 +4614,7 @@ def sequence_pipeline(canvas):
                                         bond_test2x1 = bondcoordinates_test[0]
                                         bond_test2y1 = bondcoordinates_test[1]
                                             #print(bondx2,bond2x1,bondy2,bond2y1)
-                                        if bond_x2-5 <= bond_test2x1 <= bond_x2+5 and bond_y2-5 <= bond_test2y1 <= bond_y2+5:
+                                        if bond_x2-1 <= bond_test2x1 <= bond_x2+1 and bond_y2-1 <= bond_test2y1 <= bond_y2+1:
                                             full_chain.append(bonds_keyslist[k])
                                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
                                                     #extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
