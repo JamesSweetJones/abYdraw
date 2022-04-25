@@ -3633,6 +3633,7 @@ def render(chains_list,canvas,text_to_image):
         global Bond_Arrows
         Arrow_dimensions = Bond_Arrows
         global Font_size
+        global Font_colour
 
         Bonds              = chains_list[0]
         disulphide_bridges = chains_list[1]
@@ -3895,7 +3896,7 @@ def render(chains_list,canvas,text_to_image):
                 y = Label_positions[i][0][1]
                 Domain_Text[i] = re.sub("\_","-", Domain_Text[i])
                 Domain_Text[i] = re.sub("nano|nno","",Domain_Text[i])
-                label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label",font=(str(Font_Family),str(Font_size)))
+                label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[x,y], Domain_Text[i]]
 
 
@@ -3904,19 +3905,19 @@ def render(chains_list,canvas,text_to_image):
             setlist = list(notes_set)
             for i in range(len(setlist)):
                 if "NOTE:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels",font=(str(Font_Family),str(Font_size)))
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "NOTE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     NOTE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "TYPE:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels",font=(str(Font_Family),str(Font_size)))
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "TYPE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     TYPE_labels[note] = [Note_positions[i],setlist[i]]
                 elif "ANTI:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels",font=(str(Font_Family),str(Font_size)))
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "ANTI_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     ANTI_labels[note] = [Note_positions[i],setlist[i]]
                 elif "MOD:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels",font=(str(Font_Family),str(Font_size)))
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "MOD_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     MOD_labels[note] = [Note_positions[i],setlist[i]]
                 elif "LENGTH:" in setlist[i]:
-                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels",font=(str(Font_Family),str(Font_size)))
+                    note = canvas.create_text(Note_positions[i],text=setlist[i],tags = "LENGTH_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     LENGTH_labels[note] = [Note_positions[i],setlist[i]]
 
 
@@ -3976,6 +3977,7 @@ def render_pipeline(canvas):
     global extra_mods
     global all_buttons
     global Font_size
+    global Font_colour
     Delete_lock = False
     Bond_lock = ""
     domain_mod = ""
@@ -5724,6 +5726,7 @@ def labels_button(canvas):
     elif Label_lock == True:
         Label_lock = False
     global Font_size
+    global Font_colour
 
     label_keyslist   =list(canvas_labels.keys())
     polygons_keyslist=list(canvas_polygons.keys())
@@ -5745,7 +5748,7 @@ def labels_button(canvas):
                         labelx-=5
                     elif canvas_polygons.get(polygons_keyslist[i])[0][2] < canvas_polygons.get(polygons_keyslist[i])[0][0]:
                         labelx+=5
-                label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label", font=(str(Font_Family),str(Font_size)))
+                label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label",fill=Font_colour, font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
             elif domain_label == "-H-" or domain_label == "-H*-" or domain_label == "-H^-":
@@ -5759,7 +5762,7 @@ def labels_button(canvas):
                 elif firstx > secondx:
                     labelx = (firstx) + 30
                 labely = (firsty+secondy)/2
-                label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label",  font=(str(Font_Family),str(Font_size)))
+                label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label", fill=Font_colour, font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
 def SelectCommentTypeButton(letter):
@@ -5892,7 +5895,7 @@ def raise_error(canvas,message):
         clear_message = "click to remove error message"
         lower_canvas.delete("all")
         lower_canvas.create_text((width/2),(height/3), text = message, fill = "red", font=(str(Font_Family),str(Font_size)))
-        lower_canvas.create_text((width/2),(height/3)*2, text = clear_message, font=(str(Font_Family),str(Font_size)))
+        lower_canvas.create_text((width/2),(height/3)*2, text = clear_message,font=(str(Font_Family),str(Font_size)))
         lower_canvas.bind("<Button-1>", mm.clear_error_message)
     elif CLI == True:
         print(message)
@@ -6098,6 +6101,7 @@ class MouseMover():
     def release(self, event):
         global Label_lock
         global Font_size
+        global Font_colour
         if self.newcoordinates==[]:
             self.newcoordinates.append(self.startcoordinates[0])
             self.newcoordinates.append(self.startcoordinates[1])
@@ -6190,7 +6194,7 @@ class MouseMover():
                     elif new_coordinates[2] < new_coordinates[0]:
                         labelx2+=5
                 label_name = temp_label.get(temp_label_key[0])[1]
-                label  = lower_canvas.create_text([labelx2,labely2], text = label_name, tags = "label",  font=(str(Font_Family),str(Font_size)))
+                label  = lower_canvas.create_text([labelx2,labely2], text = label_name, tags = "label", fill=Font_colour, font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[labelx2, labely2], label_name]
                 del temp_label[temp_label_key[0]]
 
@@ -6343,6 +6347,7 @@ class MouseMover():
         global temp_label
         global specificity_colours
         global Font_size
+        global Font_colour
         domain_self_item = False
         label_keyslist = list(canvas_labels.keys())
         polygons_keyslist = list(canvas_polygons.keys())
@@ -6471,7 +6476,7 @@ class MouseMover():
                     lower_canvas.delete(label_keyslist[i])
                     new_display_name = re.sub("\_","-", new_domain_name)
                     new_display_name = re.sub("\.| ","", new_display_name)
-                    label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label", font=(str(Font_Family),str(Font_size)))
+                    label  = lower_canvas.create_text([labelx,labely], text = new_display_name, tags = "label", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     canvas_labels[label] = [[labelx,labely], new_display_name]
                     temp_label[label] = [[labelx,labely], new_domain_name]
 
@@ -6488,6 +6493,7 @@ class MouseMover():
         global temp_label
         global specificity_colours
         global Font_size
+        global Font_colour
         label_keyslist = list(canvas_labels.keys())
         if self.item in label_keyslist:
             polygons_keyslist = list(canvas_polygons.keys())
@@ -6583,7 +6589,7 @@ class MouseMover():
                     if x1< labelx <x2 and y1 < labely < y2:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
-                        label = lower_canvas.create_text([labelx,labely], text = label_text, tags = "label",font=(str(Font_Family),str(Font_size)))
+                        label = lower_canvas.create_text([labelx,labely], text = label_text, tags = "label",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                         canvas_labels[label] = [[labelx,labely], label_text]
 
             canvas_polygons[domain] = [new_coordinates, domain_name, domain_comment]
@@ -6598,6 +6604,7 @@ class MouseMover():
         global Label_lock
         global specificity_colours
         global Font_size
+        global Font_colour
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         domain_comment =""
@@ -6640,7 +6647,7 @@ class MouseMover():
         if Label_lock == True:
             domain_name = re.sub("\.|@|>","",domain_name)
             domain_name = re.sub("\_","-",domain_name)
-            label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label", font=(str(Font_Family),str(Font_size)))
+            label  = lower_canvas.create_text(domaincoordinates[3], text = str(domain_name), tags = "label", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             canvas_labels[label] = [domaincoordinates[3], domain_name, domain_comment]
         global domain_mod
         #domain_mod = ""
@@ -6655,11 +6662,12 @@ class MouseMover():
         global Type_options
         global canvas_polygons
         global Font_size
+        global Font_colour
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if Type_list_header.get() != "TYPE":
-            label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels", font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(xc,yc, text = Type_list_header.get(), tags = "MOD_labels", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             MOD_labels[label] = [[xc,yc], Type_list_header.get()]
             update_domain_comments(str(", "+Type_list_header.get()),xc,yc)
 
@@ -6670,10 +6678,11 @@ class MouseMover():
         global canvas_polygons
         widget = lower_canvas
         global Font_size
+        global Font_colour
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("NOTE:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels", font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "NOTE_labels", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             NOTE_labels[label] = [[xc,yc], entry]
             update_domain_comments(str(", "+entry),xc,yc)
 
@@ -6682,11 +6691,12 @@ class MouseMover():
         global Mod_options
         global canvas_polygons
         global Font_size
+        global Font_colour
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=CustomLabelEntry.get("1.0","end-1c")
         if mod_list_header.get() != "MOD":
-            label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(xc,yc, text = mod_list_header.get(), tags = "MOD_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             MOD_labels[label] = [[xc,yc], mod_list_header.get()]
             update_domain_comments(str(", "+mod_list_header.get()),xc,yc)
 
@@ -6694,11 +6704,12 @@ class MouseMover():
         global ANTI_labels
         global canvas_polygons
         global Font_size
+        global Font_colour
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("ANTI:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels", font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "ANTI_labels", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             ANTI_labels[label] = [[xc,yc], entry]
             update_domain_comments(str(", "+entry),xc,yc)
 
@@ -6706,11 +6717,12 @@ class MouseMover():
         global LENGTH_labels
         global canvas_polygons
         global Font_size
+        global Font_colour
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
         entry=str("LENGTH:"+CustomLabelEntry.get("1.0","end-1c"))
         if entry != "":
-            label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels", font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             LENGTH_labels[label] = [[xc,yc], entry]
             update_domain_comments(str(", "+entry),xc,yc)
 
@@ -6820,6 +6832,7 @@ class MouseMover():
         global LENGTH_labels
         global specificity_colours
         global Font_size
+        global Font_colour
         lower_canvas.delete("all")
         polygons_keyslist = list(canvas_polygons.keys())
         new_polygon_dict = {}
@@ -6870,31 +6883,31 @@ class MouseMover():
                             labelx-=5
                         elif domain_coordinates[2] < domain_coordinates[0]:
                             labelx+=5
-                    label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label",font=(str(Font_Family),str(Font_size)))
+                    label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                     canvas_labels[label] = [[labelx,labely], domain_name]
             elif domain_name == "-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness,tags="bonds")
             elif domain_name == "-H-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=hinge_colour, width=Bond_thickness,tags="bonds")
             elif domain_name == "-L-" :####
-                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness, tags="bonds")
+                domain = lower_canvas.create_line(domain_coordinates, fill=linker_colour, width=Bond_thickness,tags="bonds")
             elif domain_name == "-disulphide-":####
-                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness, tags="disulphide")
+                domain = lower_canvas.create_line(domain_coordinates, fill=disulphide_colour, width=Bond_thickness,tags="disulphide")
             new_polygon_dict[domain] = [domain_coordinates, domain_name]
         for i in range(len(list(TYPE_labels.keys()))):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_TYPE_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(NOTE_labels.keys()))):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_NOTE_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(MOD_labels.keys()))):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_MOD_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(ANTI_labels.keys()))):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_ANTI_dict[label] = [domain_coordinates, entry]
         for i in range(len(list(LENGTH_labels.keys()))):
-            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",font=(str(Font_Family),str(Font_size)))
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_LENGTH_dict[label][domain_coordinates, entry]
         canvas_polygons = new_polygon_dict
         TYPE_labels = new_TYPE_dict
@@ -7587,6 +7600,7 @@ if len(sys.argv) < 2:
         global Deletes_to_redo
         global all_buttons
         global Font_size
+        global Font_colour
         label_keyslist = list(canvas_labels.keys())
         if deleted_polygons != {}:
             deleted_polygons_keys = list(deleted_polygons.keys())
@@ -7706,6 +7720,7 @@ if len(sys.argv) < 2:
         global Deletes_to_redo
         global deleted_polygons
         global Font_size
+        global Font_colour
         if Deletes_to_redo != {}:
             keys = list(Deletes_to_redo.keys())
             to_delete = max(keys)
@@ -7793,7 +7808,7 @@ if len(sys.argv) < 2:
                                 labelx-=5
                             elif domain_coordinates[2] < domain_coordinates[0]:
                                 labelx+=5
-                        label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label",font=(str(Font_Family),str(Font_size)))
+                        label  = lower_canvas.create_text(labelx,labely, text = str(domain_name), tags = "label",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                         canvas_labels[label] = [[labelx,labely], domain_name,domain_comment]
                 elif domain_name == "-" :####
                     domain = lower_canvas.create_line(domain_coordinates, fill=bond_colour, width=Bond_thickness, tags="bonds")
@@ -7809,23 +7824,23 @@ if len(sys.argv) < 2:
                     canvas_polygons[domain] = [domain_coordinates, domain_name,domain_comment]
                 del Polygon_to_redo[to_redo]
             elif to_redo in list(TYPE_labels.keys()):
-                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels",font=(str(Font_Family),str(Font_size)))
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "TYPE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 TYPE_labels[label] = [domain_coordinates, domain_name]
                 del TYPE_to_redo[to_redo]
             elif to_redo in list(NOTE_labels.keys()):
-                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels",font=(str(Font_Family),str(Font_size)))
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "NOTE_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 NOTE_labels[label] = [domain_coordinates, domain_name]
                 del NOTE_to_redo[to_redo]
             elif to_redo in list(MOD_labels.keys()):
-                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels",font=(str(Font_Family),str(Font_size)))
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "MOD_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 MOD_labels[label] = [domain_coordinates, domain_name]
                 del MOD_to_redo[to_redo]
             elif to_redo in list(ANTI_labels.keys()):
-                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels",font=(str(Font_Family),str(Font_size)))
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "ANTI_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 ANTI_labels[label] = [domain_coordinates, domain_name]
                 del ANTI_to_redo[to_redo]
             elif to_redo in list(LENGTH_labels.keys()):
-                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",font=(str(Font_Family),str(Font_size)))
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 LENGTH_labels[label] = [domain_coordinates, domain_name]
                 del LENGTH_to_redo[to_redo]
 
@@ -7856,6 +7871,7 @@ if len(sys.argv) < 2:
     domain_charge=""
     Pairing_sensitivity = 40
     Font_size = 15
+    Font_colour = '#000000'
     Font_Family = 'Helvetica'
     Bond_thickness = 2
     domain_direction = "constant"
@@ -8562,6 +8578,7 @@ if len(sys.argv) < 2:
             global selected_domain
             global colourindex
             global Font_size
+            global Font_colour
             i=ColoursettingsLibrary.curselection()
             colourindex = i[0]
             current_colour = colours.get(coloursettings_keyslist[colourindex])
@@ -8623,9 +8640,15 @@ if len(sys.argv) < 2:
         revertallcoloursbutton= tk.Button(changerframe, font=20, text = "Revert all colours", command =lambda: revertallcolours())
         revertallcoloursbutton.place(relx=0.25, rely = 0.9,relheight = 0.1, relwidth = 0.5)
         #Frame 3
+        text_new_colour = "#000000"
         def Update_text_settings():
             global Font_size
+            global Font_colour
+            global text_new_colour
+
             Font_size = font_size_scalebar.get()
+            Font_colour = text_new_colour
+            print(text_new_colour)
 
 
         text_settings_frame = tk.Frame(tab3, bg = "#D3D3D3")
@@ -8636,9 +8659,18 @@ if len(sys.argv) < 2:
         font_size_scalebar.set(Font_size)
         font_size_scalebar.place(relx=0.1, rely = 0.10,relheight = 0.2, relwidth = 0.8)
 
+        font_changecolourbutton = tk.Button(text_settings_frame, font=20, text = "Change colour", command =lambda: text_browse_colour())
+        font_changecolourbutton.place(relx=0.25, rely = 0.5,relheight = 0.1, relwidth = 0.5)
+
+
+
         Update_text_settings_button= tk.Button(text_settings_frame, font=20, text = "Update", command =lambda: Update_text_settings())
         Update_text_settings_button.place(relx=0.333, rely = 0.90,relheight = 0.07, relwidth = 0.333)
 
+        def text_browse_colour():
+            global text_new_colour
+            text_new_colour = colorchooser.askcolor()[1]
+            print(text_new_colour)
     #Coloursettings.place(relx=0.21, rely = 0.425,relheight = 0.2, relwidth = 0.19)
     def open_manual():
         global root
@@ -8705,7 +8737,7 @@ if len(sys.argv) < 2:
         "To update the settings,users must press the update button and re-render their schematic to see their new schematic. The second tab is the colour-coding menu which with a list of domain types. When a domain type is selected the current colour of assigned to that domain will appear. 'Change colour' allows users to assign a new colours to that domain type using the colour palette of the operating system, but these may be reverted by 'Revert colour' or 'Revert all colours'",
         " ",
         ]
-        manual_textbox = tk.Text(manual_frame,wrap="word", font=(str(Font_Family),str(Font_size)))
+        manual_textbox = tk.Text(manual_frame,wrap="word", fill=Font_colour, font=20)
         manual_textbox.place(relx=0, rely = 0, relheight = 1, relwidth = 1)
         for i in range(len(Manual)):
             manual_textbox.insert("end",str(Manual[i]+"\n"))
