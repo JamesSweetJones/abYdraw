@@ -1,4 +1,29 @@
 #!/usr/bin/python3
+"""
+    AbYdraw
+    This is a programme designed to use our group's Antibody Markup Language (AbML)
+    for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor
+    string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
+    It is written in Python 3 and with both command-line and graphical interfaces built by
+    using standard packages TKinter to in order to make it as accessible as possible
+
+    Copyright (C) 2022  James Sweet-Jones and Andrew Martin
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+##########################
 import re
 import sys
 import os
@@ -2019,7 +2044,7 @@ def Check_interactions(chains_list,canvas):
                             print("checkpoint7.5")
                             try:
                                 if "H[" in keyslist[i+1]:
-                                    #getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
                             except IndexError:
                                 pass
                     elif slant == True and righthanded == True:
