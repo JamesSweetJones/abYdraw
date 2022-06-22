@@ -6,22 +6,17 @@
     string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
     It is written in Python 3 and with both command-line and graphical interfaces built by
     using standard packages TKinter to in order to make it as accessible as possible
-
     Copyright (C) 2022  James Sweet-Jones and Andrew Martin
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """
 ##########################
 import re
@@ -56,6 +51,10 @@ def Get_dictionaries(x):
         x = re.sub("VHH","VHH.a",str(x))
         x = re.sub("VH","VH.a",str(x))
         x = re.sub("VL","VL.a",str(x))
+        x = re.sub("VA","VA.a",str(x))
+        x = re.sub("VB","VB.a",str(x))
+        x = re.sub("VG","VG.a",str(x))
+        x = re.sub("VD","VD.a",str(x))
         x = re.sub("H\.aH","HH",str(x))
     ###Split chains into dictionaries
     brackets = []
@@ -102,6 +101,18 @@ def Get_dictionaries(x):
         splitx  = y.split("|")
     else:
         splitx = [y]
+    print(splitx)
+    if "[ADC]" in splitx[-1]:
+        non_specific_ADC = True
+    else:
+        non_specific_ADC = False
+    if "ASEQ" in splitx[-1]:
+        splitx[-1] = splitx[-1].split("ASEQ")[0]
+    else:
+        ASEQ = None
+    if non_specific_ADC == True:
+        splitx.pop()
+    print(splitx)
     if len(splitx) == 4:
         chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b']
     elif len(splitx) == 3:
@@ -138,7 +149,7 @@ def Get_dictionaries(x):
     for i in range(len(chains)):
         chain = splitx[i].split("-")
         if i < 4:
-            if "VH" in chain[0]:
+            if "V" in chain[0] and "L" not in chain[0]:
                 if len(chain)==1:
                     dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
                 elif chain[1] != "L":
@@ -256,7 +267,7 @@ def Get_dictionaries(x):
 
 
 
-
+    print(VHa,VHb,VLa,VLb)
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -574,8 +585,9 @@ def Get_dictionaries(x):
         #elif fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {} and "X" in fragment1_keyslist[-1] and "X" in fragment2_keyslist[-1]:
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
+    print(all_to_check_keys)
     for i in range(len(all_to_check_keys)):
-        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH"]
+        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
         if "Linker" in all_to_check_keys[i] and "Linker" in all_to_check_keys[i+1]:
             error_message = str("ERROR: abYdraw does not allow L-L connections")
@@ -598,6 +610,8 @@ def Get_dictionaries(x):
         if "Linker[" not in all_to_check_keys[i]:
             domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^","", domain_to_print)
             if domain not in possible_domains:
+                print(domain)
+                print(possible_domains)
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
     if interacting_fragments == False:
@@ -875,7 +889,7 @@ def Check_interactions(chains_list,canvas):
 
             if "a" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -887,7 +901,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_a.append(cleaned_up)
             elif "b" in str(fragments[x]) and "a" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_b.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_b.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -899,7 +913,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_b.append(cleaned_up)
             elif "c" in str(fragments[x]) and "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_c.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_c.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -911,7 +925,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_c.append(cleaned_up)
             elif "d" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_d.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_d.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -923,7 +937,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_d.append(cleaned_up)
             elif "e" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_e.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_e.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -935,7 +949,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_e.append(cleaned_up)
             elif "f" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_f.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_f.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -947,7 +961,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_f.append(cleaned_up)
             elif "g" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "e" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_g.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_g.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -959,7 +973,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_g.append(cleaned_up)
             elif "h" in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "a" not in str(fragments[x]) and "d" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "e" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_h.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_h.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -971,7 +985,7 @@ def Check_interactions(chains_list,canvas):
                         names_list_light_h.append(cleaned_up)
             elif "a" not in str(fragments[x]) and "b" not in str(fragments[x]) and "c" not in str(fragments[x]) and "d" not in str(fragments[x]) and "e" not in str(fragments[x]) and "f" not in str(fragments[x]) and "g" not in str(fragments[x]) and "h" not in str(fragments[x]):
                 for i in range(len(fragments[x])):
-                    if "H" in str(fragments[x][i]):
+                    if "H" in str(fragments[x][i]):# and "L" not in str(fragments[x][i]):
                         coordinates_list_heavy_a.append(dictionary.get(fragments[x][i])[0])
                         comments_list_heavy_a.append(dictionary.get(fragments[x][i])[1])
                         cleaned_up = fragment_cleanup(fragments[x][i])
@@ -4417,6 +4431,16 @@ def sequence_pipeline(canvas):
     LENGTH_keyslist=list(LENGTH_labels.keys())
     domains_list = lower_canvas.find_withtag("domain")
     domains_dict = {}
+    splitentry = textBox.get("1.0", "end-1c").split("|")
+    if splitentry[-1] == "[ADC]":
+        non_specific_ADC = True
+    else:
+        non_specific_ADC = False
+    if "ASEQ" in splitentry[-1]:
+        ASEQ = splitentry[-1].split("ASEQ")
+    else:
+        ASEQ = None
+    print("ASEQ", ASEQ)
 
     for i in range(len(domains_list)):
         for j in range(len(polygons_keyslist)):
@@ -4848,7 +4872,7 @@ def sequence_pipeline(canvas):
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VA" in str(strings[i][j]) and "VB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VD" in str(strings[i][j]) and "VG" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VG" in str(strings[i][j]) and "VD" in str(domains_dict.get(domains_keyslist[f])[1]))  or ("CA" in str(strings[i][j]) and "CB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CB" in str(strings[i][j]) and "CA" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CG" in str(strings[i][j]) and "CD" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CD" in str(strings[i][j]) and "CG" in str(domains_dict.get(domains_keyslist[f])[1])):
 
                                                             disulphide_count = 0
 
@@ -5174,8 +5198,13 @@ def sequence_pipeline(canvas):
     final_string = re.sub("\-L\-\|","|",str(final_string))
     final_string = re.sub("\-\|","|",str(final_string))
     final_string = re.sub("\-$","",str(final_string))
-
-
+    if non_specific_ADC == True:
+        final_string += "|[ADC]"
+    if ASEQ != None:
+        print("ASEQ",ASEQ)
+        final_string +="\n"
+        for i in range(1,(len(ASEQ))):
+            final_string +=str("\nASEQ"+ASEQ[i])
 ##display string to textbox
     textBox.delete("1.0","end")
     for i in final_string:
@@ -6973,7 +7002,6 @@ def domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direc
                     startx -=120
                 elif righthanded == True and direction == "innie":
                     startx +=120
-
 
 
     #if V == True and direction == "constant":
