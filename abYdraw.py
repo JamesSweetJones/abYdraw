@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
     AbYdraw
-    This is a programme designed to use our group's Antibody Markup Language (AbML)
+    This is a programme designed to use our group's Immunoglobulin Markup Language (AbML)
     for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor
     string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
     It is written in Python 3 and with both command-line and graphical interfaces built by
@@ -8132,12 +8132,12 @@ if len(sys.argv) < 2:
     #frame1.place(relx=0.01, rely = 0.425,relheight = 0.2, relwidth = 0.4)
     Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
     antibodyformats = {
-    "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
+    "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11)-CH3(5:12)|VL.a(6:1)-CL(7:2){1}|VH.a(8:13)-CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5)|VL.a(13:8)-CL(14:9){1}",
     "TCRab":"VA(1:3)-CA(2:4)|VB(3:1)-CB(4:2)",
     "TCRgd":"VG(1:3)-CG(2:4)|VD(3:1)-CD(4:2)",
     "IgG (H-L)":"VH.a(1:13)-CH1(2:14){1}-H(3:9){2}-L(4)-CH2(5:11)-CH3(6:12)|VH.a(7:15)-CH1(8:16){1}-H(9:3){2}-L(10)-CH2(11:5)-CH3(12:6)|VL.a(13:1)-CL(14:2){1}|VL.a(15:7)-CL(16:8){1}",
-    "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
-    "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3*@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5) | VL.b(13:8)-CL(14:9){1}",
+    "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11)-CH3(5:12)|VL.ab(6:1)-CL(7:2){1}|VH.cd(8:13)-CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5)|VL.cd(13:8)-CL(14:9){1}",
+    "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11)-CH3*@(5:12)|VL.a(6:1)-CL(7:2){1}|VH.b(8:13)-CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5)|VL.b(13:8)-CL(14:9){1}",
     "Orthagonal Fab":"VH*+.a(1:6)-CH1*>(2:7){1}-H(3:10){2}-CH2(4:11)-CH3*@(5:12)|VL_.a(6:1)-CL*@(7:2){1}|VH.b(8:13)-CH1*>(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5)|VL.b(13:8)-CL*@(14:9){1}",
     "IgG-H-scFV":"VH.a(1:19)-CH1(2:20){1}-H(3:12){2}-CH2(4:13)-CH3(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.a(10:21)-CH1(11:22){1}-H(12:3){2}-CH2(13:4)-CH3(14:5)-L(15)-VH.b(16:18)-L(17)-VL.b(18:16)|VL.a(19:1)-CL(20:2){1}|VL.a(21:10)-CL(22:11){1}",
     "IgG-L-scFV":"VH.a(1:11)-CH1(2:12){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:17)-CH1(7:18){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)|VL.a(11:1)-CL(12:2){1}-L(13)-VH.b(14:16)-L(15)-VL.b(16:14)|VL.a(17:6)-CL(18:7){1}-L(19)-VH.b(20:22)-L(21)-VL.b(22:20)",
@@ -8166,7 +8166,7 @@ if len(sys.argv) < 2:
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
     "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3*@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3*>(14:5)",
     "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
-    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE] | VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
+    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE]|VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-VH.b(5:35)-CH1(6:36){1}-H(7:24){2}-CH2(8:25)-CH3(9:26)-L(10)-VH.c(11:13)-L(12)-VL.c(13:11)-L(14)-VH.d(15:17)-L(16)-VL.d(17:15)|VL.a(18:20)-L(19)-VH.a(20:18)-L(21)-VH.b(22:37)-CH1(23:38){1}-H(24:7){2}-CH2(25:8)-CH3(26:9)-L(27)-VH.c(28:30)-L(29)-VL.c(30:28)-L(31)-VH.d(32:34)-L(33)-VL.d(34:32)|VL.b(35:5)-CL(36:6){1}|VL.b(37:22)-CL(38:23){1}",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
