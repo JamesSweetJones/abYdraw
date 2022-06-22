@@ -5351,6 +5351,22 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         nanobody_button.config(fg="red")
     elif "VH" in domain_name:
         InsertVHDomainButton.config(fg="red")
+    elif "VA" in domain_name:
+        InsertVADomainButton.config(fg="red")
+    elif "VB" in domain_name:
+        InsertVBDomainButton.config(fg="red")
+    elif "VG" in domain_name:
+        InsertVGDomainButton.config(fg="red")
+    elif "VD" in domain_name:
+        InsertVDDomainButton.config(fg="red")
+    elif "CA" in domain_name:
+        InsertCADomainButton.config(fg="red")
+    elif "CB" in domain_name:
+        InsertCBDomainButton.config(fg="red")
+    elif "CG" in domain_name:
+        InsertCGDomainButton.config(fg="red")
+    elif "CD" in domain_name:
+        InsertCDDomainButton.config(fg="red")
     elif "VL" in domain_name:
         InsertVLDomainButton.config(fg="red")
     elif "CH1" in domain_name:
@@ -5506,6 +5522,10 @@ def domain_charge_button(letter):
             domain_charge = re.sub("\_","",str(domain_charge))
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
+def tab_update():
+    global domain_type
+    domain_type = ""
+    update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 ##########################################
 def delete_button(canvas):
     '''
@@ -7919,7 +7939,20 @@ if len(sys.argv) < 2:
     ###Option box
     frame2 = tk.Frame(frame, bg = '#D3D3D3')
     frame2.place(relx=0.01, rely = 0.05,relheight = 0.35, relwidth = 0.4)
+    tabControl_frame2 = ttk.Notebook(frame2)
+
+    IgTab = ttk.Frame(tabControl_frame2)
+    TCRTab = ttk.Frame(tabControl_frame2)
+    tabControl_frame2.add(IgTab, text ='Ig')
+    tabControl_frame2.add(TCRTab, text ='TCR')
+    tabControl_frame2.place(relx=0.21, rely = 0.01,relheight = 0.8, relwidth=0.4)
+    IgTab.bind("<Button-1>", lambda event: tab_update())
+    TCRTab.bind("<Button-1>", lambda event: tab_update())
     ##SEQUENCE PIPELINE VARIABLES
+
+    ###Insert bonds buttons ###
+    ###Insert bonds buttons ###
+
     Domain_Primer = []
     Domain_Primer_Lock = ""
     domain_type = ""
@@ -7981,8 +8014,11 @@ if len(sys.argv) < 2:
     AntiLabelButton.place(relx = 0.61,rely = 0.71, relheight = 0.1, relwidth= 0.1)
     ModLabelButton = tk.Button(frame2,text="MOD", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("MOD"))
     ModLabelButton.place(relx = 0.71,rely = 0.71, relheight = 0.1, relwidth= 0.1)
-    nanobody_button = tk.Button(frame2,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
-    nanobody_button.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.2)
+    InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"),True,False))
+    InsertXDomainButton.place(relx = 0.61, rely = 0.01, relheight = 0.2, relwidth=0.1)
+    InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"),True,False))
+    InsertCDomainButton.place(relx = 0.71, rely = 0.01, relheight = 0.2, relwidth=0.1)
+
     a_button.bind("<Button-2>", lambda event: domain_type_button_right_click("a"))
     a_button.bind("<Button-3>", lambda event:domain_type_button_right_click("a"))
     b_button.bind("<Button-2>", lambda event:domain_type_button_right_click("b"))
@@ -8001,25 +8037,43 @@ if len(sys.argv) < 2:
     h_button.bind("<Button-3>", lambda event:domain_type_button_right_click("h"))
     ###Insert bonds buttons ###
     ##Col1
-    InsertVHDomainButton= tk.Button(frame2,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"),False,True))
-    InsertVHDomainButton.place(relx = 0.21, rely = 0.01, relheight = 0.2, relwidth=0.2)
-    InsertCH1DomainButton= tk.Button(frame2,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"),False,True))
-    InsertCH1DomainButton.place(relx = 0.21, rely = 0.21, relheight = 0.2, relwidth=0.2)
-    InsertCH2DomainButton= tk.Button(frame2,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"),False,True))
-    InsertCH2DomainButton.place(relx = 0.21, rely = 0.41, relheight = 0.2, relwidth=0.2)
-    InsertCH3DomainButton= tk.Button(frame2,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"),False,True))
-    InsertCH3DomainButton.place(relx = 0.21, rely = 0.61, relheight = 0.2, relwidth=0.2)
+    InsertVHDomainButton= tk.Button(IgTab,text="VH",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VH"),False,True))
+    InsertVHDomainButton.place(relx = 0.0, rely = 0.0, relheight = 0.25, relwidth=0.5)
+    InsertCH1DomainButton= tk.Button(IgTab,text="CH1",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH1"),False,True))
+    InsertCH1DomainButton.place(relx = 0.0, rely = 0.25, relheight = 0.25, relwidth=0.5)
+    InsertCH2DomainButton= tk.Button(IgTab,text="CH2",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH2"),False,True))
+    InsertCH2DomainButton.place(relx = 0.0, rely = 0.50, relheight = 0.25, relwidth=0.5)
+    InsertCH3DomainButton= tk.Button(IgTab,text="CH3",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH3"),False,True))
+    InsertCH3DomainButton.place(relx = 0.0, rely = 0.75, relheight = 0.25, relwidth=0.5)
     ##Col2
-    InsertVLDomainButton= tk.Button(frame2,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"),True,False))
-    InsertVLDomainButton.place(relx = 0.41, rely = 0.01, relheight = 0.2, relwidth=0.2)
-    InsertCLDomainButton= tk.Button(frame2,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"),True,False))
-    InsertCLDomainButton.place(relx = 0.41, rely = 0.21, relheight = 0.2, relwidth=0.2)
-    InsertCH4DomainButton= tk.Button(frame2,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"),False,True))
-    InsertCH4DomainButton.place(relx = 0.41, rely = 0.41, relheight = 0.2, relwidth=0.2)
-    InsertXDomainButton= tk.Button(frame2,text="X",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("X"),True,False))
-    InsertXDomainButton.place(relx = 0.41, rely = 0.61, relheight = 0.2, relwidth=0.1)
-    InsertCDomainButton= tk.Button(frame2,text="C",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("C"),True,False))
-    InsertCDomainButton.place(relx = 0.51, rely = 0.61, relheight = 0.2, relwidth=0.1)
+    InsertVLDomainButton= tk.Button(IgTab,text="VL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VL"),True,False))
+    InsertVLDomainButton.place(relx = 0.5, rely = 0.0, relheight = 0.25, relwidth=0.5)
+    InsertCLDomainButton= tk.Button(IgTab,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"),True,False))
+    InsertCLDomainButton.place(relx = 0.5, rely = 0.25, relheight = 0.25, relwidth=0.5)
+    InsertCH4DomainButton= tk.Button(IgTab,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"),False,True))
+    InsertCH4DomainButton.place(relx = 0.5, rely = 0.50, relheight = 0.25, relwidth=0.5)
+    nanobody_button = tk.Button(IgTab,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
+    nanobody_button.place(relx = 0.5, rely = 0.75, relheight = 0.25, relwidth=0.5)
+
+
+    ##Col1
+    InsertVADomainButton= tk.Button(TCRTab,text="VA",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VA"),False,True))
+    InsertVADomainButton.place(relx = 0.0, rely = 0.0, relheight = 0.25, relwidth=0.5)
+    InsertVBDomainButton= tk.Button(TCRTab,text="VB",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"outie",False,domain_mod,"","",str("VB"),False,True))
+    InsertVBDomainButton.place(relx = 0.0, rely = 0.25, relheight = 0.25, relwidth=0.5)
+    InsertVGDomainButton= tk.Button(TCRTab,text="VG",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"innie",False,domain_mod,"","",str("VG"),False,True))
+    InsertVGDomainButton.place(relx = 0.0, rely = 0.5, relheight = 0.25, relwidth=0.5)
+    InsertVDDomainButton= tk.Button(TCRTab,text="VD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"outie",False,domain_mod,"","",str("VD"),False,True))
+    InsertVDDomainButton.place(relx = 0.0, rely = 0.75, relheight = 0.25, relwidth=0.5)
+    ##Col2
+    InsertCADomainButton= tk.Button(TCRTab,text="CA",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,domain_direction,False,domain_mod,"","",str("CA"),True,False))
+    InsertCADomainButton.place(relx = 0.5, rely = 0.0, relheight = 0.25, relwidth=0.5)
+    InsertCBDomainButton= tk.Button(TCRTab,text="CB",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CB"),True,False))
+    InsertCBDomainButton.place(relx = 0.5, rely = 0.25, relheight = 0.25, relwidth=0.5)
+    InsertCGDomainButton= tk.Button(TCRTab,text="CG",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CG"),False,True))
+    InsertCGDomainButton.place(relx = 0.5, rely = 0.5, relheight = 0.25, relwidth=0.5)
+    InsertCDDomainButton= tk.Button(TCRTab,text="CD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("CD"),True,False))
+    InsertCDDomainButton.place(relx = 0.5, rely = 0.75, relheight = 0.25, relwidth=0.5)
 
     ###Drag and pull bonds###
     Bond_lock = ""
@@ -8846,7 +8900,7 @@ if len(sys.argv) < 2:
     startcoordinates = mm.select
     newcoordinates = mm.drag
 
-    domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button]
+    domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button, InsertVADomainButton,InsertVBDomainButton,InsertVGDomainButton,InsertVDDomainButton,InsertCADomainButton,InsertCBDomainButton,InsertCGDomainButton,InsertCDDomainButton]
     bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
     specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
     mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button,Drug_button]
