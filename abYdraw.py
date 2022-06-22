@@ -101,7 +101,6 @@ def Get_dictionaries(x):
         splitx  = y.split("|")
     else:
         splitx = [y]
-    print(splitx)
     if "[ADC]" in splitx[-1]:
         non_specific_ADC = True
     else:
@@ -112,7 +111,6 @@ def Get_dictionaries(x):
         ASEQ = None
     if non_specific_ADC == True:
         splitx.pop()
-    print(splitx)
     if len(splitx) == 4:
         chains  = ['VH.a', 'VL.a', 'VH.b', 'VL.b']
     elif len(splitx) == 3:
@@ -585,7 +583,6 @@ def Get_dictionaries(x):
         #elif fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {} and "X" in fragment1_keyslist[-1] and "X" in fragment2_keyslist[-1]:
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
-    print(all_to_check_keys)
     for i in range(len(all_to_check_keys)):
         possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
@@ -610,8 +607,7 @@ def Get_dictionaries(x):
         if "Linker[" not in all_to_check_keys[i]:
             domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^","", domain_to_print)
             if domain not in possible_domains:
-                print(domain)
-                print(possible_domains)
+
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
     if interacting_fragments == False:
@@ -619,14 +615,14 @@ def Get_dictionaries(x):
         fragment2_checked = fragment2
         fragment3_checked = fragment3
         fragment4_checked = fragment4
-    print(VHa_checked)
-    print(VLa_checked)
-    print(VHb_checked)
-    print(VLb_checked)
-    print(fragment1_checked)
-    print(fragment2_checked)
-    print(fragment3_checked)
-    print(fragment4_checked)
+    #print(VHa_checked)
+    #print(VLa_checked)
+    #print(VHb_checked)
+    #print(VLb_checked)
+    #print(fragment1_checked)
+    #print(fragment2_checked)
+    #print(fragment3_checked)
+    #print(fragment4_checked)
     if  ((fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) or (fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {}) or Claw == True or faux_claw == True) and interacting_fragments == True:
         IgG2 = True
         if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
@@ -727,7 +723,6 @@ def Check_interactions(chains_list,canvas):
     finished_multimers = []
     finished_multimers_numbers = []
     finished_multimers_indexes = []
-    print("MULTIMERS", multimers)
 
     def disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
         number_of_bonds = n+1
@@ -752,8 +747,8 @@ def Check_interactions(chains_list,canvas):
             disulphide_points.append([new_x ,new_y])
             currentx = new_x
             currenty = new_y
-            print("newx", new_x, "new y", new_y)
-        print("DISULPHIDE POINTS", disulphide_points)
+        #    print("newx", new_x, "new y", new_y)
+        #print("DISULPHIDE POINTS", disulphide_points)
         return(disulphide_points)
 
     def extra_disulphide_maker(n,bottomx,bottomy,topx,topy,righthanded):
@@ -1678,7 +1673,7 @@ def Check_interactions(chains_list,canvas):
                     mod="Leucine"
                 elif "humanserumalbumin" in str(dictionary.get(keyslist[i])):
                     mod="HSA"
-            elif "C[" in keyslist[i]:
+            elif "C[" in keyslist[i] and "V" not in keyslist[i]:
                 X = True
                 mod = "C"
 
@@ -1727,7 +1722,7 @@ def Check_interactions(chains_list,canvas):
 
                 elif x_mod == True and "X" in keyslist[i]:
                     Domain_name = "X*"
-                elif x_mod == True and "C[" in keyslist[i]:
+                elif x_mod == True and "C[" in keyslist[i] and "V" not in keyslist[i] :
                     Domain_name = "C*"
 
                 Notes.append(Domain_name+" "+non_redundant_note_label)
@@ -1740,8 +1735,7 @@ def Check_interactions(chains_list,canvas):
 
             if dictionary == VHa_chain or dictionary == VHb_chain or dictionary == VLa_chain or dictionary == VLb_chain or dictionary == fragment1 or dictionary == fragment2 or dictionary == fragment3 or dictionary == fragment4:
                 try:
-                    print("NO NO NO")
-                    location = dictionary.get(keyslist[i])[0][0]
+#                    location = dictionary.get(keyslist[i])[0][0]
                     disulphide_bridge_count = int(dictionary.get(keyslist[i])[1])
                     location    = dictionary.get(keyslist[i])[0]
                     dictionary[keyslist[i]] = location
@@ -6693,6 +6687,7 @@ class MouseMover():
             global domain_direction
             Domain_Primer[3] = "innie"
         All_positions_and_chains = {}
+        print(Domain_Primer)
         domaincoordinates = domainmaker(All_positions_and_chains,startx,starty,Domain_Primer[0],Domain_Primer[1],Domain_Primer[2],Domain_Primer[3],Domain_Primer[4],Domain_Primer[5],Domain_Primer[6],Domain_Primer[7],Domain_Primer[11])
         domain_name = re.sub("nano|nno","",Domain_Primer[8])
         if "a" in str(domain_name):
@@ -8059,20 +8054,20 @@ if len(sys.argv) < 2:
     ##Col1
     InsertVADomainButton= tk.Button(TCRTab,text="VA",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VA"),False,True))
     InsertVADomainButton.place(relx = 0.0, rely = 0.0, relheight = 0.25, relwidth=0.5)
-    InsertVBDomainButton= tk.Button(TCRTab,text="VB",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"outie",False,domain_mod,"","",str("VB"),False,True))
+    InsertVBDomainButton= tk.Button(TCRTab,text="VB",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VB"),False,True))
     InsertVBDomainButton.place(relx = 0.0, rely = 0.25, relheight = 0.25, relwidth=0.5)
-    InsertVGDomainButton= tk.Button(TCRTab,text="VG",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"innie",False,domain_mod,"","",str("VG"),False,True))
+    InsertVGDomainButton= tk.Button(TCRTab,text="VG",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"innie",False,domain_mod,"","",str("VG"),False,True))
     InsertVGDomainButton.place(relx = 0.0, rely = 0.5, relheight = 0.25, relwidth=0.5)
-    InsertVDDomainButton= tk.Button(TCRTab,text="VD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,"outie",False,domain_mod,"","",str("VD"),False,True))
+    InsertVDDomainButton= tk.Button(TCRTab,text="VD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"outie",False,domain_mod,"","",str("VD"),False,True))
     InsertVDDomainButton.place(relx = 0.0, rely = 0.75, relheight = 0.25, relwidth=0.5)
     ##Col2
-    InsertCADomainButton= tk.Button(TCRTab,text="CA",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,domain_direction,False,domain_mod,"","",str("CA"),True,False))
+    InsertCADomainButton= tk.Button(TCRTab,text="CA",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CA"),True,False))
     InsertCADomainButton.place(relx = 0.5, rely = 0.0, relheight = 0.25, relwidth=0.5)
     InsertCBDomainButton= tk.Button(TCRTab,text="CB",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CB"),True,False))
     InsertCBDomainButton.place(relx = 0.5, rely = 0.25, relheight = 0.25, relwidth=0.5)
     InsertCGDomainButton= tk.Button(TCRTab,text="CG",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CG"),False,True))
     InsertCGDomainButton.place(relx = 0.5, rely = 0.5, relheight = 0.25, relwidth=0.5)
-    InsertCDDomainButton= tk.Button(TCRTab,text="CD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,True,domain_mod,"","",str("CD"),True,False))
+    InsertCDDomainButton= tk.Button(TCRTab,text="CD",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CD"),True,False))
     InsertCDDomainButton.place(relx = 0.5, rely = 0.75, relheight = 0.25, relwidth=0.5)
 
     ###Drag and pull bonds###
@@ -8138,6 +8133,8 @@ if len(sys.argv) < 2:
     Library= tk.Listbox(frame, selectbackground='#D3D3D3', height=20)
     antibodyformats = {
     "IgG":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.a(6:1)-CL(7:2){1} | VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.a(13:8)-CL(14:9){1}",
+    "TCRab":"VA(1:3)-CA(2:4)|VB(3:1)-CB(4:2)",
+    "TCRgd":"VG(1:3)-CG(2:4)|VD(3:1)-CD(4:2)",
     "IgG (H-L)":"VH.a(1:13)-CH1(2:14){1}-H(3:9){2}-L(4)-CH2(5:11)-CH3(6:12)|VH.a(7:15)-CH1(8:16){1}-H(9:3){2}-L(10)-CH2(11:5)-CH3(12:6)|VL.a(13:1)-CL(14:2){1}|VL.a(15:7)-CL(16:8){1}",
     "Promiscuous IgG": "VH.ab(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3(5:12) | VL.ab(6:1)-CL(7:2){1} | VH.cd(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) | VL.cd(13:8)-CL(14:9){1}",
     "Knobs in Holes":"VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11) - CH3*@(5:12) | VL.a(6:1)-CL(7:2){1} | VH.b(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3*>(12:5) | VL.b(13:8)-CL(14:9){1}",
