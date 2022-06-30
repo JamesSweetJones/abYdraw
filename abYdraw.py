@@ -7938,8 +7938,8 @@ if len(sys.argv) < 2:
 
     IgTab = ttk.Frame(tabControl_frame2)
     TCRTab = ttk.Frame(tabControl_frame2)
-    tabControl_frame2.add(IgTab, text ='Ig')
-    tabControl_frame2.add(TCRTab, text ='TCR')
+    tabControl_frame2.add(IgTab, text ='TCR')
+    tabControl_frame2.add(TCRTab, text ='Ig')
     tabControl_frame2.place(relx=0.21, rely = 0.01,relheight = 0.8, relwidth=0.4)
     IgTab.bind("<Button-1>", lambda event: tab_update())
     TCRTab.bind("<Button-1>", lambda event: tab_update())
