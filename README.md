@@ -33,6 +33,7 @@ Building, University College London, Gower Street, London)
 AbML was derived from existing macromolecule descriptor languages, but we have compensated for their limitations and made AbML simple, whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the number label(s) assigned to the domain(s) it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: `TYPE; NOTE; MOD; ANTI and LENGTH`. TYPE and MOD are limited to reserved keywords in block capitals while other comments are not restricted and written in lower case. 
 
 AbML expression for a standard IgG molecule would be:
+
 `VH.a(1:6)-CH1(2:7){1}-H(3:10){2}-CH2(4:11)-CH3(5:12) | 
 VL.a(6:1)-CL(7:2){1} | 
 VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) |
