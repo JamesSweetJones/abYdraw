@@ -107,7 +107,7 @@ Precompiled versions of abYdraw are available for Windows and MacOS on our resea
 
 ![abYdraw Interface](https://github.com/JamesSweetJones/abYdraw/blob/main/Interface_new.png)
 
-The program interface includes six points of reference, four of which are in a column on the left hand side and two more on the right hand side. Starting with the left hand column, the first is the Domain palette **(A)** which has buttons necessary for drawing antibody domains, secondly a library of commonly used antibody AbML expressions **(B)**, thirdly the input box for AbML expressions **(C)** and a buttonpad that will render antibody schematics or output AbML to the textbox **(D)**. On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics **(E)** and underneath there are two buttons which are involved in exporting the schematic **(F)**.
+The program interface includes six points of reference, four of which are in a column on the left hand side and two more on the right hand side. Starting with the left hand column, the first is the Domain palette **(A)** which has buttons necessary for drawing antibody domains. To switch between Immunoglobulin and T-cell receptor domains, use the tab at the top of the palatte. Underneath is a library of commonly used antibody AbML expressions **(B)**, thirdly the input box for AbML expressions **(C)** and a buttonpad that will render antibody schematics or output AbML to the textbox **(D)**. On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics **(E)** and underneath there are two buttons which are involved in exporting the schematic **(F)**.
 
 ### 4. Inputting AbML
 
@@ -115,7 +115,7 @@ AbML descriptor strings my be input in the entry box or opened in the `File>Open
 
 ### 5. Generating AbML
 
-##### Drawing MsAb Domains
+##### Drawing Domains
 To draw an antibody, you must insert domains onto the canvas and arrange them so the program recognises it as an antibody. Tools for adding domains to the canvas are in the Domain Palette which contains all of the domain types, modifications, specificities and comment types as described in the AbML guidesheet as well as some options. Selecting a button on the palette will cause it to flash red to indicate it has been switched on. Only one domain or connector type may be switched on at a time, but you may choose any combination of modifications and specificities to accompany your selection. Specificity types are only applicable to variable domains where if no specificity is selected, it will be rendered as a default `a` value. Mulitple specificities may be selected by right-clicking the first specificity and left-clicking subsequent specificities. Once a domain is selected you will notice the cursor will change from an arrow to a "+" sign. This means you can left-click to insert your chosen domain type onto the canvas at the location you have clicked. 
 
 ##### Connecting Domains
