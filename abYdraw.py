@@ -6644,6 +6644,8 @@ class MouseMover():
                 heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
             if "VH" in domain_name or "CH" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
+            elif "V" in domain_name:
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
             elif "VL" in domain_name or "CL" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
             elif "X" in domain_name:
