@@ -46,10 +46,10 @@ Full documentation of AbML is available on the AbML website: [AbML Documentation
 ##### Requirements
 
 This script requires `tkinter 8.6` or newer to run. If you are experiencing issues running the script please check your version of tkinter with:
-`import tkinter
-
+```
+import tkinter
 tkinter.TkVersion
-`
+```
 
 Newer versions of tkinter may be installed from: https://tkdocs.com/tutorial/install.html
 
