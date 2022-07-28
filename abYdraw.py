@@ -1788,7 +1788,6 @@ def Check_interactions(chains_list,canvas):
                 print(keyslist[i])
 
 
-
             if i == 0:
                 if "X" in keyslist[i] and dictionary.get(keyslist[i])[0] in multimers_keyslist:
                     current_number = dictionary.get(keyslist[i])[0]
@@ -1856,10 +1855,10 @@ def Check_interactions(chains_list,canvas):
 
                 #print(keyslist[i], dictionary.get(keyslist[i])[0], previous_number, dictionary.get(keyslist[i])[0] , (dictionary.get(previous_domain)[1]))
 
-                if checker in All_positions_and_chains and ("X" in keyslist[i] or "C[" in keyslist[i]) and len(dictionary.get(keyslist[i])) == 1:
+                if checker in All_positions_and_chains and ("X" in keyslist[i] or "C[" in keyslist[i]) and len(dictionary.get(keyslist[i])) == 1 and chain_count > 4:
                     startx = All_positions_and_chains.get(checker)[0][0]
                     starty = All_positions_and_chains.get(checker)[0][1]
-
+                    print("oopsidaisy", checker,All_positions_and_chains)
                     getcoordinates = domainmaker(All_positions_and_chains,startx,starty,righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                 elif "H[" in keyslist[i]:
@@ -1900,6 +1899,7 @@ def Check_interactions(chains_list,canvas):
 
 
                 elif "X" in keyslist[i] and dictionary.get(keyslist[i])[0] in multimers_keyslist:
+                    print("checkpoint-oops")
                     current_number = dictionary.get(keyslist[i])[0]
                     additions = multimers.get(dictionary.get(keyslist[i])[0])[0]
 
@@ -1991,6 +1991,18 @@ def Check_interactions(chains_list,canvas):
                         elif slant == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
+
+
+
+                    elif chain_count !=2 and mod !="Leucine" and "X" not in keyslist[i-1]:
+                        if innie_or_outie_list[i-2] == "innie" and righthanded == False:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif innie_or_outie_list[i-2] == "outie" and righthanded == False:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif innie_or_outie_list[i-2] == "innie" and righthanded == True:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif innie_or_outie_list[i-2] == "outie" and righthanded == True:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                 elif  ("H[" in keyslist[i-1] and "Linker[" in keyslist[i]) or ("H[" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0])) :
                     if CLI == False:
@@ -2282,7 +2294,7 @@ def Check_interactions(chains_list,canvas):
                                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                                         Build_up=True
                                         Build_down=False
-                                    elif  slant==True and righthanded == True:
+                                    elif  slant==True and righthanded == False:
                                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                                         Build_up=True
                                         Build_down=False
@@ -2301,7 +2313,80 @@ def Check_interactions(chains_list,canvas):
                             Build_out = True
                             Build_in = False
 
-##Build across
+                            ##Build across
+                    elif chain_count==4 and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and  dictionary.get(keyslist[i])[1]+2 == dictionary.get(keyslist[i-2])[1]:
+                        if CLI == False:
+                            print("checkpoint16.5")
+                            print(dictionary)
+                        if dictionary == VLa_chain or dictionary == VLb_chain:
+                            tangle_found = False
+                            if dictionary == VLa_chain:
+                                keyslista = list(VLa_chain.keys())
+                                keyslistb = list(VHa_chain.keys())
+                                try:
+                                    interactor = VLa_chain.get(keyslista[0])[1]
+                                    if "Linker[" in keyslista[1]:
+                                        interactor_2 = VLa_chain.get(keyslista[2])[1]
+                                    else:
+                                        interactor_2 = VLa_chain.get(keyslista[1])[1]
+                                    if interactor_2 < interactor: #and "H[" in keyslista[-1]:
+                                        tangle_found = True
+                                except IndexError:
+                                    pass
+                            elif dictionary == VLb_chain:
+                                keyslista = list(VLb_chain.keys())
+                                keyslistb = list(VHb_chain.keys())
+                                try:
+                                    interactor = VLb_chain.get(keyslista[0])[1]
+                                    if "Linker[" in keyslista[1]:
+                                        interactor_2 = VLb_chain.get(keyslista[2])[1]
+                                    else:
+                                        interactor_2 = VLb_chain.get(keyslista[1])[1]
+                                    if interactor_2 < interactor: #and "H[" in keyslista[-1]:
+                                        tangle_found = True
+                                except IndexError:
+                                    pass
+
+
+                            if tangle_found == True:
+                                Build_up=True
+                                Build_down=False
+                                if slant==True and righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif  slant==True and righthanded == True:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif slant==False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]),(previous_chain[1])-95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif tangle_found == False:
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+                        elif dictionary == VHa_chain or dictionary == VHb_chain:
+                            try:
+                                if "Linker[" in keyslist[i+1]:
+                                    if slant==True and righthanded == True:
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])-45,(previous_chain[1])+95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                        #Build_up=True
+                                        #Build_down=False
+                                    elif  slant==True and righthanded == False:
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0])+45,(previous_chain[1])+95, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                        #Build_up=True
+                                        #Build_down=False
+                                    elif slant==False:
+                                        getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+                                else:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                    print("Heavy5")
+                            except IndexError:
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7])+20, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                print("Heavy6")
+
+                        #if Build_out == True:
+                        #    Build_in = True
+                        #    Build_out = False
+                        #elif Build_in == True:
+                        #    Build_out = True
+                        #    Build_in = False
 
                     elif dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[0] == (dictionary.get(previous_domain)[1]):
                         if CLI == False:
@@ -2337,20 +2422,35 @@ def Check_interactions(chains_list,canvas):
                                     if startx == coordinates[0] and starty == y1:
                                         clash = True
                             if clash == True:
-                                return(True,startx,starty+95 )
+                                return([True,startx,starty+95])
                             elif clash == False:
-                                return(False,startx,starty )
+                                return([False,startx,starty])
                         if "H[" not in keyslist[i-2]:
+                            print("boom!")
                             clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
+                            print(clash)
                             if clash[0] == True:
+                                print("BOOM2")
                                 Build_up = True
                                 Build_down=False
-                            if slant == True and righthanded == True:
-                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
-                            elif slant == True and righthanded == False:
-                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            if "X[" in keyslist[i] and (dictionary == VLa_chain or dictionary == VLb_chain):
+                                print("OH NOOO")
+                                slant= False
+                                Build_up = True
+                                Build_down=False
+                                if  righthanded == True:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-20,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])+20,(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                else:
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+115),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             else:
-                                getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                if slant == True and righthanded == True:
+                                    getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                elif slant == True and righthanded == False:
+                                    getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                                else:
+                                    getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif "H[" in keyslist[i-2]:
                             print(previous_chain)
                             if  righthanded == True:
@@ -3002,11 +3102,25 @@ def Check_interactions(chains_list,canvas):
                 VHa_H_coordinatesy = (height/2)-50
                 VHb_H_coordinatesx = (width/2)+50
                 VHb_H_coordinatesy = (height/2)-50
+                test_keyslist = list(VHa_1_test.keys())
+                for i in range(len(test_keyslist)):
+                    print(test_keyslist[i])
+                    if "X[" in str(test_keyslist[i]):
+                        try:
+                            if "H[" in str(test_keyslist[i+1]):
+                                VHa_H_coordinatesx = (width/2)-100
+                                VHa_H_coordinatesy = (height/2)-50
+                                VHb_H_coordinatesx = (width/2)+100
+                                VHb_H_coordinatesy = (height/2)-50
+                        except:
+                            pass
+
             elif IgG2 == True:
                 VHa_H_coordinatesx = (width/2)-200
                 VHa_H_coordinatesy = (height/2)-100
                 VHb_H_coordinatesx = (width/2)-100
                 VHb_H_coordinatesy = (height/2)-100
+
         elif (("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) or ("C[" in str(VHa_1_test) and "C[" in str(VHb_1_test)))and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
