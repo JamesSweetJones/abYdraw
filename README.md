@@ -21,7 +21,7 @@ TKinter in order to make it as accessible as possible.
 7. Saving and exporting
 8. Settings
 
-Reference:
+Reference: James Sweet-Jones, Maham Ahmad & Andrew C.R. Martin (2022) Antibody markup language (AbML) — a notation language for antibody-based drug formats and software for creating and rendering AbML (abYdraw), mAbs, 14:1, DOI: 10.1080/19420862.2022.2101183
 
 Software authors: James Sweet-Jones and Andrew Martin (Darwin
 Building, University College London, Gower Street, London)
@@ -39,9 +39,19 @@ VL.a(6:1)-CL(7:2){1} |
 VH.a(8:13)- CH1(9:14){1}-H(10:3){2}-CH2(11:4)-CH3(12:5) |
 VL.a(13:8)-CL(14:9){1}`
 
-Full documentation of AbML is available on the AbML web site: [AbML Documentation](http://www.bioinf.org.uk/abs/abml/).
+Full documentation of AbML is available on the AbML website: [AbML Documentation](http://www.bioinf.org.uk/abs/abml/).
 
 ### 2. Installing and Executing
+
+##### Requirements
+
+This script requires `tkinter 8.6` or newer to run. If you are experiencing issues running the script please check your version of tkinter with:
+```
+import tkinter
+tkinter.TkVersion
+```
+
+Newer versions of tkinter may be installed from: https://tkdocs.com/tutorial/install.html
 
 ##### Command Line Interface
 
