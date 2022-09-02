@@ -1951,6 +1951,7 @@ def Check_interactions(chains_list,canvas):
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     elif chain_count !=2 and mod !="Leucine" and "X" not in keyslist[i-1]:
+                        print("Holya yah")
                         if innie_or_outie_list[i-2] == "innie" and righthanded == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif innie_or_outie_list[i-2] == "outie" and righthanded == False:
@@ -1973,13 +1974,13 @@ def Check_interactions(chains_list,canvas):
                     elif chain_count !=2 and mod !="Leucine" and "X" in keyslist[i-1]:
                         Build_up = True
                         if righthanded == False and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+90),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif righthanded == False and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+90),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif righthanded == True and Build_in == True and Build_out == False:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-30),(previous_chain[1]+90),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif righthanded == True and Build_in == False and Build_out == True:
-                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+30),(previous_chain[1]+90),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         Build_in = True
                         Build_out = False
@@ -8287,6 +8288,7 @@ if len(sys.argv) < 2:
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-VH.b(5:35)-CH1(6:36){1}-H(7:24){2}-CH2(8:25)-CH3(9:26)-L(10)-VH.c(11:13)-L(12)-VL.c(13:11)-L(14)-VH.d(15:17)-L(16)-VL.d(17:15)|VL.a(18:20)-L(19)-VH.a(20:18)-L(21)-VH.b(22:37)-CH1(23:38){1}-H(24:7){2}-CH2(25:8)-CH3(26:9)-L(27)-VH.c(28:30)-L(29)-VL.c(30:28)-L(31)-VH.d(32:34)-L(33)-VL.d(34:32)|VL.b(35:5)-CL(36:6){1}|VL.b(37:22)-CL(38:23){1}",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
+    "Tetravalent diabody/FC":"VL.a(1:8)-L(2)-VH.b(3:6)-L(4)-X(5:10){1} |VL.b(6:3)-L(7)-VH.a(8:1)-L(9)-X(10:5){1}-H(11:24){2}-CH2(12:25)-CH3(13:26) |VL.a(14:21)-L(15)-VH.b(16:19)-L(17)-X(18:23){1}|VL.b(19:16)-L(20)-VH.a(21:14)-L(22)-X(23:18){1}-H(24:11){2}-CH2(25:12)-CH3(26:13)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
     'scFV-X-Fc-Body':"VL.a(1:3)-L(2)-VH.a(3:1)-X(4:10){1}[TYPE:FUSION]-CH2(5:11)-CH3(6:12)|VL.b(7:9)-L(8)-VH.b(9:7)-X(10:4){1}[TYPE:FUSION]-CH2(11:5)-CH3(12:6)",
     "IgG-IgG":"VH.a(1:13)-CH1(2:14){1}-H(3:8){2}-CH2(4:9)-CH3(5:10)|VH.a(6:15)-CH1(7:16){1}-H(8:3){2}-CH2(9:4)-CH3(10:5)-L(11)-C(12)[TYPE:OPDM]|VL.a(13:1)-CL(14:2){1}|VL.a(15:6)-CL(16:7){1}|VH.b(17:28)-CH1(18:29){1}-H(19:25){2}-CH2(20:26)-CH3(21:27)-L(22)-C(12)[TYPE:OPDM]|VH.b(23:30)-CH1(24:31){1}-H(25:19){2}-CH2(26:20)-CH3(27:21)|VL.b(28:17)-CL(29:18){1}|VL.b(30:23)-CL(31:24){1}"
