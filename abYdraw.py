@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-    AbYdraw V1.1
+    AbYdraw
     This is a programme designed to use our group's Immunoglobulin Markup Language (IgML)
     for describing bispecific antibody (BsAb) formats by either inputting an IgML descriptor
     string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.1"
+version_number = "V1.01"
 
 
 ######################################
