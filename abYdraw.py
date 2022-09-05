@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.01"
+version_number = "V1.02"
 
 
 ######################################
@@ -1524,11 +1524,17 @@ def Check_interactions(chains_list,canvas):
                         pass
                 if tangle_found == False :
                     if "X" in str(dictionary):
+                        print("path 1")
                         if "LEUCINE" in str(dictionary) or "X" in keyslist[-1] or "X" in keyslist[0]:
-                            slant = True
+                            if "X" in keyslist[0] and len(VHa_chain.get(keyslist[0])[0]) == 2:
+
+                                slant = False
+                            else:
+                                slant = True
                         else:
                             slant = False
                     elif ("H[" in str(keyslista) or "H*[" in str(keyslista) or "H^[" in str(keyslista)) and ("H[" in str(keyslistb) or "H*[" in str(keyslistb) or "H^[" in str(keyslistb)) :
+                        print("path 2")
                         slant = True
                     else:
                         slant = False
@@ -2032,6 +2038,7 @@ def Check_interactions(chains_list,canvas):
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     if chain_count <=2:
+
                         if dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
                             try:
                                 if dictionary.get(keyslist[0])[0] != (dictionary.get(keyslist[2])[1]) :
@@ -2043,7 +2050,10 @@ def Check_interactions(chains_list,canvas):
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         else:
-                            if "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
+                            if slant == False and "X[" in keyslist[0] and VHa_H_coordinatesx == (width/2)-30:
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+                            elif "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
                                 if righthanded == True :
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                                 elif righthanded == False:
@@ -2440,15 +2450,11 @@ def Check_interactions(chains_list,canvas):
                             elif clash == False:
                                 return([False,startx,starty])
                         if "H[" not in keyslist[i-2]:
-                            print("boom!")
                             clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
-                            print(clash)
                             if clash[0] == True:
-                                print("BOOM2")
                                 Build_up = True
                                 Build_down=False
                             if "X[" in keyslist[i] and (dictionary == VLa_chain or dictionary == VLb_chain):
-                                print("OH NOOO")
                                 slant= False
                                 Build_up = True
                                 Build_down=False
@@ -2466,7 +2472,6 @@ def Check_interactions(chains_list,canvas):
                                 else:
                                     getcoordinates = domainmaker(All_positions_and_chains,clash[1],clash[2],righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif "H[" in keyslist[i-2]:
-                            print(previous_chain)
                             if  righthanded == True:
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6])-20,(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             elif righthanded == False:
@@ -3117,9 +3122,10 @@ def Check_interactions(chains_list,canvas):
                 VHb_H_coordinatesx = (width/2)+50
                 VHb_H_coordinatesy = (height/2)-50
                 test_keyslist = list(VHa_1_test.keys())
+                test_keyslistb= list(VHb_1_test.keys())
+                print(len(VHa_1_test.get(test_keyslist[0])[0]))
                 for i in range(len(test_keyslist)):
-                    print(test_keyslist[i])
-                    if "X[" in str(test_keyslist[i]):
+                    if "X[" in str(test_keyslist[i]) and "H[" not in test_keyslistb[0]:
                         try:
                             if "H[" in str(test_keyslist[i+1]):
                                 VHa_H_coordinatesx = (width/2)-100
@@ -3128,6 +3134,13 @@ def Check_interactions(chains_list,canvas):
                                 VHb_H_coordinatesy = (height/2)-50
                         except:
                             pass
+                    if "X[" in str(test_keyslist[0]) and len(VHa_1_test.get(test_keyslist[0])[0]) == 2:
+                        VHa_H_coordinatesx = (width/2)-30
+                        VHa_H_coordinatesy = (height/2)-50
+                        VHb_H_coordinatesx = (width/2)+30
+                        VHb_H_coordinatesy = (height/2)-50
+
+
 
             elif IgG2 == True:
                 VHa_H_coordinatesx = (width/2)-200
