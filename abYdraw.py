@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.02"
+version_number = "V1.03"
 
 
 ######################################
@@ -4655,6 +4655,9 @@ def sequence_pipeline(canvas):
     print("ARCS", arcs_dict)
 
     chains=[]
+    strings         = []
+    full_chains     = []
+    hinge_starts    = []
     current_chain_str = []
     current_chain_coords_lists = []
     domains_keyslist = list(domains_dict.keys())
@@ -4668,6 +4671,44 @@ def sequence_pipeline(canvas):
     length_keyslist= list(length_dict.keys())
     arcs_keyslist = list(arcs_dict.keys())
     hinges_keyslist= list(hinges_dict.keys())
+    ##Check for hanging starts
+    bond_start = []
+    for i in range(len(hinges_keyslist)):
+        ending_found = False
+        bondx1 = hinges_dict.get(hinges_keyslist[i])[0][0]
+        bondy1 = hinges_dict.get(hinges_keyslist[i])[0][1]
+        for j in range(len(domains_keyslist)):
+            min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[j])[0])
+            domainx1 = min_max[0]
+            domainx2 = min_max[1]
+            domainy1 = min_max[2]
+            domainy2 = min_max[3]
+            if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
+                ending_found = True
+        if ending_found == False:
+            continuation_found = False
+            bondx2 = hinges_dict.get(hinges_keyslist[i])[0][2]
+            bondy2 = hinges_dict.get(hinges_keyslist[i])[0][3]
+            for j in range(len(domains_keyslist)):
+                min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[j])[0])
+                domainx1 = min_max[0]
+                domainx2 = min_max[1]
+                domainy1 = min_max[2]
+                domainy2 = min_max[3]
+                if domainx1 < bondx2 < domainx2 and domainy1 < bondy2 < domainy2:
+                    continuation_found = True
+                    saved_domain = domains_keyslist[j]
+            if continuation_found == True:
+                hinge_starts.append(saved_domain)
+                chains.append(saved_domain)
+
+
+                #full_chain.append(chains[i])
+                #string.append(hinges_dict.get(chains[i])[1])
+
+
+    print(chains)
+
     for i in range(len(domains_keyslist)):
         start_found = True
         continuation_found = False
@@ -4691,9 +4732,8 @@ def sequence_pipeline(canvas):
             start_found = False
 
 
-    print(chains)
-    strings         = []
-    full_chains     = []
+
+
     #full_directions = []
 
 
@@ -4842,9 +4882,25 @@ def sequence_pipeline(canvas):
 
 
         #full_directions.append(directions)
-
+        if full_chain[0] in hinge_starts:
+            min_max = get_min_max_coordinates(domains_dict.get(full_chain[0])[0])
+            domainx1 = min_max[0]
+            domainx2 = min_max[1]
+            domainy1 = min_max[2]
+            domainy2 = min_max[3]
+            for i in range(len(hinges_keyslist)):
+                ending_found = False
+                bondx1 = hinges_dict.get(hinges_keyslist[i])[0][2]
+                bondy1 = hinges_dict.get(hinges_keyslist[i])[0][3]
+                print(domainx1 , bondx1 , domainx2 , domainy1 , bondy1 , domainy2)
+                if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
+                    full_chain.insert(0, hinges_keyslist[i])
+                    print(full_chain)
+                    string.insert(0,hinges_dict.get(hinges_keyslist[i])[1])
+                    print(string)
         full_chains.append(full_chain)
         strings.append(string)
+
 ##reorder chains by specificity
 
     #chain_starters = []
@@ -5320,6 +5376,10 @@ def sequence_pipeline(canvas):
 ##conver lists to expression
     final_string = ""
     print(strings[i])
+    if "-H" in strings[0][0]:
+        if len(strings) == 2:
+            strings[0],strings[1] = strings[1],strings[0]
+
     for i in range(len(strings)):
         for j in range(len(strings[i])):
             if j == 0 and i == 0:
@@ -5334,6 +5394,8 @@ def sequence_pipeline(canvas):
     final_string = re.sub("\-L\-\|","|",str(final_string))
     final_string = re.sub("\-\|","|",str(final_string))
     final_string = re.sub("\-$","",str(final_string))
+    final_string = re.sub("^-","",str(final_string))
+    final_string = re.sub("\|-","",str(final_string))
     if non_specific_ADC == True:
         final_string += "|[ADC]"
     if ASEQ != None:
