@@ -2043,7 +2043,6 @@ def Check_interactions(chains_list,canvas):
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                         else:
-
                             if "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
                                 if righthanded == True :
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -2079,7 +2078,7 @@ def Check_interactions(chains_list,canvas):
                             print("checkpoint7.5")
                             try:
                                 if "H[" in keyslist[i+1]:
-                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
+                                    getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]-75),righthanded,False,V,direction,X,mod,interaction,previous_H, Build_up)
                             except IndexError:
                                 pass
                     elif slant == True and righthanded == True:
@@ -8289,7 +8288,6 @@ if len(sys.argv) < 2:
     "scDiabody-Fc":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:18){2}-CH2(9:19)-CH3(10:20)|VL.b(11:17)-L(12)-VL.b(13:15)-L(14)-VH.b(15:13)-L(16)-VH.b(17:11)-H(18:8){2}-CH2(19:9)-CH3(20:10)",
     "scDiabody-CH3":"VL.a(1:7)-L(2)-VL.a(3:5)-L(4)-VH.a(5:3)-L(6)-VH.a(7:1)-H(8:17){2}-CH3(9:18) |VL.b(10:16)-L(11)-VL.b(12:14)-L(13)-VH.b(14:12)-L(15)-VH.b(16:10)-H(17:8){2}-CH3(18:9)",
     "Diabody-CH3":"VH.b(1:11)-L(2)-VL.a(3:13){1}-H(4:9){2}-CH3(5:10)|VH.b(6:14)-L(7)-VL.a(8:16){1}-H(9:4){2}-CH3(10:5)|VL.b(11:1)-L(12)-VH.a(13:3){1}|VL.b(14:6)-L(15)-VH.a(16:8){1}",
-    "Tetravalent Diabody-Fc":"VL.a(1:13)-L(2)-VH.b(3:11)-L(4)-X(5:15){1}|VL.a(6:21)-L(7)-VH.b(8:19)-L(9)-X(10:23){1}|VL.b(11:3)-L(12)-VH.a(13:1)-L(14)-X(15:5){1}-H(16:24){2}-CH2(17:25)-CH3(18:26)|VL.b(19:8)-L(20)-VH.a(21:6)-L(22)-X(23:10){1}-H(24:16){2}-CH2(25:17)-CH3(26:18)",
     "DART":"VL.a(1:7)-L(2)-VH.b(3:5)-H*(4:8){3}[MOD:REMDISULFIDE]|VL.b(5:3)-L(6)-VH.a(7:1)-H*(8:4){3}[MOD:REMDISULFIDE]",
     "Tandem A and B": "VH.a(1:8)-L(2)-VL.b(3:10)-L(4)-VH.b(5:12)-L(6)-VL.a(7:14)|VL.a(8:1)-L(9)-VH.b(10:3)-L(11)-VL.b(12:5)-L(13)-VH.a(14:7)",
     "Intrabody":"VL.a(1:3)-L(2)-VH.a(3:1)-H(4:14){2}-CH1(5:15)-CH2(6:16)-L(7)-VH.b(8:10)-L(9)-VL.b(10:8)|VL.a(11:13)-L(12)-VH.a(13:11)-H(14:4){2}-CH1(15:5)-CH2(16:6)-L(17)-VH.b(18:20)-L(19)-VL.b(20:18)",
