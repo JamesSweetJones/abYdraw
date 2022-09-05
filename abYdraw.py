@@ -77,7 +77,7 @@ def Get_dictionaries(x):
 
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
-        non_brackets[i]= re.sub(",","",non_brackets[i])
+        non_brackets[i]= re.sub("[^1-9],[^1-9]","[^1-9] [^1-9]",non_brackets[i])
 
     y = ""
     counter = 0
@@ -109,6 +109,7 @@ def Get_dictionaries(x):
         splitx[-1] = splitx[-1].split("ASEQ")[0]
     else:
         ASEQ = None
+    print(splitx)
     if non_specific_ADC == True:
         splitx.pop()
     if len(splitx) == 4:
