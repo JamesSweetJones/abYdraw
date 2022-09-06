@@ -2028,7 +2028,7 @@ def Check_interactions(chains_list,canvas):
 
                 elif  ("H[" in keyslist[i-1] and "Linker[" in keyslist[i]) or ("H[" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0])) :
                     if CLI == False:
-                        print("checkpoint6")
+                        print("checkpoint6",slant)
                     previous_H = True
                     slant=False
                     if "Linker[" in keyslist[i]:
@@ -2038,9 +2038,42 @@ def Check_interactions(chains_list,canvas):
                         elif righthanded == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
+                    if chain_count == 1:
+                        slant = False
+                        print("slanted")
                     if chain_count <=2:
+                        if dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
+                            if CLI == False:
+                                print("checkpoint6.5")
+                            to_join_number      = str(dictionary.get(keyslist[i])[1])
+                            to_join_coordinates = find_the_fragment(to_join_number,All_positions_and_chains)
+                            to_joinx            = to_join_coordinates[0][0]
+                            to_joiny            = to_join_coordinates[0][1]
+                            to_join_righthanded = to_join_coordinates[1]
+                            to_join_direction   = to_join_coordinates[2]
+                            all_list = list(All_positions_and_chains.keys())
+                            get = (All_positions_and_chains.get(all_list[-1]))
+                            print(get)
+                            yprev = get[0][0][1]
 
-                        if dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
+                            if chain_count == 1  and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-2])[0]):
+                                print("checkpoint12.7")
+                                Build_in = False
+                                Build_out = True
+                            if to_join_righthanded == False and to_join_direction == 'outie':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif to_join_righthanded == False and to_join_direction == 'innie':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif to_join_righthanded == False and to_join_direction == 'constant':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif to_join_righthanded == True and to_join_direction == 'outie':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx+60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif to_join_righthanded == True and to_join_direction == 'innie':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                            elif to_join_righthanded == True and to_join_direction == 'constant':
+                                getcoordinates = domainmaker(All_positions_and_chains,to_joinx-60,to_joiny, righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+                        elif dictionary.get(keyslist[2]) != [''] and "Linker[" in keyslist[2]:
                             try:
                                 if dictionary.get(keyslist[0])[0] != (dictionary.get(keyslist[2])[1]) :
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -2060,10 +2093,14 @@ def Check_interactions(chains_list,canvas):
                                 elif righthanded == False:
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
+                            elif chain_count == 1 and slant == False:
+                                getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                             elif righthanded == True :
+                                print("hello")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             elif righthanded == False:
+                                print("goodby")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     elif H_count ==1 :
@@ -6848,10 +6885,10 @@ class MouseMover():
                 heavy_colour, light_colour = generic_heavy_colour, generic_light_colour
             if "VH" in domain_name or "CH" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
-            elif "V" in domain_name:
-                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
             elif "VL" in domain_name or "CL" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=light_colour, width=1, tags="domain")
+            elif "V" in domain_name:
+                domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=heavy_colour, width=1, tags="domain")
             elif "X" in domain_name:
                 domain = lower_canvas.create_polygon(new_coordinates, outline='#000000',fill=X_colour, width=1, tags="domain")
             elif "C" in domain_name:
@@ -8375,7 +8412,7 @@ if len(sys.argv) < 2:
     "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE]|VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-VH.b(5:35)-CH1(6:36){1}-H(7:24){2}-CH2(8:25)-CH3(9:26)-L(10)-VH.c(11:13)-L(12)-VL.c(13:11)-L(14)-VH.d(15:17)-L(16)-VL.d(17:15)|VL.a(18:20)-L(19)-VH.a(20:18)-L(21)-VH.b(22:37)-CH1(23:38){1}-H(24:7){2}-CH2(25:8)-CH3(26:9)-L(27)-VH.c(28:30)-L(29)-VL.c(30:28)-L(31)-VH.d(32:34)-L(33)-VL.d(34:32)|VL.b(35:5)-CL(36:6){1}|VL.b(37:22)-CL(38:23){1}",
-    "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-CH2(8:11)-CH3(9:12)-L(10)-CH2(11:8)-CH3(12:9)",
+    "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-H(8:12){2}-CH2(9:13)-CH3(10:14)-L(11)-H(12:8){2}-CH2(13:9)-CH3(14:10)",
     "Tetravalent diabody/FC":"VL.a(1:8)-L(2)-VH.b(3:6)-L(4)-X(5:10){1} |VL.b(6:3)-L(7)-VH.a(8:1)-L(9)-X(10:5){1}-H(11:24){2}-CH2(12:25)-CH3(13:26) |VL.a(14:21)-L(15)-VH.b(16:19)-L(17)-X(18:23){1}|VL.b(19:16)-L(20)-VH.a(21:14)-L(22)-X(23:18){1}-H(24:11){2}-CH2(25:12)-CH3(26:13)",
     "Trimeric Fusion Protein":"VH.a(1:6)-CH1(2:7){1}-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2){1}|X(8:9,14)[NOTE:FUSION]-X(9:8,14)[NOTE:FUSION]-CH1(10:15){1}-H(11:3){2}-CH2(12:4)-CH3(13:5)|X(14:8,9)[NOTE:FUSION]-CL(15:10){1}",
     'scFV-X-Fc-Body':"VL.a(1:3)-L(2)-VH.a(3:1)-X(4:10){1}[TYPE:FUSION]-CH2(5:11)-CH3(6:12)|VL.b(7:9)-L(8)-VH.b(9:7)-X(10:4){1}[TYPE:FUSION]-CH2(11:5)-CH3(12:6)",
