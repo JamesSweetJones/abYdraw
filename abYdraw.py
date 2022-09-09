@@ -142,7 +142,7 @@ def Get_dictionaries(x):
     fragment2={}
     fragment3={}
     fragment4={}
-
+    saved_domains = []
 
 
     for i in range(len(chains)):
@@ -218,6 +218,7 @@ def Get_dictionaries(x):
             locationstr =  str(re.sub("\[|\'|\]","", str(locationstr)))
             locationstr =  str(re.sub(":",",", str(locationstr)))
             locationstr = list(locationstr.split(","))
+
             if len(locationstr) == 0:
                 error_message = str("ERROR: missing numbering at domain "+domain+domain+str([j])+"\nAll domains must be numbered sequentially from N-terminus to C-terminus")
                 raise_error(lower_canvas, error_message)
@@ -226,9 +227,15 @@ def Get_dictionaries(x):
                     if i == 0:
                         location_counting.append(int(locationstr[i]))
                     location.append(int(locationstr[i]))
+
                 except ValueError:
                     error_message = str("Domain "+chain[j]+" is not numbered")
                     raise_error(lower_canvas,error_message)
+            if location[0] in saved_domains:
+                error_message = str("ERROR: there are two domains with the number "+str(location[0]))
+                raise_error(lower_canvas, error_message)
+            else:
+                saved_domains.append(location[0])
 
 
 
@@ -4722,7 +4729,7 @@ def sequence_pipeline(canvas):
             domainy2 = min_max[3]
             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
                 ending_found = True
-                
+
         for k in range(len(bonds_keyslist)):
             bond2x2 = bonds_dict.get(bonds_keyslist[k])[0][2]
             bond2y2 = bonds_dict.get(bonds_keyslist[k])[0][3]
