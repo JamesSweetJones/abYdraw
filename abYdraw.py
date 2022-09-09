@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.03"
+version_number = "V1.04"
 
 
 ######################################
@@ -4722,6 +4722,13 @@ def sequence_pipeline(canvas):
             domainy2 = min_max[3]
             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
                 ending_found = True
+                
+        for k in range(len(bonds_keyslist)):
+            bond2x2 = bonds_dict.get(bonds_keyslist[k])[0][2]
+            bond2y2 = bonds_dict.get(bonds_keyslist[k])[0][3]
+            if bond2x2 == bondx1 and bond2y2 == bondy1:
+                ending_found = True
+
         if ending_found == False:
             continuation_found = False
             bondx2 = hinges_dict.get(hinges_keyslist[i])[0][2]
@@ -4744,7 +4751,6 @@ def sequence_pipeline(canvas):
                 #string.append(hinges_dict.get(chains[i])[1])
 
 
-    print(chains)
 
     for i in range(len(domains_keyslist)):
         start_found = True
