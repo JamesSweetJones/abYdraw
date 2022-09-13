@@ -231,7 +231,8 @@ def Get_dictionaries(x):
                 except ValueError:
                     error_message = str("Domain "+chain[j]+" is not numbered")
                     raise_error(lower_canvas,error_message)
-            if location[0] in saved_domains:
+            print(domain)
+            if location[0] in saved_domains and (domain != "X" and domain !="C"):
                 error_message = str("ERROR: there are two domains with the number "+str(location[0]))
                 raise_error(lower_canvas, error_message)
             else:
@@ -2936,6 +2937,7 @@ def Check_interactions(chains_list,canvas):
                 All_positions_and_chains[text] = [getcoordinates[0], righthanded, direction]
 
 
+
 ##append interactions
 
             if dictionary != VHa_chain and dictionary != VHb_chain and dictionary != VLa_chain and dictionary != VLb_chain and dictionary != fragment1 and dictionary != fragment2 and dictionary != fragment3 and dictionary != fragment4 and "Linker[" not in keyslist[i]:
@@ -3157,7 +3159,6 @@ def Check_interactions(chains_list,canvas):
         VLb_1_test = VLb_chain.copy()
 
 
-
 ##VHa_chain
 
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
@@ -3172,13 +3173,18 @@ def Check_interactions(chains_list,canvas):
                 for i in range(len(test_keyslist)):
                     if "X[" in str(test_keyslist[i]) and "H[" not in test_keyslistb[0]:
                         try:
-                            if "H[" in str(test_keyslist[i+1]):
+                            if "H[" in str(test_keyslist[i+1]) and "L[" in str(test_keyslist):
                                 VHa_H_coordinatesx = (width/2)-100
                                 VHa_H_coordinatesy = (height/2)-50
                                 VHb_H_coordinatesx = (width/2)+100
                                 VHb_H_coordinatesy = (height/2)-50
+                                print("oh noooooo")
                         except:
-                            pass
+
+                            VHa_H_coordinatesx = (width/2)-50
+                            VHa_H_coordinatesy = (height/2)-50
+                            VHb_H_coordinatesx = (width/2)+50
+                            VHb_H_coordinatesy = (height/2)-50
                     if "X[" in str(test_keyslist[0]) and len(VHa_1_test.get(test_keyslist[0])[0]) == 2:
                         VHa_H_coordinatesx = (width/2)-30
                         VHa_H_coordinatesy = (height/2)-50
@@ -3277,18 +3283,29 @@ def Check_interactions(chains_list,canvas):
 
 ###Get start positions of light chains and render
     elif chain_count == 2 and Claw == False:
-
+        print("a",VHa_chain)
+        print("b",VHb_chain)
+        if len(list(VHb_chain.keys())) < len(list(VHa_chain.keys())):
+            print('aye aye captain')
+            VHa_chain, VHb_chain = VHb_chain, VHa_chain
         keyslista = list(VHa_chain.keys())
         keyslistb = list(VHb_chain.keys())
         keyslist = list(VHa_chain.keys())
+
         VHb_startx, VHb_starty = (width/2)+100,(height/2)-200
         VHb_stats = renderchains(VHb_chain,VHb_startx, VHb_starty, canvas)
+        #print(VHb_stats)
+        print("a",VHa_chain)
+        print("b",VHb_chain)
         VHa_list = list(VHa_chain.keys())
         VHa_startx, VHa_starty= (width/2)-150,(height/2)-200
         try:
             VHa_inter = VHa_chain.get(VHa_list[0])[0][1]
+            print("VHa_inter", VHa_inter)
+            print(All_positions_and_chains)
             if VHa_chain.get(keyslista[0])[0][0] == VHb_chain.get(keyslistb[0])[1] or VHa_chain.get(keyslista[0])[0][1] in All_positions_and_chains:
                 VHa_start = find_the_fragment(VHa_inter,All_positions_and_chains)
+                print("VHa_start",VHa_start)
                 if VHa_start is not None:
                     righthanded = VHa_start[1]
                     if righthanded == True:
@@ -3298,14 +3315,21 @@ def Check_interactions(chains_list,canvas):
                         VHa_startx=VHa_start[0][0]-60
                         VHa_starty=VHa_start[0][1]
                 else:
+                    print("oops")
                     VHa_startx, VHa_starty= (width/2)-150,(height/2)-200
+            else:
+                print("trombone noises")
+
         except IndexError:
+            print("double oops")
             if len(VHa_chain.get(VHa_list[1])[0]) > 1:
                 if VHa_chain.get(VHa_list[1])[0][0] == VHb_chain.get(keyslistb[1])[1]:
                     VHa_startx, VHa_starty= (width/2)-50,(height/2)-200
 
+
         VHa_stats = renderchains(VHa_chain,VHa_startx, VHa_starty, canvas)
 
+        print(VHa_startx, VHa_starty,VHb_startx, VHb_starty)
 
 
 ##Light chains_list
@@ -3396,6 +3420,7 @@ def Check_interactions(chains_list,canvas):
                         if frag_start is not None and interaction_found == False:
                             interaction_found = True
                             righthanded = frag_start[1]
+                            print("yippee")
                             break
                     except IndexError:
                         inter = fragment.get(fragment_list[i])[0][0]
@@ -3404,6 +3429,7 @@ def Check_interactions(chains_list,canvas):
                                 connection_found = True
 
                 if interaction_found == True:
+
                     if righthanded == True:
                         frag_startx=frag_start[0][0]+60
                         frag_starty=frag_start[0][1]
