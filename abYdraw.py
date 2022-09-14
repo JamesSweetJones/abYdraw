@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.04"
+version_number = "V1.05"
 
 
 ######################################
@@ -8451,7 +8451,7 @@ if len(sys.argv) < 2:
     "scTriplebody":"VH.a(1:8)-CH1(2:9){2}-L(3)-VL.b(4:6)-L(5)-VH.b(6:4)-L(7)-VL.a(8:1)-CL(9:2){2}-L(10)-VL.c(11:13)-L(12)-VH.c(13:11)",
     "TriBiMinibody":"VH.a(1:3)-L(2)-VL.a(3:1)-H(4:13){2}-CH3*@(5:14)-L(6)-VH.b(7:9)-L(8)-VL.b(9:7)|VH.c(10:12)-L(11)-VL.c(12:10)-H(13:4){2}-CH3*>(14:5)",
     "LUZ-Y":"VL.a(1:4)-CL(2:5){1}-L(3)-VH.a(4:1)-CH1(5:2){1}-H(6:15){2}-CH2(7:16)-CH3(8:17)-X(9:18)[TYPE:ZIPPER]|VL.b(10:13)-CL(11:14){1}-L(12)-VH.b(13:10)-CH1(14:11){1}-H(15:6){2}-CH2(16:7)-CH3(17:8)-X(18:9)[TYPE:ZIPPER]",
-    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3*>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL*(8:19){1}[MOD:DISULFIDE]|VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3*@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1*(19:8){1}[MOD:DISULFIDE]",
+    "KIH IgG-scFab":"VH.a(1:14)-CH1(2:15){1}-H(3:11){2}-CH2(4:12)-CH3>(5:13){1}[MOD:DISULFIDE]-L(6)-VH.b(7:18)-CL(8:19){1}[MOD:DISULFIDE]|VH.a(9:16)-CH1(10:17)-H(11:3){2}-CH2(12:4)-CH3@(13:5){1}[MOD:DISULFIDE] |VL.a(14:1)-CL(15:2){1} |VL.a(16:9)-CL(17:10) |VL.b(18:7)-CH1(19:8){1}[MOD:DISULFIDE]",
     "Dock and Lock":"VH.a(1:5)-CH1(2:6){1}-L(3)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.a(5:1)-CL(6:2){1}|VH.b(7:10)-CH1(8:11){1}-L(9)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.b(10:7)-CL(11:8){1}|VH.c(12:15)-CH1(13:16){1}-L(14)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.c(15:12)-CL(16:13){1}|VH.d(17:20)-CH1(18:21){1}-L(19)-X(4)[TYPE:FUSION, NOTE:DDD2/AD2 heterodimer]|VL.d(20:17)-CL(21:18){1}",
     "scFV-IgG-scFV-scFV": "VL.a(1:3)-L(2)-VH.a(3:1)-L(4)-VH.b(5:35)-CH1(6:36){1}-H(7:24){2}-CH2(8:25)-CH3(9:26)-L(10)-VH.c(11:13)-L(12)-VL.c(13:11)-L(14)-VH.d(15:17)-L(16)-VL.d(17:15)|VL.a(18:20)-L(19)-VH.a(20:18)-L(21)-VH.b(22:37)-CH1(23:38){1}-H(24:7){2}-CH2(25:8)-CH3(26:9)-L(27)-VH.c(28:30)-L(29)-VL.c(30:28)-L(31)-VH.d(32:34)-L(33)-VL.d(34:32)|VL.b(35:5)-CL(36:6){1}|VL.b(37:22)-CL(38:23){1}",
     "scFV-scFV-Fc":"VH.a(1:3)-L(2)-VL.a(3:1)-L(4)-VH.b(5:7)-L(6)-VL.b(7:5)-H(8:12){2}-CH2(9:13)-CH3(10:14)-L(11)-H(12:8){2}-CH2(13:9)-CH3(14:10)",
