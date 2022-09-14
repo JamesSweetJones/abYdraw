@@ -1527,18 +1527,19 @@ def Check_interactions(chains_list,canvas):
                         else:
                             interactor_2a = VHa_chain.get(keyslista[1])[0][1]
                             interactor_2b = VHa_chain.get(keyslista[2])[0][0]
-                        if interactor_2a < interactor1a and interactor1b != interactor_2a and "H[" in keyslista[-1]:
+                        if (interactor_2a < interactor1a and interactor1b != interactor_2a and "H[" in keyslista[-1]):# or (interactor_2a < interactor1a and interactor1b != interactor_2a):#
                             tangle_found = True
+                            print("ya ya ya")
                     except IndexError:
                         pass
                 if tangle_found == False :
-                    if "X" in str(dictionary):
+                    if "X" in str(dictionary) :
                         print("path 1")
                         if "LEUCINE" in str(dictionary) or "X" in keyslist[-1] or "X" in keyslist[0]:
-                            if "X" in keyslist[0] and len(VHa_chain.get(keyslist[0])[0]) == 2:
-
+                            if ("X" in keyslist[0] and len(VHa_chain.get(keyslist[0])[0]) == 2):
                                 slant = False
                             else:
+
                                 slant = True
                         else:
                             slant = False
@@ -1549,6 +1550,7 @@ def Check_interactions(chains_list,canvas):
                         slant = False
                 else:
                     if tangle_found == True:
+                        print("hooray")
                         slant = False
                     elif "H[" in str(dictionary) or "H*[" in str(dictionary)or "H^[" in str(dictionary) :
                         slant = True
@@ -1557,6 +1559,7 @@ def Check_interactions(chains_list,canvas):
             #elif dictionary == VHa_chain and "H[" in str(keyslistb) or dictionary == VHb_chain and  "H[" in str(keyslista):
             #    slant = True
             else:
+                print("okie dokie")
                 slant = False
 
             keyslista = list(VHa_chain.keys())
@@ -3171,16 +3174,16 @@ def Check_interactions(chains_list,canvas):
                 test_keyslistb= list(VHb_1_test.keys())
                 print(len(VHa_1_test.get(test_keyslist[0])[0]))
                 for i in range(len(test_keyslist)):
-                    if "X[" in str(test_keyslist[i]) and "H[" not in test_keyslistb[0]:
+                    if "X[" in str(test_keyslist[i]) and "H[" not in test_keyslistb[0] and "X[" not in str(test_keyslist[0]) :
                         try:
-                            if "H[" in str(test_keyslist[i+1]) and "L[" in str(test_keyslist):
+                            if "H[" in str(test_keyslist[i+1]):# and "L[" in str(test_keyslist[i-1]):
                                 VHa_H_coordinatesx = (width/2)-100
                                 VHa_H_coordinatesy = (height/2)-50
                                 VHb_H_coordinatesx = (width/2)+100
                                 VHb_H_coordinatesy = (height/2)-50
                                 print("oh noooooo")
                         except:
-
+                            pass
                             VHa_H_coordinatesx = (width/2)-50
                             VHa_H_coordinatesy = (height/2)-50
                             VHb_H_coordinatesx = (width/2)+50
