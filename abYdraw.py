@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.05"
+version_number = "V1.06"
 
 
 ######################################
@@ -8516,6 +8516,7 @@ if len(sys.argv) < 2:
     "F(ab)2":"VH.a(1:4)-CH1(2:5){1}-H(3:8){2}|VL.a(4:1)-CL(5:2){1}|VH.a(6:9)-CH1(7:10){1}-H(8:3){2}|VL.a(9:6)-CL(10:7){1}",
     "scFV":"VH.a(1:3)-L(2)-VL.a(3:1)",
     "scFV4":"VH.a(1:3)-L(2)-VL.a(3:1)-CL(4:8){1}|VL.a(5:7)-L(6)-VH.a(7:5)-CH1(8:4){1}-H(9:20){2}-CH2(10:21)-CH3(11:22)|VH.b(12:14)-L(13)-VL.b(14:12)-CL(15:19){1}|VL.b(16:18)-L(17)-VH.b(18:16)-CH1(19:15){1}-H(20:9){2}-CH2(21:10)-CH3(22:11)",
+    "Fab-Fc/scFV-fc":"VH.a(1:6)-CH1(2:7)-H(3:11){2}-CH2(4:12)-CH3(5:13)|VL.a(6:1)-CL(7:2)|VL.b(8:10)-L(9)-VH.b(10:8)-H(11:3){2}-CH2(12:4)-CH3(13:5)",
     "VHH4-IgG":"VHH.a(1) -CH1(2:7){1} -H(3:10){2}-CH2(4:11) -CH3*@(5:12) | VHH.a(6)  -CL(7:2){1} | VHH.b(8) -CH1(9:14){1}-H(10:3){2}-CH2(11:4) -CH3*>(12:5) | VHH.b(13) -CL(14:9){1}",
     "Nanobody":"VHH.a(1)",
     "Camelid":"VHH.a(1:5){1}-H(2:6){2}-CH2(3:7)-CH3(4:8)|VHH.a(5:1){1}-H(6:2){2}-CH2(7:3)-CH3(8:4)",
