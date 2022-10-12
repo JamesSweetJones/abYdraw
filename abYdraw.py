@@ -284,6 +284,8 @@ def Get_dictionaries(x):
     fragment2_keyslist = list(fragment2.keys())
     fragment3_keyslist = list(fragment3.keys())
     fragment4_keyslist = list(fragment4.keys())
+    fragments = [fragment1,fragment2,fragment3,fragment4]
+
     VHa_checked = {}
     VHb_checked = {}
     VLa_checked = {}
@@ -378,6 +380,14 @@ def Get_dictionaries(x):
         VLa_match = False
         VLb_match = False
 
+        checked_heavy_dicts.append(VHa_checked)
+        checked_heavy_dicts.append(VHb_checked)
+        VHa_keyslist = list(VHa_checked.keys())
+        VHb_keyslist = list(VHb_checked.keys())
+        checked_heavy_chains.append(VHa_keyslist)
+        checked_heavy_chains.append(VHb_keyslist)
+        VLa_match = False
+        VLb_match = False
         for i in range(len(checked_heavy_chains)):
             for j in range(len(checked_heavy_chains[i])):
                 try:
@@ -387,11 +397,11 @@ def Get_dictionaries(x):
                             if chains[a] not in checked_heavy_chains:
                                 interactor = dicts[a].get(chains[a][b])[0][0]
                                 if current_interactor == interactor: # and "H[" not in str(chains[i][j]) and "H[" not in str(chains[a]):
-                                    if i %2 == 0 and VLa_match == False:
+                                    if i %2 == 0 and VLa_match == False and dicts[a] not in fragments:
                                         VLa_checked = dicts[a]
                                         VLa_match = True
                                         used.append(dicts[a])
-                                    elif i %2 != 0 and VLb_match == False:
+                                    elif i %2 != 0 and VLb_match == False and dicts[a] not in fragments:
                                         VLb_checked = dicts[a]
                                         VLb_match = True
                                         used.append(dicts[a])
