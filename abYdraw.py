@@ -2087,7 +2087,7 @@ def Check_interactions(chains_list,canvas):
 
                 elif  ("H[" in keyslist[i-1] and "Linker[" in keyslist[i]) or ("H[" in keyslist[i-1] and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] != (dictionary.get(previous_domain)[0])) :
                     if CLI == False:
-                        print("checkpoint6",slant)
+                        print("checkpoint6")
                     previous_H = True
                     slant=False
                     if "Linker[" in keyslist[i]:
@@ -2099,7 +2099,7 @@ def Check_interactions(chains_list,canvas):
 
                     if chain_count == 1:
                         slant = False
-                    if chain_count <=2:
+                    if chain_count <=2 and "H[" not in keyslist[i-1]:
                         if dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
                             if CLI == False:
                                 print("checkpoint6.5")
