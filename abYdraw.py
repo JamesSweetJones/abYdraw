@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """
     AbYdraw
-    This is a programme designed to use our group's Immunoglobulin Markup Language (IgML)
-    for describing bispecific antibody (BsAb) formats by either inputting an IgML descriptor
+    This is a programme designed to use our group's Immunoglobulin Markup Language (AbML)
+    for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor
     string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
     It is written in Python 3 and with both command-line and graphical interfaces built by
     using standard packages TKinter to in order to make it as accessible as possible
@@ -312,10 +312,12 @@ def Get_dictionaries(x):
                             for b in range(len(chains[a])):
                                 interactor = dicts[a].get(chains[a][b])[0][0]
                                 if current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and VHa_VHb_found == False:
+                                    print( str(chains[i][j]),str(chains[a][b]))
                                     VHa_VHb_found = True
                                     VHa_checked,VHb_checked= dicts[i],dicts[a]
                                     used.append(dicts[i])
                                     used.append(dicts[a])
+                                    print("hooray")
                                     break
                                 elif current_interactor == interactor and ("H[" in str(chains[i][j]) and "H[" in str(chains[a][b])) and (("X[" in str(chains[i][j]) and "X[" in str(chains[a][b])) or ("C[" in str(chains[i][j]) and "C[" in str(chains[a][b]))) and VHa_VHb_found == False:
                                     VHa_VHb_found = True
@@ -336,7 +338,7 @@ def Get_dictionaries(x):
                                     used.append(dicts[a])
                                     break
                 except IndexError:
-                    if ("X" in chains[i][j] or "C[" in chains[i][j]) and len(dicts[i].get(chains[i][j])[0]) == 1 :
+                    if ("X" in chains[i][j] or "C[" in chains[i][j]) and len(dicts[i].get(chains[i][j])[0]) == 1 and VHa_VHb_found == False :
                         current_interactor = dicts[i].get(chains[i][j])[0][0]
                         for a in range(len(chains)):
                             if dicts[a] != dicts[i]:
@@ -379,7 +381,7 @@ def Get_dictionaries(x):
         checked_heavy_chains.append(VHb_keyslist)
         VLa_match = False
         VLb_match = False
-
+        #print(VHa_keyslist,VHb_keyslist)
         checked_heavy_dicts.append(VHa_checked)
         checked_heavy_dicts.append(VHb_checked)
         VHa_keyslist = list(VHa_checked.keys())
@@ -408,6 +410,10 @@ def Get_dictionaries(x):
 
                 except IndexError:
                     continue
+        print(VHa_checked)
+        print(VLa_checked)
+        print(VHb_checked)
+        print(VLb_checked)
     elif chain_count ==2:
         VHa_checked = VHa
         VHb_checked = VHb
@@ -434,9 +440,8 @@ def Get_dictionaries(x):
     Claw_number = 0
     if chain_count > 1:
         for i in range(len(chains)):
-            if chains[i] != []:
-
-                if  "X"  in chains[i][-1] or "C[" in chains[i][-1] and ("LEUCINE") not in str(dicts[i].get(chains[i][-1])[2]) and ("leucine") not in str(dicts[i].get(chains[i][-1])[2]):
+            if chains[i] != [] and 'H[' not in str(chains[i]):
+                if  "X"  in chains[i][-1] or "C[" in chains[i][-1] and ("LEUCINE") not in str(dicts[i].get(chains[i][-1])[2]) and ("LEUCINE") not in str(dicts[i].get(chains[i][-1])[2]):
                     Current_Claw_number = dicts[i].get(chains[i][-1])[0][0]
                     if Claw_number == 0:
                         Claw_number = Current_Claw_number
@@ -452,6 +457,7 @@ def Get_dictionaries(x):
     #if faux_claw == True:
     #    interacting_fragments = True
     if Claw == True:
+        print("Ummm OK??")
         VHa_checked = VHa
         VLa_checked = VLa
         VHb_checked = VHb
@@ -1733,6 +1739,9 @@ def Check_interactions(chains_list,canvas):
                     mod="Leucine"
                 elif "humanserumalbumin" in str(dictionary.get(keyslist[i])):
                     mod="HSA"
+                elif "IgM" in str(dictionary.get(keyslist[i])):
+                    print("HELLO DOLLY")
+                    mod="IgM"
             elif "C[" in keyslist[i] and "V" not in keyslist[i]:
                 X = True
                 mod = "C"
@@ -2018,7 +2027,12 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     elif chain_count !=2 and mod !="Leucine" and "X" not in keyslist[i-1]:
-                        if innie_or_outie_list[i-2] == "innie" and righthanded == False:
+                        print(mod)
+                        if mod=="IgM":
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-25),(previous_chain[1]+150),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+
+
+                        elif innie_or_outie_list[i-2] == "innie" and righthanded == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]-98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif innie_or_outie_list[i-2] == "outie" and righthanded == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[0]+98),(previous_chain[1]),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -2100,6 +2114,7 @@ def Check_interactions(chains_list,canvas):
                     if chain_count == 1:
                         slant = False
                     if chain_count <=2 and "H[" not in keyslist[i-1]:
+                        print("OKISE")
                         if dictionary.get(keyslist[i])[0] == previous_number and str(dictionary.get(keyslist[i])[1]) in Location_Text:
                             if CLI == False:
                                 print("checkpoint6.5")
@@ -2146,6 +2161,7 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                             elif "H[" in keyslist[i-1] and "Linker[" in keyslist[i-2]:
+                                print("okay")
                                 if righthanded == True :
                                     getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+70),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                                 elif righthanded == False:
@@ -2155,12 +2171,16 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                             elif righthanded == True :
+                                print("Ummm")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                             elif righthanded == False:
+                                print("HMMMMM")
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
                     elif H_count ==1 :
-                        if righthanded == True :
+                        if "X[" in keyslist[0] and len(dictionary.get(keyslist[0])) > 1:
+                            getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
+                        elif righthanded == True :
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]-20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                         elif righthanded == False:
                             getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]+20),(previous_chain[7]+40),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
@@ -3241,6 +3261,7 @@ def Check_interactions(chains_list,canvas):
 ##VHa_chain
 
         if "H[" in str(VHa_1_test) and "H[" in str(VHb_1_test):
+            print("ARR Yarrr")
             if IgG2 == False:
                 VHa_H_coordinatesx = (width/2)-50
                 VHa_H_coordinatesy = (height/2)-50
@@ -3279,6 +3300,7 @@ def Check_interactions(chains_list,canvas):
                 VHb_H_coordinatesy = (height/2)-100
 
         elif (("X[" in str(VHa_1_test) and "X[" in str(VHb_1_test)) or ("C[" in str(VHa_1_test) and "C[" in str(VHb_1_test)))and ("H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test)):
+            print("oh goodness!")
             keyslista = list(VHa_chain.keys())
             keyslistb = list(VHb_chain.keys())
             Xa = ""
@@ -3301,10 +3323,16 @@ def Check_interactions(chains_list,canvas):
                                 VHb_H_coordinatesy = (height/2)-50
 
         elif chain_count == 4 and "H[" not in str(VHa_1_test) and "H[" not in str(VHb_1_test) and "X[" not in str(VHa_1_test) and "X[" not in str(VHb_1_test) and "C[" not in str(VHa_1_test) and "C[" not in str(VHb_1_test):
+            print("Oh hello there")
             VHa_H_coordinatesx = (width/2)-32
             VHa_H_coordinatesy = (height/2)
             VHb_H_coordinatesx = (width/2)+32
             VHb_H_coordinatesy = (height/2)
+        else:
+            VHa_H_coordinatesx = (width/2)-50
+            VHa_H_coordinatesy = (height/2)-50
+            VHb_H_coordinatesx = (width/2)+50
+            VHb_H_coordinatesy = (height/2)-50
         teststartx = 0
         teststarty = 0
         testHpositionVHa = renderchains(VHa_1_test,teststartx,teststarty, canvas)[25]
@@ -4690,10 +4718,10 @@ def Get_Template_File(canvas):
         Template_File.append(i)
     if CLI == False:
         String = textBox.get("1.0","end")
-        Template_File.append(str("IgML String: "+String))
+        Template_File.append(str("AbML String: "+String))
     elif CLI== True:
         String = entry
-        Template_File.append(str("IgML String: "+String))
+        Template_File.append(str("AbML String: "+String))
     save_txt_file(Template_File)
 
 
@@ -8498,7 +8526,7 @@ if len(sys.argv) < 2:
     button.place(relx=0.05,rely=0.825,relheight=0.1, relwidth=0.15)
     button.bind("<Enter>", button_hover)
     button.bind("<Leave>", button_hover_leave)
-    button = tk.Button(frame, text = "Get IgML", bg = "#CFCFCF", font=20, command=lambda: sequence_pipeline(lower_canvas))
+    button = tk.Button(frame, text = "Get AbML", bg = "#CFCFCF", font=20, command=lambda: sequence_pipeline(lower_canvas))
     button.place(relx=0.2,rely=0.825,relheight=0.1, relwidth=0.15)
     button.bind("<Enter>", button_hover)
     button.bind("<Leave>", button_hover_leave)
@@ -9177,14 +9205,14 @@ if len(sys.argv) < 2:
         "abYdraw",
         " ",
         " ",
-        "This is a programme designed to use our group's Antibody Markup Language (IgML) for describing bispecific antibody (BsAb) formats by either inputting an IgML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and using standard packages TKinter to build the graphical interface in order to make it as accessible as possible.",
+        "This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and using standard packages TKinter to build the graphical interface in order to make it as accessible as possible.",
         " ",
         "Contents",
         "1. Installing and Executing",
         "2. Interface",
-        "3. IgML",
-        "4. Inputting IgML",
-        "5. Obtaining IgML",
+        "3. AbML",
+        "4. Inputting AbML",
+        "5. Obtaining AbML",
         "6. Formats Library",
         "7. Saving and exporting",
         "8. Settings",
@@ -9196,19 +9224,19 @@ if len(sys.argv) < 2:
         " ",
         "2. Interface",
         "The programme interface includes six points of reference, four of which in a column on the left hand side and two more on the right hand side.",
-        "Starting with the left hand column, the first is the Domain palette which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody IgML expressions, thirdly the input box for IgML expressions and a buttonpad that will render antibody schematics or output IgML to the textbox.",
+        "Starting with the left hand column, the first is the Domain palette which has buttons necessary for drawing antibody domains, secondly a library of commonly used bispecific antibody AbML expressions, thirdly the input box for AbML expressions and a buttonpad that will render antibody schematics or output AbML to the textbox.",
         "On the right hand side, the most prominent feature is the canvas for drawing and rendering antibody schematics and underneath there are two buttons which are involved in exporting the schematic.",
         " ",
-        "3. IgML",
-        "Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made IgML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the",
-        "number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: TYPE; NOTE; MOD; ANTI and LENGTH. Full descriptions of IgML can be found on the language guide sheet included in the Repository.",
+        "3. AbML",
+        "Our language was derived from existing macromolecule descriptor languages but we have compensated for their limitations and made AbML simple whilst conveying as much useful information as possible. Strings are split into chains, which are then split into domains. Each domain type has its own symbol and each domain unit also carries additional information including: modification types; the specificity of the variable region (if applicable); a number label assigned to the domain and the",
+        "number label assigned to the domain it interacts with; the number of disulphide bonds between the two interacting domains and comments outlining additional information not covered by the language of types: TYPE; NOTE; MOD; ANTI and LENGTH. Full descriptions of AbML can be found on the language guide sheet included in the Repository.",
         " ",
-        "4. Inputting IgML",
-        "IgML descriptor strings my be inputted in the entry box or opened in the 'File>Open' menu and then by clicking 'Get Structure', a schematic of that antibody will render in the canvas. Schematics are drawn in colour-coded fashion depending on any specificities given in the descriptor chain. Domains are connected by different kinds of linkers which are also colour-coded depending on their type. Any comments given in the descriptor string are also displayed beside the schematic. Labels on",
+        "4. Inputting AbML",
+        "AbML descriptor strings my be inputted in the entry box or opened in the 'File>Open' menu and then by clicking 'Get Structure', a schematic of that antibody will render in the canvas. Schematics are drawn in colour-coded fashion depending on any specificities given in the descriptor chain. Domains are connected by different kinds of linkers which are also colour-coded depending on their type. Any comments given in the descriptor string are also displayed beside the schematic. Labels on",
         "the schematic may be toggled on and off using the Labels key on the Domain Palette.",
         " ",
-        "5. Obtaining IgML",
-        "To draw an antibody, you must insert domains onto the canvas and arrange them so the programme recognises it as an antibody. Your tools for adding domains to the canvas are in the Domain Palette which contains all of the domain types, modifications, specificities and comment types as described in the IgML guidesheet as well as some options. Selecting a button on the palette will cause it to flash red to indicate it has been switched on. Only one domain or connector type may be switched",
+        "5. Obtaining AbML",
+        "To draw an antibody, you must insert domains onto the canvas and arrange them so the programme recognises it as an antibody. Your tools for adding domains to the canvas are in the Domain Palette which contains all of the domain types, modifications, specificities and comment types as described in the AbML guidesheet as well as some options. Selecting a button on the palette will cause it to flash red to indicate it has been switched on. Only one domain or connector type may be switched",
         "on at a time, but you may choose any combination of modifications and specificities to accompany your selection. Specificity types are only applicable to VH or VL domains but when drawing other domains, a default 'a' value is set. Once selected you will notice the cursor will change from arrow to '+' sign. This means you can left-click to insert your chosen domain type onto the canvas at the location you have clicked. If no domain types are selected but a modification or specificity",
         "are, then by clicking on a domain on the canvas, you may replace its current specificity and modification to those you have selected.",
         "Domains may be connected with the connector options in the first column of the palette. When a connector type is selected it will become highlighted in red and the user must click and drag the bond from its starting position to its end, making sure each end is inside the boundaries two domains it links. Bonds are unidirectional and start from N-terminus to C-terminus.",
@@ -9216,14 +9244,14 @@ if len(sys.argv) < 2:
         "Comments may be removed by commenting on a domain where that comment is already applied and tidying the canvas."
         "If no domain types or modifications are selected then domains, linkers and comments may be rearranged by clicking and dragging them. You must ensure that interacting domains are positioned close together at roughly the same level and that VH and VL domains face each other to complete their antigen binding domains. Their orientations can be changed by right-clicking the relevant domains. Furthermore features may be deleted by selecting the 'Delete' button on the palette and",
         "then selecting what to delete. To remove all features, click 'Clear All' and the canvas will be made blank.",
-        "Once domains and connectors are arranged, click the 'Get IgML' button to generate the IgML descriptor string for this sequence. Once this has been generated it will appear in the input box. You may then click 'Get structure' again to re-render the schematic with abYdraw. Alternatively, the 'Tidy' button performs both steps of this operation. Once rendered, an image may be altered by adding or removing domains. By clicking 'Get Sequence' or 'Tidy', you will obtain a new expression",
+        "Once domains and connectors are arranged, click the 'Get AbML' button to generate the AbML descriptor string for this sequence. Once this has been generated it will appear in the input box. You may then click 'Get structure' again to re-render the schematic with abYdraw. Alternatively, the 'Tidy' button performs both steps of this operation. Once rendered, an image may be altered by adding or removing domains. By clicking 'Get Sequence' or 'Tidy', you will obtain a new expression",
         "for rendering.",
         " ",
-        "6. IgML Formats Library",
-        "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and IgML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
+        "6. AbML Formats Library",
+        "To assist users, the programme has a library of BsAb formats available which can be scrolled through and selected. This will give the schematic and AbML expression for this format that can be used as a starting point to make new expressions and schematics that are relevant to the user.",
         " ",
         "7. Exporting and Saving",
-        "Exporting the canvas image as .eps, .jpeg or .png file can be done by 'Export Image' and using the file directory to save the image. Alternatively the IgML may be saved as a text file by clicking the 'File>Save' option in the menu.",
+        "Exporting the canvas image as .eps, .jpeg or .png file can be done by 'Export Image' and using the file directory to save the image. Alternatively the AbML may be saved as a text file by clicking the 'File>Save' option in the menu.",
         "Finally you may export a Template File from the expression in the entry box which is a format of notating important BsAb residues. The programme cannot locate these residues but it can identify the features that are in the BsAb that users may want to include in the Template Files.",
         " ",
         "8. Settings",
@@ -9334,10 +9362,10 @@ else:
     # Create the parser
     my_parser = argparse.ArgumentParser(prog="abYdraw",
                                         usage='python %(prog)s [options]',
-                                        description="This is a programme designed to use our group's Antibody Markup Language (IgML) for describing bispecific antibody (BsAb) formats by either inputting an IgML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and with both command-line and graphical interfaces built by using standard packages TKinter to in order to make it as accessible as possible.")
+                                        description="This is a programme designed to use our group's Antibody Markup Language (AbML) for describing bispecific antibody (BsAb) formats by either inputting an AbML descriptor string of a BsAb or by drawing a BsAb and outputting the its descriptor string. It is written in Python 3 and with both command-line and graphical interfaces built by using standard packages TKinter to in order to make it as accessible as possible.")
 
-    my_parser.add_argument('-f','--file', type=str,help='the path to plaintext file with IgML expression')
-    my_parser.add_argument('-i','--input', type=str,help='string of IgML input')
+    my_parser.add_argument('-f','--file', type=str,help='the path to plaintext file with AbML expression')
+    my_parser.add_argument('-i','--input', type=str,help='string of AbML input')
     my_parser.add_argument('-o','--output', type=str,help='string of image output name (default "abYdraw_export")')
     my_parser.add_argument('-s','--show',nargs='?', type=int,help='Show image window 0-1 (default 0)')
     my_parser.add_argument('-e','--format',type=str ,help='specify image format eps, png, jepg (default eps)')
