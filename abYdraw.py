@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
     AbYdraw
-    This is a programme designed to use our group's Immunoglobulin Markup Language (IgML)
+    This is a programme designed to use our group's Antibody Markup Language (AgML)
     for describing bispecific antibody (BsAb) formats by either inputting an IgML descriptor
     string of a BsAb or by drawing a BsAb and outputting the its descriptor string.
     It is written in Python 3 and with both command-line and graphical interfaces built by
