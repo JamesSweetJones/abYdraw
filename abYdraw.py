@@ -607,7 +607,7 @@ def Get_dictionaries(x):
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
     for i in range(len(all_to_check_keys)):
-        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD"]
+        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CH5","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
         if "Linker" in all_to_check_keys[i] and "Linker" in all_to_check_keys[i+1]:
             error_message = str("ERROR: abYdraw does not allow L-L connections")
@@ -631,7 +631,7 @@ def Get_dictionaries(x):
             domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^","", domain_to_print)
             if domain not in possible_domains:
 
-                error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CL,X,H or L")
+                error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CH5,CL,X,H or L")
                 raise_error(lower_canvas, error_message)
     if interacting_fragments == False:
         fragment1_checked = fragment1
@@ -4518,7 +4518,7 @@ def Get_Template_File(canvas):
             H_chain_Ranges_Strings.append(str("CH3Range"+index+":"))
         if "CH4" in str(string):
             H_chain_Ranges_Strings.append(str("CH4Range"+index+":"))
-        if "CH1" in str(string) or "CH2" in str(string) or "CH3" in str(string) or "CH4" in str(string):
+        if "CH1" in str(string) or "CH2" in str(string) or "CH3" in str(string) or "CH4" in str(string) or "CH5" in str(string):
             H_chain_Ranges_Strings.append(str("CHSRange"+index+":"))
         if "CL" in str(string):
             LVJC_Germline_Strings.append(str("LCGermline"+index+":"))
@@ -5241,7 +5241,7 @@ def sequence_pipeline(canvas):
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VA" in str(strings[i][j]) and "VB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VD" in str(strings[i][j]) and "VG" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VG" in str(strings[i][j]) and "VD" in str(domains_dict.get(domains_keyslist[f])[1]))  or ("CA" in str(strings[i][j]) and "CB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CB" in str(strings[i][j]) and "CA" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CG" in str(strings[i][j]) and "CD" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CD" in str(strings[i][j]) and "CG" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VA" in str(strings[i][j]) and "VB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VD" in str(strings[i][j]) and "VG" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VG" in str(strings[i][j]) and "VD" in str(domains_dict.get(domains_keyslist[f])[1]))  or ("CA" in str(strings[i][j]) and "CB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CB" in str(strings[i][j]) and "CA" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CG" in str(strings[i][j]) and "CD" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CD" in str(strings[i][j]) and "CG" in str(domains_dict.get(domains_keyslist[f])[1])):
 
                                                             disulphide_count = 0
 
@@ -5296,7 +5296,7 @@ def sequence_pipeline(canvas):
                                         combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                         for g in combinations_to_try:
                                             if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
+                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
                                                     disulphide_count = 0
                                                     paired_X_domains.append(int(paired_number))
                                                     for y in range(len(disulphides_keyslist)):
@@ -5752,6 +5752,8 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         InsertCH3DomainButton.config(fg="red")
     elif "CH4" in domain_name:
         InsertCH4DomainButton.config(fg="red")
+    elif "CH5" in domain_name:
+        InsertCH5DomainButton.config(fg="red")
     elif "CL" in domain_name:
         InsertCLDomainButton.config(fg="red")
     elif "X" in domain_name:
@@ -8498,7 +8500,9 @@ if len(sys.argv) < 2:
     InsertCLDomainButton= tk.Button(IgTab,text="CL",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CL"),True,False))
     InsertCLDomainButton.place(relx = 0.5, rely = 0.25, relheight = 0.25, relwidth=0.5)
     InsertCH4DomainButton= tk.Button(IgTab,text="CH4",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH4"),False,True))
-    InsertCH4DomainButton.place(relx = 0.5, rely = 0.50, relheight = 0.25, relwidth=0.5)
+    InsertCH4DomainButton.place(relx = 0.5, rely = 0.50, relheight = 0.25, relwidth=0.25)
+    InsertCH5DomainButton= tk.Button(IgTab,text="CH5",bg = "#CFCFCF", command=lambda: prime_domain_button(lower_canvas, 400,100,True,False,False,domain_direction,False,domain_mod,"","",str("CH5"),False,True))
+    InsertCH5DomainButton.place(relx = 0.75, rely = 0.50, relheight = 0.25, relwidth=0.25)
     nanobody_button = tk.Button(IgTab,text="VHH",bg = "#CFCFCF", command =lambda: prime_domain_button(lower_canvas, 400,100,True,False,True,"Single_Fv_Chain",False,domain_mod,"","",str("VHH"+domain_mod+"."+domain_type),False,True))
     nanobody_button.place(relx = 0.5, rely = 0.75, relheight = 0.25, relwidth=0.5)
 
@@ -9360,7 +9364,7 @@ if len(sys.argv) < 2:
     startcoordinates = mm.select
     newcoordinates = mm.drag
 
-    domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button, InsertVADomainButton,InsertVBDomainButton,InsertVGDomainButton,InsertVDDomainButton,InsertCADomainButton,InsertCBDomainButton,InsertCGDomainButton,InsertCDDomainButton]
+    domain_buttons = [InsertVHDomainButton,InsertCH1DomainButton,InsertCH2DomainButton,InsertCH3DomainButton,InsertVLDomainButton,InsertCLDomainButton,InsertCH4DomainButton,InsertCH5DomainButton,InsertXDomainButton, InsertCDomainButton, nanobody_button, InsertVADomainButton,InsertVBDomainButton,InsertVGDomainButton,InsertVDDomainButton,InsertCADomainButton,InsertCBDomainButton,InsertCGDomainButton,InsertCDDomainButton]
     bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
     specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
     mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button,Drug_button]
