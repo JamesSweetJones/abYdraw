@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.06"
+version_number = "V1.07"
 
 
 ######################################
@@ -1776,7 +1776,7 @@ def Check_interactions(chains_list,canvas):
                             non_redundant_note_label += str(note_label_split[x])
                         else:
                             non_redundant_note_label += str(note_label_split[x]+", ")
-                if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label:
+                if "TYPE:" not in note_label and "NOTE:" not in note_label and "ANTI:" not in note_label and "LENGTH:" not in note_label and "MOD:" not in note_label and "CLASS:" not in note_label:
                     error_message = str("ERROR: Unrecognised comment type given in ["+note_label+"]"+"\nAll comments must start with classifiers TYPE:, MOD:, NOTE:, ANTI: or LENGTH:")
                     raise_error(lower_canvas, error_message)
                 if h_mod == True:
@@ -3972,6 +3972,8 @@ def render(chains_list,canvas,text_to_image):
         ANTI_labels = {}
         global LENGTH_labels
         LENGTH_labels = {}
+        global CLASS_labels
+        CLASS_labels = {}
         global Bond_thickness
         global Bond_Arrows
         Arrow_dimensions = Bond_Arrows
@@ -4237,7 +4239,8 @@ def render(chains_list,canvas,text_to_image):
             for i in range(len(Label_positions)):
                 x = Label_positions[i][0][0]
                 y = Label_positions[i][0][1]
-                Domain_Text[i] = re.sub("\_","-", Domain_Text[i])
+                Domain_Text[i] = re.sub("\_",Negative_charge_character, Domain_Text[i])
+                Domain_Text[i] = re.sub("\+",Positive_charge_character, Domain_Text[i])
                 Domain_Text[i] = re.sub("nano|nno","",Domain_Text[i])
                 label  = canvas.create_text(x,y, text=Domain_Text[i],tags = "label",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[x,y], Domain_Text[i]]
@@ -6248,6 +6251,8 @@ def SelectCommentTypeButton(letter):
             AntiLabelButton.config(fg="red")
         elif letter == "LENGTH":
             LengthLabelButton.config(fg="red")
+        elif letter == "CLASS":
+            ClassLabelButton.config(fg="red")
         CommentLabelButton_function(lower_canvas)
     elif CustomLabelLock == letter:
         CustomLabelLock = ""
@@ -6308,6 +6313,13 @@ def CommentLabelButton_function(canvas):
         lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
         status_label.config(text=entry)
         lower_canvas.config(cursor = "plus")
+    elif CustomLabelLock == "CLASS":
+        CustomLabelButton.configure(fg="red")
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        lower_canvas.bind("<Button-1>", mm.place_class_label)
+        lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
+        status_label.config(text=entry)
+        lower_canvas.config(cursor = "plus")
     elif CustomLabelLock == "ANTI":
         CustomLabelButton.configure(fg="red")
         entry=CustomLabelEntry.get("1.0","end-1c")
@@ -6322,6 +6334,7 @@ def CommentLabelButton_function(canvas):
         lower_canvas.bind("<ButtonRelease-1>", mm.place_domain_release)
         status_label.config(text=entry)
         lower_canvas.config(cursor = "plus")
+
 
     elif CustomLabelLock == "":
         CustomLabelButton.configure(fg="black")
@@ -6459,12 +6472,14 @@ class MouseMover():
         global ANTI_labels
         global MOD_labels
         global LENGTH_labels
+        global CLASS_labels
         label_keyslist = list(canvas_labels.keys())
         TYPE_keyslist = list(TYPE_labels.keys())
         NOTE_keyslist = list(NOTE_labels.keys())
         MOD_keyslist = list(MOD_labels.keys())
         ANTI_keyslist = list(ANTI_labels.keys())
         LENGTH_keyslist = list(LENGTH_labels.keys())
+        CLASS_keyslist = list(CLASS_labels.keys())
         if self.item in label_keyslist:
             polygons_keyslist = list(canvas_polygons.keys())
             for i in range(len(polygons_keyslist)):
@@ -6498,6 +6513,10 @@ class MouseMover():
             self.startcoordinates = [xc, yc]
             lower_canvas.config(cursor = "fleur")
             return(startcoordinates)
+        elif self.item in CLASS_keyslist:
+            self.startcoordinates = [xc, yc]
+            lower_canvas.config(cursor = "fleur")
+            return(startcoordinates)
         if "-" not in str(canvas_polygons.get(self.item)[1]):
             domain_coordinates = (canvas_polygons.get(self.item)[0])
             xs= []
@@ -6519,13 +6538,18 @@ class MouseMover():
 
                 for i in range(len(label_keyslist)):
                     label_text = canvas_labels.get(label_keyslist[i])[1]
+                    #label_text = re.sub(Positive_charge_character,"+",label_text_test)
+                    #label_text = re.sub(Negative_charge_character,"-",label_text_test)
                     label_location = canvas_labels.get(label_keyslist[i])[0]
                     labelx = label_location[0]
                     labely = label_location[1]
                     labelx_theory = (x1+x2)/2
                     labely_theory = (y1+y2)/2
                     label_text_test = re.sub("\.|\>|\@","",canvas_polygons.get(self.item)[1])
+                    label_text_test = re.sub("\+",Positive_charge_character,label_text_test)
+                    label_text_test = re.sub("\-|\_",Negative_charge_character,label_text_test)
                     label_text_test = re.sub("\_","-",label_text_test)
+                    print(label_text_test, label_text)
                     if (labelx_theory == labelx or labelx_theory-5 == labelx or labelx_theory+5 == labelx) and labely_theory == labely  and label_text_test==label_text:
                         del canvas_labels[label_keyslist[i]]
                         lower_canvas.delete(label_keyslist[i])
@@ -6674,6 +6698,7 @@ class MouseMover():
         global NOTE_labels
         global ANTI_labels
         global MOD_labels
+        global CLASS_labels
         global LENGTH_labels
         widget = lower_canvas
         xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
@@ -6684,6 +6709,7 @@ class MouseMover():
         MOD_keyslist = list(MOD_labels.keys())
         ANTI_keyslist = list(ANTI_labels.keys())
         LENGTH_keyslist = list(LENGTH_labels.keys())
+        CLASS_keyslist = list(CLASS_labels.keys())
         domain_self_item = False
         for i in range(len(polygons_keyslist)):
             domain_coordinates = (canvas_polygons.get(polygons_keyslist[i])[0])
@@ -6735,6 +6761,10 @@ class MouseMover():
                 elif self.item in LENGTH_keyslist:
                     lower_canvas.delete(self.item)
                     del LENGTH_labels[self.item]
+                    update_domain_comments("",xc,yc)
+                elif self.item in CLASS_keyslist:
+                    lower_canvas.delete(self.item)
+                    del CLASS_labels[self.item]
                     update_domain_comments("",xc,yc)
             elif self.item in polygons_keyslist and "disulphide" in canvas_polygons.get(self.item)[1]:
                 lower_canvas.delete(self.item)
@@ -7153,6 +7183,20 @@ class MouseMover():
             MOD_labels[label] = [[xc,yc], mod_list_header.get()]
             update_domain_comments(str(", "+mod_list_header.get()),xc,yc)
 
+    def place_class_label(self,event):
+        global CLASS_labels
+        global Class_options
+        global canvas_polygons
+        global Font_size
+        global Font_colour
+        widget = lower_canvas
+        xc = widget.canvasx(event.x); yc = widget.canvasy(event.y)
+        entry=CustomLabelEntry.get("1.0","end-1c")
+        if class_list_header.get() != "CLASS":
+            label = lower_canvas.create_text(xc,yc, text = class_list_header.get(), tags = "CLASS_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
+            CLASS_labels[label] = [[xc,yc], class_list_header.get()]
+            update_domain_comments(str(", "+class_list_header.get()),xc,yc)
+
     def place_anti_label(self,event):
         global ANTI_labels
         global canvas_polygons
@@ -7178,6 +7222,7 @@ class MouseMover():
             label = lower_canvas.create_text(xc,yc, text = entry, tags = "LENGTH_labels", fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             LENGTH_labels[label] = [[xc,yc], entry]
             update_domain_comments(str(", "+entry),xc,yc)
+
 
     ###Draw and drag bonds###
     def start_bond(self,event):
@@ -7283,6 +7328,7 @@ class MouseMover():
         global MOD_labels
         global ANTI_labels
         global LENGTH_labels
+        global CLASS_labels
         global specificity_colours
         global Font_size
         global Font_colour
@@ -7294,6 +7340,7 @@ class MouseMover():
         new_ANTI_dict = {}
         new_MOD_dict = {}
         new_LENGTH_dict = {}
+        new_CLASS_dict = {}
         for i in range(len(polygons_keyslist)):
             domain_coordinates = canvas_polygons.get(polygons_keyslist[i])[0]
             domain_name = canvas_polygons.get(polygons_keyslist[i])[1]
@@ -7362,11 +7409,15 @@ class MouseMover():
         for i in range(len(list(LENGTH_labels.keys()))):
             label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
             new_LENGTH_dict[label][domain_coordinates, entry]
+        for i in range(len(list(CLASS_labels.keys()))):
+            label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "CLASS_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
+            new_CLASS_dict[label][domain_coordinates, entry]
         canvas_polygons = new_polygon_dict
         TYPE_labels = new_TYPE_dict
         NOTE_labels = new_NOTE_dict
         ANTI_labels = new_ANTI_dict
         MOD_labels = new_MOD_dict
+        CLASS_labels = new_CLASS_dict
         LENGTH_labels = new_LENGTH_dict
         lower_canvas.bind("<Button-1>", mm.select)
         lower_canvas.bind("<B1-Motion>", mm.drag)
@@ -8175,6 +8226,7 @@ if len(sys.argv) < 2:
         global MOD_labels
         global ANTI_labels
         global LENGTH_labels
+        global CLASS_labels
         global specificity_colours
         global Deletes_to_redo
         global deleted_polygons
@@ -8221,6 +8273,10 @@ if len(sys.argv) < 2:
                 lower_canvas.delete(to_delete)
                 LENGTH_to_redo[to_delete] = LENGTH_labels.get(to_delete)
                 del LENGTH_labels[to_delete]
+            elif to_delete in list(CLASS_labels.keys()):
+                lower_canvas.delete(to_delete)
+                CLASS_to_redo[to_delete] = CLASS_labels.get(to_delete)
+                del CLASS_labels[to_delete]
             Deletes_to_redo= {}
             deleted_polygons={}
         else:
@@ -8302,6 +8358,10 @@ if len(sys.argv) < 2:
                 label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "LENGTH_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
                 LENGTH_labels[label] = [domain_coordinates, domain_name]
                 del LENGTH_to_redo[to_redo]
+            elif to_redo in list(CLASS_labels.keys()):
+                label = lower_canvas.create_text(domain_coordinates, text = entry, tags = "CLASS_labels",fill=Font_colour,font=(str(Font_Family),str(Font_size)))
+                CLASS_labels[label] = [domain_coordinates, domain_name]
+                del CLASS_to_redo[to_redo]
 
 
 
@@ -8341,6 +8401,8 @@ if len(sys.argv) < 2:
     domain_mod  = ""
     extra_mods  = ""
     domain_charge=""
+    Positive_charge_character = u"\u2295"
+    Negative_charge_character = u"\u2296"
     Pairing_sensitivity = 40
     Font_size = 15
     Font_colour = '#000000'
@@ -8386,8 +8448,11 @@ if len(sys.argv) < 2:
     Negative_charge.place(relx = 0.66, rely = 0.51, relheight = 0.1, relwidth=0.05)
     remove_mods_button = tk.Button(frame2,text="rm",bg = "#CFCFCF", command =lambda: remove_mods_button_function())
     remove_mods_button.place(relx = 0.76,rely = 0.51, relheight = 0.1, relwidth= 0.05)
-    LengthLabelButton = tk.Button(frame2,text="LENGTH", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
-    LengthLabelButton.place(relx = 0.81,rely = 0.61,relheight = 0.1, relwidth= 0.18)
+    LengthLabelButton = tk.Button(frame2,text="LEN", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("LENGTH"))
+    LengthLabelButton.place(relx = 0.81,rely = 0.61,relheight = 0.1, relwidth= 0.09)
+    ClassLabelButton = tk.Button(frame2,text="CLASS", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("CLASS"))
+    ClassLabelButton.place(relx = 0.90,rely = 0.61,relheight = 0.1, relwidth= 0.09)
+
     NoteLabelButton = tk.Button(frame2,text="NOTE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("NOTE"))
     NoteLabelButton.place(relx = 0.61,rely = 0.61, relheight = 0.1, relwidth= 0.1)
     TypeLabelButton = tk.Button(frame2,text="TYPE", bg="#CFCFCF", command=lambda: SelectCommentTypeButton("TYPE"))
@@ -8482,12 +8547,17 @@ if len(sys.argv) < 2:
     Type_list_header = tk.StringVar(frame2)
     Type_list_header.set(Type_options[0])
     Type_menu = tk.OptionMenu(frame2, Type_list_header, *Type_options)
-    Type_menu.place(relx=0.01,rely = 0.83, relwidth=0.33,relheight=0.15)
+    Type_menu.place(relx=0.01,rely = 0.83, relwidth=0.22,relheight=0.15)
     Mod_options = ["MOD", "MOD:ENHANCEFCRN","MOD:ENHANCEADCC",    "MOD:STRANDEXCHANGE","MOD:DISULPHIDE",    "MOD:DISULFIDE", "MOD:REMDISULPHIDE","MOD:REMDISULFIDE",    "MOD:PI",    "MOD:CONJUGATION",   "MOD:HEXAMER",    "MOD:NOFCGR",    "MOD:NOPROTEINA","MOD:NOOX",    "MOD:NOADCC",    "MOD:NOCDC",    "MOD:NOADCP",    "MOD:NOADCCCDC",    "MOD:NOGLYCOS","MOD:NOADE",    "MOD:NOAGG",    "MOD:NOPROT",    "MOD:REMCYS",    "MOD:STABILIZATION",    "MOD:AFFINITY",    "MOD:OTHER"]
     mod_list_header = tk.StringVar(frame2)
     mod_list_header.set(Mod_options[0])
     Mod_menu = tk.OptionMenu(frame2, mod_list_header, *Mod_options)
-    Mod_menu.place(relx=0.34,rely = 0.83, relwidth=0.33,relheight=0.15)
+    Mod_menu.place(relx=0.23,rely = 0.83, relwidth=0.22,relheight=0.15)
+    Class_options = ["CLASS", "CLASS:IgG","CLASS:IgE","CLASS:IgA","CLASS:IgM", "CLASS:IgD","CLASS:OTHER"]
+    class_list_header = tk.StringVar(frame2)
+    class_list_header.set(Class_options[0])
+    class_menu = tk.OptionMenu(frame2, class_list_header, *Class_options)
+    class_menu.place(relx=0.45,rely = 0.83, relwidth=0.22,relheight=0.15)
 
 
 
@@ -9271,6 +9341,7 @@ if len(sys.argv) < 2:
     ANTI_labels     = {}
     MOD_labels      = {}
     LENGTH_labels   = {}
+    CLASS_labels    = {}
     deleted_polygons= {}
     TYPE_to_redo    = {}
     NOTE_to_redo    = {}
@@ -9293,7 +9364,7 @@ if len(sys.argv) < 2:
     bond_buttons = [InsertBondButton,InsertLHingeButton, InsertLinkerButton,InsertDBondButton]
     specificity_buttons = [a_button,b_button,c_button,d_button,e_button,f_button,g_button,h_button]
     mod_buttons = [KIH_knob,KIH_hole,Positive_charge,Negative_charge,Gly_button,Mod_button,Drug_button]
-    comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton]
+    comments_buttons = [AntiLabelButton,TypeLabelButton,NoteLabelButton,LengthLabelButton,ModLabelButton, CustomLabelButton,ClassLabelButton]
     delete_buttons = [InsertDelAllButton, InsertDelClickButton]
     all_buttons = domain_buttons + bond_buttons + specificity_buttons + mod_buttons + comments_buttons + delete_buttons
 
@@ -9449,6 +9520,7 @@ else:
     ANTI_labels     = {}
     MOD_labels      = {}
     LENGTH_labels   = {}
+    CLASS_labels    = {}
 
     specificity_colours = [a_heavy_colour, a_light_colour,b_heavy_colour, b_light_colour,c_heavy_colour, c_light_colour,d_heavy_colour, d_light_colour,e_heavy_colour, e_light_colour,f_heavy_colour, f_light_colour,g_heavy_colour, g_light_colour,h_heavy_colour, h_light_colour,generic_heavy_colour,generic_light_colour,X_colour,C_colour]
     bond_colours = [disulphide_colour,bond_colour,hinge_colour,linker_colour]
