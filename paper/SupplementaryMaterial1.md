@@ -24,6 +24,7 @@ H      Hinge
 CH2    Constant Heavy 2
 CH3    Constant Heavy 3
 CH4    Constant Heavy 4
+CH5    Constant Heavy 5
 L      Linker
 X      Extra domain
 C      Chemical conjugation
@@ -195,6 +196,7 @@ The following keywords are currently allowed for comments:
 - TYPE:   Used with Extra Domains and Chemical Moieties to indicate
           what they are - only a restricted list is allowed
 - LENGTH: The length of a domain (typically of a Linker)
+- CLASS:  Specify the immunoglobulin class of origin for a domain.
 - NOTE:   Any other comment (free text, must appear last in a list of
           comments) 
 
@@ -257,5 +259,11 @@ The following keywords are reserved for Chemical Moiety types:
 - MOD:OTHER 		- a modification not explained by any reserved
                           keywords (explained in a NOTE comment) 
 
+### CLASS - allowed keywords
 
-
+- CLASS:IgG 	- Domain of IgG origin
+- CLASS:IgE	  - Domain of IgE origin
+- CLASS:IgA 	- Domain of IgA origin
+- CLASS:IgD	  - Domain of IgD origin
+- CLASS:IgM  	- Domain of IgM origin
+- CLASS:OTHER - Domain of other non-mammalian origin (i.e. IgY, IgNAR)
