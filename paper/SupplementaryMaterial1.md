@@ -1,7 +1,7 @@
-Antibody Markup Language (AbML) Format Description V1.0
+Antibody Markup Language (AbML) Format Description V1.06
 =======================================================
 
-10th February 2022
+21st November 2022
 
 General
 -------
