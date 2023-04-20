@@ -78,7 +78,7 @@ def Get_dictionaries(x):
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
         non_brackets[i]= re.sub("[^1-9],[^1-9]","[^1-9] [^1-9]",non_brackets[i])
-
+    
     y = ""
     counter = 0
     if len(non_brackets) > len(brackets):
@@ -146,7 +146,21 @@ def Get_dictionaries(x):
 
 
     for i in range(len(chains)):
-        chain = splitx[i].split("-")
+        print(splitx[i])
+        chain = []
+        current_split = ""
+        for x in splitx[i]:
+            if x != "-":
+                current_split +=x
+            elif x == "-" and ("[" in current_split and "]" not in current_split):
+                current_split +=x
+            elif  x == "-" and ("[" in current_split and "]" in current_split) or ("[" not in current_split and "]" not in current_split) :
+                chain.append(current_split)
+                current_split = ""
+        chain.append(current_split)
+
+        #chain = splitx[i].split("-")
+
         if i < 4:
             if "V" in chain[0] and "L" not in chain[0]:
                 if len(chain)==1:
@@ -455,7 +469,6 @@ def Get_dictionaries(x):
     #if faux_claw == True:
     #    interacting_fragments = True
     if Claw == True:
-        print("Ummm OK??")
         VHa_checked = VHa
         VLa_checked = VLa
         VHb_checked = VHb
@@ -5241,7 +5254,7 @@ def sequence_pipeline(canvas):
                                                 combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                                 for g in combinations_to_try:
                                                     if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VA" in str(strings[i][j]) and "VB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VD" in str(strings[i][j]) and "VG" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VG" in str(strings[i][j]) and "VD" in str(domains_dict.get(domains_keyslist[f])[1]))  or ("CA" in str(strings[i][j]) and "CB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CB" in str(strings[i][j]) and "CA" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CG" in str(strings[i][j]) and "CD" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CD" in str(strings[i][j]) and "CG" in str(domains_dict.get(domains_keyslist[f])[1])):
+                                                        if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H*-" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H*" in str(strings[i][j]) and "-H" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H" in str(strings[i][j]) and "-H*" in str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H^-" in str(strings[i][j]) and "-H^-" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C") or ("VHH" in str(strings[i][j]) and "VHH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VA" in str(strings[i][j]) and "VB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VD" in str(strings[i][j]) and "VG" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VG" in str(strings[i][j]) and "VD" in str(domains_dict.get(domains_keyslist[f])[1]))  or ("CA" in str(strings[i][j]) and "CB" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CB" in str(strings[i][j]) and "CA" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CG" in str(strings[i][j]) and "CD" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CD" in str(strings[i][j]) and "CG" in str(domains_dict.get(domains_keyslist[f])[1])):
 
                                                             disulphide_count = 0
 
@@ -5296,7 +5309,7 @@ def sequence_pipeline(canvas):
                                         combinations_to_try = [[d2x1,((d2y1+d2y2)/2)],[d2x2,((d2y1+d2y2)/2)],[d2x1,d2y1],[d2x2,d2y1],[d2x2,d2y2],[d2x1,d2y2]]
                                         for g in combinations_to_try:
                                             if d1x1 < g[0] < d1x2 and d1y1 < g[1] < d1y2:
-                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
+                                                if ("VH" in str(strings[i][j]) and "VL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("VL" in str(strings[i][j]) and "VH" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CL" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CL" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH1" in str(strings[i][j]) and "CH1" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH2" in str(strings[i][j]) and "CH2" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH3" in str(strings[i][j]) and "CH3" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH4" in str(strings[i][j]) and "CH4" in str(domains_dict.get(domains_keyslist[f])[1])) or ("CH5" in str(strings[i][j]) and "CH5" in str(domains_dict.get(domains_keyslist[f])[1])) or ("-H-" == str(strings[i][j]) and "-H-" == str(domains_dict.get(domains_keyslist[f])[1])) or ("X" in str(strings[i][j]) and "X" in str(domains_dict.get(domains_keyslist[f])[1])) or ( str(strings[i][j]) == "C" and  str(domains_dict.get(domains_keyslist[f])[1]) == "C"):
                                                     disulphide_count = 0
                                                     paired_X_domains.append(int(paired_number))
                                                     for y in range(len(disulphides_keyslist)):
