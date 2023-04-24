@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.07"
+version_number = "V1.08"
 
 
 ######################################
@@ -4147,8 +4147,8 @@ def render(chains_list,canvas,text_to_image):
             else:
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
-            domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinges"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
-            print("HINGES", Hinges[i][1] )
+            domain = canvas.create_line(Hinges[i][0], fill=hinge_colour, width = Bond_thickness,tags=("bonds","hinge"), arrow=tk.LAST, arrowshape=Arrow_dimensions)
+            print("HINGE", Hinges[i][1] )
             if Hinges[i][1] == False or isinstance(Hinges[i][1], int) == True or isinstance(Hinges[i][1], float) == True:
                 Hinges[i][1] = ""
                 canvas_polygons[domain] = [Hinges[i][0], "-H-", Hinges[i][1]]
@@ -4815,7 +4815,8 @@ def sequence_pipeline(canvas):
         for j in range(len(polygons_keyslist)):
             if arcs_list[i] == polygons_keyslist[j]:
                 arcs_dict[j] = canvas_polygons.get(polygons_keyslist[j])
-    hinges_list = lower_canvas.find_withtag("hinges")
+    hinges_list = lower_canvas.find_withtag("hinge")
+    print("Hinge list",hinges_list)
     hinges_dict = {}
     for i in range(len(hinges_list)):
         for j in range(len(polygons_keyslist)):
@@ -4856,9 +4857,11 @@ def sequence_pipeline(canvas):
     length_keyslist= list(length_dict.keys())
     arcs_keyslist = list(arcs_dict.keys())
     hinges_keyslist= list(hinges_dict.keys())
+    print(hinges_keyslist)
     ##Check for hanging starts
     bond_start = []
     for i in range(len(hinges_keyslist)):
+        print("Howsa boopin")
         ending_found = False
         bondx1 = hinges_dict.get(hinges_keyslist[i])[0][0]
         bondy1 = hinges_dict.get(hinges_keyslist[i])[0][1]
@@ -4868,8 +4871,10 @@ def sequence_pipeline(canvas):
             domainx2 = min_max[1]
             domainy1 = min_max[2]
             domainy2 = min_max[3]
+            #print(domainx1, bondx1,domainx2, domainy1, bondy1, domainy2)
             if domainx1 < bondx1 < domainx2 and domainy1 < bondy1 < domainy2:
                 ending_found = True
+                #print("We found the end!!")
 
         for k in range(len(bonds_keyslist)):
             bond2x2 = bonds_dict.get(bonds_keyslist[k])[0][2]
@@ -4878,6 +4883,7 @@ def sequence_pipeline(canvas):
                 ending_found = True
 
         if ending_found == False:
+            print("looking for the continuation")
             continuation_found = False
             bondx2 = hinges_dict.get(hinges_keyslist[i])[0][2]
             bondy2 = hinges_dict.get(hinges_keyslist[i])[0][3]
@@ -4893,14 +4899,17 @@ def sequence_pipeline(canvas):
             if continuation_found == True:
                 hinge_starts.append(saved_domain)
                 chains.append(saved_domain)
-
+                print("HINGE START")
+        else:
+            print("we didn't find the end. Sad face")
 
                 #full_chain.append(chains[i])
                 #string.append(hinges_dict.get(chains[i])[1])
 
 
-
+    #print(chains)
     for i in range(len(domains_keyslist)):
+        print("looking for domains yo")
         start_found = True
         continuation_found = False
         min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[i])[0])
@@ -5178,7 +5187,7 @@ def sequence_pipeline(canvas):
                 elif "-L^-" in strings[i][j]:
                     strings[i][j] = str("-L^("+str(counter)+")-")
                     counter += 1
-    print(strings)
+    print("strings strings",strings)
 ##Pair chains based on closeness
     paired = []
     for i in range(len(strings)):
@@ -5566,7 +5575,7 @@ def sequence_pipeline(canvas):
 
 ##conver lists to expression
     final_string = ""
-    print(strings[i])
+    print("Final strings",strings)
     if "-H" in strings[0][0]:
         if len(strings) == 2:
             strings[0],strings[1] = strings[1],strings[0]
@@ -5579,6 +5588,7 @@ def sequence_pipeline(canvas):
                 final_string+= str("|"+strings[i][j])
             elif j > 0 :
                 final_string += strings[i][j]
+    final_string = re.sub("\|\-H","|H", str(final_string))
     final_string = re.sub("\.\(",".a(", str(final_string))
     final_string = re.sub("\]\[",", ", str(final_string))
     final_string = re.sub("\-\-","-", str(final_string))
