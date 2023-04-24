@@ -78,7 +78,7 @@ def Get_dictionaries(x):
     for i in range(len(non_brackets)):
         non_brackets[i]= re.sub("\s","",non_brackets[i])
         non_brackets[i]= re.sub("[^1-9],[^1-9]","[^1-9] [^1-9]",non_brackets[i])
-    
+
     y = ""
     counter = 0
     if len(non_brackets) > len(brackets):
@@ -146,7 +146,7 @@ def Get_dictionaries(x):
 
 
     for i in range(len(chains)):
-        print(splitx[i])
+        #print(splitx[i])
         chain = []
         current_split = ""
         for x in splitx[i]:
@@ -245,7 +245,7 @@ def Get_dictionaries(x):
                 except ValueError:
                     error_message = str("Domain "+chain[j]+" is not numbered")
                     raise_error(lower_canvas,error_message)
-            print(domain)
+            #print(domain)
             if location[0] in saved_domains and (domain != "X" and domain !="C"):
                 error_message = str("ERROR: there are two domains with the number "+str(location[0]))
                 raise_error(lower_canvas, error_message)
@@ -289,7 +289,6 @@ def Get_dictionaries(x):
 
 
 
-    print(VHa,VHb,VLa,VLb)
     ###checker###
     VHa_keyslist = list(VHa.keys())
     VLa_keyslist = list(VLa.keys())
@@ -421,11 +420,13 @@ def Get_dictionaries(x):
                                         used.append(dicts[a])
 
                 except IndexError:
+                    #print("ERROR IN VLB")
                     continue
         print(VHa_checked)
         print(VLa_checked)
         print(VHb_checked)
         print(VLb_checked)
+
     elif chain_count ==2:
         VHa_checked = VHa
         VHb_checked = VHb
@@ -651,14 +652,14 @@ def Get_dictionaries(x):
         fragment2_checked = fragment2
         fragment3_checked = fragment3
         fragment4_checked = fragment4
-    #print(VHa_checked)
-    #print(VLa_checked)
-    #print(VHb_checked)
-    #print(VLb_checked)
-    #print(fragment1_checked)
-    #print(fragment2_checked)
-    #print(fragment3_checked)
-    #print(fragment4_checked)
+    print(VHa_checked)
+    print(VLa_checked)
+    print(VHb_checked)
+    print(VLb_checked)
+    print(fragment1_checked)
+    print(fragment2_checked)
+    print(fragment3_checked)
+    print(fragment4_checked)
     if  ((fragment1 !={} and fragment2 !={} and fragment3 != {} and fragment4 !={}) or (fragment1 !={} and fragment2 !={} and fragment3 == {} and fragment4 == {}) or Claw == True or faux_claw == True) and interacting_fragments == True:
         IgG2 = True
         if "C[" in str(fragment3_checked) and "C[" not in str(fragment1_checked):
