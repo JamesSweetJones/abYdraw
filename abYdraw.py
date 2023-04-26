@@ -4879,7 +4879,8 @@ def sequence_pipeline(canvas):
         for k in range(len(bonds_keyslist)):
             bond2x2 = bonds_dict.get(bonds_keyslist[k])[0][2]
             bond2y2 = bonds_dict.get(bonds_keyslist[k])[0][3]
-            if bond2x2 == bondx1 and bond2y2 == bondy1:
+            print(bond2x2, bondx1, bond2y2, bondy1)
+            if (bond2x2-25 <= bondx1 <= bond2x2+25) and (bond2y2-25 <= bondy1 <= bond2y2+25):
                 ending_found = True
 
         if ending_found == False:
@@ -4991,7 +4992,7 @@ def sequence_pipeline(canvas):
                         bond_test2x1 = bondcoordinates_test[0]
                         bond_test2y1 = bondcoordinates_test[1]
                             #print(bondx2,bond2x1,bondy2,bond2y1)
-                        if bond_x2-1 <= bond_test2x1 <= bond_x2+1 and bond_y2-1 <= bond_test2y1 <= bond_y2+1:
+                        if bond_x2-2 <= bond_test2x1 <= bond_x2+2 and bond_y2-2 <= bond_test2y1 <= bond_y2+2:
                             full_chain.append(bonds_keyslist[k])
                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
                             bondx2 = bonds_dict.get(full_chain[-1])[0][2]
@@ -5038,7 +5039,7 @@ def sequence_pipeline(canvas):
                                         bond_test2x1 = bondcoordinates_test[0]
                                         bond_test2y1 = bondcoordinates_test[1]
                                             #print(bondx2,bond2x1,bondy2,bond2y1)
-                                        if bond_x2-1 <= bond_test2x1 <= bond_x2+1 and bond_y2-1 <= bond_test2y1 <= bond_y2+1:
+                                        if bond_x2-2 <= bond_test2x1 <= bond_x2+2 and bond_y2-2 <= bond_test2y1 <= bond_y2+2:
                                             full_chain.append(bonds_keyslist[k])
                                             string.append(bonds_dict.get(bonds_keyslist[k])[1])
                                                     #extra_bonds_keyslist.remove(extra_bonds_keyslist[k])
