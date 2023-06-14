@@ -4861,7 +4861,6 @@ def sequence_pipeline(canvas):
     ##Check for hanging starts
     bond_start = []
     for i in range(len(hinges_keyslist)):
-        print("Howsa boopin")
         ending_found = False
         bondx1 = hinges_dict.get(hinges_keyslist[i])[0][0]
         bondy1 = hinges_dict.get(hinges_keyslist[i])[0][1]
@@ -4884,7 +4883,6 @@ def sequence_pipeline(canvas):
                 ending_found = True
 
         if ending_found == False:
-            print("looking for the continuation")
             continuation_found = False
             bondx2 = hinges_dict.get(hinges_keyslist[i])[0][2]
             bondy2 = hinges_dict.get(hinges_keyslist[i])[0][3]
@@ -4902,7 +4900,7 @@ def sequence_pipeline(canvas):
                 chains.append(saved_domain)
                 print("HINGE START")
         else:
-            print("we didn't find the end. Sad face")
+            print("we didn't find the end")
 
                 #full_chain.append(chains[i])
                 #string.append(hinges_dict.get(chains[i])[1])
@@ -4910,7 +4908,6 @@ def sequence_pipeline(canvas):
 
     #print(chains)
     for i in range(len(domains_keyslist)):
-        print("looking for domains yo")
         start_found = True
         continuation_found = False
         min_max = get_min_max_coordinates(domains_dict.get(domains_keyslist[i])[0])
