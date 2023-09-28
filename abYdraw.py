@@ -30,7 +30,7 @@ import tkinter.font as TkFont
 import time
 import argparse
 from PIL import Image
-version_number = "V1.08"
+version_number = "V1.09"
 
 
 ######################################
@@ -164,38 +164,38 @@ def Get_dictionaries(x):
         if i < 4:
             if "V" in chain[0] and "L" not in chain[0]:
                 if len(chain)==1:
-                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                 elif chain[1] != "L":
-                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                 elif chain[1] == "L":
                     if "VH" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                     elif "VL" in chain[2]:
-                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                     else:
-                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
 
             elif "VL" in chain[0]:
                 try:
                     if  chain[1] != "L":
-                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                        dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                     elif chain[1] == "L":
                         if len(chain) > 2:
                             if "VH" in chain[2]:
-                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                             elif "VL" in chain[2]:
-                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                             else:
-                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                                dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
                 except IndexError:
-                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^","",str(chains[i])))
+                    dict = str(re.sub("\.|\+|\_|\*|\!|nano|\^|\%","",str(chains[i])))
 
             elif "X" in chain[0]:
-                 dict = str(re.sub("\.|\+|\_|\*|\!|\^","",str(chains[i])))
+                 dict = str(re.sub("\.|\+|\_|\*|\!|\|\%^","",str(chains[i])))
             elif "L" in chain[0]:
-                dict = str(re.sub("\.|\+|\_|\*|\!|\^","",str(chains[i])))
+                dict = str(re.sub("\.|\+|\_|\*|\!|\^|\%","",str(chains[i])))
             else:
-                dict = str(re.sub("\.|\+|\_|\*|\!|\^","",str(chains[i])))
+                dict = str(re.sub("\.|\+|\_|\*|\!|\^|\%","",str(chains[i])))
         elif i >= 4:
             dict_number = i-3
             dict = str("fragment"+str(dict_number))
@@ -210,6 +210,10 @@ def Get_dictionaries(x):
             elif ("H^" in domain or "L^" in domain) and "V" not in domain and "CL" not in domain:
                 domain = re.sub("\^","", str(domain))
                 h_mod = 2
+            elif ("H%" in domain or "L%" in domain) and "V" not in domain and "CL" not in domain:
+                domain = re.sub("\%","", str(domain))
+                h_mod = 3
+
             else:
                 h_mod = 0
             if "X*" in domain or "C*" in domain:
@@ -621,7 +625,7 @@ def Get_dictionaries(x):
 
     all_to_check_keys = list(VHa_checked.keys())+list(VLa_checked.keys())+list(VHb_checked.keys())+list(VLb_checked.keys())+list(fragment1.keys())+list(fragment2.keys())+list(fragment3.keys())+list(fragment4.keys())
     for i in range(len(all_to_check_keys)):
-        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CH5","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD"]
+        possible_domains = ["VH","VL","CH1","CH2","CH3","CH4","CH5","CL","X","H","Linker","L","C", "VHH","VA","CA","VB","CB","VG","CG","VD","CD","CHS","J"]
         domain_to_print = re.sub("\[.*\]","",all_to_check_keys[i])
         if "Linker" in all_to_check_keys[i] and "Linker" in all_to_check_keys[i+1]:
             error_message = str("ERROR: abYdraw does not allow L-L connections")
@@ -642,7 +646,7 @@ def Get_dictionaries(x):
             error_message = str("ERROR: ! modifications are only allowed in CH2 domains, not "+ domain_to_print)
             raise_error(lower_canvas, error_message)
         if "Linker[" not in all_to_check_keys[i]:
-            domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^","", domain_to_print)
+            domain = re.sub("\.|nano|nno|[a-h]|\@|>|\+|\-|\_|\!|\*|\^|\%","", domain_to_print)
             if domain not in possible_domains:
 
                 error_message = str("ERROR: Unrecognised domain type "+ str(domain_to_print)+"\nAll domains in expression much be of type VH,VL,CH1,CH2,CH3,CH4,CH5,CL,X,H or L")
@@ -1213,7 +1217,7 @@ def Check_interactions(chains_list,canvas):
 
                                     previous_domain_interaction = False
                                     previous_interactor = ""
-                                    if "X" not in str(keyslist[n-2]):
+                                    if "X" not in str(keyslist[n-2]) and len(chain.get(keyslist[n-2])[0]) > 1:
                                         interactor = chain.get(keyslist[n-2])[0][1]
                                         for i in range(len(second_comp_keyslist)):
                                             current_interactor = second_comp.get(second_comp_keyslist[i])[0][0]
@@ -1910,6 +1914,9 @@ def Check_interactions(chains_list,canvas):
                 if "H[" not in keyslist[i-1] and "Linker[" not in keyslist[i-1]:# and "X" not in keyslist[i]:
                     previous_number = (dictionary.get(previous_domain)[0])+1
                     print("CheckpointH")
+                    if (len(dictionary.get(keyslist[i]))) == 1 and "Linker[" not in keyslist[i]:
+                        dictionary.get(keyslist[i]).append(dictionary.get(keyslist[i])[0])
+                        
                 elif "X[" in keyslist[i-1] and "Linker[" not in keyslist[i]:
                     if CLI == False:
                         print("checkpointX")
@@ -2217,7 +2224,7 @@ def Check_interactions(chains_list,canvas):
                         getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+20),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
                     Build_in  = True
                     Build_out = False
-
+                
                 elif chain_count == 2 and  "H[" not in keyslist[0] and "H[" not in keyslist[i] and "Linker[" not in keyslist[i-1] and "Linker[" not in keyslist[i] and "X" not in keyslist[i] and "X" not in keyslist[i-1] and dictionary.get(keyslist[i])[0] != (dictionary.get(previous_domain)[1]) and dictionary.get(keyslist[i])[0] == previous_number and dictionary.get(keyslist[i])[1] == (dictionary.get(keyslist[i-1])[1]+3):
                     if CLI == False:
                         print("checkpoint8")
@@ -2611,7 +2618,7 @@ def Check_interactions(chains_list,canvas):
                                 getcoordinates = domainmaker(All_positions_and_chains,(previous_chain[6]),(previous_chain[7]+80),righthanded,slant,V,direction,X,mod,interaction,previous_H, Build_up)
 
 ##H disulphides
-            if "H[" in keyslist[i] or "H*[" in keyslist[i] or "H^[" in keyslist[i] or "Linker[" in keyslist[i] and len(dictionary.get(keyslist[i])) >1 and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
+            if "H[" in keyslist[i] or "H*[" in keyslist[i] or "H^[" in keyslist[i] or "H%[" in keyslist[i] or "Linker[" in keyslist[i] and len(dictionary.get(keyslist[i])) >1 and (dictionary != VHa_1_test or dictionary != VHb_1_test or dictionary != VLa_1_test or dictionary != VLb_1_test):
                 print("DISULPHIDE CHECKPOINT")
                 if i == 0:
                     bottom_bond = [startx,starty]
@@ -3280,6 +3287,7 @@ def Check_interactions(chains_list,canvas):
                                 print("oh noooooo")
                         except:
                             pass
+                            print("Umm ok then")
                             VHa_H_coordinatesx = (width/2)-50
                             VHa_H_coordinatesy = (height/2)-50
                             VHb_H_coordinatesx = (width/2)+50
@@ -3289,8 +3297,8 @@ def Check_interactions(chains_list,canvas):
                         VHa_H_coordinatesy = (height/2)-50
                         VHb_H_coordinatesx = (width/2)+30
                         VHb_H_coordinatesy = (height/2)-50
-
-
+                    #elif "X[" in str(test_keyslist[0]) and "X[" not in str(test_keyslist[0])
+                   
 
             elif IgG2 == True:
                 VHa_H_coordinatesx = (width/2)-200
@@ -4144,6 +4152,9 @@ def render(chains_list,canvas,text_to_image):
             elif "^" in str(l_mods_normal[i]):
                 l_mods_normal[i] = re.sub("\^","",l_mods_normal[i])
                 canvas_polygons[domain] = [Linkers[i], "-L^-", l_mods_normal[i]]
+            elif "%" in str(l_mods_normal[i]):
+                l_mods_normal[i] = re.sub("\%","",l_mods_normal[i])
+                canvas_polygons[domain] = [Linkers[i], "-L%-", l_mods_normal[i]]
             else:
                 canvas_polygons[domain] = [Linkers[i], "-L-",l_mods_normal[i]]
         for i in range(len(Hinges)):
@@ -4157,6 +4168,9 @@ def render(chains_list,canvas,text_to_image):
             elif "^" in Hinges[i][1]:
                 Hinges[i][1] = re.sub("\^","",Hinges[i][1])
                 canvas_polygons[domain] = [Hinges[i][0], "-H^-",Hinges[i][1]]
+            elif "%" in Hinges[i][1]:
+                Hinges[i][1] = re.sub("\%","",Hinges[i][1])
+                canvas_polygons[domain] = [Hinges[i][0], "-H%-",Hinges[i][1]]
             else:
                 canvas_polygons[domain] = [Hinges[i][0], "-H-", ""]
 
@@ -5139,7 +5153,7 @@ def sequence_pipeline(canvas):
         for j in range(len(strings[i])):
             assigned_keyslist = list(assigned_numbers.keys())
             if str(strings[i][j]) != "-" :
-                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-L^-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-H^-" not in strings[i][j] and "-L*-" not in strings[i][j]:
+                if "-H-" not in strings[i][j] and "-L-" not in strings[i][j] and "-L^-" not in strings[i][j] and "-H*-" not in strings[i][j] and "-H^-" not in strings[i][j]and  "-H%-" not in strings[i][j] and "-L%-" not in strings[i][j] and "-L*-" not in strings[i][j]:
                     index = full_chains[i][j]
                     coordinates = domains_dict.get(index)[0]
                     assigned_match = False
@@ -5179,11 +5193,17 @@ def sequence_pipeline(canvas):
                 elif "-H^-" in strings[i][j]:
                     strings[i][j] = str("-H^("+str(counter)+")-")
                     counter += 1
+                elif "-H%-" in strings[i][j]:
+                    strings[i][j] = str("-H%("+str(counter)+")-")
+                    counter += 1
                 elif "-L*-" in strings[i][j]:
                     strings[i][j] = str("-L*("+str(counter)+")-")
                     counter += 1
                 elif "-L^-" in strings[i][j]:
                     strings[i][j] = str("-L^("+str(counter)+")-")
+                    counter += 1
+                elif "-L%-" in strings[i][j]:
+                    strings[i][j] = str("-L%("+str(counter)+")-")
                     counter += 1
     print("strings strings",strings)
 ##Pair chains based on closeness
@@ -5804,6 +5824,8 @@ def update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods):
         Mod_button.config(fg="red")
     if "^" in extra_mods:
         Drug_button.config(fg="red")
+    if "%" in extra_mods:
+        Drug_button.config(fg="red")
     if domain_mod == ">":
         KIH_knob.configure(fg="red")
     elif domain_mod == "@":
@@ -5898,6 +5920,8 @@ def extra_mod_button(letter):
             extra_mods = re.sub("\*","",str(extra_mods))
         elif letter == "^":
             extra_mods = re.sub("\^","",str(extra_mods))
+        elif letter == "%":
+            extra_mods = re.sub("\%","",str(extra_mods))
     update_domain_primer(domain_type,domain_charge,domain_mod,extra_mods)
 
 def domain_charge_button(letter):
@@ -6228,7 +6252,7 @@ def labels_button(canvas):
                 label  = lower_canvas.create_text([labelx,labely], text = domain_name, tags = "label",fill=Font_colour, font=(str(Font_Family),str(Font_size)))
                 canvas_labels[label] = [[labelx, labely], domain_name]
                 temp_label = {}
-            elif domain_label == "-H-" or domain_label == "-H*-" or domain_label == "-H^-":
+            elif domain_label == "-H-" or domain_label == "-H*-" or domain_label == "-H^-"or domain_label == "-H%-":
                 domain_name = re.sub("-","", domain_label)
                 firstx  = domain_coordinates[0]
                 secondx = domain_coordinates[2]
@@ -6868,7 +6892,7 @@ class MouseMover():
         if domain_self_item == True:
             domain_name = canvas_polygons.get(self.item)[1]
             clean_domain_name = re.sub("\.a|\.b|\.c|\.d|\.e|\.f|\.g|\.h|a|b|c|d|e|f|g|h","",domain_name)
-            clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*|\^","",clean_domain_name)
+            clean_domain_name = re.sub("\@|\>|\+|\-|\_|\!|\*|\^|\%","",clean_domain_name)
             if domain_type != "":
                 domain_type_to_add = re.sub("\.","",domain_type)
                 domain_type_to_add = str("."+domain_type_to_add)
@@ -6901,19 +6925,23 @@ class MouseMover():
                 domain_mod_to_add = domain_mod
 
             extra_mods_to_add = ""
-            if "*" in str(domain_name) or "!" in str(domain_name) or "^" in str(domain_name):
+            if "*" in str(domain_name) or "!" in str(domain_name) or "^" in str(domain_name) or "%" in str(domain_name):
                 if "*" in str(extra_mods):
                     extra_mods_to_add = re.sub("\*","",extra_mods)
                 if "!" in str(extra_mods):
                     extra_mods_to_add = re.sub("\!","",extra_mods)
                 if "^" in str(extra_mods):
                     extra_mods_to_add = re.sub("\^","",extra_mods)
+                if "%" in str(extra_mods):
+                    extra_mods_to_add = re.sub("\%","",extra_mods)
                 if "*" in str(domain_name):
                     extra_mods_to_add += "*"
                 if "!" in str(domain_name):
                     extra_mods_to_add += "!"
                 if "^" in str(domain_name):
                     extra_mods_to_add += "^"
+                if "%" in str(domain_name):
+                    extra_mods_to_add += "%"
 
             else:
                 extra_mods_to_add = extra_mods
@@ -6960,9 +6988,13 @@ class MouseMover():
                 new_domain_name = "-H*-"
             elif domain_name == "-H-" and "^" in extra_mods:
                 new_domain_name = "-H^-"
+            elif domain_name == "-H-" and "%" in extra_mods:
+                new_domain_name = "-H%-"
             elif "H*" in domain_name   and "V" not in domain_name and "*" not in extra_mods_to_add:
                 new_domain_name = "-H-"
             elif "H^" in domain_name   and "V" not in domain_name and "^" not in extra_mods_to_add:
+                new_domain_name = "-H-"
+            elif "H%" in domain_name   and "V" not in domain_name and "^" not in extra_mods_to_add:
                 new_domain_name = "-H-"
             canvas_polygons[self.item][1] = new_domain_name
             ###change display label
