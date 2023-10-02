@@ -2024,7 +2024,7 @@ def Check_interactions(chains_list,canvas):
                         if Build_in == True:
                             Build_in = False
                             Build_out = True
-                    if chain_count == 2 and  mod !="Leucine":
+                    if chain_count == 2 and  mod !="Leucine" and "X[" not in keyslist[i]:
                         clash = check_for_clashes((previous_chain[6]),(previous_chain[7]+20))
                         if clash[0] == True:
                             Build_up = True
@@ -5516,7 +5516,7 @@ def sequence_pipeline(canvas):
             if strings[i][j] != "-":
                 comment_found = False
                 domain_type = strings[i][j].split("(")[0]
-                mod_domain_type = re.sub("\.|\+|\-|\@|\>","", str(domain_type))
+                mod_domain_type = re.sub("f\+|\-|\@|\>","", str(domain_type))
                 mod_domain_type1 = str(mod_domain_type+" ")
                 mod_domain_type2 = str(mod_domain_type+"* ")
                 domain_type = re.sub("\.|\*|\+|\-|\@|\>|\^","", str(domain_type))
@@ -5607,6 +5607,9 @@ def sequence_pipeline(canvas):
             elif j > 0 :
                 final_string += strings[i][j]
     final_string = re.sub("\|\-H","|H", str(final_string))
+    final_string = re.sub("([\+|\_])([a-h])","\\1.\\2",str(final_string))
+    final_string = re.sub("\.\.",".", str(final_string))
+    final_string = re.sub("\.\.",".", str(final_string))
     final_string = re.sub("\.\(",".a(", str(final_string))
     final_string = re.sub("\]\[",", ", str(final_string))
     final_string = re.sub("\-\-","-", str(final_string))
